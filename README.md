@@ -1,0 +1,18 @@
+# Steve's Factory Manager
+
+This is a complete rewrite of Vswe's [Steve's Factory Manager](https://minecraft.curseforge.com/projects/steves-factory-manager)
+
+Credits to Vswe for creating this awesome mod and give us permission to port it, and gigabit101 for maintaining this mod
+during the 1.10.2 times.
+
+---
+
+### Past Forks of the Mod
+
++ Original by Vswe: https://github.com/Vswe/ModJam3
++ gigabit101's fork: https://github.com/gigabit101/StevesFactoryManager
++ SuperFactoryManager by TeamDman:  https://github.com/TeamDman/SuperFactoryManager
+
+---
+
+Permissions can be found [here](https://twitter.com/Steves_Carts/status/795197105849729024)

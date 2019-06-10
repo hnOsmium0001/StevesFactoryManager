@@ -1,0 +1,66 @@
+// For those who want the bleeding edge
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+
+apply plugin: 'maven-publish'
+
+repositories {
+    maven { // JEI
+        url "http://dvs1.progwml6.com/files/maven"
+    }
+}
+
+group= "vswe.stevesfactory" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "stevesfactory"
+
+if (System.getenv('BUILD_NUMBER') != null) {
+    version += "-${System.getenv('BUILD_NUMBER')}"
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+minecraft {
+    mappings channel: 'snapshot', version: '20190608-1.14.2'
+    accessTransformer = file('top_at.cfg')
+
+    runs {
+        client = {
+            // recommended logging data for a userdev environment
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            // recommended logging level for the console
+            properties 'forge.logging.console.level': 'debug'
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
+        server = {
+            // recommended logging data for a userdev environment
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            // recommended logging level for the console
+            properties 'forge.logging.console.level': 'debug'
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.14.2-26.0.8'
+}
+
+jar {
+    manifest {
+        attributes 'FMLAT': 'top_at.cfg'
+    }
+}

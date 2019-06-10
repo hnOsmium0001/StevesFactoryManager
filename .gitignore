@@ -1,0 +1,16 @@
+# Exclude everything except...
+/*
+
+# Gradle stuff
+!gradle/
+!build.gradle
+!gradle.properties
+!gradlew.bat
+!gradlew
+
+# Source code
+!src/
+
+# Other files
+!LICENSE
+!README.md
