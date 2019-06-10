@@ -8,9 +8,9 @@ authors="Vwse,gagabit101,hnOsmium0001"
 
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]]
-modId="stevesfactory"
+modId="sfm"
 version="${file.jarVersion}"
-displayName="Steve' Factory Manager"
+displayName="Steve's Factory Manager"
 #updateJSONURL="http://myurl.me/"
 description='''
 Steve' Factory Manager
