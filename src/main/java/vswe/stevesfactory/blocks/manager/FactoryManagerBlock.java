@@ -1,4 +1,4 @@
-package vswe.stevesfactory.blocks;
+package vswe.stevesfactory.blocks.manager;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.registries.ObjectHolder;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.blocks.FactoryManagerBlock;
+import vswe.stevesfactory.blocks.manager.FactoryManagerBlock;
 import vswe.stevesfactory.setup.builder.BlockBuilder;
 
 import java.util.ArrayList;
