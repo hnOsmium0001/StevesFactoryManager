@@ -33,7 +33,7 @@ public class ModItems {
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        pendingItems.forEach(builder -> event.getRegistry().register(builder.construct()));
+        pendingItems.forEach(b -> event.getRegistry().register(b.construct()));
     }
 
     public static void finishLoading() {

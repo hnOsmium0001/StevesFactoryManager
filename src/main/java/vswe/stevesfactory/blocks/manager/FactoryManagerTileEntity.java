@@ -2,11 +2,11 @@ package vswe.stevesfactory.blocks.manager;
 
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import vswe.stevesfactory.api.ICable;
 import vswe.stevesfactory.api.INetwork;
+import vswe.stevesfactory.setup.ModBlocks;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,8 +15,8 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
 
     private Set<ICable> connectedCables = new HashSet<>();
 
-    public FactoryManagerTileEntity(TileEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public FactoryManagerTileEntity() {
+        super(ModBlocks.factoryManagerTileEntity);
     }
 
     @Override

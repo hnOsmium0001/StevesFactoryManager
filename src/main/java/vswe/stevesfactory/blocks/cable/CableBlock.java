@@ -1,4 +1,4 @@
-package vswe.stevesfactory.blocks;
+package vswe.stevesfactory.blocks.cable;
 
 import net.minecraft.block.Block;
 
