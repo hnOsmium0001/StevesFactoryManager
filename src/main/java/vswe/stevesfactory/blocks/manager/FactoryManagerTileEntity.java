@@ -4,6 +4,8 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import org.apache.logging.log4j.Logger;
+import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.ICable;
 import vswe.stevesfactory.api.INetwork;
 import vswe.stevesfactory.setup.ModBlocks;
@@ -49,6 +51,18 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
                 search(center);
             }
         }
+    }
+
+    public void dump() {
+        Logger logger = StevesFactoryManager.logger;
+        logger.debug("======== Dumping Factory Manager at {} ========", pos.toString());
+
+        logger.debug("Connected cables:");
+        for (ICable cable : connectedCables) {
+            logger.debug("{}: {}", cable.getPos(), cable);
+        }
+
+        logger.debug("======== Finished dumping Factory Manager ========");
     }
 
 }

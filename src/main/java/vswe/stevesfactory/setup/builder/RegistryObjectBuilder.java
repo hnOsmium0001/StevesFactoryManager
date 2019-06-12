@@ -13,6 +13,8 @@ public class RegistryObjectBuilder<T extends IForgeRegistryEntry<T>, B> {
     private Function<B, T> factory;
     private B builder;
 
+    private T product;
+
     public RegistryObjectBuilder(String registryName) {
         this(new ResourceLocation(Objects.requireNonNull(registryName)));
     }
@@ -36,9 +38,12 @@ public class RegistryObjectBuilder<T extends IForgeRegistryEntry<T>, B> {
     }
 
     public T construct() {
-        Preconditions.checkState(factory != null, "Cannot construct %s without a Factory function!", getRegistryName());
-        Preconditions.checkState(builder != null, "Cannot construct %s without a Builder!", getRegistryName());
-        return factory.apply(builder).setRegistryName(getRegistryName());
+        if (product == null) {
+            Preconditions.checkState(factory != null, "Cannot construct %s without a Factory function!", getRegistryName());
+            Preconditions.checkState(builder != null, "Cannot construct %s without a Builder!", getRegistryName());
+            product = factory.apply(builder).setRegistryName(getRegistryName());
+        }
+        return product;
     }
 
 }

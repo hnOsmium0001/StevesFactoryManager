@@ -7,13 +7,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.setup.builder.RegistryObjectBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
 public class ModItems {
@@ -21,7 +20,7 @@ public class ModItems {
     public static ItemGroup creativeTab = new ItemGroup(StevesFactoryManager.MODID) {
         @Override
         public ItemStack createIcon() {
-            return new ItemStack(ModBlocks.factoryManager);
+            return new ItemStack(ModBlocks.factoryManagerBlock);
         }
     };
 

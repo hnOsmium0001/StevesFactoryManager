@@ -16,7 +16,6 @@ import vswe.stevesfactory.blocks.cable.CableTileEntity;
 import vswe.stevesfactory.blocks.manager.FactoryManagerBlock;
 import vswe.stevesfactory.blocks.manager.FactoryManagerTileEntity;
 import vswe.stevesfactory.setup.builder.BlockBuilder;
-import vswe.stevesfactory.setup.builder.TileEntityBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,35 +26,32 @@ import static vswe.stevesfactory.setup.ModItems.defaultItemProperties;
 public class ModBlocks {
 
     private static List<BlockBuilder> pendingBlocks = new ArrayList<>();
-    private static List<TileEntityBuilder<?>> pendingTiles = new ArrayList<>();
 
     @ObjectHolder("sfm:factory_manager")
-    public static FactoryManagerBlock factoryManager;
+    public static FactoryManagerBlock factoryManagerBlock;
     @ObjectHolder("sfm:factory_manager")
     public static TileEntityType<FactoryManagerTileEntity> factoryManagerTileEntity;
 
     @ObjectHolder("sfm:cable")
-    public static FactoryManagerBlock cable;
+    public static CableBlock cableBlock;
     @ObjectHolder("sfm:cable")
     public static TileEntityType<CableTileEntity> cableTileEntity;
 
     public static void init() {
         // func_223042_a == create
-        pendingBlocks.add(new BlockBuilder("factory_manager")
-                .builder(Block.Properties.create(Material.IRON).hardnessAndResistance(2f, 10f))
+        pendingBlocks.add(new BlockBuilder<FactoryManagerTileEntity>("factory_manager")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2f, 10f))
+                .constructor(FactoryManagerBlock::new)
                 .item(defaultItemProperties())
-                .factory(FactoryManagerBlock::new));
-        pendingTiles.add(new TileEntityBuilder<>("factory_manager")
-                .builder(TileEntityType.Builder.func_223042_a(FactoryManagerTileEntity::new))
-                .factory(b -> b.build(null)));
+                .tileEntity(block -> TileEntityType.Builder.func_223042_a(FactoryManagerTileEntity::new, block))
+                .noRenderer());
 
-        pendingBlocks.add(new BlockBuilder("cable")
-                .builder(Block.Properties.create(Material.IRON).hardnessAndResistance(2f, 10f))
+        pendingBlocks.add(new BlockBuilder<CableTileEntity>("cable")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(0.4f, 10f))
+                .constructor(CableBlock::new)
                 .item(defaultItemProperties())
-                .factory(CableBlock::new));
-        pendingTiles.add(new TileEntityBuilder<>("factory_manager")
-                .builder(TileEntityType.Builder.func_223042_a(FactoryManagerTileEntity::new))
-                .factory(b -> b.build(null)));
+                .tileEntity(block -> TileEntityType.Builder.func_223042_a(CableTileEntity::new, block))
+                .noRenderer());
     }
 
     @SubscribeEvent
@@ -70,17 +66,16 @@ public class ModBlocks {
 
     @SubscribeEvent
     public static void registerTileEntities(RegistryEvent.Register<TileEntityType<?>> event) {
-        pendingTiles.forEach(b -> event.getRegistry().register(b.construct()));
+        pendingBlocks.forEach(b -> event.getRegistry().register(b.constructTileEntityType()));
     }
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
-        pendingTiles.forEach(TileEntityBuilder::tryRegisterRenderer);
+        pendingBlocks.forEach(BlockBuilder::tryRegisterTileEntityRenderer);
     }
 
     public static void finishLoading() {
         pendingBlocks = null;
-        pendingTiles = null;
     }
 
 }
