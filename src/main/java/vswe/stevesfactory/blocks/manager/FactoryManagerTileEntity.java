@@ -1,5 +1,6 @@
 package vswe.stevesfactory.blocks.manager;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -13,9 +14,9 @@ import vswe.stevesfactory.setup.ModBlocks;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INetwork {
+public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INetwork, ICable {
 
-    private Set<ICable> connectedCables = new HashSet<>();
+    private Set<BlockPos> connectedCables = new HashSet<>();
 
     public FactoryManagerTileEntity() {
         super(ModBlocks.factoryManagerTileEntity);
@@ -24,31 +25,30 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     @Override
     public void tick() {
         if (!world.isRemote) {
-            // Update extremely infrequently
-            // Note that it will update every time the player opens the GUI TODO
-            if (world.getGameTime() % 6000 == 0) {
-                search(pos);
-            }
+            // TODO logic
         }
     }
 
     @Override
-    public Set<? extends ICable> getConnectedCables() {
+    public Set<BlockPos> getConnectedCables() {
         return connectedCables;
+    }
+
+    public void openGUI(PlayerEntity player) {
+        connectedCables.clear();
+        search(pos);
     }
 
     private void search(BlockPos center) {
         if (world == null)
             return;
 
-        connectedCables.clear();
         for (Direction direction : Direction.values()) {
-            BlockPos neighbor = pos.offset(direction);
+            BlockPos neighbor = center.offset(direction);
             TileEntity tile = world.getTileEntity(neighbor);
-            if (tile instanceof ICable && !connectedCables.contains(tile)) {
-                ICable element = (ICable) tile;
-                connectedCables.add(element);
-                search(center);
+            if (tile instanceof ICable && !connectedCables.contains(neighbor)) {
+                connectedCables.add(neighbor);
+                search(neighbor);
             }
         }
     }
@@ -58,11 +58,16 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         logger.debug("======== Dumping Factory Manager at {} ========", pos.toString());
 
         logger.debug("Connected cables:");
-        for (ICable cable : connectedCables) {
-            logger.debug("{}: {}", cable.getPos(), cable);
+        for (BlockPos pos : connectedCables) {
+            logger.debug("{}: {}", pos, world.getTileEntity(pos));
         }
 
         logger.debug("======== Finished dumping Factory Manager ========");
+    }
+
+    @Override
+    public boolean isCable() {
+        return true;
     }
 
 }

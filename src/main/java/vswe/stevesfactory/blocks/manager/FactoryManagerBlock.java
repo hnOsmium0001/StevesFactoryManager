@@ -20,9 +20,13 @@ public class FactoryManagerBlock extends Block {
 
     @Override
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult lookingAt) {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof FactoryManagerTileEntity) {
-            ((FactoryManagerTileEntity) tile).dump();
+        if (!world.isRemote) {
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile instanceof FactoryManagerTileEntity) {
+                FactoryManagerTileEntity manager = (FactoryManagerTileEntity) tile;
+                manager.openGUI(player);
+                manager.dump();
+            }
         }
         return true;
     }
