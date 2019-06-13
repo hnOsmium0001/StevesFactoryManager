@@ -1,4 +1,4 @@
-package vswe.stevesfactory.api;
+package vswe.stevesfactory.api.network;
 
 /**
  * Implement this interface in order to override the default connection logic of factory managers.

@@ -1,9 +1,9 @@
-package vswe.stevesfactory.api;
+package vswe.stevesfactory.api.network;
 
 import com.google.common.collect.AbstractIterator;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import vswe.stevesfactory.api.IConnectable.ConnectionType;
+import vswe.stevesfactory.api.network.IConnectable.ConnectionType;
 
 import java.util.Iterator;
 

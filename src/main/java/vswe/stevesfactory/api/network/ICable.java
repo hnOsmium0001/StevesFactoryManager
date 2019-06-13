@@ -1,9 +1,6 @@
-package vswe.stevesfactory.api;
+package vswe.stevesfactory.api.network;
 
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.List;
 
 /**
  * A block that is a part of a network, such as cables.

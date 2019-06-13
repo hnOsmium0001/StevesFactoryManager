@@ -1,10 +1,9 @@
 package vswe.stevesfactory.blocks.cable;
 
 import net.minecraft.tileentity.TileEntity;
-import vswe.stevesfactory.api.Connections;
-import vswe.stevesfactory.api.ICable;
-import vswe.stevesfactory.api.IConnectable;
-import vswe.stevesfactory.api.IConnectable.ConnectionType;
+import vswe.stevesfactory.api.network.Connections;
+import vswe.stevesfactory.api.network.ICable;
+import vswe.stevesfactory.api.network.IConnectable.ConnectionType;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.ConnectionHelper;
 

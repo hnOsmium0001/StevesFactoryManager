@@ -7,9 +7,9 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.Connections;
-import vswe.stevesfactory.api.ICable;
-import vswe.stevesfactory.api.INetwork;
+import vswe.stevesfactory.api.network.Connections;
+import vswe.stevesfactory.api.network.ICable;
+import vswe.stevesfactory.api.network.INetwork;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.ConnectionHelper;
 

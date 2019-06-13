@@ -5,9 +5,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import vswe.stevesfactory.api.Connections;
-import vswe.stevesfactory.api.IConnectable;
-import vswe.stevesfactory.api.IConnectable.ConnectionType;
+import vswe.stevesfactory.api.network.Connections;
+import vswe.stevesfactory.api.network.IConnectable;
+import vswe.stevesfactory.api.network.IConnectable.ConnectionType;
 
 public final class ConnectionHelper {
 

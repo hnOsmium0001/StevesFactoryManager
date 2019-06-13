@@ -1,4 +1,4 @@
-package vswe.stevesfactory.api;
+package vswe.stevesfactory.api.manager;
 
 public interface IHookTrigger extends IHook {
 

@@ -1,4 +1,4 @@
-package vswe.stevesfactory.api;
+package vswe.stevesfactory.api.network;
 
 import net.minecraft.util.math.BlockPos;
 
