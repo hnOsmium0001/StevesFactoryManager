@@ -24,4 +24,8 @@ public interface ICable {
      */
     boolean isCable();
 
+    Connections getConnectionStatus();
+
+    void updateConnections();
+
 }
