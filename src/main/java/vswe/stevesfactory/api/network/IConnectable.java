@@ -2,12 +2,14 @@ package vswe.stevesfactory.api.network;
 
 /**
  * Implement this interface in order to override the default connection logic of factory managers.
+ * <p>
+ * Note that even this interface is named "connectable", it handles inventory linking and has nothing to do with cable connections.
  */
 public interface IConnectable {
 
-    ConnectionType getConnectionType();
+    LinkType getConnectionType();
 
-    enum ConnectionType {
+    enum LinkType {
         /**
          * Always connect to the tile entity
          */

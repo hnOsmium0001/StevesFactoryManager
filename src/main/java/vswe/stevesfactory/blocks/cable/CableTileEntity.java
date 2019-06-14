@@ -6,11 +6,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import vswe.stevesfactory.api.network.Connections;
+import vswe.stevesfactory.api.network.LinkingStatus;
 import vswe.stevesfactory.api.network.ICable;
-import vswe.stevesfactory.api.network.IConnectable.ConnectionType;
-import vswe.stevesfactory.api.network.INetwork;
+import vswe.stevesfactory.api.network.IConnectable.LinkType;
+import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.CapabilityHelper;
 import vswe.stevesfactory.utils.ConnectionHelper;
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class CableTileEntity extends TileEntity implements ICable {
 
-    private Connections connections;
+    private LinkingStatus linkingStatus;
     private List<BlockPos> connectedNeighbors = new ArrayList<>(6);
 
     public CableTileEntity() {
@@ -30,22 +29,22 @@ public class CableTileEntity extends TileEntity implements ICable {
 
     @Override
     public void onLoad() {
-        connections = new Connections(pos);
+        linkingStatus = new LinkingStatus(pos);
     }
 
     @Override
-    public Connections getConnectionStatus() {
-        return connections;
+    public LinkingStatus getLinkingStatus() {
+        return linkingStatus;
     }
 
     @Override
-    public void updateConnections() {
-        ConnectionHelper.updateConnectionType(world, connections);
+    public void updateLinks() {
+        ConnectionHelper.updateLinkType(world, linkingStatus);
 
         connectedNeighbors.clear();
-        Iterator<Pair<Direction, ConnectionType>> it = connections.connections(ConnectionType.DEFAULT);
+        Iterator<Pair<Direction, LinkType>> it = linkingStatus.connections(LinkType.DEFAULT);
         while (it.hasNext()) {
-            Pair<Direction, ConnectionType> current = it.next();
+            Pair<Direction, LinkType> current = it.next();
             BlockPos pos = this.pos.offset(current.getLeft());
             TileEntity tile = world.getTileEntity(pos);
             if (tile != null && !(tile instanceof ICable)) {
@@ -59,17 +58,17 @@ public class CableTileEntity extends TileEntity implements ICable {
 
     public void updateConnections(BlockPos updatedHint) {
         // TODO use hint
-        updateConnections();
+        updateLinks();
     }
 
     @Override
-    public void onJoinNetwork(INetwork network) {
-        connectedNeighbors.forEach(network::addConnectedInventory);
+    public void onJoinNetwork(INetworkController network) {
+        connectedNeighbors.forEach(network::addLink);
     }
 
     @Override
-    public void onLeaveNetwork(INetwork network) {
-        connectedNeighbors.forEach(network::removeConnectedInventory);
+    public void onLeaveNetwork(INetworkController network) {
+        connectedNeighbors.forEach(network::removeLink);
     }
 
     @Override

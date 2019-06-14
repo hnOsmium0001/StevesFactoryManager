@@ -5,9 +5,11 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Set;
 
-public interface INetwork {
+public interface INetworkController {
 
     Set<BlockPos> getConnectedCables();
+
+    Set<BlockPos> getLinkedInventories();
 
     /**
      * Connect a inventory located at position to the network.
@@ -17,13 +19,13 @@ public interface INetwork {
      * @return {@code true} if the position didn't exist already.
      */
     @CanIgnoreReturnValue
-    boolean addConnectedInventory(BlockPos pos);
+    boolean addLink(BlockPos pos);
 
     /**
      * @return {@code true} if the network has the position and successfully removed it.
-     * @see #addConnectedInventory(BlockPos)
+     * @see #addLink(BlockPos)
      */
     @CanIgnoreReturnValue
-    boolean removeConnectedInventory(BlockPos pos);
+    boolean removeLink(BlockPos pos);
 
 }

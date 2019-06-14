@@ -4,16 +4,16 @@ import com.google.common.collect.AbstractIterator;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.tuple.Pair;
-import vswe.stevesfactory.api.network.IConnectable.ConnectionType;
+import vswe.stevesfactory.api.network.IConnectable.LinkType;
 
 import java.util.Iterator;
 
-public final class Connections implements Iterable<Pair<Direction, ConnectionType>> {
+public final class LinkingStatus implements Iterable<Pair<Direction, LinkType>> {
 
     private BlockPos center;
-    public ConnectionType up, down, north, south, east, west;
+    public LinkType up, down, north, south, east, west;
 
-    public Connections(BlockPos center) {
+    public LinkingStatus(BlockPos center) {
         this.center = center;
     }
 
@@ -21,7 +21,7 @@ public final class Connections implements Iterable<Pair<Direction, ConnectionTyp
         return center;
     }
 
-    public ConnectionType get(Direction direction) {
+    public LinkType get(Direction direction) {
         switch (direction) {
             case DOWN:
                 return down;
@@ -39,7 +39,7 @@ public final class Connections implements Iterable<Pair<Direction, ConnectionTyp
         throw new IllegalArgumentException("Nonexistent direction " + direction);
     }
 
-    public void set(Direction direction, ConnectionType type) {
+    public void set(Direction direction, LinkType type) {
         switch (direction) {
             case DOWN:
                 down = type;
@@ -66,16 +66,16 @@ public final class Connections implements Iterable<Pair<Direction, ConnectionTyp
      * Use {@link #connections()} when not using for-each loop.
      */
     @Override
-    public Iterator<Pair<Direction, ConnectionType>> iterator() {
+    public Iterator<Pair<Direction, LinkType>> iterator() {
         return connections();
     }
 
-    public Iterator<Pair<Direction, ConnectionType>> connections() {
-        return new AbstractIterator<Pair<Direction, ConnectionType>>() {
+    public Iterator<Pair<Direction, LinkType>> connections() {
+        return new AbstractIterator<Pair<Direction, LinkType>>() {
             private int last = 0;
 
             @Override
-            protected Pair<Direction, ConnectionType> computeNext() {
+            protected Pair<Direction, LinkType> computeNext() {
                 switch (last++) {
                     case 0:
                         return Pair.of(Direction.DOWN, down);
@@ -96,14 +96,14 @@ public final class Connections implements Iterable<Pair<Direction, ConnectionTyp
         };
     }
 
-    public Iterator<Pair<Direction, ConnectionType>> connections(ConnectionType filter) {
-        return new AbstractIterator<Pair<Direction, ConnectionType>>() {
-            private final Iterator<Pair<Direction, ConnectionType>> all = connections();
+    public Iterator<Pair<Direction, LinkType>> connections(LinkType filter) {
+        return new AbstractIterator<Pair<Direction, LinkType>>() {
+            private final Iterator<Pair<Direction, LinkType>> all = connections();
 
             @Override
-            protected Pair<Direction, ConnectionType> computeNext() {
+            protected Pair<Direction, LinkType> computeNext() {
                 while (all.hasNext()) {
-                    Pair<Direction, ConnectionType> current = all.next();
+                    Pair<Direction, LinkType> current = all.next();
                     if (current.getRight() == filter) {
                         return current;
                     }

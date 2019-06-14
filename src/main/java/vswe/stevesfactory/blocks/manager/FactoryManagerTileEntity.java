@@ -5,22 +5,26 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.network.Connections;
+import vswe.stevesfactory.api.network.LinkingStatus;
 import vswe.stevesfactory.api.network.ICable;
-import vswe.stevesfactory.api.network.INetwork;
+import vswe.stevesfactory.api.network.IConnectable.LinkType;
+import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.setup.ModBlocks;
+import vswe.stevesfactory.utils.CapabilityHelper;
 import vswe.stevesfactory.utils.ConnectionHelper;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
-public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INetwork, ICable {
+public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INetworkController, ICable {
 
     private Set<BlockPos> connectedCables = new HashSet<>();
-    private Set<BlockPos> connectedInventories = new HashSet<>();
-    private Connections connections;
+    private Set<BlockPos> linkedInventories = new HashSet<>();
+    private LinkingStatus linkingStatus;
 
     public FactoryManagerTileEntity() {
         super(ModBlocks.factoryManagerTileEntity);
@@ -28,7 +32,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
 
     @Override
     public void onLoad() {
-        connections = new Connections(pos);
+        linkingStatus = new LinkingStatus(pos);
     }
 
     @Override
@@ -50,7 +54,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
 
         // Update the manager itself as a cable
         connectedCables.add(pos);
-        updateConnections();
+        updateLinks();
 
         search(pos);
     }
@@ -73,7 +77,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             TileEntity tile = world.getTileEntity(neighbor);
             if (tile instanceof ICable && !connectedCables.contains(neighbor)) {
                 ICable cable = (ICable) tile;
-                cable.updateConnections();
+                cable.updateLinks();
                 cable.onJoinNetwork(this);
                 connectedCables.add(neighbor);
                 search(neighbor);
@@ -90,8 +94,8 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             logger.debug("    {}: {}", pos, world.getTileEntity(pos));
         }
 
-        logger.debug("Connected inventories:");
-        for (BlockPos pos : connectedInventories) {
+        logger.debug("Linked inventories:");
+        for (BlockPos pos : linkedInventories) {
             logger.debug("    {}: {}", pos, world.getTileEntity(pos));
         }
 
@@ -104,36 +108,63 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     }
 
     @Override
-    public boolean addConnectedInventory(BlockPos pos) {
-        return connectedInventories.add(pos);
+    public Set<BlockPos> getLinkedInventories() {
+        return linkedInventories;
     }
 
     @Override
-    public boolean removeConnectedInventory(BlockPos pos) {
-        return connectedInventories.remove(pos);
+    public boolean addLink(BlockPos pos) {
+        return linkedInventories.add(pos);
+    }
+
+    @Override
+    public boolean removeLink(BlockPos pos) {
+        return linkedInventories.remove(pos);
+    }
+
+    @Override
+    public LinkingStatus getLinkingStatus() {
+        return linkingStatus;
+    }
+
+    @Override
+    public void updateLinks() {
+        updateLinksInternal(this);
+    }
+
+    private void updateLinksInternal(INetworkController network) {
+        ConnectionHelper.updateLinkType(world, linkingStatus);
+
+        Iterator<Pair<Direction, LinkType>> it = linkingStatus.connections(LinkType.DEFAULT);
+        while (it.hasNext()) {
+            Pair<Direction, LinkType> current = it.next();
+            BlockPos pos = this.pos.offset(current.getLeft());
+            // Remove both correct and incorrect links, and add the correct ones back
+            network.removeLink(pos);
+
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile != null && !(tile instanceof ICable)) {
+                if (CapabilityHelper.shouldLink(tile)) {
+                    network.addLink(pos);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onJoinNetwork(INetworkController network) {
+        if (network != this) {
+            updateLinksInternal(network);
+        }
+    }
+
+    @Override
+    public void onLeaveNetwork(INetworkController network) {
     }
 
     @Override
     public boolean isCable() {
         return true;
-    }
-
-    @Override
-    public Connections getConnectionStatus() {
-        return connections;
-    }
-
-    @Override
-    public void updateConnections() {
-        ConnectionHelper.updateConnectionType(world, connections);
-    }
-
-    @Override
-    public void onJoinNetwork(INetwork network) {
-    }
-
-    @Override
-    public void onLeaveNetwork(INetwork network) {
     }
 
 }

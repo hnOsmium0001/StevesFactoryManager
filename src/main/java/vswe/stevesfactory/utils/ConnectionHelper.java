@@ -5,30 +5,30 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import vswe.stevesfactory.api.network.Connections;
+import vswe.stevesfactory.api.network.LinkingStatus;
 import vswe.stevesfactory.api.network.IConnectable;
-import vswe.stevesfactory.api.network.IConnectable.ConnectionType;
+import vswe.stevesfactory.api.network.IConnectable.LinkType;
 
 public final class ConnectionHelper {
 
     private ConnectionHelper() {
     }
 
-    public static ConnectionType getConnectionType(TileEntity tile) {
+    public static LinkType getLinkType(TileEntity tile) {
         if (tile instanceof IConnectable) {
             return ((IConnectable) tile).getConnectionType();
         }
-        return ConnectionType.DEFAULT;
+        return LinkType.DEFAULT;
     }
 
     @CanIgnoreReturnValue
-    public static Connections updateConnectionType(World world, Connections connections) {
-        BlockPos center = connections.getCenter();
+    public static LinkingStatus updateLinkType(World world, LinkingStatus linkingStatus) {
+        BlockPos center = linkingStatus.getCenter();
         for (Direction direction : Direction.values()) {
             TileEntity tile = world.getTileEntity(center.offset(direction));
-            connections.set(direction, getConnectionType(tile));
+            linkingStatus.set(direction, getLinkType(tile));
         }
-        return connections;
+        return linkingStatus;
     }
 
 }

@@ -4,16 +4,13 @@ import net.minecraft.util.math.BlockPos;
 
 /**
  * A block that is a part of a network, such as cables.
+ * <p>
+ * Whenever the word "connection" is used, it represents network cables unless specifically mentioned; similarly, whenever the work "link"
+ * is used, it represents inventories that are <i>linked</i> to network controllers.
  */
 public interface ICable {
 
     BlockPos getPos();
-
-//    /**
-//     * Get a list of cables that is directly neighbors of this block. Specifically, all elements of the returned list must must have their
-//     * coordinates one of the returns values of {@link BlockPos#offset(Direction)}.
-//     */
-//    List<ICable> getNeighbors();
 
     /**
      * This block will only be recognized if this method returns {@code true}. This could be used at situations such as making a block
@@ -21,21 +18,24 @@ public interface ICable {
      */
     boolean isCable();
 
-    Connections getConnectionStatus();
+    /**
+     * Update the links to neighboring inventories.
+     */
+    LinkingStatus getLinkingStatus();
 
-    void updateConnections();
+    void updateLinks();
 
     /**
      * Triggers wen this cable components joins a network. Cable implementations can add hooks and capabilities to this network.
      * <p>
      * Additionally it is ok to store a reference to the joined networks. However usually this is not needed.
      */
-    void onJoinNetwork(INetwork network);
+    void onJoinNetwork(INetworkController network);
 
     /**
      * Triggers when this cable component leaves a network. Cable implementations can should removed added hooks and capabilities from the
      * network.
      */
-    void onLeaveNetwork(INetwork network);
+    void onLeaveNetwork(INetworkController network);
 
 }
