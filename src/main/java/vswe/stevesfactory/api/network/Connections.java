@@ -3,11 +3,12 @@ package vswe.stevesfactory.api.network;
 import com.google.common.collect.AbstractIterator;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.tuple.Pair;
 import vswe.stevesfactory.api.network.IConnectable.ConnectionType;
 
 import java.util.Iterator;
 
-public final class Connections implements Iterable<ConnectionType> {
+public final class Connections implements Iterable<Pair<BlockPos, ConnectionType>> {
 
     private BlockPos center;
     public ConnectionType up, down, north, south, east, west;
@@ -65,25 +66,29 @@ public final class Connections implements Iterable<ConnectionType> {
      * Use {@link #connections()} when not using for-each loop.
      */
     @Override
-    public Iterator<ConnectionType> iterator() {
-        return new AbstractIterator<ConnectionType>() {
+    public Iterator<Pair<BlockPos, ConnectionType>> iterator() {
+        return connections();
+    }
+
+    public Iterator<Pair<BlockPos, ConnectionType>> connections() {
+        return new AbstractIterator<Pair<BlockPos, ConnectionType>>() {
             private int last = 0;
 
             @Override
-            protected ConnectionType computeNext() {
+            protected Pair<BlockPos, ConnectionType> computeNext() {
                 switch (last++) {
                     case 0:
-                        return down;
+                        return Pair.of(center.offset(Direction.DOWN), down);
                     case 1:
-                        return up;
+                        return Pair.of(center.offset(Direction.UP), up);
                     case 2:
-                        return north;
+                        return Pair.of(center.offset(Direction.NORTH), north);
                     case 3:
-                        return south;
+                        return Pair.of(center.offset(Direction.SOUTH), south);
                     case 4:
-                        return west;
+                        return Pair.of(center.offset(Direction.WEST), west);
                     case 5:
-                        return east;
+                        return Pair.of(center.offset(Direction.EAST), east);
                     default:
                         return endOfData();
                 }
@@ -91,19 +96,15 @@ public final class Connections implements Iterable<ConnectionType> {
         };
     }
 
-    public Iterator<ConnectionType> connections() {
-        return iterator();
-    }
-
-    public Iterator<ConnectionType> connections(ConnectionType filter) {
-        return new AbstractIterator<ConnectionType>() {
-            private final Iterator<ConnectionType> all = connections();
+    public Iterator<Pair<BlockPos, ConnectionType>> connections(ConnectionType filter) {
+        return new AbstractIterator<Pair<BlockPos, ConnectionType>>() {
+            private final Iterator<Pair<BlockPos, ConnectionType>> all = connections();
 
             @Override
-            protected ConnectionType computeNext() {
+            protected Pair<BlockPos, ConnectionType> computeNext() {
                 while (all.hasNext()) {
-                    ConnectionType current = all.next();
-                    if (current == filter) {
+                    Pair<BlockPos, ConnectionType> current = all.next();
+                    if (current.getRight() == filter) {
                         return current;
                     }
                 }

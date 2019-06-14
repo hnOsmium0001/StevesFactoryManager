@@ -1,6 +1,8 @@
 package vswe.stevesfactory.blocks.cable;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.tuple.Pair;
 import vswe.stevesfactory.api.network.Connections;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.IConnectable.ConnectionType;
@@ -31,11 +33,19 @@ public class CableTileEntity extends TileEntity implements ICable {
     public void updateConnections() {
         ConnectionHelper.updateConnectionType(world, connections);
 
-        Iterator<ConnectionType> it = connections.connections(ConnectionType.DEFAULT);
+        Iterator<Pair<BlockPos, ConnectionType>> it = connections.connections(ConnectionType.DEFAULT);
         while (it.hasNext()) {
-            ConnectionType current = it.next();
-
+            Pair<BlockPos, ConnectionType> current = it.next();
+            TileEntity tile = world.getTileEntity(current.getLeft());
+            if (tile != null) {
+                // TODO capability detector
+            }
         }
+    }
+
+    public void updateConnections(BlockPos updatedHint) {
+        // TODO use hint
+        updateConnections();
     }
 
     @Override
