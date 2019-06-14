@@ -9,6 +9,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import vswe.stevesfactory.StevesFactoryManager;
 
 import javax.annotation.Nullable;
 
@@ -18,6 +21,7 @@ public class FactoryManagerBlock extends Block {
         super(properties);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult lookingAt) {
         if (!world.isRemote) {
@@ -25,10 +29,16 @@ public class FactoryManagerBlock extends Block {
             if (tile instanceof FactoryManagerTileEntity) {
                 FactoryManagerTileEntity manager = (FactoryManagerTileEntity) tile;
                 manager.openGUI(player);
-                manager.dump();
+                tryDump(manager);
             }
         }
         return true;
+    }
+
+    private void tryDump(FactoryManagerTileEntity manager) {
+        if (LogManager.getRootLogger().getLevel().isLessSpecificThan(Level.DEBUG)) {
+            manager.dump();
+        }
     }
 
     @Override

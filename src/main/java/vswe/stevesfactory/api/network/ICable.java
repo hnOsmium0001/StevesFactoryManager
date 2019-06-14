@@ -25,4 +25,17 @@ public interface ICable {
 
     void updateConnections();
 
+    /**
+     * Triggers wen this cable components joins a network. Cable implementations can add hooks and capabilities to this network.
+     * <p>
+     * Additionally it is ok to store a reference to the joined networks. However usually this is not needed.
+     */
+    void onJoinNetwork(INetwork network);
+
+    /**
+     * Triggers when this cable component leaves a network. Cable implementations can should removed added hooks and capabilities from the
+     * network.
+     */
+    void onLeaveNetwork(INetwork network);
+
 }
