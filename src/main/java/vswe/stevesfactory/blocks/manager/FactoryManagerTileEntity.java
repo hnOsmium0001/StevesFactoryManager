@@ -1,5 +1,7 @@
 package vswe.stevesfactory.blocks.manager;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -16,22 +18,24 @@ import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.api.network.LinkingStatus;
+import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.setup.ModBlocks;
-import vswe.stevesfactory.utils.CapabilityHelper;
 import vswe.stevesfactory.utils.ConnectionHelper;
+import vswe.stevesfactory.utils.VectorHelper;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
-public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INetworkController, ICable {
+public class FactoryManagerTileEntity extends BaseTileEntity implements ITickableTileEntity, INetworkController, ICable {
 
     private static final String KEY_CONNECTED_CABLES = "ConnectedCables";
     private static final String KEY_LINKED_INVENTORIES = "LinkedInventories";
     private static final String KEY_LINKING_STATUS = "LinkingStatus";
 
     private Set<BlockPos> connectedCables = new HashSet<>();
-    private Set<BlockPos> linkedInventories = new HashSet<>();
+    private Multiset<BlockPos> linkedInventories = HashMultiset.create();
 
     private LinkingStatus linkingStatus;
 
@@ -45,6 +49,14 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     }
 
     @Override
+    public void onRemoved() {
+        for (BlockPos pos : connectedCables) {
+            ICable cable = Objects.requireNonNull((ICable) world.getTileEntity(pos));
+            cable.onLeaveNetwork(this);
+        }
+    }
+
+    @Override
     public void tick() {
         if (!world.isRemote) {
             // TODO logic
@@ -53,10 +65,10 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
 
     public void openGUI(PlayerEntity player) {
         search();
+        // TODO gui
     }
 
     private void search() {
-        notifyLeavedCables();
         // Relocate all the cables to prevent the last cable, for example, from being recognized as connected
         // [manager] - [cable] - [removed cable (air)] - [unconnected cable]
         connectedCables.clear();
@@ -65,30 +77,24 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         connectedCables.add(pos);
         updateLinks();
 
+        StevesFactoryManager.logger.trace("Started searching around manager at {}", pos);
         search(pos);
-    }
-
-    private void notifyLeavedCables() {
-        for (BlockPos pos : connectedCables) {
-            TileEntity tile = world.getTileEntity(pos);
-            if (!(tile instanceof ICable)) {
-                connectedCables.remove(pos);
-            }
-        }
+        StevesFactoryManager.logger.trace("Finished searching around the manager");
     }
 
     private void search(BlockPos center) {
-        if (world == null)
+        if (world == null) {
             return;
+        }
 
-        for (Direction direction : Direction.values()) {
+        StevesFactoryManager.logger.trace("Searching at cable {}", center);
+        for (Direction direction : VectorHelper.DIRECTIONS) {
             BlockPos neighbor = center.offset(direction);
             TileEntity tile = world.getTileEntity(neighbor);
             if (tile instanceof ICable && !connectedCables.contains(neighbor)) {
-                ICable cable = (ICable) tile;
-                cable.updateLinks();
-                cable.onJoinNetwork(this);
+                ((ICable) tile).onJoinNetwork(this);
                 connectedCables.add(neighbor);
+                // Recursive search (DFS)
                 search(neighbor);
             }
         }
@@ -108,7 +114,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             logger.debug("    {}: {}", pos, world.getTileEntity(pos));
         }
 
-        logger.debug("======== Finished dumping Factory Manager ========");
+        logger.debug("======== Finished umping Factory Manager ========");
     }
 
     @Override
@@ -117,15 +123,27 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     }
 
     @Override
-    public Set<BlockPos> getLinkedInventories() {
-        return linkedInventories;
+    public void removeCable(BlockPos cable) {
+        connectedCables.remove(cable);
+        ((ICable) world.getTileEntity(cable)).onLeaveNetwork(this);
     }
 
+    @Override
+    public Set<BlockPos> getLinkedInventories() {
+        return linkedInventories.elementSet();
+    }
+
+    /**
+     * @return {@code true} always. See {@link Multiset#add(Object)} for details.
+     */
     @Override
     public boolean addLink(BlockPos pos) {
         return linkedInventories.add(pos);
     }
 
+    /**
+     * @return {@code true} always. See {@link Multiset#add(Object)} for details.
+     */
     @Override
     public boolean removeLink(BlockPos pos) {
         return linkedInventories.remove(pos);
@@ -152,8 +170,8 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             network.removeLink(pos);
 
             TileEntity tile = world.getTileEntity(pos);
-            if (tile != null && !(tile instanceof ICable)) {
-                if (CapabilityHelper.shouldLink(tile)) {
+            if (tile != null) {
+                if (ConnectionHelper.shouldLink(tile)) {
                     network.addLink(pos);
                 }
             }

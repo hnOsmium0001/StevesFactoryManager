@@ -1,6 +1,5 @@
 package vswe.stevesfactory.blocks.manager;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -11,11 +10,11 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.blocks.BaseBlock;
 
 import javax.annotation.Nullable;
 
-public class FactoryManagerBlock extends Block {
+public class FactoryManagerBlock extends BaseBlock {
 
     public FactoryManagerBlock(Properties properties) {
         super(properties);

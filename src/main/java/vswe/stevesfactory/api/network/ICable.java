@@ -27,8 +27,8 @@ public interface ICable {
 
     /**
      * Triggers wen this cable components joins a network. Cable implementations can add hooks and capabilities to this network.
-     * <p>
-     * Additionally it is ok to store a reference to the joined networks. However usually this is not needed.
+     *
+     * @implNote It is ok to store a reference to the joined networks.
      */
     void onJoinNetwork(INetworkController network);
 

@@ -7,8 +7,28 @@ import java.util.Set;
 
 public interface INetworkController {
 
+    BlockPos getPos();
+
     Set<BlockPos> getConnectedCables();
 
+    /**
+     * Remove a cable from the network. The removed cable will be notified with the event {@link
+     * ICable#onLeaveNetwork(INetworkController)}.
+     * <p>
+     * This should cause the network to be updated and revalidate its cache, including connected cables.
+     *
+     * @implNote Implementation may assume the position contains an {@link ICable}. If it does not, it is up to the invokers to resolve the
+     * problem.
+     */
+    void removeCable(BlockPos cable);
+
+    /**
+     * Internal storage of linked inventories by the controller.
+     * <p>
+     * <b>WARNING: </b> Uses of the return value of this method should <b>never</b> modify the content of this set. Instead, they should
+     * use {@link #addLink(BlockPos)} and {@link #removeLink(BlockPos)} to do so. Controllers are allowed to be designed such that
+     * modification to the returning set might cause breakage.
+     */
     Set<BlockPos> getLinkedInventories();
 
     /**

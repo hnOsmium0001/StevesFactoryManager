@@ -20,10 +20,4 @@ public final class CapabilityHelper {
         return provider.getCapability(cap).isPresent();
     }
 
-    public static boolean shouldLink(ICapabilityProvider provider) {
-        // TODO registry for capabilities
-        return CapabilityHelper.hasCapabilityAtAll(provider, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ||
-                CapabilityHelper.hasCapabilityAtAll(provider, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
-    }
-
 }
