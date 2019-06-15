@@ -1,17 +1,21 @@
 package vswe.stevesfactory.blocks.manager;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.network.LinkingStatus;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.api.network.LinkingStatus;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.CapabilityHelper;
 import vswe.stevesfactory.utils.ConnectionHelper;
@@ -22,8 +26,13 @@ import java.util.Set;
 
 public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INetworkController, ICable {
 
+    private static final String KEY_CONNECTED_CABLES = "ConnectedCables";
+    private static final String KEY_LINKED_INVENTORIES = "LinkedInventories";
+    private static final String KEY_LINKING_STATUS = "LinkingStatus";
+
     private Set<BlockPos> connectedCables = new HashSet<>();
     private Set<BlockPos> linkedInventories = new HashSet<>();
+
     private LinkingStatus linkingStatus;
 
     public FactoryManagerTileEntity() {
@@ -165,6 +174,44 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     @Override
     public boolean isCable() {
         return true;
+    }
+
+    @Override
+    public void read(CompoundNBT compound) {
+        super.read(compound);
+
+        ListNBT serializedCables = compound.getList(KEY_CONNECTED_CABLES, Constants.NBT.TAG_COMPOUND);
+        connectedCables.clear();
+        for (int i = 0; i < serializedCables.size(); i++) {
+            connectedCables.add(NBTUtil.readBlockPos(serializedCables.getCompound(i)));
+        }
+
+        ListNBT serializedInventories = compound.getList(KEY_LINKED_INVENTORIES, Constants.NBT.TAG_COMPOUND);
+        linkedInventories.clear();
+        for (int i = 0; i < serializedInventories.size(); i++) {
+            linkedInventories.add(NBTUtil.readBlockPos(serializedInventories.getCompound(i)));
+        }
+
+        linkingStatus = LinkingStatus.readFrom(compound.getCompound(KEY_LINKING_STATUS));
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT compound) {
+        ListNBT serializedCables = new ListNBT();
+        for (BlockPos pos : connectedCables) {
+            serializedCables.add(NBTUtil.writeBlockPos(pos));
+        }
+        compound.put(KEY_CONNECTED_CABLES, serializedCables);
+
+        ListNBT serializedInventories = new ListNBT();
+        for (BlockPos pos : linkedInventories) {
+            serializedInventories.add(NBTUtil.writeBlockPos(pos));
+        }
+        compound.put(KEY_LINKED_INVENTORIES, serializedInventories);
+
+        compound.put(KEY_LINKING_STATUS, linkingStatus.write());
+
+        return super.write(compound);
     }
 
 }

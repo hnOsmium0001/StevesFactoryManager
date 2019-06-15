@@ -6,6 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
@@ -21,6 +22,16 @@ public class CableBlock extends Block {
         if (tile instanceof CableTileEntity) {
             ((CableTileEntity) tile).updateConnections(neighbor);
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof CableTileEntity) {
+            ((CableTileEntity) tile).onRemoved();
+        }
+        super.onReplaced(state, world, pos, newState, isMoving);
     }
 
     @Override

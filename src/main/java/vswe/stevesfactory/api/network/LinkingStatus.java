@@ -1,15 +1,39 @@
 package vswe.stevesfactory.api.network;
 
 import com.google.common.collect.AbstractIterator;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.tuple.Pair;
+import org.w3c.dom.stylesheets.LinkStyle;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
 
 import java.util.Iterator;
 
 public final class LinkingStatus implements Iterable<Pair<Direction, LinkType>> {
 
+    private static final String KEY_CENTER_POS = "CenterPos";
+    private static final String KEY_DOWN = "Down";
+    private static final String KEY_UP = "Up";
+    private static final String KEY_NORTH = "North";
+    private static final String KEY_SOUTH = "South";
+    private static final String KEY_WEST = "West";
+    private static final String KEY_EAST = "East";
+
+    public static LinkingStatus readFrom(CompoundNBT compound) {
+        BlockPos center = NBTUtil.readBlockPos(compound.getCompound(KEY_CENTER_POS));
+        LinkingStatus status = new LinkingStatus(center);
+        status.down = LinkType.fromID(compound.getInt(KEY_DOWN));
+        status.up = LinkType.fromID(compound.getInt(KEY_UP));
+        status.north = LinkType.fromID(compound.getInt(KEY_NORTH));
+        status.south = LinkType.fromID(compound.getInt(KEY_SOUTH));
+        status.west = LinkType.fromID(compound.getInt(KEY_WEST));
+        status.east = LinkType.fromID(compound.getInt(KEY_EAST));
+        return status;
+    }
+    
     private BlockPos center;
     public LinkType up, down, north, south, east, west;
 
@@ -111,6 +135,31 @@ public final class LinkingStatus implements Iterable<Pair<Direction, LinkType>> 
                 return endOfData();
             }
         };
+    }
+
+    public CompoundNBT write() {
+        return write(new CompoundNBT());
+    }
+
+    public CompoundNBT write(CompoundNBT compound) {
+        compound.put(KEY_CENTER_POS, NBTUtil.writeBlockPos(center));
+        compound.putInt(KEY_DOWN, down.getID());
+        compound.putInt(KEY_UP, up.getID());
+        compound.putInt(KEY_NORTH, north.getID());
+        compound.putInt(KEY_SOUTH, south.getID());
+        compound.putInt(KEY_WEST, west.getID());
+        compound.putInt(KEY_EAST, east.getID());
+        return compound;
+    }
+
+    public void read(CompoundNBT compound) {
+        center = NBTUtil.readBlockPos(compound.getCompound(KEY_CENTER_POS));
+        down = LinkType.fromID(compound.getInt(KEY_DOWN));
+        up = LinkType.fromID(compound.getInt(KEY_UP));
+        north = LinkType.fromID(compound.getInt(KEY_NORTH));
+        south = LinkType.fromID(compound.getInt(KEY_SOUTH));
+        west = LinkType.fromID(compound.getInt(KEY_WEST));
+        east = LinkType.fromID(compound.getInt(KEY_EAST));
     }
 
 }
