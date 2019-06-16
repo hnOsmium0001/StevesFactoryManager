@@ -9,6 +9,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,7 @@ import vswe.stevesfactory.api.network.LinkingStatus;
 import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.ConnectionHelper;
+import vswe.stevesfactory.utils.VectorHelper;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -84,12 +86,9 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     private void search(BlockPos center) {
-        if (world == null) {
-            return;
-        }
-
         StevesFactoryManager.logger.trace("Searching at cable {}", center);
-        for (BlockPos neighbor : getNeighbors()) {
+        for (Direction direction : VectorHelper.DIRECTIONS) {
+            BlockPos neighbor = center.offset(direction);
             TileEntity tile = world.getTileEntity(neighbor);
             if (tile instanceof ICable && !connectedCables.contains(neighbor)) {
                 addCableToNetwork((ICable) tile, neighbor);

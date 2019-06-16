@@ -39,6 +39,12 @@ public final class LinkingStatus implements Iterable<Pair<Direction, LinkType>> 
 
     public LinkingStatus(BlockPos center) {
         this.center = center;
+        this.up = LinkType.NEVER;
+        this.down = LinkType.NEVER;
+        this.north = LinkType.NEVER;
+        this.south = LinkType.NEVER;
+        this.east = LinkType.NEVER;
+        this.west = LinkType.NEVER;
     }
 
     public BlockPos getCenter() {
