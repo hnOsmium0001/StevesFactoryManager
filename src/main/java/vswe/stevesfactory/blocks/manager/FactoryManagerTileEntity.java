@@ -4,9 +4,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.*;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -14,17 +12,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.network.ICable;
-import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.api.network.LinkingStatus;
+import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.setup.ModBlocks;
-import vswe.stevesfactory.utils.ConnectionHelper;
-import vswe.stevesfactory.utils.VectorHelper;
+import vswe.stevesfactory.utils.*;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public class FactoryManagerTileEntity extends BaseTileEntity implements ITickableTileEntity, INetworkController, ICable {
@@ -106,8 +100,11 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private void removeAllCableFromNetwork() {
         StevesFactoryManager.logger.trace("Started removing all cables from the network {}", pos);
         for (BlockPos pos : connectedCables) {
-            ICable cable = Objects.requireNonNull((ICable) world.getTileEntity(pos));
-            cable.onLeaveNetwork(this);
+            @Nullable
+            ICable cable = (ICable) world.getTileEntity(pos);
+            if (cable != null) {
+                cable.onLeaveNetwork(this);
+            }
         }
     }
 
@@ -175,7 +172,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public void updateLinks() {
-        ConnectionHelper.updateLinkType(world, linkingStatus);
+        NetworkHelper.updateLinkType(world, linkingStatus);
 
 //        for (Direction direction : VectorHelper.DIRECTIONS) {
 //            BlockPos pos1 = this.pos.offset(direction);
@@ -184,7 +181,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 //
 //            TileEntity tile = world.getTileEntity(pos1);
 //            if (tile != null) {
-//                if (ConnectionHelper.shouldLink(tile)) {
+//                if (NetworkHelper.shouldLink(tile)) {
 //                    network.addLink(pos1);
 //                }
 //            }
@@ -217,38 +214,28 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
         super.read(compound);
 
-        ListNBT serializedCables = compound.getList(KEY_CONNECTED_CABLES, Constants.NBT.TAG_COMPOUND);
-        connectedCables.clear();
-        for (int i = 0; i < serializedCables.size(); i++) {
-            connectedCables.add(NBTUtil.readBlockPos(serializedCables.getCompound(i)));
-        }
+        linkingStatus = LinkingStatus.readFrom(compound.getCompound(KEY_LINKING_STATUS));
+        connectedCables = IOHelper.readBlockPosesHashSet(compound.getList(KEY_CONNECTED_CABLES, Constants.NBT.TAG_COMPOUND));
 
         ListNBT serializedInventories = compound.getList(KEY_LINKED_INVENTORIES, Constants.NBT.TAG_COMPOUND);
         linkedInventories.clear();
         for (int i = 0; i < serializedInventories.size(); i++) {
             linkedInventories.add(NBTUtil.readBlockPos(serializedInventories.getCompound(i)));
         }
-
-        linkingStatus = LinkingStatus.readFrom(compound.getCompound(KEY_LINKING_STATUS));
     }
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         StevesFactoryManager.logger.trace("Writing data into NBT ({})", pos);
 
-        ListNBT serializedCables = new ListNBT();
-        for (BlockPos pos : connectedCables) {
-            serializedCables.add(NBTUtil.writeBlockPos(pos));
-        }
-        compound.put(KEY_CONNECTED_CABLES, serializedCables);
+        compound.put(KEY_LINKING_STATUS, linkingStatus.write());
+        compound.put(KEY_CONNECTED_CABLES, IOHelper.writeBlockPoses(connectedCables));
 
         ListNBT serializedInventories = new ListNBT();
         for (BlockPos pos : linkedInventories) {
             serializedInventories.add(NBTUtil.writeBlockPos(pos));
         }
         compound.put(KEY_LINKED_INVENTORIES, serializedInventories);
-
-        compound.put(KEY_LINKING_STATUS, linkingStatus.write());
 
         return super.write(compound);
     }
