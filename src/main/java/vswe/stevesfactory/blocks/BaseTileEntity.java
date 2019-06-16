@@ -1,10 +1,15 @@
 package vswe.stevesfactory.blocks;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import vswe.stevesfactory.utils.VectorHelper;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public abstract class BaseTileEntity extends TileEntity {
 
     private Iterable<BlockPos> neighbors;

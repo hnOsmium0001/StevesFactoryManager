@@ -1,6 +1,7 @@
 package vswe.stevesfactory.blocks.cable;
 
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -13,8 +14,11 @@ import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class CableTileEntity extends BaseTileEntity implements ICable {
 
     private static final String KEY_JOINED_NETWORKS = "JoinedNetworks";

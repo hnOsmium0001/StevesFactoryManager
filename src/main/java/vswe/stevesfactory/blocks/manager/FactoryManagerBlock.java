@@ -1,5 +1,6 @@
 package vswe.stevesfactory.blocks.manager;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -13,7 +14,10 @@ import org.apache.logging.log4j.LogManager;
 import vswe.stevesfactory.blocks.BaseBlock;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class FactoryManagerBlock extends BaseBlock {
 
     public FactoryManagerBlock(Properties properties) {

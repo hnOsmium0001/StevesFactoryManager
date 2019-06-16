@@ -3,6 +3,7 @@ package vswe.stevesfactory.blocks.manager;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -18,9 +19,12 @@ import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashSet;
 import java.util.Set;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class FactoryManagerTileEntity extends BaseTileEntity implements ITickableTileEntity, INetworkController, ICable {
 
     private static final String KEY_CONNECTED_CABLES = "ConnectedCables";

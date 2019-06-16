@@ -1,5 +1,6 @@
 package vswe.stevesfactory.blocks.cable;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -8,7 +9,10 @@ import net.minecraft.world.*;
 import vswe.stevesfactory.blocks.BaseBlock;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class CableBlock extends BaseBlock {
 
     public CableBlock(Properties properties) {
