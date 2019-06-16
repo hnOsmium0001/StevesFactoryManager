@@ -1,10 +1,10 @@
 package vswe.stevesfactory.blocks.cable;
 
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import vswe.stevesfactory.StevesFactoryManager;
@@ -14,21 +14,22 @@ import vswe.stevesfactory.api.network.LinkingStatus;
 import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.ConnectionHelper;
-import vswe.stevesfactory.utils.VectorHelper;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CableTileEntity extends BaseTileEntity implements ICable {
 
-    public static final String KEY_JOINED_NETWORKS = "JoinedNetworks";
+    private static final String KEY_JOINED_NETWORKS = "JoinedNetworks";
     private static final String KEY_LINKING_STATUS = "LinkingStatus";
     private static final String KEY_NEIGHBOR_INVENTORIES = "NeighborInventories";
 
     private transient List<INetworkController> joinedNetworks = new ArrayList<>();
 
     private LinkingStatus linkingStatus;
-    private List<BlockPos> connectedNeighbors = new ArrayList<>(6);
+    private Set<BlockPos> linkedNeighbors = new ObjectArraySet<>(6);
 
     public CableTileEntity() {
         super(ModBlocks.cableTileEntity);
@@ -36,6 +37,7 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
 
     @Override
     public void onLoad() {
+        super.onLoad();
         linkingStatus = new LinkingStatus(pos);
     }
 
@@ -48,45 +50,46 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
     }
 
     @Override
+    public void updateLinks() {
+        StevesFactoryManager.logger.debug("Updating links of CableTileEntity at {}", pos);
+        ConnectionHelper.updateLinkType(world, linkingStatus);
+
+        joinedNetworks.forEach(network -> linkedNeighbors.forEach(network::removeLink));
+        linkedNeighbors.clear();
+        for (BlockPos neighbor : getNeighbors()) {
+            TileEntity tile = world.getTileEntity(neighbor);
+            if (ConnectionHelper.shouldLink(tile)) {
+                linkedNeighbors.add(neighbor);
+            }
+        }
+        joinedNetworks.forEach(network -> linkedNeighbors.forEach(network::addLink));
+
+        StevesFactoryManager.logger.debug("Updated links of the CableTileEntity. Result: {}", linkedNeighbors);
+    }
+
+    @Override
     public LinkingStatus getLinkingStatus() {
         return linkingStatus;
     }
 
+    @Nullable
     @Override
-    public void updateLinks() {
-        StevesFactoryManager.logger.trace("Updating links of CableTileEntity at {}", pos);
-        ConnectionHelper.updateLinkType(world, linkingStatus);
-
-        joinedNetworks.forEach(network -> connectedNeighbors.forEach(network::removeLink));
-        connectedNeighbors.clear();
-        for (Direction direction : VectorHelper.DIRECTIONS) {
-            BlockPos pos = this.pos.offset(direction);
-            TileEntity tile = world.getTileEntity(pos);
-            if (tile != null) {
-                if (ConnectionHelper.shouldLink(tile)) {
-                    connectedNeighbors.add(pos);
-                }
-            }
-        }
-        joinedNetworks.forEach(network -> connectedNeighbors.forEach(network::addLink));
-        StevesFactoryManager.logger.trace("Updated links of the aCableTileEntity");
-    }
-
-    public void updateLinks(BlockPos updatedHint) {
-        // TODO use hint
-        updateLinks();
+    public Set<BlockPos> getNeighborInventories() {
+        return linkedNeighbors;
     }
 
     @Override
     public void onJoinNetwork(INetworkController network) {
         joinedNetworks.add(network);
         updateLinks();
+        StevesFactoryManager.logger.trace("Cable {} joined network {}", pos, network);
     }
 
     @Override
     public void onLeaveNetwork(INetworkController network) {
         joinedNetworks.remove(network);
-        connectedNeighbors.forEach(network::removeLink);
+        linkedNeighbors.forEach(network::removeLink);
+        StevesFactoryManager.logger.trace("Cable {} left network {}", pos, network);
     }
 
     @Override
@@ -112,10 +115,10 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
 
         linkingStatus = LinkingStatus.readFrom(compound.getCompound(KEY_LINKING_STATUS));
 
-        connectedNeighbors.clear();
+        linkedNeighbors.clear();
         ListNBT serializedNeighbors = compound.getList(KEY_NEIGHBOR_INVENTORIES, Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < serializedNeighbors.size(); i++) {
-            connectedNeighbors.add(NBTUtil.readBlockPos(serializedNeighbors.getCompound(i)));
+            linkedNeighbors.add(NBTUtil.readBlockPos(serializedNeighbors.getCompound(i)));
         }
     }
 
@@ -130,7 +133,7 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
         compound.put(KEY_JOINED_NETWORKS, serializedNetworkControllers);
 
         ListNBT serializedNeighbors = new ListNBT();
-        for (BlockPos pos : connectedNeighbors) {
+        for (BlockPos pos : linkedNeighbors) {
             serializedNeighbors.add(NBTUtil.writeBlockPos(pos));
         }
         compound.put(KEY_NEIGHBOR_INVENTORIES, serializedNeighbors);

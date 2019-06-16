@@ -2,8 +2,10 @@ package vswe.stevesfactory.blocks.cable;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import vswe.stevesfactory.blocks.BaseBlock;
 
@@ -17,10 +19,24 @@ public class CableBlock extends BaseBlock {
 
     @Override
     public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor) {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof CableTileEntity) {
-            ((CableTileEntity) tile).updateLinks(neighbor);
+        if (!world.isRemote()) {
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile instanceof CableTileEntity) {
+                ((CableTileEntity) tile).updateLinks();
+            }
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public BlockState updatePostPlacement(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos facingPos) {
+        if (!world.isRemote()) {
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile instanceof CableTileEntity) {
+                ((CableTileEntity) tile).updateLinks();
+            }
+        }
+        return super.updatePostPlacement(state, direction, newState, world, pos, facingPos);
     }
 
     @Override

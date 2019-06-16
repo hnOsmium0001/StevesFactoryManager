@@ -2,6 +2,9 @@ package vswe.stevesfactory.api.network;
 
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nullable;
+import java.util.Set;
+
 /**
  * A block that is a part of a network, such as cables.
  * <p>
@@ -22,6 +25,14 @@ public interface ICable {
      * Update the links to neighboring inventories.
      */
     LinkingStatus getLinkingStatus();
+
+    /**
+     * Get a set of linked inventories.
+     * <p>
+     * If implementations do not support this method, they may return {@code null} to indicate so.
+     */
+    @Nullable
+    Set<BlockPos> getNeighborInventories();
 
     void updateLinks();
 

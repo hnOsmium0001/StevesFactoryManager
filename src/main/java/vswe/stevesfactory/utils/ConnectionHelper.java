@@ -35,6 +35,9 @@ public final class ConnectionHelper {
     }
 
     public static boolean shouldLink(ICapabilityProvider provider) {
+        if (provider == null) {
+            return false;
+        }
         // TODO registry for capabilities
         return CapabilityHelper.hasCapabilityAtAll(provider, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ||
                 CapabilityHelper.hasCapabilityAtAll(provider, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);

@@ -27,6 +27,9 @@ public final class VectorHelper {
 
             @Override
             protected BlockPos computeNext() {
+                if (index >= DIRECTIONS.size()) {
+                    return endOfData();
+                }
                 return center.offset(DIRECTIONS.get(index++));
             }
         };
