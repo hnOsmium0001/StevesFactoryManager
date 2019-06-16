@@ -1,7 +1,8 @@
-package vswe.stevesfactory.library.gui;
+package vswe.stevesfactory.library.gui.layout;
+
+import vswe.stevesfactory.library.gui.widget.IWidget;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public interface ILayout<T extends IWidget> {
@@ -10,8 +11,7 @@ public interface ILayout<T extends IWidget> {
      * Recalculate the positions of the given list of widgets based on a defined rule.
      *
      * @param bounds  The border that contain all widgets.
-     * @param widgets A list of widgets that is to be recalculated positions. This reference may or may not get modified by this method. If
-     *                modifications are unacceptable, invokers may use this verion that has no side-effects to the parameters.
+     * @param widgets A list of widgets that is to be recalculated positions. This reference may or may not get modified by this method.
      * @return A list of widgets that is recalculated by this layout handler. This does not necessarilly have to point to the same list as
      * the parameter {@code widgets}.
      */
@@ -26,7 +26,7 @@ public interface ILayout<T extends IWidget> {
      * @see #reflow(Dimension, List)
      */
     default List<T> reflowPure(Dimension bounds, List<T> widgets) {
-        return reflow(bounds, new ArrayList<>(widgets));
+        throw new UnsupportedOperationException();
     }
 
 }

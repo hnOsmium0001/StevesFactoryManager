@@ -1,9 +1,10 @@
-package vswe.stevesfactory.library.gui;
+package vswe.stevesfactory.library.gui.widget;
 
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.IRenderable;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import vswe.stevesfactory.library.gui.window.IWindow;
 
 import javax.annotation.Nullable;
 import java.awt.*;
