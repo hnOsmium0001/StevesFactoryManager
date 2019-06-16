@@ -6,18 +6,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.network.ICable;
-import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.api.network.LinkingStatus;
+import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class CableTileEntity extends BaseTileEntity implements ICable {
 

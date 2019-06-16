@@ -5,9 +5,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.tuple.Pair;
-import org.w3c.dom.stylesheets.LinkStyle;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
 
 import java.util.Iterator;
@@ -33,7 +31,7 @@ public final class LinkingStatus implements Iterable<Pair<Direction, LinkType>> 
         status.east = LinkType.fromID(compound.getInt(KEY_EAST));
         return status;
     }
-    
+
     private BlockPos center;
     public LinkType up, down, north, south, east, west;
 

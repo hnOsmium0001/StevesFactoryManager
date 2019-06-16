@@ -1,9 +1,7 @@
 package vswe.stevesfactory.setup;
 
-import net.minecraft.item.Item;
+import net.minecraft.item.*;
 import net.minecraft.item.Item.Properties;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -17,7 +15,7 @@ import java.util.List;
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
 public class ModItems {
 
-    public static ItemGroup creativeTab = new ItemGroup(StevesFactoryManager.MODID) {
+    public static final ItemGroup creativeTab = new ItemGroup(StevesFactoryManager.MODID) {
         @Override
         public ItemStack createIcon() {
             return new ItemStack(ModBlocks.factoryManagerBlock);

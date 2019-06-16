@@ -19,7 +19,7 @@ public final class NetworkHelper {
     private NetworkHelper() {
     }
 
-    public static LinkType getLinkType(TileEntity tile) {
+    public static LinkType getLinkType(@Nullable TileEntity tile) {
         if (tile instanceof IConnectable) {
             return ((IConnectable) tile).getConnectionType();
         }
@@ -36,7 +36,7 @@ public final class NetworkHelper {
         return linkingStatus;
     }
 
-    public static boolean shouldLink(ICapabilityProvider provider) {
+    public static boolean shouldLink(@Nullable ICapabilityProvider provider) {
         if (provider == null) {
             return false;
         }

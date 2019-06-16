@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 
 public final class VectorHelper {
@@ -15,7 +16,7 @@ public final class VectorHelper {
     /**
      * Cached immutable list of {@link Direction}s for helping reduce memory usage.
      */
-    public static ImmutableList<Direction> DIRECTIONS = ImmutableList.copyOf(Direction.values());
+    public static final ImmutableList<Direction> DIRECTIONS = ImmutableList.copyOf(Direction.values());
 
     public static Iterable<BlockPos> neighbors(BlockPos center) {
         return () -> neighborsIterator(center);
@@ -48,6 +49,7 @@ public final class VectorHelper {
         return ((dx + 1) << 4) | ((dz + 1) << 2) | (dy + 1);
     }
 
+    @Nullable
     public static Direction relativeDirection(BlockPos center, BlockPos neighbor) {
         int dx = neighbor.getX() - center.getX();
         int dy = neighbor.getY() - center.getY();
