@@ -1,6 +1,10 @@
 # Steve's Factory Manager
 
-This is a complete rewrite of Vswe's [Steve's Factory Manager](https://minecraft.curseforge.com/projects/steves-factory-manager)
+Steve's Factory Manager is a Minecraft mod which allows you to set up systems that moves and manages items between inventories and machines.
+
+---
+
+This is a partial rewrite of Vswe's [Steve's Factory Manager](https://minecraft.curseforge.com/projects/steves-factory-manager)
 
 Credits to Vswe for creating this awesome mod and give us permission to port it, and gigabit101 for maintaining this mod
 during the 1.10.2 times.
