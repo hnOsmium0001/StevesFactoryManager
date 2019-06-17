@@ -17,8 +17,12 @@ public interface IRelocatableWidget extends IWidget {
         setY(y);
     }
 
-    void setX(int x);
+    default void setX(int x) {
+        getLocation().x = x;
+    }
 
-    void setY(int y);
+    default void setY(int y) {
+        getLocation().y = y;
+    }
 
 }

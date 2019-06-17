@@ -1,3 +1,7 @@
+/* Code is adapted from McJtyLib
+ * https://github.com/McJtyMods/McJtyLib/blob/1.12/src/main/java/mcjty/lib/gui/widgets/TextField.java
+ */
+
 package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -5,7 +9,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.core.IRelocatableWidget;
-import vswe.stevesfactory.library.gui.widget.mixin.WidgetRelocationMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.awt.*;
@@ -13,7 +16,9 @@ import java.awt.datatransfer.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-public class TextField extends AbstractWidget implements IRelocatableWidget, WidgetRelocationMixin {
+public class TextField extends AbstractWidget implements IRelocatableWidget {
+
+    public static final int SECONDARY_BUTTON = 1;
 
     public static void setClipboardString(String text) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -66,7 +71,14 @@ public class TextField extends AbstractWidget implements IRelocatableWidget, Wid
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int key) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (isEnabled() && editable) {
+            getWindow().changeFocus(this);
+            if (button == SECONDARY_BUTTON) {
+                setText("");
+            }
+            return true;
+        }
         return false;
     }
 

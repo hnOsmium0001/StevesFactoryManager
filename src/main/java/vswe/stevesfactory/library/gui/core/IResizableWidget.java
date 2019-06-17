@@ -17,8 +17,12 @@ public interface IResizableWidget extends IWidget {
         setHeight(height);
     }
 
-    void setWidth(int width);
+    default void setWidth(int width) {
+        getDimensions().width = width;
+    }
 
-    void setHeight(int height);
+    default void setHeight(int height) {
+        getDimensions().height = height;
+    }
 
 }

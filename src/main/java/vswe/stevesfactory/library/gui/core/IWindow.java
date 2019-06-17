@@ -15,6 +15,8 @@ public interface IWindow<T extends IWidget> extends IGuiEventListener {
 
     IWidget getFocusedWidget();
 
+    void changeFocus(IWidget widget);
+
     ILayout<T> getLayout();
 
 }

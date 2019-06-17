@@ -15,16 +15,4 @@ public interface ILayout<T extends IWidget> {
      */
     List<T> reflow(Dimension bounds, List<T> widgets);
 
-    /**
-     * A version of {@link #reflow(Dimension, List)} that has no side-effects on the parameters.
-     * <p>
-     * Implementations that do not modified the parameter {@code widgets} of {@link #reflow(Dimension, List)} should override this method
-     * such that it directly delegates to the former.
-     *
-     * @see #reflow(Dimension, List)
-     */
-    default List<T> reflowPure(Dimension bounds, List<T> widgets) {
-        throw new UnsupportedOperationException();
-    }
-
 }

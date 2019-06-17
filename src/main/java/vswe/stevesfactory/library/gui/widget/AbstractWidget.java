@@ -19,10 +19,9 @@ public abstract class AbstractWidget implements IWidget {
     }
 
     private Point location;
-
     private Dimension dimensions;
-    private IWidget parent;
 
+    private IWidget parent;
     private IWindow window;
 
     private boolean enabled;
@@ -34,6 +33,15 @@ public abstract class AbstractWidget implements IWidget {
     public AbstractWidget(Point location, Dimension dimensions) {
         this.location = location;
         this.dimensions = dimensions;
+    }
+
+    public void transferOwner(IWidget newParent) {
+        this.parent = newParent;
+    }
+
+    private void transferOwner(IWindow newWindow, IWidget newWidget) {
+        this.window = newWindow;
+        transferOwner(newWidget);
     }
 
     @Override
