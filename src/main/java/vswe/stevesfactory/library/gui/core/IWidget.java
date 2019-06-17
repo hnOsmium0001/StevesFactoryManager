@@ -1,10 +1,9 @@
-package vswe.stevesfactory.library.gui.widget;
+package vswe.stevesfactory.library.gui.core;
 
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.IRenderable;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import vswe.stevesfactory.library.gui.window.IWindow;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -29,5 +28,13 @@ public interface IWidget extends IGuiEventListener, IRenderable {
     IWidget getParentWidget();
 
     IWindow getWindow();
+
+    boolean isEnabled();
+
+    void setEnabled(boolean enabled);
+
+    default boolean isFocused() {
+        return getWindow().getFocusedWidget() == this;
+    }
 
 }

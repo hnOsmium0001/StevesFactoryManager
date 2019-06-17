@@ -1,12 +1,11 @@
-package vswe.stevesfactory.library.gui.window;
+package vswe.stevesfactory.library.gui.core;
 
 import net.minecraft.client.gui.IGuiEventListener;
-import vswe.stevesfactory.library.gui.widget.IWidget;
 
 import java.awt.*;
 import java.util.List;
 
-public interface IWindow extends IGuiEventListener {
+public interface IWindow<T extends IWidget> extends IGuiEventListener {
 
     Dimension getBorder();
 
@@ -14,6 +13,8 @@ public interface IWindow extends IGuiEventListener {
 
     List<IWidget> getChildren();
 
+    IWidget getFocusedWidget();
 
+    ILayout<T> getLayout();
 
 }

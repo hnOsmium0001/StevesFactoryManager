@@ -1,6 +1,4 @@
-package vswe.stevesfactory.library.gui.layout;
-
-import vswe.stevesfactory.library.gui.widget.IWidget;
+package vswe.stevesfactory.library.gui.core;
 
 import java.awt.*;
 import java.util.List;

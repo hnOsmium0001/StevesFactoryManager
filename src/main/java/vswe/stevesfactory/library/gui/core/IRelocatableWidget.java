@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.widget;
+package vswe.stevesfactory.library.gui.core;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
