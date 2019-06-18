@@ -95,4 +95,7 @@ public interface IWidget extends IGuiEventListener, IRenderable {
         return false;
     }
 
+    default void onDestruct() {
+    }
+
 }

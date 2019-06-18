@@ -1,12 +1,10 @@
 package vswe.stevesfactory.library.gui.core;
 
-import net.minecraft.client.gui.IGuiEventListener;
-
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 
-public interface IWindow<T extends IWidget> extends IGuiEventListener {
+public interface IWindow<T extends IWidget> {
 
     Dimension getBorder();
 
@@ -19,7 +17,6 @@ public interface IWindow<T extends IWidget> extends IGuiEventListener {
 
     /**
      * When possible, use {@link #changeFocus(IWidget, boolean)} instead.
-     * @param widget
      */
     void setFocusedWidget(@Nullable IWidget widget);
 
@@ -35,18 +32,20 @@ public interface IWindow<T extends IWidget> extends IGuiEventListener {
 
     ILayout<T> getLayout();
 
-    @Override
-    default boolean isMouseOver(double mouseX, double mouseY) {
-        return true;
-    }
+    boolean isMouseOver(double mouseX, double mouseY);
 
-    // ============================ //
-    // Disabled methods from parent //
-    // ============================ //
+    void mouseClicked(double mouseX, double mouseY, int button);
 
-    @Override
-    default boolean changeFocus(boolean focus) {
-        throw new UnsupportedOperationException();
-    }
+    void mouseReleased(double mouseX, double mouseY, int button);
+
+    void mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY);
+
+    void mouseScrolled(double mouseX, double mouseY, double amountScrolled);
+
+    void keyPressed(int keyCode, int scanCode, int modifiers);
+
+    void keyReleased(int keyCode, int scanCode, int modifiers);
+
+    void charTyped(char charTyped, int keyCode);
 
 }
