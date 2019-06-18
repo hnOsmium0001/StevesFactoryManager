@@ -4,11 +4,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.core.IWindow;
+import vswe.stevesfactory.library.gui.widget.mixin.WidgetPositionMixin;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public abstract class AbstractWidget implements IWidget {
+public abstract class AbstractWidget implements IWidget, WidgetPositionMixin {
 
     public static Minecraft getMinecraft() {
         return Minecraft.getInstance();
@@ -21,8 +23,11 @@ public abstract class AbstractWidget implements IWidget {
     private Point location;
     private Dimension dimensions;
 
-    private IWidget parent;
     private IWindow window;
+    private IWidget parent;
+
+    private int absX;
+    private int absY;
 
     private boolean enabled;
 
@@ -35,26 +40,40 @@ public abstract class AbstractWidget implements IWidget {
         this.dimensions = dimensions;
     }
 
-    public void transferOwner(IWidget newParent) {
+    public void transferOwner(@Nonnull IWidget newParent) {
         this.parent = newParent;
+        this.absX = newParent.getAbsoluteX() + getX();
+        this.absY = newParent.getAbsoluteY() + getY();
     }
 
-    private void transferOwner(IWindow newWindow, IWidget newWidget) {
+    private void transferOwner(IWindow newWindow, @Nullable IWidget newParent) {
         this.window = newWindow;
-        transferOwner(newWidget);
+        if (newParent != null) {
+            transferOwner(newParent);
+        }
     }
 
     @Override
-    public Point getLocation() {
+    public Point getPosition() {
         return location;
     }
 
-    public int getX() {
-        return location.x;
+    @Override
+    public int getAbsoluteX() {
+        return absX;
     }
 
-    public int getY() {
-        return location.y;
+    @Override
+    public int getAbsoluteY() {
+        return absY;
+    }
+
+    public int getAbsoluteXBR() {
+        return getAbsoluteX() + getWidth();
+    }
+
+    public int getAbsoluteYBR() {
+        return getAbsoluteY() + getHeight();
     }
 
     @Override
@@ -62,13 +81,6 @@ public abstract class AbstractWidget implements IWidget {
         return dimensions;
     }
 
-    public int getWidth() {
-        return dimensions.width;
-    }
-
-    public int getHeight() {
-        return dimensions.height;
-    }
 
     @Nullable
     @Override
@@ -89,6 +101,14 @@ public abstract class AbstractWidget implements IWidget {
     @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return getAbsoluteX() <= mouseX &&
+                getAbsoluteXBR() > mouseX &&
+                getAbsoluteY() <= mouseY &&
+                getAbsoluteYBR() > mouseY;
     }
 
 }

@@ -4,6 +4,7 @@
 
 package vswe.stevesfactory.library.gui.widget;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
@@ -11,6 +12,7 @@ import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.core.IRelocatableWidget;
 import vswe.stevesfactory.utils.RenderingHelper;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.KeyEvent;
@@ -20,9 +22,22 @@ public class TextField extends AbstractWidget implements IRelocatableWidget {
 
     public static final int SECONDARY_BUTTON = 1;
 
+    public static Clipboard getAwtClipboard() {
+        return Toolkit.getDefaultToolkit().getSystemClipboard();
+    }
+
+    @Nullable
+    public static String getClipboardString() {
+        try {
+            return (String) getAwtClipboard().getData(DataFlavor.stringFlavor);
+        } catch (UnsupportedFlavorException | IOException e) {
+            StevesFactoryManager.logger.error("Exception when getting clipboard contents", e);
+            return null;
+        }
+    }
+
     public static void setClipboardString(String text) {
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(new StringSelection(text), null);
+        getAwtClipboard().setContents(new StringSelection(text), null);
     }
 
     private String text = "";
@@ -49,6 +64,7 @@ public class TextField extends AbstractWidget implements IRelocatableWidget {
         return editable;
     }
 
+    @CanIgnoreReturnValue
     public TextField setEditable(boolean editable) {
         this.editable = editable;
         return this;
@@ -58,6 +74,7 @@ public class TextField extends AbstractWidget implements IRelocatableWidget {
         return text;
     }
 
+    @CanIgnoreReturnValue
     public TextField setText(String text) {
         this.text = text;
         cursor = text.length();
@@ -73,7 +90,7 @@ public class TextField extends AbstractWidget implements IRelocatableWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isEnabled() && editable) {
-            getWindow().changeFocus(this);
+            getWindow().setFocusedWidget(this);
             if (button == SECONDARY_BUTTON) {
                 setText("");
             }
@@ -185,12 +202,8 @@ public class TextField extends AbstractWidget implements IRelocatableWidget {
     }
 
     private void pasteText() {
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        String data;
-        try {
-            data = (String) clipboard.getData(DataFlavor.stringFlavor);
-        } catch (UnsupportedFlavorException | IOException e) {
-            StevesFactoryManager.logger.error("Exception when pasting text", e);
+        String data = getClipboardString();
+        if (data == null) {
             return;
         }
 
@@ -209,16 +222,19 @@ public class TextField extends AbstractWidget implements IRelocatableWidget {
         }
     }
 
+    @CanIgnoreReturnValue
     public TextField selectAll() {
         return setSelection(0, text.length());
     }
 
+    @CanIgnoreReturnValue
     public TextField setSelection(int start, int end) {
         selection = start;
         cursor = end;
         return this;
     }
 
+    @CanIgnoreReturnValue
     public TextField clearSelection() {
         selection = -1;
         return this;
@@ -246,6 +262,7 @@ public class TextField extends AbstractWidget implements IRelocatableWidget {
         return text.substring(getSelectionStart(), getSelectionEnd());
     }
 
+    @CanIgnoreReturnValue
     public TextField replaceSelectedRegion(String replacement) {
         int selectionStart = getSelectionStart();
         text = text.substring(0, selectionStart) + replacement + text.substring(getSelectionEnd());
@@ -284,8 +301,8 @@ public class TextField extends AbstractWidget implements IRelocatableWidget {
         ensureVisible();
 
         int color = 0;
-        int x = getLocation().x;
-        int y = getLocation().y;
+        int x = getPosition().x;
+        int y = getPosition().y;
         int width = getDimensions().width;
         int height = getDimensions().height;
 
