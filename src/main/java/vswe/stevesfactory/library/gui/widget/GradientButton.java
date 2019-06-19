@@ -166,7 +166,7 @@ public class GradientButton extends AbstractWidget implements WidgetRelocationMi
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        if (isMouseOver(mouseX, mouseY) && getState() == State.NORMAL) {
+        if (isInside(mouseX, mouseY) && getState() == State.NORMAL) {
             setState(State.HOVERING);
         } else if (getState() == State.HOVERING) {
             updateToRestingState();

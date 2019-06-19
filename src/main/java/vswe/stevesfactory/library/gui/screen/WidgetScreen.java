@@ -3,19 +3,18 @@ package vswe.stevesfactory.library.gui.screen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
-import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.core.IWindow;
 import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetScreen extends Screen {
+public abstract class WidgetScreen extends Screen {
 
-    private IWindow<IWidget> primaryWindow;
+    private IWindow primaryWindow;
     private IWindowPositionHandler positionHandler;
 
-    private List<Pair<IWindow<?>, IWindowPositionHandler>> windows = new ArrayList<>();
+    private List<Pair<IWindow, IWindowPositionHandler>> windows = new ArrayList<>();
 
     protected WidgetScreen(ITextComponent title) {
         super(title);
@@ -29,7 +28,7 @@ public class WidgetScreen extends Screen {
     public void tick() {
     }
 
-    protected void initalizePrimaryWindow(IWindow<IWidget> primaryWindow, IWindowPositionHandler positionHandler) {
+    protected void initalizePrimaryWindow(IWindow primaryWindow, IWindowPositionHandler positionHandler) {
         if (this.primaryWindow == null && this.positionHandler == null) {
             this.primaryWindow = primaryWindow;
             this.positionHandler = positionHandler;
@@ -39,18 +38,23 @@ public class WidgetScreen extends Screen {
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        primaryWindow.render(positionHandler);
-        windows.forEach(pair -> pair.getLeft().render(pair.getRight()));
+        primaryWindow.resolvePosition(positionHandler);
+        primaryWindow.render();
+        for (Pair<IWindow, IWindowPositionHandler> pair : windows) {
+            IWindow window = pair.getLeft();
+            window.resolvePosition(pair.getRight());
+            window.render();
+        }
 
         // This should do nothing because we are not adding vanilla buttons
         super.render(mouseX, mouseY, particleTicks);
     }
 
-    public void addWindow(IWindow<?> window, IWindowPositionHandler positionHandler) {
+    public void addWindow(IWindow window, IWindowPositionHandler positionHandler) {
         addWindow(Pair.of(window, positionHandler));
     }
 
-    public void addWindow(Pair<IWindow<?>, IWindowPositionHandler> window) {
+    public void addWindow(Pair<IWindow, IWindowPositionHandler> window) {
         windows.add(window);
     }
 

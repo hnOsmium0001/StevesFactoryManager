@@ -1,6 +1,5 @@
 package vswe.stevesfactory.library.gui.core;
 
-import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.IRenderable;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -12,7 +11,7 @@ import java.awt.*;
  * A component of the GUI that has a rendering
  */
 @OnlyIn(Dist.CLIENT)
-public interface IWidget extends IGuiEventListener, IRenderable {
+public interface IWidget extends IRenderable {
 
     /**
      * Local coordinate relative to the parent component
@@ -52,50 +51,55 @@ public interface IWidget extends IGuiEventListener, IRenderable {
     default void onFocusChanged(boolean focus) {
     }
 
-    @Override
-    default boolean changeFocus(boolean focus) {
-        return getWindow().changeFocus(this, focus);
-    }
-
-    @Override
-    boolean isMouseOver(double mouseX, double mouseY);
-
-    @Override
-    default boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return false;
-    }
-
-    @Override
-    default boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return false;
-    }
-
-    @Override
-    default boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
-        return false;
-    }
-
-    @Override
-    default boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled) {
-        return false;
-    }
-
-    @Override
-    default boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return false;
-    }
-
-    @Override
-    default boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return false;
-    }
-
-    @Override
-    default boolean charTyped(char charTyped, int keyCode) {
-        return false;
-    }
-
     default void onDestruct() {
     }
+
+    /**
+     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
+     * continue.
+     */
+    boolean isInside(double x, double y);
+
+    /**
+     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
+     * continue.
+     */
+    boolean mouseClicked(double mouseX, double mouseY, int button);
+
+    /**
+     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
+     * continue.
+     */
+    boolean mouseReleased(double mouseX, double mouseY, int button);
+
+    /**
+     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
+     * continue.
+     */
+    boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY);
+
+    /**
+     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
+     * continue.
+     */
+    boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled);
+
+    /**
+     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
+     * continue.
+     */
+    boolean keyPressed(int keyCode, int scanCode, int modifiers);
+
+    /**
+     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
+     * continue.
+     */
+    boolean keyReleased(int keyCode, int scanCode, int modifiers);
+
+    /**
+     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
+     * continue.
+     */
+    boolean charTyped(char charTyped, int keyCode);
 
 }
