@@ -1,18 +1,19 @@
 package vswe.stevesfactory.library.gui.widget;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.GLAllocation;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
-import vswe.stevesfactory.library.gui.core.IRelocatableWidget;
-import vswe.stevesfactory.library.gui.core.IResizableWidget;
+import vswe.stevesfactory.library.gui.widget.mixin.WidgetRelocationMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.WidgetResizingMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GradientButton extends AbstractWidget implements IRelocatableWidget, IResizableWidget {
+public class GradientButton extends AbstractWidget implements WidgetRelocationMixin, WidgetResizingMixin {
 
     public enum State {
         NORMAL,
@@ -20,6 +21,8 @@ public class GradientButton extends AbstractWidget implements IRelocatableWidget
         CLICKED,
         HOVERING
     }
+
+    public static final int SIDE_MARGIN = 8;
 
     public static final int TOP_LEFT_COLOR = 0xffeeeeee;
     public static final int BOTTOM_RIGHT_COLOR = 0xff777777;
@@ -98,16 +101,36 @@ public class GradientButton extends AbstractWidget implements IRelocatableWidget
         return id;
     }
 
+    private String text;
     private State state = State.NORMAL;
     private int bodyDL;
 
     public GradientButton(int x, int y, int width, int height) {
         super(x, y, width, height);
+        this.text = text;
     }
 
     public GradientButton(Point location, Dimension dimensions) {
         super(location, dimensions);
     }
+
+    public String getText() {
+        return text;
+    }
+
+    @CanIgnoreReturnValue
+    public GradientButton setText(String text) {
+        this.text = text;
+        return this;
+    }
+
+    @CanIgnoreReturnValue
+    public GradientButton fitWidth() {
+        int textWidth = getFontRenderer().getStringWidth(text);
+        setWidth(textWidth + SIDE_MARGIN * 2);
+        return this;
+    }
+
 
     @Override
     public void setEnabled(boolean enabled) {

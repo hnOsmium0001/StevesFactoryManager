@@ -9,7 +9,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.library.gui.core.IRelocatableWidget;
+import vswe.stevesfactory.library.gui.widget.mixin.WidgetRelocationMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nullable;
@@ -18,7 +18,7 @@ import java.awt.datatransfer.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-public class TextField extends AbstractWidget implements IRelocatableWidget {
+public class TextField extends AbstractWidget implements WidgetRelocationMixin {
 
     public static final int SECONDARY_BUTTON = 1;
 

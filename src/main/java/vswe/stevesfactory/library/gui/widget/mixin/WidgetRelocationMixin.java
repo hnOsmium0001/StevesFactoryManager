@@ -1,12 +1,13 @@
-package vswe.stevesfactory.library.gui.core;
+package vswe.stevesfactory.library.gui.widget.mixin;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import vswe.stevesfactory.library.gui.core.IWidget;
 
 import java.awt.*;
 
 @OnlyIn(Dist.CLIENT)
-public interface IRelocatableWidget extends IWidget {
+public interface WidgetRelocationMixin extends IWidget {
 
     default void setLocation(Point point) {
         setLocation(point.x, point.y);
