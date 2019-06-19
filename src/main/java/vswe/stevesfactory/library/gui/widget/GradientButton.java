@@ -135,10 +135,10 @@ public class GradientButton extends AbstractWidget implements WidgetRelocationMi
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        updateRestingState();
+        updateToRestingState();
     }
 
-    private void updateRestingState() {
+    private void updateToRestingState() {
         if (isEnabled()) {
             setState(State.NORMAL);
         } else {
@@ -160,7 +160,7 @@ public class GradientButton extends AbstractWidget implements WidgetRelocationMi
         if (!isEnabled()) {
             return false;
         }
-        updateRestingState();
+        updateToRestingState();
         return true;
     }
 
@@ -169,7 +169,7 @@ public class GradientButton extends AbstractWidget implements WidgetRelocationMi
         if (isMouseOver(mouseX, mouseY) && getState() == State.NORMAL) {
             setState(State.HOVERING);
         } else if (getState() == State.HOVERING) {
-            updateRestingState();
+            updateToRestingState();
         }
         GlStateManager.callList(bodyDL);
     }

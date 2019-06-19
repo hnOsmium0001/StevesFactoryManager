@@ -1,16 +1,25 @@
 package vswe.stevesfactory.library.gui.core;
 
+import net.minecraft.client.gui.INestedGuiEventHandler;
+import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
+
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 
-public interface IWindow<T extends IWidget> {
+public interface IWindow<T extends IWidget> extends INestedGuiEventHandler {
+
+    int getWidth();
+
+    int getHeight();
 
     Dimension getBorder();
 
     Dimension getContentDimensions();
 
     List<IWidget> getChildren();
+
+    void render(IWindowPositionHandler handler);
 
     @Nullable
     IWidget getFocusedWidget();
@@ -32,20 +41,6 @@ public interface IWindow<T extends IWidget> {
 
     ILayout<T> getLayout();
 
-    boolean isMouseOver(double mouseX, double mouseY);
-
-    void mouseClicked(double mouseX, double mouseY, int button);
-
-    void mouseReleased(double mouseX, double mouseY, int button);
-
-    void mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY);
-
-    void mouseScrolled(double mouseX, double mouseY, double amountScrolled);
-
-    void keyPressed(int keyCode, int scanCode, int modifiers);
-
-    void keyReleased(int keyCode, int scanCode, int modifiers);
-
-    void charTyped(char charTyped, int keyCode);
+    void onRemoved();
 
 }
