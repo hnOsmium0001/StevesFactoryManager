@@ -1,9 +1,13 @@
 package vswe.stevesfactory.utils;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
+import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public final class RenderingHelper {
@@ -13,6 +17,30 @@ public final class RenderingHelper {
 
     public static BufferBuilder getRenderer() {
         return Tessellator.getInstance().getBuffer();
+    }
+
+    public static void bindTexture(ResourceLocation texture) {
+        Minecraft.getInstance().getTextureManager().bindTexture(texture);
+    }
+
+    public static void useGradientGLStates() {
+        GlStateManager.disableTexture();
+        GlStateManager.disableAlphaTest();
+        GlStateManager.enableBlend();
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
+    }
+
+    public static void usePlainColorGLStates() {
+        GlStateManager.disableTexture();
+        GlStateManager.disableBlend();
+    }
+
+    public static void useTextureGLStates() {
+        GlStateManager.enableTexture();
+        GlStateManager.disableAlphaTest();
+        GlStateManager.disableBlend();
+        GlStateManager.color3f(1.0F, 1.0F, 1.0F);
     }
 
     public static void drawRect(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {
@@ -65,16 +93,16 @@ public final class RenderingHelper {
         GlStateManager.disableTexture();
         GlStateManager.enableBlend();
         GlStateManager.disableAlphaTest();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(x2, y1, 0.0f).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x1, y1, 0.0f).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x1, y2, 0.0f).color(f5, f6, f7, f4).endVertex();
-        buffer.pos(x2, y2, 0.0f).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x2, y1, 0.0F).color(f1, f2, f3, f).endVertex();
+        buffer.pos(x1, y1, 0.0F).color(f1, f2, f3, f).endVertex();
+        buffer.pos(x1, y2, 0.0F).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x2, y2, 0.0F).color(f5, f6, f7, f4).endVertex();
         tessellator.draw();
 
         GlStateManager.shadeModel(GL11.GL_FLAT);
@@ -96,22 +124,51 @@ public final class RenderingHelper {
         GlStateManager.disableTexture();
         GlStateManager.enableBlend();
         GlStateManager.disableAlphaTest();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(x1, y1, 0.0f).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x1, y2, 0.0f).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x2, y2, 0.0f).color(f5, f6, f7, f4).endVertex();
-        buffer.pos(x2, y1, 0.0f).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x1, y1, 0.0F).color(f1, f2, f3, f).endVertex();
+        buffer.pos(x1, y2, 0.0F).color(f1, f2, f3, f).endVertex();
+        buffer.pos(x2, y2, 0.0F).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x2, y1, 0.0F).color(f5, f6, f7, f4).endVertex();
         tessellator.draw();
 
         GlStateManager.shadeModel(GL11.GL_FLAT);
         GlStateManager.disableBlend();
         GlStateManager.enableAlphaTest();
         GlStateManager.enableTexture();
+    }
+
+    public static void drawTexture(int x1, int y1, int x2, int y2, ResourceLocation texture, float u1, float v1, float u2, float v2) {
+        useTextureGLStates();
+        bindTexture(texture);
+
+        BufferBuilder buffer = getRenderer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        buffer.pos(x1, y1, 0.0F).tex(0.0F, 0.0F).endVertex();
+        buffer.pos(x1, y2, 0.0F).tex(0.0F, 1.0F).endVertex();
+        buffer.pos(x2, y2, 0.0F).tex(1.0F, 1.0F).endVertex();
+        buffer.pos(x2, y1, 0.0F).tex(1.0F, 0.0F).endVertex();
+        Tessellator.getInstance().draw();
+    }
+
+    public static void drawCompleteTexture(int x1, int y1, int x2, int y2, ResourceLocation texture) {
+        drawTexture(x1, y1, x2, y2, texture, 0.0F, 0.0F, 1.0F, 1.0F);
+    }
+
+    public static void drawTexturePortion(int x1, int y1, int x2, int y2, ResourceLocation texture, int textureWidth, int textureHeight, int tx, int ty, int portionWidth, int portionHeight) {
+        float uFactor = 1 / textureWidth;
+        float vFactor = 1 / textureHeight;
+        int tx2 = tx + portionWidth;
+        int ty2 = ty + portionHeight;
+        drawTexture(x1, y1, x2, y2, texture, tx * uFactor, ty * vFactor, tx2 * uFactor, ty2 * vFactor);
+    }
+
+    public static void drawTexture256(int x1, int y1, int x2, int y2, ResourceLocation texture, int tx, int ty, int portionWidth, int portionHeight) {
+        drawTexturePortion(x1, y1, x2, y2, texture, 256, 256, tx, ty, portionWidth, portionHeight);
     }
 
 }
