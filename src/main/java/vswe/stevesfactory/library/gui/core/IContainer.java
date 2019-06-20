@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface IContainer<T extends IWidget> extends IWidget {
 
-    List<IWidget> getChildren();
+    List<T> getChildren();
 
     ILayout<T> getLayout();
 

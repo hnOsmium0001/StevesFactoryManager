@@ -130,7 +130,7 @@ public class GradientButton extends AbstractWidget implements RelocatableWidgetM
 
     @CanIgnoreReturnValue
     public GradientButton fitTextWidth(int sideMargin) {
-        int textWidth = getFontRenderer().getStringWidth(text);
+        int textWidth = fontRenderer().getStringWidth(text);
         setWidth(textWidth + sideMargin * 2);
         return this;
     }

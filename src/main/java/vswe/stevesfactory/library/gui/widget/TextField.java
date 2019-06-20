@@ -278,17 +278,17 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     }
 
     private int calculateVerticalOffset() {
-        return (getDimensions().height - getFontRenderer().FONT_HEIGHT) / 2;
+        return (getDimensions().height - fontRenderer().FONT_HEIGHT) / 2;
     }
 
     private void ensureVisible() {
         if (cursor < startOffset) {
             startOffset = cursor;
         } else {
-            int w = getFontRenderer().getStringWidth(text.substring(startOffset, cursor));
+            int w = fontRenderer().getStringWidth(text.substring(startOffset, cursor));
             while (w > getDimensions().width - 12) {
                 startOffset++;
-                w = getFontRenderer().getStringWidth(text.substring(startOffset, cursor));
+                w = fontRenderer().getStringWidth(text.substring(startOffset, cursor));
             }
         }
     }
@@ -305,14 +305,14 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
 
         RenderingHelper.drawThickBeveledBox(x, y, x + width - 1, y + height - 1, 1, 0xff2b2b2b, 0xffffffff, color);
 
-        String renderedText = getFontRenderer().trimStringToWidth(this.text.substring(startOffset), width - 10);
+        String renderedText = fontRenderer().trimStringToWidth(this.text.substring(startOffset), width - 10);
         int textX = x + 5;
         int textY = y + calculateVerticalOffset();
         if (isEnabled()) {
             if (isEditable()) {
-                getFontRenderer().drawString(renderedText, textX, textY, 0xff000000);
+                fontRenderer().drawString(renderedText, textX, textY, 0xff000000);
             } else {
-                getFontRenderer().drawString(renderedText, textX, textY, 0xff333333);
+                fontRenderer().drawString(renderedText, textX, textY, 0xff333333);
             }
 
             if (isRegionSelected()) {
@@ -327,16 +327,16 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
 
                 String renderedSelection = renderedText.substring(renderedStart, renderedEnd);
                 String renderedPreSelection = renderedText.substring(0, renderedStart);
-                int selectionX = textX + getFontRenderer().getStringWidth(renderedPreSelection);
-                int selectionWidth = getFontRenderer().getStringWidth(renderedSelection);
-                RenderingHelper.drawColorLogic(selectionX - 1, textY, selectionWidth + 1, getFontRenderer().FONT_HEIGHT, 60, 147, 242, GlStateManager.LogicOp.OR_REVERSE);
+                int selectionX = textX + fontRenderer().getStringWidth(renderedPreSelection);
+                int selectionWidth = fontRenderer().getStringWidth(renderedSelection);
+                RenderingHelper.drawColorLogic(selectionX - 1, textY, selectionWidth + 1, fontRenderer().FONT_HEIGHT, 60, 147, 242, GlStateManager.LogicOp.OR_REVERSE);
             }
         } else {
-            getFontRenderer().drawString(renderedText, textX, textY, 0xffa0a0a0);
+            fontRenderer().drawString(renderedText, textX, textY, 0xffa0a0a0);
         }
 
         if (isFocused()) {
-            int w = getFontRenderer().getStringWidth(this.text.substring(startOffset, cursor));
+            int w = fontRenderer().getStringWidth(text.substring(startOffset, cursor));
             RenderingHelper.drawRect(x + 5 + w, y + 2, x + 5 + w + 1, y + height - 3, 0xff000000);
         }
     }

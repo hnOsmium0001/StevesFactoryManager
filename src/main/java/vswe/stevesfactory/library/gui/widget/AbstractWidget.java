@@ -12,11 +12,13 @@ import java.awt.*;
 
 public abstract class AbstractWidget implements IWidget, WidgetPositionMixin {
 
-    public static Minecraft getMinecraft() {
+    public static final Point LAYOUT_HAND = new Point(-1, -1);
+
+    public static Minecraft minecraft() {
         return Minecraft.getInstance();
     }
 
-    public static FontRenderer getFontRenderer() {
+    public static FontRenderer fontRenderer() {
         return Minecraft.getInstance().fontRenderer;
     }
 
@@ -80,7 +82,6 @@ public abstract class AbstractWidget implements IWidget, WidgetPositionMixin {
     public Dimension getDimensions() {
         return dimensions;
     }
-
 
     @Nullable
     @Override
