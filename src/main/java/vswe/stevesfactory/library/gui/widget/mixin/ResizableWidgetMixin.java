@@ -7,7 +7,7 @@ import vswe.stevesfactory.library.gui.core.IWidget;
 import java.awt.*;
 
 @OnlyIn(Dist.CLIENT)
-public interface WidgetResizingMixin extends IWidget {
+public interface ResizableWidgetMixin extends IWidget {
 
     default void setDimensions(Dimension dimensions) {
         setDimensions(dimensions.width, dimensions.height);

@@ -9,7 +9,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.library.gui.widget.mixin.WidgetRelocationMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nullable;
@@ -18,7 +19,7 @@ import java.awt.datatransfer.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-public class TextField extends AbstractWidget implements WidgetRelocationMixin {
+public class TextField extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
 
     public static final int SECONDARY_BUTTON = 1;
 
@@ -101,10 +102,6 @@ public class TextField extends AbstractWidget implements WidgetRelocationMixin {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
-            return true;
-        }
-
         if (Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown()) {
             switch (keyCode) {
                 case KeyEvent.VK_C: {

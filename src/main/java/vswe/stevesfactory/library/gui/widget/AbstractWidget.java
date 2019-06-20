@@ -104,11 +104,11 @@ public abstract class AbstractWidget implements IWidget, WidgetPositionMixin {
     }
 
     @Override
-    public boolean isInside(double mouseX, double mouseY) {
-        return getAbsoluteX() <= mouseX &&
-                getAbsoluteXBR() > mouseX &&
-                getAbsoluteY() <= mouseY &&
-                getAbsoluteYBR() > mouseY;
+    public boolean isInside(double x, double y) {
+        return getAbsoluteX() <= x &&
+                getAbsoluteXBR() > x &&
+                getAbsoluteY() <= y &&
+                getAbsoluteYBR() > y;
     }
 
 }

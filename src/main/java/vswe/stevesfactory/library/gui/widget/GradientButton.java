@@ -5,15 +5,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.GLAllocation;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
-import vswe.stevesfactory.library.gui.widget.mixin.WidgetRelocationMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.WidgetResizingMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GradientButton extends AbstractWidget implements WidgetRelocationMixin, WidgetResizingMixin {
+public class GradientButton extends AbstractWidget implements RelocatableWidgetMixin, ResizableWidgetMixin, LeafWidgetMixin {
 
     public enum State {
         NORMAL,
@@ -125,9 +124,14 @@ public class GradientButton extends AbstractWidget implements WidgetRelocationMi
     }
 
     @CanIgnoreReturnValue
-    public GradientButton fitWidth() {
+    public GradientButton fitTextWidth() {
+        return fitTextWidth(SIDE_MARGIN);
+    }
+
+    @CanIgnoreReturnValue
+    public GradientButton fitTextWidth(int sideMargin) {
         int textWidth = getFontRenderer().getStringWidth(text);
-        setWidth(textWidth + SIDE_MARGIN * 2);
+        setWidth(textWidth + sideMargin * 2);
         return this;
     }
 

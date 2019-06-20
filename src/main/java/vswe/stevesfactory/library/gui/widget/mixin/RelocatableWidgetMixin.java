@@ -7,7 +7,7 @@ import vswe.stevesfactory.library.gui.core.IWidget;
 import java.awt.*;
 
 @OnlyIn(Dist.CLIENT)
-public interface WidgetRelocationMixin extends IWidget {
+public interface RelocatableWidgetMixin extends IWidget {
 
     default void setLocation(Point point) {
         setLocation(point.x, point.y);
