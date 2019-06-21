@@ -38,19 +38,18 @@ public class ModBlocks {
     public static TileEntityType<CableTileEntity> cableTileEntity;
 
     public static void init() {
-        // func_223042_a == create
         pendingBlocks.add(new BlockBuilder<FactoryManagerTileEntity>("factory_manager")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2f, 10f))
                 .constructor(FactoryManagerBlock::new)
                 .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.func_223042_a(FactoryManagerTileEntity::new, block))
+                .tileEntity(block -> TileEntityType.Builder.create(FactoryManagerTileEntity::new, block))
                 .noRenderer());
 
         pendingBlocks.add(new BlockBuilder<CableTileEntity>("cable")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(0.4f, 10f))
                 .constructor(CableBlock::new)
                 .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.func_223042_a(CableTileEntity::new, block))
+                .tileEntity(block -> TileEntityType.Builder.create(CableTileEntity::new, block))
                 .noRenderer());
     }
 
