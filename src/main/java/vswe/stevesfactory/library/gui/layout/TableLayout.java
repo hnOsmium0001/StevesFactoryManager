@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.layout;
 
+import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.gui.core.ILayout;
 import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
@@ -87,6 +88,8 @@ public class TableLayout<T extends IWidget & RelocatableWidgetMixin> implements 
 
     @Override
     public List<T> reflow(Dimension bounds, List<T> widgets) {
+        Preconditions.checkArgument(widgetDimensions(widgets));
+
         int width = bounds.width;
         int height = bounds.height;
 
@@ -111,6 +114,26 @@ public class TableLayout<T extends IWidget & RelocatableWidgetMixin> implements 
     @Override
     public LayoutType getType() {
         return LayoutType.StatedLayout;
+    }
+
+    /**
+     * Test whether all widgets have the same dimension or not. Currently this layout implementation does not support widgets with different
+     * sizes.
+     */
+    private boolean widgetDimensions(List<T> widgets) {
+        if (widgets.isEmpty()) {
+            return true;
+        }
+
+        T first = widgets.get(0);
+        int commonWidth = first.getWidth();
+        int commonHeight = first.getHeight();
+        for (T widget : widgets) {
+            if (commonWidth != widget.getWidth() || commonHeight != widget.getHeight()) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

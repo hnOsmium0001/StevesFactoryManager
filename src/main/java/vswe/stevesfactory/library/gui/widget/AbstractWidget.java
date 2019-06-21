@@ -4,15 +4,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.core.IWindow;
+import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.WidgetPositionMixin;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public abstract class AbstractWidget implements IWidget, WidgetPositionMixin {
-
-    public static final Point LAYOUT_HAND = new Point(-1, -1);
+public abstract class AbstractWidget implements IWidget, WidgetPositionMixin, RelocatableWidgetMixin {
 
     public static Minecraft minecraft() {
         return Minecraft.getInstance();
@@ -28,6 +27,7 @@ public abstract class AbstractWidget implements IWidget, WidgetPositionMixin {
     private IWindow window;
     private IWidget parent;
 
+    // Cached because this might reach all the up to the root node by recursion on getAbsoluteX/Y
     private int absX;
     private int absY;
 
@@ -44,15 +44,20 @@ public abstract class AbstractWidget implements IWidget, WidgetPositionMixin {
 
     public void transferOwner(@Nonnull IWidget newParent) {
         this.parent = newParent;
-        this.absX = newParent.getAbsoluteX() + getX();
-        this.absY = newParent.getAbsoluteY() + getY();
+        // Update because parent's position might have changed
+        updateAbsolutePositions();
     }
 
-    private void transferOwner(IWindow newWindow, @Nullable IWidget newParent) {
+    public void transferOwner(IWindow newWindow, @Nullable IWidget newParent) {
         this.window = newWindow;
         if (newParent != null) {
             transferOwner(newParent);
         }
+    }
+
+    private void updateAbsolutePositions() {
+        absX = parent.getAbsoluteX() + getX();
+        absY = parent.getAbsoluteY() + getY();
     }
 
     @Override
@@ -76,6 +81,28 @@ public abstract class AbstractWidget implements IWidget, WidgetPositionMixin {
 
     public int getAbsoluteYBR() {
         return getAbsoluteY() + getHeight();
+    }
+
+    @Override
+    public void setLocation(int x, int y) {
+        location.x = x;
+        location.y = y;
+        // Update because the relative position changed
+        updateAbsolutePositions();
+    }
+
+    @Override
+    public void setX(int x) {
+        location.x = x;
+        // Update because the relative position changed
+        updateAbsolutePositions();
+    }
+
+    @Override
+    public void setY(int y) {
+        location.y = y;
+        // Update because the relative position changed
+        updateAbsolutePositions();
     }
 
     @Override
