@@ -1,23 +1,38 @@
 package vswe.stevesfactory.library.gui.screen;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
+import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.core.IWindow;
 import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class WidgetScreen extends Screen {
+
+    public static int scaledWidth() {
+        return Minecraft.getInstance().mainWindow.getScaledWidth();
+    }
+
+    public static int scaledHeight() {
+        return Minecraft.getInstance().mainWindow.getScaledHeight();
+    }
 
     private IWindow primaryWindow;
     private IWindowPositionHandler positionHandler;
 
     private List<Pair<IWindow, IWindowPositionHandler>> windows = new ArrayList<>();
 
-    protected WidgetScreen(ITextComponent title) {
+    private Rectangle screenBounds = new Rectangle();
+
+    protected WidgetScreen(ITextComponent title, int width, int height) {
         super(title);
+        this.setScreenBounds(width, height);
     }
 
     @Override
@@ -38,6 +53,11 @@ public abstract class WidgetScreen extends Screen {
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        // Dark overlay
+        renderBackground();
+        // Window frame
+        GlStateManager.callList(DisplayListCaches.createVanillaStyleBackground(screenBounds));
+
         primaryWindow.resolvePosition(positionHandler);
         primaryWindow.render();
         for (Pair<IWindow, IWindowPositionHandler> pair : windows) {
@@ -48,6 +68,19 @@ public abstract class WidgetScreen extends Screen {
 
         // This should do nothing because we are not adding vanilla buttons
         super.render(mouseX, mouseY, particleTicks);
+    }
+
+    public Rectangle getScreenBounds() {
+        return screenBounds;
+    }
+
+    public void setScreenBounds(int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.screenBounds.width = width;
+        this.screenBounds.height = height;
+        this.screenBounds.x = scaledWidth() / 2 - width / 2;
+        this.screenBounds.y = scaledHeight() / 2 - height / 2;
     }
 
     public void addWindow(IWindow window, IWindowPositionHandler positionHandler) {
