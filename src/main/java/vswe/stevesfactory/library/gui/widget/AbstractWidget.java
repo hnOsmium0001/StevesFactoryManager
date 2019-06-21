@@ -7,7 +7,6 @@ import vswe.stevesfactory.library.gui.core.IWindow;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.WidgetPositionMixin;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 
@@ -42,20 +41,28 @@ public abstract class AbstractWidget implements IWidget, WidgetPositionMixin, Re
         this.dimensions = dimensions;
     }
 
-    public void transferOwner(@Nonnull IWidget newParent) {
+    @Override
+    public void onParentChanged(IWidget newParent) {
         this.parent = newParent;
-        // Update because parent's position might have changed
-        updateAbsolutePositions();
+        onParentPositionChanged();
     }
 
-    public void transferOwner(IWindow newWindow, @Nullable IWidget newParent) {
-        this.window = newWindow;
-        if (newParent != null) {
-            transferOwner(newParent);
-        }
+    // TODO support change window
+    @Override
+    public void onWindowChanged(IWindow newWindow, IWidget newParent) {
+        throw new UnsupportedOperationException();
     }
 
-    private void updateAbsolutePositions() {
+    @Override
+    public void onParentPositionChanged() {
+        updateAbsolutePosition();
+    }
+
+    private void onRelativePositionChanged() {
+        updateAbsolutePosition();
+    }
+
+    private void updateAbsolutePosition() {
         absX = parent.getAbsoluteX() + getX();
         absY = parent.getAbsoluteY() + getY();
     }
@@ -87,22 +94,19 @@ public abstract class AbstractWidget implements IWidget, WidgetPositionMixin, Re
     public void setLocation(int x, int y) {
         location.x = x;
         location.y = y;
-        // Update because the relative position changed
-        updateAbsolutePositions();
+        onRelativePositionChanged();
     }
 
     @Override
     public void setX(int x) {
         location.x = x;
-        // Update because the relative position changed
-        updateAbsolutePositions();
+        onRelativePositionChanged();
     }
 
     @Override
     public void setY(int y) {
         location.y = y;
-        // Update because the relative position changed
-        updateAbsolutePositions();
+        onRelativePositionChanged();
     }
 
     @Override

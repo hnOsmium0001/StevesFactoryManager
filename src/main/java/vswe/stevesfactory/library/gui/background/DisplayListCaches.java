@@ -22,14 +22,13 @@ public final class DisplayListCaches {
             .removalListener(removal -> GLAllocation.deleteDisplayLists((Integer) removal.getValue()))
             .build();
 
-    public static int createVanillaStyleBackground(int x, int y, int width, int height) {
-        Rectangle rectangle = new Rectangle(x, y, width, height);
+    public static int createVanillaStyleBackground(Rectangle rectangle) {
         try {
             return VANILLA_BACKGROUND_CACHE.get(rectangle, () -> {
                 int id = GLAllocation.generateDisplayLists(1);
                 GlStateManager.newList(id, GL11.GL_COMPILE);
                 {
-                    BackgroundRenderer.drawVanillaStyle(x, y, width, height);
+                    BackgroundRenderer.drawVanillaStyle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
                 GlStateManager.endList();
                 return id;
@@ -38,6 +37,10 @@ public final class DisplayListCaches {
             StevesFactoryManager.logger.error("Exception when creating OpenGL display list for {} for vanilla-style background", rectangle, e);
             return -1;
         }
+    }
+
+    public static int createVanillaStyleBackground(int x, int y, int width, int height) {
+        return createVanillaStyleBackground(new Rectangle(x, y, width, height));
     }
 
 }

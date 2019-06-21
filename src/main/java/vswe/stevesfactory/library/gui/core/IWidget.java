@@ -4,12 +4,10 @@ import net.minecraft.client.gui.IRenderable;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-/**
- * A component of the GUI that has a rendering
- */
 @OnlyIn(Dist.CLIENT)
 public interface IWidget extends IRenderable {
 
@@ -35,7 +33,6 @@ public interface IWidget extends IRenderable {
     @Override
     void render(int mouseX, int mouseY, float particleTicks);
 
-    @Nullable
     IWidget getParentWidget();
 
     IWindow getWindow();
@@ -53,6 +50,15 @@ public interface IWidget extends IRenderable {
 
     default void onDestruct() {
     }
+
+    /**
+     * @implSpec Calling this method should update the value returned by {@link #getParentWidget()} and trigger {@link #onParentPositionChanged()}.
+     */
+    void onParentChanged(IWidget newParent);
+
+    void onWindowChanged(IWindow newWindow, IWidget newParent);
+
+    void onParentPositionChanged();
 
     /**
      * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would

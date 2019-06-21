@@ -25,42 +25,51 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWid
     }
 
     @Override
+    public void onParentPositionChanged() {
+        int oldAbsX = getAbsoluteX();
+        int oldAbsY = getAbsoluteY();
+        super.onParentPositionChanged();
+        if (getAbsoluteX() != oldAbsX || getAbsoluteY() != oldAbsY) {
+            for (T child : children) {
+                child.onParentPositionChanged();
+            }
+        }
+    }
+
+    @Override
     public List<T> getChildren() {
         return childrenView;
     }
 
-    @CanIgnoreReturnValue
+    @Override
     public Box<T> addChildren(T widget) {
         children.add(widget);
+        widget.onParentChanged(this);
         reflow();
         return this;
     }
 
-    @CanIgnoreReturnValue
+    @Override
     public Box<T> addChildren(Collection<T> widgets) {
         children.addAll(widgets);
+        widgets.forEach(widget -> widget.onParentChanged(this));
         reflow();
         return this;
     }
 
-    @CanIgnoreReturnValue
+    @Override
     public Box<T> addChildren(Iterable<T> widgets) {
-        return addChildren(widgets.iterator());
+        ContainerWidgetMixin.super.addChildren(widgets);
+        return this;
     }
 
-    @CanIgnoreReturnValue
+    @Override
     public Box<T> addChildren(Iterator<T> widgets) {
-        widgets.forEachRemaining(children::add);
+        ContainerWidgetMixin.super.addChildren(widgets);
         return this;
     }
 
-    @CanIgnoreReturnValue
-    @SafeVarargs
-    public final Box<T> addChildren(T... widgets) {
-        children.addAll(Arrays.asList(widgets));
-        reflow();
-        return this;
-    }
+    // In most cases these are not necessary because widget's position rely on the layout
 
     @CanIgnoreReturnValue
     public Box<T> updateChildLocation(T child, Point point) {
