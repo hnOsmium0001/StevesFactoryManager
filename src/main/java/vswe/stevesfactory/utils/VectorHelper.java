@@ -71,4 +71,11 @@ public final class VectorHelper {
         return null;
     }
 
+    public static boolean isInside(int x, int y, int mx, int my) {
+        return x >= 0 &&
+                x < mx &&
+                y >= 0 &&
+                y < my;
+    }
+
 }

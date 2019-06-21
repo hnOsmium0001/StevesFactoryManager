@@ -15,4 +15,11 @@ public interface ILayout<T extends IWidget> {
      */
     List<T> reflow(Dimension bounds, List<T> widgets);
 
+    LayoutType getType();
+
+    enum LayoutType {
+        StatelessLayout,
+        StatedLayout
+    }
+
 }
