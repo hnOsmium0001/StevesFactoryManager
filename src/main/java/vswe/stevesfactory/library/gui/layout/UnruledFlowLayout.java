@@ -13,8 +13,10 @@ public class UnruledFlowLayout<T extends IWidget & RelocatableWidgetMixin> imple
     public List<T> reflow(Dimension bounds, List<T> widgets) {
         int y = 0;
         for (T widget : widgets) {
-            adjustPosition(widget, y);
-            y += widget.getHeight();
+            if (shouldIncludeWidget(widget)) {
+                adjustPosition(widget, y);
+                y += widget.getHeight();
+            }
         }
         return widgets;
     }
@@ -24,8 +26,18 @@ public class UnruledFlowLayout<T extends IWidget & RelocatableWidgetMixin> imple
         return LayoutType.StatelessLayout;
     }
 
+    /**
+     * This method is to be overridden to provide more functionality when reflow.
+     */
     public void adjustPosition(T widget, int y) {
         widget.setY(y);
+    }
+
+    public boolean shouldIncludeWidget(IWidget widget) {
+        if (widget instanceof ILayoutDataProvider) {
+            return ((ILayoutDataProvider) widget).getBoxSizing().flow;
+        }
+        return false;
     }
 
 }

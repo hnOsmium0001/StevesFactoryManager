@@ -93,8 +93,8 @@ public class TableLayout<T extends IWidget & RelocatableWidgetMixin> implements 
         int width = bounds.width;
         int height = bounds.height;
 
-        int nextX = componentMargin;
-        int nextY = componentMargin;
+        int nextX = 0;
+        int nextY = 0;
         int headX = nextX;
         int headY = nextY;
 

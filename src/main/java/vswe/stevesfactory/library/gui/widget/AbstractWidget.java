@@ -32,6 +32,10 @@ public abstract class AbstractWidget implements IWidget, WidgetPositionMixin, Re
 
     private boolean enabled;
 
+    public AbstractWidget(int width, int height) {
+        this(0, 0, width, height);
+    }
+
     public AbstractWidget(int x, int y, int width, int height) {
         this(new Point(x, y), new Dimension(width, height));
     }

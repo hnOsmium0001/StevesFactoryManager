@@ -8,6 +8,8 @@ import java.util.List;
 
 /**
  * Identity layout handler. The function is integrated in {@link IWidget}.
+ * <p>
+ * This layout type will ignore the {@code box-sizing} property of the widgets.
  */
 public class PositionalLayout implements ILayout<IWidget> {
 
