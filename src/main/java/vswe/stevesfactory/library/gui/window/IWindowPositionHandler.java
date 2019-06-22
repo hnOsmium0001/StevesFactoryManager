@@ -7,6 +7,6 @@ import java.awt.*;
 @FunctionalInterface
 public interface IWindowPositionHandler {
 
-    Point resolve(IWindow<?> window);
+    Point resolve(IWindow window);
 
 }

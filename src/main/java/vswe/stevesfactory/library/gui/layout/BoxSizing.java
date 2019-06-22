@@ -1,5 +1,7 @@
 package vswe.stevesfactory.library.gui.layout;
 
+import vswe.stevesfactory.library.gui.core.IWidget;
+
 public enum BoxSizing {
 
     BORDER_BOX(true),
@@ -13,4 +15,10 @@ public enum BoxSizing {
         this.flow = flow;
     }
 
+    public static boolean shouldIncludeWidget(IWidget widget) {
+        if (widget instanceof ILayoutDataProvider) {
+            return ((ILayoutDataProvider) widget).getBoxSizing().flow;
+        }
+        return false;
+    }
 }

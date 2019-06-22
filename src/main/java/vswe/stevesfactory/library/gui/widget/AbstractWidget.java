@@ -4,13 +4,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.core.IWindow;
+import vswe.stevesfactory.library.gui.layout.BoxSizing;
+import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.WidgetPositionMixin;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public abstract class AbstractWidget implements IWidget, WidgetPositionMixin, RelocatableWidgetMixin {
+public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, WidgetPositionMixin, RelocatableWidgetMixin {
 
     public static Minecraft minecraft() {
         return Minecraft.getInstance();
@@ -145,6 +147,11 @@ public abstract class AbstractWidget implements IWidget, WidgetPositionMixin, Re
                 getAbsoluteXBR() > x &&
                 getAbsoluteY() <= y &&
                 getAbsoluteYBR() > y;
+    }
+
+    @Override
+    public BoxSizing getBoxSizing() {
+        return BoxSizing.BORDER_BOX;
     }
 
 }

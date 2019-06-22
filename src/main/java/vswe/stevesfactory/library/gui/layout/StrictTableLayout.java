@@ -10,7 +10,7 @@ import java.util.List;
 
 import static vswe.stevesfactory.utils.VectorHelper.isInside;
 
-public class TableLayout<T extends IWidget & RelocatableWidgetMixin> implements ILayout<T> {
+public class StrictTableLayout<T extends IWidget & RelocatableWidgetMixin> implements ILayout<T> {
 
     public enum GrowDirection {
         UP {
@@ -80,7 +80,7 @@ public class TableLayout<T extends IWidget & RelocatableWidgetMixin> implements 
     public GrowDirection overflowDirection;
     public int componentMargin;
 
-    public TableLayout(GrowDirection stackDirection, GrowDirection overflowDirection, int componentMargin) {
+    public StrictTableLayout(GrowDirection stackDirection, GrowDirection overflowDirection, int componentMargin) {
         this.stackDirection = stackDirection;
         this.overflowDirection = overflowDirection;
         this.componentMargin = componentMargin;
@@ -88,7 +88,7 @@ public class TableLayout<T extends IWidget & RelocatableWidgetMixin> implements 
 
     @Override
     public List<T> reflow(Dimension bounds, List<T> widgets) {
-        Preconditions.checkArgument(widgetDimensions(widgets));
+        Preconditions.checkArgument(isWidgetDimensionsIdentical(widgets));
 
         int width = bounds.width;
         int height = bounds.height;
@@ -99,6 +99,10 @@ public class TableLayout<T extends IWidget & RelocatableWidgetMixin> implements 
         int headY = nextY;
 
         for (T widget : widgets) {
+            if (!BoxSizing.shouldIncludeWidget(widget)) {
+                continue;
+            }
+
             widget.setLocation(nextX, nextY);
             if (isCompletelyInside(nextX, nextY, widget.getWidth(), widget.getHeight(), width, height)) {
                 nextX = stackDirection.computeNextX(nextX, width, componentMargin);
@@ -120,7 +124,7 @@ public class TableLayout<T extends IWidget & RelocatableWidgetMixin> implements 
      * Test whether all widgets have the same dimension or not. Currently this layout implementation does not support widgets with different
      * sizes.
      */
-    private boolean widgetDimensions(List<T> widgets) {
+    private boolean isWidgetDimensionsIdentical(List<T> widgets) {
         if (widgets.isEmpty()) {
             return true;
         }
