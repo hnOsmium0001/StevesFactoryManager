@@ -32,9 +32,7 @@ public interface IWindow {
         return getPosition().y;
     }
 
-    void resolvePosition(IWindowPositionHandler positionHandler);
-
-    void render();
+    void render(int mouseX, int mouseY, float particleTicks);
 
     @Nullable
     IWidget getFocusedWidget();

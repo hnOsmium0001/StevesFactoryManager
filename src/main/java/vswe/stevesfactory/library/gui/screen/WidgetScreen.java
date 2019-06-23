@@ -1,15 +1,13 @@
 package vswe.stevesfactory.library.gui.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
-import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.core.IWindow;
 import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
 
-import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,63 +22,56 @@ public abstract class WidgetScreen extends Screen {
     }
 
     private IWindow primaryWindow;
-    private IWindowPositionHandler positionHandler;
 
     private List<Pair<IWindow, IWindowPositionHandler>> windows = new ArrayList<>();
 
-    private Rectangle screenBounds = new Rectangle();
-
-    protected WidgetScreen(ITextComponent title, int width, int height) {
+    protected WidgetScreen(ITextComponent title) {
         super(title);
-        this.setScreenBounds(width, height);
     }
 
     @Override
     protected void init() {
+        primaryWindow = null;
+        windows.clear();
     }
 
     @Override
     public void tick() {
     }
 
-    protected void initalizePrimaryWindow(IWindow primaryWindow, IWindowPositionHandler positionHandler) {
-        if (this.primaryWindow == null && this.positionHandler == null) {
+    protected void initializePrimaryWindow(IWindow primaryWindow) {
+        if (this.primaryWindow == null) {
             this.primaryWindow = primaryWindow;
-            this.positionHandler = positionHandler;
+        } else {
+            throw new IllegalStateException("Already initialized the primary window " + this.primaryWindow);
         }
-        throw new IllegalStateException("Already initialized the primary window " + this.primaryWindow + " and position handler " + this.positionHandler);
+    }
+
+    public IWindow getPrimaryWindow() {
+        return primaryWindow;
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         // Dark overlay
         renderBackground();
-        // Window frame
-        GlStateManager.callList(DisplayListCaches.createVanillaStyleBackground(screenBounds));
 
-        primaryWindow.resolvePosition(positionHandler);
-        primaryWindow.render();
+//        // Window frame
+//        GlStateManager.pushMatrix();
+////        GlStateManager.callList(DisplayListCaches.createVanillaStyleBackground(screenBounds));
+//        GlStateManager.translatef(screenBounds.x, screenBounds.y, 0);
+//        GlStateManager.scalef(0.8f, 0.8f, 0.0f);
+//        BackgroundRenderer.drawVanillaStyle(0, 0, screenBounds.width, screenBounds.height);
+//        GlStateManager.popMatrix();
+
+        primaryWindow.render(mouseX, mouseY, particleTicks);
         for (Pair<IWindow, IWindowPositionHandler> pair : windows) {
             IWindow window = pair.getLeft();
-            window.resolvePosition(pair.getRight());
-            window.render();
+            window.render(mouseX, mouseY, particleTicks);
         }
 
         // This should do nothing because we are not adding vanilla buttons
         super.render(mouseX, mouseY, particleTicks);
-    }
-
-    public Rectangle getScreenBounds() {
-        return screenBounds;
-    }
-
-    public void setScreenBounds(int width, int height) {
-        this.width = width;
-        this.height = height;
-        this.screenBounds.width = width;
-        this.screenBounds.height = height;
-        this.screenBounds.x = scaledWidth() / 2 - width / 2;
-        this.screenBounds.y = scaledHeight() / 2 - height / 2;
     }
 
     public void addWindow(IWindow window, IWindowPositionHandler positionHandler) {
@@ -94,11 +85,6 @@ public abstract class WidgetScreen extends Screen {
     public void clearWindows() {
         windows.forEach(window -> window.getLeft().onRemoved());
         windows.clear();
-    }
-
-    @Override
-    public boolean isMouseOver(double mouseX, double mouseY) {
-        return true;
     }
 
     @Override
@@ -135,6 +121,13 @@ public abstract class WidgetScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (keyCode == KeyEvent.VK_E) {
+            Minecraft.getInstance().player.closeScreen();
+            return true;
+        }
         if (windows.stream().noneMatch(window -> window.getLeft().keyPressed(keyCode, scanCode, modifiers))) {
             primaryWindow.keyPressed(keyCode, scanCode, modifiers);
         }

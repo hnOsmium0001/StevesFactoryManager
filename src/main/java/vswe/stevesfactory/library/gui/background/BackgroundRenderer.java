@@ -11,6 +11,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.utils.RenderingHelper;
 
 @OnlyIn(Dist.CLIENT)
 public final class BackgroundRenderer {
@@ -23,10 +24,7 @@ public final class BackgroundRenderer {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/generic_components.png");
     private static final int UNIT_LENGTH = 4;
-    /**
-     * 0.00390625 == 1/256
-     */
-    private static final float UV_MULTIPLIER = 0.00390625f;
+    private static final float UV_MULTIPLIER = 1f / 256f;
 
     /**
      * Draw a vanilla styled GUI background on the given position with the given width and height.
@@ -45,9 +43,11 @@ public final class BackgroundRenderer {
     public static void drawVanillaStyle(int x, int y, int width, int height) {
         Preconditions.checkArgument(width >= 8 && height >= 8);
 
-        BUFFER.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        RenderingHelper.useTextureGLStates();
 
+        BUFFER.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         Minecraft.getInstance().getTextureManager().bindTexture(TEXTURE);
+
         int cornerXRight = x + width - UNIT_LENGTH;
         int cornerYBottom = y + height - UNIT_LENGTH;
         CornerPiece.drawTopLeft(x, y);

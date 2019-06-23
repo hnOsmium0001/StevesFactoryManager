@@ -11,6 +11,7 @@ import vswe.stevesfactory.StevesFactoryManager;
 
 import java.awt.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @OnlyIn(Dist.CLIENT)
 public final class DisplayListCaches {
@@ -19,12 +20,18 @@ public final class DisplayListCaches {
     }
 
     private static final Cache<Rectangle, Integer> VANILLA_BACKGROUND_CACHE = CacheBuilder.newBuilder()
-            .removalListener(removal -> GLAllocation.deleteDisplayLists((Integer) removal.getValue()))
+            .expireAfterAccess(60, TimeUnit.SECONDS)
+            .removalListener(removal -> {
+                StevesFactoryManager.logger.info("Removed background display list with size {}", removal.getKey());
+                GLAllocation.deleteDisplayLists((Integer) removal.getValue());
+            })
             .build();
 
     public static int createVanillaStyleBackground(Rectangle rectangle) {
         try {
             return VANILLA_BACKGROUND_CACHE.get(rectangle, () -> {
+                StevesFactoryManager.logger.info("Created background display list with size {}", rectangle);
+
                 int id = GLAllocation.generateDisplayLists(1);
                 GlStateManager.newList(id, GL11.GL_COMPILE);
                 {

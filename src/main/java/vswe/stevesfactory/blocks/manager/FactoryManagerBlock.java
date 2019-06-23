@@ -2,6 +2,7 @@ package vswe.stevesfactory.blocks.manager;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
@@ -34,6 +35,8 @@ public class FactoryManagerBlock extends BaseBlock {
                 manager.openGUI(player);
                 tryDump(manager);
             }
+        } else {
+            Minecraft.getInstance().displayGuiScreen(new FactoryManagerGUI());
         }
         return true;
     }
