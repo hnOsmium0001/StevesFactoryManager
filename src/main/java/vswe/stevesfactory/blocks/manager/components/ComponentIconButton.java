@@ -10,6 +10,34 @@ import vswe.stevesfactory.utils.RenderingHelper;
 
 public class ComponentIconButton extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
 
+    public enum Components {
+        TRIGGER("trigger.png"),
+        ITEM_IMPORT("item_import.png"),
+        ITEM_EXPORT("item_export.png"),
+        ITEM_CONDITION("item_condition.png"),
+        FLOW_CONTROL("flow_control.png"),
+        FLUID_IMPORT("fluid_import"),
+        FLUID_EXPORT("fluid_export"),
+        FLUID_CONDITION("fluid_condition"),
+        REDSTONE_EMITTER("redstone_emitter"),
+        REDSTONE_CONDITION("redstone_condition"),
+        CRAFT_ITEM("craft_item"),
+        FOR_EACH("for_each"),
+        GROUP("group"),
+        GROUP_IO("group_io"),
+        CAMOUFLAGE("camouflage"),
+        SIGN_UPDATER("sign_updater"),
+        CONFIGURATIONS("configurations");
+
+        public final String fileName;
+        public final ResourceLocation texture;
+
+        Components(String fileName) {
+            this.fileName = fileName;
+            this.texture = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/" + fileName);
+        }
+    }
+
     private static final ResourceLocation BACKGROUND_NORMAL = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_background/background_normal.png");
     private static final ResourceLocation BACKGROUND_HOVERED = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_background/background_hovered.png");
 
@@ -18,8 +46,8 @@ public class ComponentIconButton extends AbstractWidget implements RelocatableWi
 
     private final ResourceLocation texture;
 
-    public ComponentIconButton(SelectionPanel parent, String fileName) {
-        this(parent, new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/" + fileName));
+    public ComponentIconButton(SelectionPanel parent, Components component) {
+        this(parent, component.texture);
     }
 
     public ComponentIconButton(SelectionPanel parent, ResourceLocation texture) {

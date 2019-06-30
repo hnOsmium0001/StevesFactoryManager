@@ -186,8 +186,8 @@ public class FactoryManagerGUI extends WidgetScreen {
         }
 
         @Override
-        public DynamicWidthLayout getLayout() {
-            return DynamicWidthLayout.INSTANCE;
+        public DynamicWidthWidget.DynamicWidthLayout getLayout() {
+            return DynamicWidthWidget.DynamicWidthLayout.INSTANCE;
         }
 
         @Override
@@ -205,57 +205,6 @@ public class FactoryManagerGUI extends WidgetScreen {
             // No render events for this object because it is technically internal for the window, and it has the exact size as the window
             selectionPanel.render(mouseX, mouseY, particleTicks);
             editorPanel.render(mouseX, mouseY, particleTicks);
-        }
-
-    }
-
-    public static class DynamicWidthLayout implements ILayout<DynamicWidthWidget<?>> {
-
-        public static final DynamicWidthLayout INSTANCE = new DynamicWidthLayout();
-
-        @Override
-        public List<DynamicWidthWidget<?>> reflow(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {
-            int usable = bounds.width;
-            int nextX = 0;
-            for (DynamicWidthWidget widget : widgets) {
-                switch (widget.getWidthOccupier()) {
-                    case MIN_WIDTH: {
-                        int w = calculateWidthMin(widget);
-                        widget.setX(nextX);
-                        widget.setWidth(w);
-                        usable -= w;
-                        nextX += w;
-                        break;
-                    }
-                    case MAX_WIDTH: {
-                        int w = calculateWidthMax(widget, usable);
-                        widget.setX(nextX);
-                        widget.setWidth(w);
-                        nextX += w;
-                        break;
-                    }
-                }
-            }
-
-            return widgets;
-        }
-
-        private int calculateWidthMin(DynamicWidthWidget<?> widget) {
-            IWidget furthest = widget.getChildren().stream()
-                    .max(Comparator.comparingInt(IWidget::getX))
-                    .orElseThrow(RuntimeException::new);
-            int x = furthest.getX();
-            int w = furthest.getWidth();
-            return x + w;
-        }
-
-        private int calculateWidthMax(DynamicWidthWidget<?> widget, int usable) {
-            return usable;
-        }
-
-        @Override
-        public LayoutType getType() {
-            return LayoutType.StatelessLayout;
         }
 
     }

@@ -11,7 +11,7 @@ import java.util.List;
 public class EditorPanel extends DynamicWidthWidget<IWidget> {
 
     public EditorPanel(FactoryManagerGUI.TopLevelWidget parent, IWindow window) {
-        super(parent, window, WidthOccupingType.MAX_WIDTH);
+        super(parent, window, WidthOccupierType.MAX_WIDTH);
     }
 
     // TODO
