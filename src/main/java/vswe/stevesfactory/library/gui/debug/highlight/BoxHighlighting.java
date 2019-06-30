@@ -1,18 +1,28 @@
 package vswe.stevesfactory.library.gui.debug.highlight;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.core.*;
+import vswe.stevesfactory.utils.RenderingHelper;
 
-import java.util.List;
+import java.awt.*;
 
 import static vswe.stevesfactory.utils.RenderingHelper.drawTransparentRect;
+import static vswe.stevesfactory.utils.RenderingHelper.vertexTransparentRect;
 
 public class BoxHighlighting {
 
     public static final int CONTENTS = 0x99ff9d82;
     public static final int BORDER = 0x993b86ff;
+    public static final float BORDER_A = BORDER >> 24 & 255;
+    public static final float BORDER_R = BORDER >> 16 & 255;
+    public static final float BORDER_G = BORDER >> 8 & 255;
+    public static final float BORDER_B = BORDER & 255;
 
     public static boolean tryDraw(IWidget widget, int mx, int my) {
         if (widget.isInside(mx, my)) {
@@ -24,7 +34,6 @@ public class BoxHighlighting {
                 }
             }
             draw(widget);
-            overlayInfo(mx, my, widget);
             return true;
         }
         return false;
@@ -34,10 +43,14 @@ public class BoxHighlighting {
         int ax = widget.getAbsoluteX();
         int ay = widget.getAbsoluteY();
         drawTransparentRect(ax, ay, ax + widget.getWidth(), ay + widget.getHeight(), CONTENTS);
+
+        if (Screen.hasControlDown()) {
+            overlayInfo(widget);
+        }
     }
 
-    public static void overlayInfo(int mx, int my, IWidget widget) {
-        List<String> text = ImmutableList.of(
+    public static void overlayInfo(IWidget widget) {
+        overlayInfo(new String[]{
                 widget + ":",
                 "X=" + widget.getX(),
                 "Y=" + widget.getY(),
@@ -45,8 +58,7 @@ public class BoxHighlighting {
                 "AbsY=" + widget.getAbsoluteY(),
                 "Width=" + widget.getWidth(),
                 "Height=" + widget.getHeight()
-        );
-        GuiUtils.drawHoveringText(text, mx, my, Minecraft.getInstance().mainWindow.getScaledWidth(), Minecraft.getInstance().mainWindow.getScaledHeight(), Integer.MAX_VALUE, Minecraft.getInstance().fontRenderer);
+        });
     }
 
     public static boolean tryDraw(IWindow window, int mx, int my) {
@@ -57,31 +69,44 @@ public class BoxHighlighting {
                 }
             }
             draw(window);
-            overlayInfo(mx, my, window);
             return true;
         }
         return false;
     }
 
     public static void draw(IWindow window) {
-        int x = window.getX();
-        int y = window.getY();
-        int x2 = x + window.getWidth();
-        int y2 = y + window.getHeight();
-        int bs = window.getBorderSize();
         // Can't just do two rectangles because they are transparent
-        drawTransparentRect(x, y, x2, y + bs, BORDER);
-        drawTransparentRect(x2 - bs, y, x2, y2 - bs, BORDER);
-        drawTransparentRect(x + bs, y2 - bs, x2, y2, BORDER);
-        drawTransparentRect(x, y + bs, x + bs, y2, BORDER);
+        RenderingHelper.preDrawTransparentRect();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        {
+            int x = window.getX();
+            int y = window.getY();
+            int x2 = x + window.getWidth();
+            int y2 = y + window.getHeight();
+            int bs = window.getBorderSize();
 
-        int cx = window.getContentX();
-        int cy = window.getContentY();
-        drawTransparentRect(cx, cy, cx + window.getContentWidth(), cy + window.getContentHeight(), CONTENTS);
+            vertexTransparentRect(buffer, x, y, x2 - bs, y + bs, BORDER_A, BORDER_R, BORDER_G, BORDER_B);
+            vertexTransparentRect(buffer, x2 - bs, y, x2, y2 - bs, BORDER_A, BORDER_R, BORDER_G, BORDER_B);
+            vertexTransparentRect(buffer, x + bs, y2 - bs, x2, y2, BORDER_A, BORDER_R, BORDER_G, BORDER_B);
+            vertexTransparentRect(buffer, x, y + bs, x + bs, y2, BORDER_A, BORDER_R, BORDER_G, BORDER_B);
+        }
+        {
+            int cx = window.getContentX();
+            int cy = window.getContentY();
+            vertexTransparentRect(buffer, cx, cy, cx + window.getContentWidth(), cy + window.getContentHeight(), CONTENTS);
+        }
+        tessellator.draw();
+        RenderingHelper.postDrawTransparentRect();
+
+        if (Screen.hasControlDown()) {
+            overlayInfo(window);
+        }
     }
 
-    public static void overlayInfo(int mx, int my, IWindow window) {
-        List<String> text = ImmutableList.of(
+    public static void overlayInfo(IWindow window) {
+        overlayInfo(new String[]{
                 window + ":",
                 "X=" + window.getX(),
                 "Y=" + window.getY(),
@@ -90,9 +115,19 @@ public class BoxHighlighting {
                 "ContentX=" + window.getContentX(),
                 "ContentY=" + window.getContentY(),
                 "ContentWidth=" + window.getContentWidth(),
-                "ContentHeight=" + window.getContentHeight()
-        );
-        GuiUtils.drawHoveringText(text, mx, my, Minecraft.getInstance().mainWindow.getScaledWidth(), Minecraft.getInstance().mainWindow.getScaledHeight(), Integer.MAX_VALUE, Minecraft.getInstance().fontRenderer);
+                "ContentHeight=" + window.getContentHeight(),
+                "BorderSize=" + window.getBorderSize()
+        });
+    }
+
+    private static void overlayInfo(String[] texts) {
+        int x = 1;
+        int y = 1;
+        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+        for (String s : texts) {
+            fontRenderer.drawString(s, x, y, Color.WHITE.getRGB());
+            y += fontRenderer.FONT_HEIGHT + 2;
+        }
     }
 
 }

@@ -144,6 +144,7 @@ public final class RenderingHelper {
     public static void drawTexture(int x1, int y1, int x2, int y2, ResourceLocation texture, float u1, float v1, float u2, float v2) {
         GlStateManager.enableTexture();
         GlStateManager.disableLighting();
+        GlStateManager.color3f(1.0F, 1.0F, 1.0F);
         bindTexture(texture);
 
         BufferBuilder buffer = getRenderer();
@@ -172,29 +173,45 @@ public final class RenderingHelper {
     }
 
     public static void drawTransparentRect(int x1, int y1, int x2, int y2, int color) {
-        float a = color >> 24 & 255;
-        float r = color >> 16 & 255;
-        float g = color >> 8 & 255;
-        float b = color & 255;
-
-        GlStateManager.disableTexture();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
+        preDrawTransparentRect();
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        vertexTransparentRect(buffer, x1, y1, x2, y2, color);
+        tessellator.draw();
+
+        postDrawTransparentRect();
+    }
+
+    // These methods should be used for drawing multiple rectangles at once
+
+    public static void vertexTransparentRect(BufferBuilder buffer, int x1, int y1, int x2, int y2, int color) {
+        float a = color >> 24 & 255;
+        float r = color >> 16 & 255;
+        float g = color >> 8 & 255;
+        float b = color & 255;
+        vertexTransparentRect(buffer, x1, y1, x2, y2, a, r, g, b);
+    }
+
+    public static void vertexTransparentRect(BufferBuilder buffer, int x1, int y1, int x2, int y2, float a, float r, float g, float b) {
         buffer.pos(x1, y1, 0.0F).color(r, g, b, a).endVertex();
         buffer.pos(x1, y2, 0.0F).color(r, g, b, a).endVertex();
         buffer.pos(x2, y2, 0.0F).color(r, g, b, a).endVertex();
         buffer.pos(x2, y1, 0.0F).color(r, g, b, a).endVertex();
-        tessellator.draw();
+    }
 
+    public static void preDrawTransparentRect() {
+        GlStateManager.disableTexture();
+        GlStateManager.disableAlphaTest();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
+    }
+
+    public static void postDrawTransparentRect() {
         GlStateManager.disableBlend();
         GlStateManager.enableAlphaTest();
         GlStateManager.enableTexture();
-        GlStateManager.clearCurrentColor();
     }
 
 }

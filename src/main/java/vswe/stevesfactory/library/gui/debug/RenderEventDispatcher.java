@@ -4,30 +4,79 @@ import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.core.IWindow;
 import vswe.stevesfactory.library.gui.debug.highlight.BoxHighlighting;
 
-public class RenderEventDispatcher {
+public final class RenderEventDispatcher {
 
-    public static final boolean DEBUG = false;
+    private RenderEventDispatcher() {
+    }
+
+    private enum Type {
+        ENABLED {
+            @Override
+            public void preRender(IWidget widget, int mx, int my) {
+
+            }
+
+            @Override
+            public void preRender(IWindow widget, int mx, int my) {
+
+            }
+
+            @Override
+            public void postRender(IWidget widget, int mx, int my) {
+
+                BoxHighlighting.tryDraw(widget, mx, my);
+            }
+
+            @Override
+            public void postRender(IWindow widget, int mx, int my) {
+
+                BoxHighlighting.tryDraw(widget, mx, my);
+            }
+        },
+        DISABLED {
+            // Do nothing at all
+            @Override
+            public void preRender(IWidget widget, int mx, int my) {
+            }
+
+            @Override
+            public void preRender(IWindow widget, int mx, int my) {
+            }
+
+            @Override
+            public void postRender(IWidget widget, int mx, int my) {
+            }
+
+            @Override
+            public void postRender(IWindow widget, int mx, int my) {
+            }
+        };
+
+        public abstract void preRender(IWidget widget, int mx, int my);
+
+        public abstract void preRender(IWindow widget, int mx, int my);
+
+        public abstract void postRender(IWidget widget, int mx, int my);
+
+        public abstract void postRender(IWindow widget, int mx, int my);
+    }
+
+    private static Type activeInstance = Type.ENABLED;
 
     public static void onPreRender(IWidget widget, int mx, int my) {
-
+        activeInstance.preRender(widget, mx, my);
     }
 
     public static void onPreRender(IWindow window, int mx, int my) {
-
+        activeInstance.preRender(window, mx, my);
     }
 
     public static void onPostRender(IWidget widget, int mx, int my) {
-        if (!DEBUG) {
-            return;
-        }
-        BoxHighlighting.tryDraw(widget, mx, my);
+        activeInstance.postRender(widget, mx, my);
     }
 
     public static void onPostRender(IWindow window, int mx, int my) {
-        if (!DEBUG) {
-            return;
-        }
-        BoxHighlighting.tryDraw(window, mx, my);
+        activeInstance.postRender(window, mx, my);
     }
 
 }
