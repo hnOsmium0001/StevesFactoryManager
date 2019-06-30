@@ -143,7 +143,7 @@ public final class RenderingHelper {
     }
 
     public static void drawTexture(int x1, int y1, int x2, int y2, ResourceLocation texture, float u1, float v1, float u2, float v2) {
-        useTextureGLStates();
+        GlStateManager.enableTexture();
         bindTexture(texture);
 
         BufferBuilder buffer = getRenderer();

@@ -68,7 +68,7 @@ public class StrictTableLayout<T extends IWidget & RelocatableWidgetMixin> imple
      * Test whether the given rectangle is completely inside the region from {@code (0,0)} to {@code (mx,my)}. Completely inside means all
      * four vertices are inside the given region.
      */
-    public static boolean isCompletelyInside(int x, int y, int width, int height, int mx, int my) {
+    private static boolean isCompletelyInside(int x, int y, int width, int height, int mx, int my) {
         return isInside(x, y, mx, my) &&
                 isInside(x, y + height, mx, my) &&
                 isInside(x + width, y + height, mx, my) &&
@@ -90,11 +90,8 @@ public class StrictTableLayout<T extends IWidget & RelocatableWidgetMixin> imple
     public List<T> reflow(Dimension bounds, List<T> widgets) {
         Preconditions.checkArgument(isWidgetDimensionsIdentical(widgets));
 
-        int width = bounds.width;
-        int height = bounds.height;
-
-        int nextX = 0;
-        int nextY = 0;
+        int nextX = componentMargin;
+        int nextY = componentMargin;
         int headX = nextX;
         int headY = nextY;
 
@@ -104,10 +101,12 @@ public class StrictTableLayout<T extends IWidget & RelocatableWidgetMixin> imple
             }
 
             widget.setLocation(nextX, nextY);
-            if (isCompletelyInside(nextX, nextY, widget.getWidth(), widget.getHeight(), width, height)) {
-                nextX = stackDirection.computeNextX(nextX, width, componentMargin);
-                nextY = stackDirection.computeNextY(nextY, height, componentMargin);
-            } else {
+
+            int width = widget.getWidth();
+            int height = widget.getHeight();
+            nextX = stackDirection.computeNextX(nextX, width, componentMargin);
+            nextY = stackDirection.computeNextY(nextY, height, componentMargin);
+            if (!isCompletelyInside(nextX, nextY, width, height, bounds.width, bounds.height)) {
                 nextX = headX = overflowDirection.computeNextX(headX, width, componentMargin);
                 nextY = headY = overflowDirection.computeNextY(headY, height, componentMargin);
             }

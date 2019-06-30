@@ -6,6 +6,13 @@ import vswe.stevesfactory.library.gui.core.IWidget;
 public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
 
     @Override
+    default void render(int mouseX, int mouseY, float particleTicks) {
+        for (T child : getChildren()) {
+            child.render(mouseX, mouseY, particleTicks);
+        }
+    }
+
+    @Override
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!isInside(mouseX, mouseY)) {
             return false;

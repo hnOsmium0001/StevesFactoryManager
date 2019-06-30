@@ -10,8 +10,6 @@ public interface IWindow {
 
     Dimension getBorder();
 
-    Dimension getContentDimensions();
-
     default int getWidth() {
         return getBorder().width;
     }
@@ -19,6 +17,8 @@ public interface IWindow {
     default int getHeight() {
         return getBorder().height;
     }
+
+    Dimension getContentDimensions();
 
     List<IWidget> getChildren();
 
@@ -30,6 +30,14 @@ public interface IWindow {
 
     default int getY() {
         return getPosition().y;
+    }
+
+    default int getContentX() {
+        return getX() + (getWidth() - getContentDimensions().width) / 2;
+    }
+
+    default int getContentY() {
+        return getY() + (getHeight() - getContentDimensions().height) / 2;
     }
 
     void render(int mouseX, int mouseY, float particleTicks);

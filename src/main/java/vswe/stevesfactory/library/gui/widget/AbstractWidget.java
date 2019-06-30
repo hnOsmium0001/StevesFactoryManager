@@ -23,15 +23,15 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
     }
 
     private Point location;
+
     private Dimension dimensions;
-
     private IWindow window;
-    private IWidget parent;
 
+    private IWidget parent;
     // Cached because this might reach all the up to the root node by recursion on getAbsoluteX/Y
+
     private int absX;
     private int absY;
-
     private boolean enabled;
 
     public AbstractWidget(int width, int height) {
@@ -53,10 +53,11 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
         onParentPositionChanged();
     }
 
-    // TODO support change window
     @Override
     public void onWindowChanged(IWindow newWindow, IWidget newParent) {
-        throw new UnsupportedOperationException();
+        this.window = newWindow;
+        this.parent = newParent;
+        onParentPositionChanged();
     }
 
     @Override

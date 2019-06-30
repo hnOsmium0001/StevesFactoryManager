@@ -10,6 +10,10 @@ public interface IContainer<T extends IWidget> extends IWidget {
 
     ILayout<T> getLayout();
 
+    default void reflow() {
+        getLayout().reflow(getDimensions(), getChildren());
+    }
+
     @CanIgnoreReturnValue
     IContainer<T> addChildren(T widget);
 

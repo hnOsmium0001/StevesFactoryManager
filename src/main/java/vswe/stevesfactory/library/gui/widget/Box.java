@@ -123,7 +123,8 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWid
         return paused;
     }
 
-    private void reflow() {
+    @Override
+    public void reflow() {
         if (!paused && layout != null) {
             getLayout().reflow(getDimensions(), children);
         }
