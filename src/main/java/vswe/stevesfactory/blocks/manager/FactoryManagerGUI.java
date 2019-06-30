@@ -6,10 +6,10 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.client.config.GuiUtils;
 import vswe.stevesfactory.blocks.manager.components.*;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.core.*;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
@@ -72,6 +72,11 @@ public class FactoryManagerGUI extends WidgetScreen {
         }
 
         @Override
+        public int getBorderSize() {
+            return 4;
+        }
+
+        @Override
         public Dimension getContentDimensions() {
             return contentDimensions;
         }
@@ -88,10 +93,10 @@ public class FactoryManagerGUI extends WidgetScreen {
 
         @Override
         public void render(int mouseX, int mouseY, float particleTicks) {
+            RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
             GlStateManager.callList(backgroundDL);
             topLevel.render(mouseX, mouseY, particleTicks);
-//            GuiUtils.drawGradientRect(0, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0xaaff9d82, 0xaaff9d82);
-//            GuiUtils.drawGradientRect(0, getContentX(), getContentY(), getContentX() + getContentDimensions().width, getContentY() + getContentDimensions().height, 0xaa5c87ff, 0xaa5c87ff);
+            RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
 
         @Nonnull
@@ -197,6 +202,7 @@ public class FactoryManagerGUI extends WidgetScreen {
 
         @Override
         public void render(int mouseX, int mouseY, float particleTicks) {
+            // No render events for this object because it is technically internal for the window, and it has the exact size as the window
             selectionPanel.render(mouseX, mouseY, particleTicks);
             editorPanel.render(mouseX, mouseY, particleTicks);
         }

@@ -2,6 +2,7 @@ package vswe.stevesfactory.blocks.manager.components;
 
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
@@ -29,6 +30,7 @@ public class ComponentIconButton extends AbstractWidget implements RelocatableWi
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         int x1 = getAbsoluteX();
         int y1 = getAbsoluteY();
         int x2 = getAbsoluteXBR();
@@ -39,6 +41,7 @@ public class ComponentIconButton extends AbstractWidget implements RelocatableWi
             RenderingHelper.drawCompleteTexture(x1, y1, x2, y2, BACKGROUND_NORMAL);
         }
         RenderingHelper.drawCompleteTexture(x1, y1, x2, y2, texture);
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
 }

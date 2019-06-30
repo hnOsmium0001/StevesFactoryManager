@@ -38,7 +38,6 @@ public final class RenderingHelper {
 
     public static void useTextureGLStates() {
         GlStateManager.enableTexture();
-        GlStateManager.disableAlphaTest();
         GlStateManager.disableBlend();
         GlStateManager.color3f(1.0F, 1.0F, 1.0F);
     }
@@ -144,14 +143,15 @@ public final class RenderingHelper {
 
     public static void drawTexture(int x1, int y1, int x2, int y2, ResourceLocation texture, float u1, float v1, float u2, float v2) {
         GlStateManager.enableTexture();
+        GlStateManager.disableLighting();
         bindTexture(texture);
 
         BufferBuilder buffer = getRenderer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos(x1, y1, 0.0F).tex(0.0F, 0.0F).endVertex();
-        buffer.pos(x1, y2, 0.0F).tex(0.0F, 1.0F).endVertex();
-        buffer.pos(x2, y2, 0.0F).tex(1.0F, 1.0F).endVertex();
-        buffer.pos(x2, y1, 0.0F).tex(1.0F, 0.0F).endVertex();
+        buffer.pos(x1, y1, 0.0F).tex(u1, v1).endVertex();
+        buffer.pos(x1, y2, 0.0F).tex(u1, v2).endVertex();
+        buffer.pos(x2, y2, 0.0F).tex(u2, v2).endVertex();
+        buffer.pos(x2, y1, 0.0F).tex(u2, v1).endVertex();
         Tessellator.getInstance().draw();
     }
 
@@ -169,6 +169,32 @@ public final class RenderingHelper {
 
     public static void drawTexture256(int x1, int y1, int x2, int y2, ResourceLocation texture, int tx, int ty, int portionWidth, int portionHeight) {
         drawTexturePortion(x1, y1, x2, y2, texture, 256, 256, tx, ty, portionWidth, portionHeight);
+    }
+
+    public static void drawTransparentRect(int x1, int y1, int x2, int y2, int color) {
+        float a = color >> 24 & 255;
+        float r = color >> 16 & 255;
+        float g = color >> 8 & 255;
+        float b = color & 255;
+
+        GlStateManager.disableTexture();
+        GlStateManager.disableAlphaTest();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        buffer.pos(x1, y1, 0.0F).color(r, g, b, a).endVertex();
+        buffer.pos(x1, y2, 0.0F).color(r, g, b, a).endVertex();
+        buffer.pos(x2, y2, 0.0F).color(r, g, b, a).endVertex();
+        buffer.pos(x2, y1, 0.0F).color(r, g, b, a).endVertex();
+        tessellator.draw();
+
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlphaTest();
+        GlStateManager.enableTexture();
+        GlStateManager.clearCurrentColor();
     }
 
 }

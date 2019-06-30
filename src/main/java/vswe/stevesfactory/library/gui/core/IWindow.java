@@ -1,7 +1,5 @@
 package vswe.stevesfactory.library.gui.core;
 
-import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
-
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
@@ -18,7 +16,17 @@ public interface IWindow {
         return getBorder().height;
     }
 
+    int getBorderSize();
+
     Dimension getContentDimensions();
+
+    default int getContentWidth() {
+        return getContentDimensions().width;
+    }
+
+    default int getContentHeight() {
+        return getContentDimensions().height;
+    }
 
     List<IWidget> getChildren();
 
@@ -33,11 +41,11 @@ public interface IWindow {
     }
 
     default int getContentX() {
-        return getX() + (getWidth() - getContentDimensions().width) / 2;
+        return getX() + (getWidth() - getContentWidth()) / 2;
     }
 
     default int getContentY() {
-        return getY() + (getHeight() - getContentDimensions().height) / 2;
+        return getY() + (getHeight() - getContentHeight()) / 2;
     }
 
     void render(int mouseX, int mouseY, float particleTicks);
@@ -77,10 +85,10 @@ public interface IWindow {
         int selfY = getY();
         int selfXBR = selfX + getWidth();
         int selfYBR = selfX + getHeight();
-        return selfX < x &&
-                selfXBR > x &&
-                selfY < y &&
-                selfYBR > y;
+        return x >= selfX &&
+                x < selfXBR &&
+                y >= selfY &&
+                y < selfYBR;
     }
 
     /**

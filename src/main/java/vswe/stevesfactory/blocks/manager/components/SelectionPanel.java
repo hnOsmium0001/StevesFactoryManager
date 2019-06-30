@@ -2,6 +2,7 @@ package vswe.stevesfactory.blocks.manager.components;
 
 import vswe.stevesfactory.blocks.manager.FactoryManagerGUI.TopLevelWidget;
 import vswe.stevesfactory.library.gui.core.*;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 
@@ -45,10 +46,11 @@ public class SelectionPanel extends DynamicWidthWidget<ComponentIconButton> {
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         for (IWidget icon : ENTRIES) {
             icon.render(mouseX, mouseY, particleTicks);
         }
-//        GuiUtils.drawGradientRect(0, getAbsoluteX(), getAbsoluteY(), getAbsoluteXBR(), getAbsoluteYBR(), 0xaa5c87ff, 0xaa5c87ff);
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     @Override
