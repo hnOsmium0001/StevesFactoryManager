@@ -18,8 +18,8 @@ import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
-import java.util.*;
 
 public class FactoryManagerGUI extends WidgetScreen {
 

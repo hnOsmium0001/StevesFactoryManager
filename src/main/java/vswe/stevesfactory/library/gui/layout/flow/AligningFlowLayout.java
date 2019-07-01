@@ -1,9 +1,9 @@
-package vswe.stevesfactory.library.gui.layout;
+package vswe.stevesfactory.library.gui.layout.flow;
 
 import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
-public class AligningFlowLayout<T extends IWidget & RelocatableWidgetMixin> extends UnruledFlowLayout<T> {
+public class AligningFlowLayout<T extends IWidget & RelocatableWidgetMixin> extends BasicFlowLayout<T> {
 
     public enum Alignment {
         LEFT {

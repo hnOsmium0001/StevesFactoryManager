@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.layout;
+package vswe.stevesfactory.library.gui.layout.misc;
 
 import vswe.stevesfactory.library.gui.core.ILayout;
 import vswe.stevesfactory.library.gui.core.IWidget;

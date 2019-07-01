@@ -8,7 +8,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
-public class ComponentIconButton extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
+public class ComponentSelectionButton extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
 
     public enum Components {
         TRIGGER("trigger.png"),
@@ -46,11 +46,11 @@ public class ComponentIconButton extends AbstractWidget implements RelocatableWi
 
     private final ResourceLocation texture;
 
-    public ComponentIconButton(SelectionPanel parent, Components component) {
+    public ComponentSelectionButton(SelectionPanel parent, Components component) {
         this(parent, component.texture);
     }
 
-    public ComponentIconButton(SelectionPanel parent, ResourceLocation texture) {
+    public ComponentSelectionButton(SelectionPanel parent, ResourceLocation texture) {
         super(0, 0, WIDTH, HEIGHT);
         onWindowChanged(parent.getWindow(), parent);
         this.texture = texture;

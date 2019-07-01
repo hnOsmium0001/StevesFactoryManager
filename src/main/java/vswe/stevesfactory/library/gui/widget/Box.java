@@ -104,7 +104,7 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWid
 
     /**
      * Cancel all reflow actions until {@link #unpause()} gets triggered. This should be used as a way to avoid unnecessary reflow (layout
-     * updates) when changing widget properties in batch.d
+     * updates) when changing widget properties in batch.
      */
     @CanIgnoreReturnValue
     public Box<T> pause() {

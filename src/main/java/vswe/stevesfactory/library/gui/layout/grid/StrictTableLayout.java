@@ -1,8 +1,9 @@
-package vswe.stevesfactory.library.gui.layout;
+package vswe.stevesfactory.library.gui.layout.grid;
 
 import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.gui.core.ILayout;
 import vswe.stevesfactory.library.gui.core.IWidget;
+import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;

@@ -5,25 +5,25 @@ import vswe.stevesfactory.blocks.manager.FactoryManagerGUI.TopLevelWidget;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
 import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
-import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
+import vswe.stevesfactory.library.gui.layout.grid.StrictTableLayout;
+import vswe.stevesfactory.library.gui.layout.grid.StrictTableLayout.GrowDirection;
 
 import java.util.*;
 
-public class SelectionPanel extends DynamicWidthWidget<ComponentIconButton> {
+public class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> {
 
-    private static final StrictTableLayout<ComponentIconButton> LAYOUT = new StrictTableLayout<>(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
+    private static final StrictTableLayout<ComponentSelectionButton> LAYOUT = new StrictTableLayout<>(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
 
-    private final ImmutableList<ComponentIconButton> staticIcons;
-    private final List<ComponentIconButton> addendumIcons;
-    private final List<ComponentIconButton> icons;
+    private final ImmutableList<ComponentSelectionButton> staticIcons;
+    private final List<ComponentSelectionButton> addendumIcons;
+    private final List<ComponentSelectionButton> icons;
 
     public SelectionPanel(TopLevelWidget parent, IWindow window) {
         super(parent, window, WidthOccupierType.MIN_WIDTH);
 
-        ImmutableList.Builder<ComponentIconButton> icons = ImmutableList.builder();
-        for (ComponentIconButton.Components value : ComponentIconButton.Components.values()) {
-            icons.add(new ComponentIconButton(this, value));
+        ImmutableList.Builder<ComponentSelectionButton> icons = ImmutableList.builder();
+        for (ComponentSelectionButton.Components value : ComponentSelectionButton.Components.values()) {
+            icons.add(new ComponentSelectionButton(this, value));
         }
         this.staticIcons = icons.build();
         this.addendumIcons = new ArrayList<>();
@@ -43,22 +43,22 @@ public class SelectionPanel extends DynamicWidthWidget<ComponentIconButton> {
     }
 
     @Override
-    public List<ComponentIconButton> getChildren() {
+    public List<ComponentSelectionButton> getChildren() {
         return icons;
     }
 
     @Override
-    public ILayout<ComponentIconButton> getLayout() {
+    public ILayout<ComponentSelectionButton> getLayout() {
         return LAYOUT;
     }
 
     @Override
-    public IContainer<ComponentIconButton> addChildren(ComponentIconButton widget) {
+    public IContainer<ComponentSelectionButton> addChildren(ComponentSelectionButton widget) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public IContainer<ComponentIconButton> addChildren(Collection<ComponentIconButton> widgets) {
+    public IContainer<ComponentSelectionButton> addChildren(Collection<ComponentSelectionButton> widgets) {
         throw new UnsupportedOperationException();
     }
 
