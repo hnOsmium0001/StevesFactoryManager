@@ -1,4 +1,4 @@
-package vswe.stevesfactory.blocks.manager.components;
+package vswe.stevesfactory.blocks.manager.selection;
 
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;

@@ -2,6 +2,7 @@ package vswe.stevesfactory.blocks.manager.components;
 
 import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.blocks.manager.FactoryManagerGUI;
+import vswe.stevesfactory.blocks.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 

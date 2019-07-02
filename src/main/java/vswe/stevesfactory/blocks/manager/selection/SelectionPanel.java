@@ -1,7 +1,8 @@
-package vswe.stevesfactory.blocks.manager.components;
+package vswe.stevesfactory.blocks.manager.selection;
 
 import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.blocks.manager.FactoryManagerGUI.TopLevelWidget;
+import vswe.stevesfactory.blocks.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
 import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;

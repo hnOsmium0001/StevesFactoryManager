@@ -22,7 +22,9 @@ public class Icon extends AbstractWidget implements RelocatableWidgetMixin, Leaf
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        texture.draw(getAbsoluteX(), getAbsoluteY());
+        if (isEnabled()) {
+            texture.draw(getAbsoluteX(), getAbsoluteY());
+        }
     }
 
     public TextureWrapper getTexture() {

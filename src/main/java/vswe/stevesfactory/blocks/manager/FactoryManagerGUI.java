@@ -7,6 +7,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TranslationTextComponent;
 import vswe.stevesfactory.blocks.manager.components.*;
+import vswe.stevesfactory.blocks.manager.components.EditorPanel;
+import vswe.stevesfactory.blocks.manager.selection.SelectionPanel;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;

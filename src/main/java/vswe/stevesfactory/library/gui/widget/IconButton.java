@@ -7,7 +7,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;
 
-public class IconButton extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
+public class IconButton extends AbstractIconButton {
 
     private TextureWrapper textureNormal;
     private TextureWrapper textureHovering;
@@ -23,18 +23,11 @@ public class IconButton extends AbstractWidget implements RelocatableWidgetMixin
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float particleTicks) {
-        if (isInside(mouseX, mouseY)) {
-            textureHovering.draw(getAbsoluteX(), getAbsoluteY());
-        } else {
-            textureNormal.draw(getAbsoluteX(), getAbsoluteY());
-        }
-    }
-
     public TextureWrapper getTextureNormal() {
         return textureNormal;
     }
 
+    @Override
     public TextureWrapper getTextureHovering() {
         return textureHovering;
     }
