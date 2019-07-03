@@ -1,6 +1,7 @@
 package vswe.stevesfactory.library.gui.screen;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
@@ -11,7 +12,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class WidgetScreen extends Screen {
+public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     public static int scaledWidth() {
         return Minecraft.getInstance().mainWindow.getScaledWidth();
@@ -53,16 +54,8 @@ public abstract class WidgetScreen extends Screen {
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        // Dark overlay
+        // Dark background overlay
         renderBackground();
-
-//        // Window frame
-//        GlStateManager.pushMatrix();
-////        GlStateManager.callList(DisplayListCaches.createVanillaStyleBackground(screenBounds));
-//        GlStateManager.translatef(screenBounds.x, screenBounds.y, 0);
-//        GlStateManager.scalef(0.8f, 0.8f, 0.0f);
-//        BackgroundRenderer.drawVanillaStyle(0, 0, screenBounds.width, screenBounds.height);
-//        GlStateManager.popMatrix();
 
         primaryWindow.render(mouseX, mouseY, particleTicks);
         for (Pair<IWindow, IWindowPositionHandler> pair : windows) {
@@ -120,6 +113,11 @@ public abstract class WidgetScreen extends Screen {
     }
 
     @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        // TODO add this event to widgets
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
@@ -134,13 +132,13 @@ public abstract class WidgetScreen extends Screen {
         return true;
     }
 
-    @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (windows.stream().noneMatch(window -> window.getLeft().keyReleased(keyCode, scanCode, modifiers))) {
-            primaryWindow.keyReleased(keyCode, scanCode, modifiers);
-        }
-        return true;
-    }
+    // TODO figure out why is is gone
+//    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+//        if (windows.stream().noneMatch(window -> window.getLeft().keyReleased(keyCode, scanCode, modifiers))) {
+//            primaryWindow.keyReleased(keyCode, scanCode, modifiers);
+//        }
+//        return true;
+//    }
 
     @Override
     public boolean charTyped(char charTyped, int keyCode) {
