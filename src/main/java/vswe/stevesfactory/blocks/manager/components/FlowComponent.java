@@ -1,10 +1,11 @@
 package vswe.stevesfactory.blocks.manager.components;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.core.*;
-import vswe.stevesfactory.library.gui.layout.misc.PositionalLayout;
+import vswe.stevesfactory.library.gui.layout.BoxSizing;
+import vswe.stevesfactory.library.gui.layout.IdentityLayouts;
+import vswe.stevesfactory.library.gui.layout.flow.BasicFlowLayout;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
@@ -87,6 +88,11 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         public FlowComponent getParentWidget() {
             return Objects.requireNonNull((FlowComponent) super.getParentWidget());
         }
+
+        @Override
+        public BoxSizing getBoxSizing() {
+            return BoxSizing.PHANTOM;
+        }
     }
 
     public static class RenameButton extends AbstractIconButton {
@@ -126,6 +132,11 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         public FlowComponent getParentWidget() {
             return Objects.requireNonNull((FlowComponent) super.getParentWidget());
         }
+
+        @Override
+        public BoxSizing getBoxSizing() {
+            return BoxSizing.PHANTOM;
+        }
     }
 
     public static class SubmitButton extends AbstractIconButton {
@@ -164,6 +175,11 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         @Override
         public FlowComponent getParentWidget() {
             return Objects.requireNonNull((FlowComponent) super.getParentWidget());
+        }
+
+        @Override
+        public BoxSizing getBoxSizing() {
+            return BoxSizing.PHANTOM;
         }
     }
 
@@ -216,15 +232,27 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         public FlowComponent getParentWidget() {
             return Objects.requireNonNull((FlowComponent) super.getParentWidget());
         }
+
+        @Override
+        public BoxSizing getBoxSizing() {
+            return BoxSizing.PHANTOM;
+        }
     }
 
+    // TODO decided whether I want other widget to hold all the menus or not
+
+    // Even though flow control components might have multiple parents, it is not important to the execution flow
+    private FlowComponent parentComponent;
+    // Use array here because it would always have a fixed size
+    private FlowComponent[] childComponents;
 
     private ToggleStateButton toggleStateButton;
     private RenameButton renameButton;
     private SubmitButton submitButton;
     private CancelButton cancelButton;
     private TextField name;
-    private final ImmutableList<IWidget> children;
+    private List<Menu> menuComponents;
+    private final List<IWidget> children;
 
     private State state = State.COLLAPSED;
 
@@ -236,7 +264,25 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         this.cancelButton = new CancelButton(this);
         this.name = new TextField(0, 0, 0, 0);
         this.name.onParentChanged(this);
-        this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton);
+        this.menuComponents = new ArrayList<>();
+        this.children = new AbstractList<IWidget>() {
+            @Override
+            public IWidget get(int i) {
+                switch (i) {
+                    case 0: return toggleStateButton;
+                    case 1: return renameButton;
+                    case 2: return submitButton;
+                    case 3: return cancelButton;
+                    case 4: return name;
+                    default: return menuComponents.get(i);
+                }
+            }
+
+            @Override
+            public int size() {
+                return 5 + menuComponents.size();
+            }
+        };
     }
 
     @Override
@@ -281,22 +327,57 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
 
     @Override
     public ILayout<IWidget> getLayout() {
-        return PositionalLayout.INSTANCE;
+        // TODO use proper layout
+        return IdentityLayouts.PLAIN_WIDGETS;
+    }
+
+    public FlowComponent addChildren(Menu menu) {
+        // TODO remove this limit by adding a scrolling list to the menus
+        if (menuComponents.size() >= 5) {
+            throw new IllegalStateException();
+        }
+        menuComponents.add(menu);
+        return this;
     }
 
     @Override
-    public final IContainer<IWidget> addChildren(IWidget widget) {
-        throw new UnsupportedOperationException();
+    public final FlowComponent addChildren(IWidget widget) {
+        if (widget instanceof Menu) {
+            return addChildren(widget);
+        } else {
+            throw new IllegalArgumentException("Flow components do not accept new child widgets with type other than Menu");
+        }
     }
 
     @Override
-    public final IContainer<IWidget> addChildren(Collection<IWidget> widgets) {
-        throw new UnsupportedOperationException();
+    public final FlowComponent addChildren(Collection<IWidget> widgets) {
+        for (IWidget widget : widgets) {
+            addChildren(widget);
+        }
+        return this;
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         getBackgroundTexture().draw(getAbsoluteX(), getAbsoluteY());
-        ContainerWidgetMixin.super.render(mouseX, mouseY, particleTicks);
+        // Renaming state (showing different buttons at different times) is handled inside the widgets' render method
+        toggleStateButton.render(mouseX, mouseY, particleTicks);
+        renameButton.render(mouseX, mouseY, particleTicks);
+        submitButton.render(mouseX, mouseY, particleTicks);
+        cancelButton.render(mouseX, mouseY, particleTicks);
+        name.render(mouseX, mouseY, particleTicks);
+        if (state == State.EXPANDED) {
+            for (Menu menu : menuComponents) {
+                menu.render(mouseX, mouseY, particleTicks);
+            }
+        }
+    }
+
+    public FlowComponent getParentComponent() {
+        return parentComponent;
+    }
+
+    public FlowComponent[] getChildComponents() {
+        return childComponents;
     }
 }

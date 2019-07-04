@@ -1,44 +1,49 @@
 package vswe.stevesfactory.blocks.manager.components;
 
-import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.blocks.manager.FactoryManagerGUI;
-import vswe.stevesfactory.blocks.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.layout.IdentityLayouts;
 
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
 
-public class EditorPanel extends DynamicWidthWidget<IWidget> {
+public class EditorPanel extends DynamicWidthWidget<FlowComponent> {
+
+    private List<FlowComponent> children = new ArrayList<>();
 
     public EditorPanel(FactoryManagerGUI.TopLevelWidget parent, IWindow window) {
         super(parent, window, WidthOccupierType.MAX_WIDTH);
     }
 
-    // TODO
     @Override
-    public List<IWidget> getChildren() {
-        return ImmutableList.of();
+    public List<FlowComponent> getChildren() {
+        return children;
+    }
+
+    // Maybe we want a different solution here
+    @SuppressWarnings("unchecked")
+    @Override
+    public ILayout<FlowComponent> getLayout() {
+        return IdentityLayouts.UNBOUNDED;
     }
 
     @Override
-    public ILayout<IWidget> getLayout() {
-        return null;
+    public IContainer<FlowComponent> addChildren(FlowComponent widget) {
+        children.add(widget);
+        return this;
     }
 
     @Override
-    public IContainer<IWidget> addChildren(IWidget widget) {
-        return null;
-    }
-
-    @Override
-    public IContainer<IWidget> addChildren(Collection<IWidget> widgets) {
-        return null;
+    public IContainer<FlowComponent> addChildren(Collection<FlowComponent> widgets) {
+        children.addAll(widgets);
+        return this;
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+        super.render(mouseX, mouseY, particleTicks);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
