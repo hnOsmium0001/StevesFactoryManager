@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TranslationTextComponent;
-import vswe.stevesfactory.blocks.manager.components.*;
+import vswe.stevesfactory.blocks.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.blocks.manager.components.EditorPanel;
 import vswe.stevesfactory.blocks.manager.selection.SelectionPanel;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
@@ -188,11 +188,6 @@ public class FactoryManagerGUI extends WidgetScreen {
         }
 
         @Override
-        public DynamicWidthWidget.DynamicWidthLayout getLayout() {
-            return DynamicWidthWidget.DynamicWidthLayout.INSTANCE;
-        }
-
-        @Override
         public TopLevelWidget addChildren(DynamicWidthWidget widget) {
             throw new UnsupportedOperationException();
         }
@@ -209,6 +204,10 @@ public class FactoryManagerGUI extends WidgetScreen {
             editorPanel.render(mouseX, mouseY, particleTicks);
         }
 
+        @Override
+        public void reflow() {
+            DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);
+        }
     }
 
 }

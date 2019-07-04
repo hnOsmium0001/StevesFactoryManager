@@ -9,57 +9,46 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 
+// TODO is the generic parameter still needed?
 public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractWidget implements IContainer<T>, RelocatableWidgetMixin, ResizableWidgetMixin, ContainerWidgetMixin<T> {
 
-    public static class DynamicWidthLayout implements ILayout<DynamicWidthWidget<?>> {
-
-        public static final DynamicWidthLayout INSTANCE = new DynamicWidthLayout();
-
-        @Override
-        public List<DynamicWidthWidget<?>> reflow(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {
-            int usable = bounds.width;
-            int nextX = 0;
-            for (DynamicWidthWidget widget : widgets) {
-                switch (widget.getWidthOccupier()) {
-                    case MIN_WIDTH: {
-                        int w = calculateWidthMin(widget);
-                        widget.setX(nextX);
-                        widget.setWidth(w);
-                        usable -= w;
-                        nextX += w;
-                        break;
-                    }
-                    case MAX_WIDTH: {
-                        int w = calculateWidthMax(widget, usable);
-                        widget.setX(nextX);
-                        widget.setWidth(w);
-                        nextX += w;
-                        break;
-                    }
+    public static List<DynamicWidthWidget<?>> reflowDynamicWidth(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {
+        int usable = bounds.width;
+        int nextX = 0;
+        for (DynamicWidthWidget widget : widgets) {
+            switch (widget.getWidthOccupier()) {
+                case MIN_WIDTH: {
+                    int w = calculateWidthMin(widget);
+                    widget.setX(nextX);
+                    widget.setWidth(w);
+                    usable -= w;
+                    nextX += w;
+                    break;
+                }
+                case MAX_WIDTH: {
+                    int w = calculateWidthMax(widget, usable);
+                    widget.setX(nextX);
+                    widget.setWidth(w);
+                    nextX += w;
+                    break;
                 }
             }
-
-            return widgets;
         }
 
-        private int calculateWidthMin(DynamicWidthWidget<?> widget) {
-            IWidget furthest = widget.getChildren().stream()
-                    .max(Comparator.comparingInt(IWidget::getX))
-                    .orElseThrow(RuntimeException::new);
-            int x = furthest.getX();
-            int w = furthest.getWidth();
-            return x + w;
-        }
+        return widgets;
+    }
 
-        private int calculateWidthMax(DynamicWidthWidget<?> widget, int usable) {
-            return usable;
-        }
+    private static int calculateWidthMin(DynamicWidthWidget<?> widget) {
+        IWidget furthest = widget.getChildren().stream()
+                .max(Comparator.comparingInt(IWidget::getX))
+                .orElseThrow(RuntimeException::new);
+        int x = furthest.getX();
+        int w = furthest.getWidth();
+        return x + w;
+    }
 
-        @Override
-        public LayoutType getType() {
-            return LayoutType.StatelessLayout;
-        }
-
+    private static int calculateWidthMax(DynamicWidthWidget<?> widget, int usable) {
+        return usable;
     }
 
     public enum WidthOccupierType {

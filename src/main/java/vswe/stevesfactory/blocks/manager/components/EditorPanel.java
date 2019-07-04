@@ -3,7 +3,6 @@ package vswe.stevesfactory.blocks.manager.components;
 import vswe.stevesfactory.blocks.manager.FactoryManagerGUI;
 import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.layout.IdentityLayouts;
 
 import java.util.*;
 import java.util.List;
@@ -19,13 +18,6 @@ public class EditorPanel extends DynamicWidthWidget<FlowComponent> {
     @Override
     public List<FlowComponent> getChildren() {
         return children;
-    }
-
-    // Maybe we want a different solution here
-    @SuppressWarnings("unchecked")
-    @Override
-    public ILayout<FlowComponent> getLayout() {
-        return IdentityLayouts.UNBOUNDED;
     }
 
     @Override
@@ -47,4 +39,7 @@ public class EditorPanel extends DynamicWidthWidget<FlowComponent> {
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
+    @Override
+    public void reflow() {
+    }
 }

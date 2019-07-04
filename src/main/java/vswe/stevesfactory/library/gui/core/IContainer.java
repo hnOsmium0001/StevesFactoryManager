@@ -8,11 +8,7 @@ public interface IContainer<T extends IWidget> extends IWidget {
 
     List<T> getChildren();
 
-    ILayout<T> getLayout();
-
-    default void reflow() {
-        getLayout().reflow(getDimensions(), getChildren());
-    }
+    void reflow();
 
     @CanIgnoreReturnValue
     IContainer<T> addChildren(T widget);

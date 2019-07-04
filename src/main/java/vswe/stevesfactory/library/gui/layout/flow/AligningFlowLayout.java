@@ -3,7 +3,7 @@ package vswe.stevesfactory.library.gui.layout.flow;
 import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
-public class AligningFlowLayout<T extends IWidget & RelocatableWidgetMixin> extends BasicFlowLayout<T> {
+public class AligningFlowLayout extends FlowLayout {
 
     public enum Alignment {
         LEFT {
@@ -36,14 +36,8 @@ public class AligningFlowLayout<T extends IWidget & RelocatableWidgetMixin> exte
     }
 
     @Override
-    public void adjustPosition(T widget, int y) {
+    public <T extends IWidget & RelocatableWidgetMixin> void adjustPosition(T widget, int y) {
         super.adjustPosition(widget, y);
         alignment.alignTo(widget, alignmentX);
     }
-
-    @Override
-    public LayoutType getType() {
-        return LayoutType.StatedLayout;
-    }
-
 }

@@ -1,19 +1,22 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import vswe.stevesfactory.library.gui.core.*;
+import vswe.stevesfactory.library.gui.core.IContainer;
+import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, RelocatableWidgetMixin, ResizableWidgetMixin, ContainerWidgetMixin<T> {
 
     private List<T> children = new ArrayList<>();
     private List<T> childrenView = Collections.unmodifiableList(children);
 
-    private ILayout<T> layout;
+    private Consumer<List<T>> layout = l -> {
+    };
     private boolean paused = false;
 
     public Box(int x, int y, int width, int height) {
@@ -86,16 +89,6 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWid
     }
 
     @Override
-    public ILayout<T> getLayout() {
-        return layout;
-    }
-
-    public void setLayout(ILayout<T> layout) {
-        this.layout = layout;
-        reflow();
-    }
-
-    @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         for (T child : children) {
             child.render(mouseX, mouseY, particleTicks);
@@ -123,11 +116,15 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWid
         return paused;
     }
 
+    @CanIgnoreReturnValue
+    public Box<T> setLayout(Consumer<List<T>> layout) {
+        this.layout = layout;
+        return this;
+    }
+
     @Override
     public void reflow() {
-        if (!paused && layout != null) {
-            getLayout().reflow(getDimensions(), children);
-        }
+        layout.accept(children);
     }
 
 }

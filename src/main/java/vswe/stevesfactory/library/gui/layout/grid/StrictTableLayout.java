@@ -1,7 +1,7 @@
 package vswe.stevesfactory.library.gui.layout.grid;
 
 import com.google.common.base.Preconditions;
-import vswe.stevesfactory.library.gui.core.ILayout;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import vswe.stevesfactory.library.gui.core.IWidget;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
@@ -11,7 +11,7 @@ import java.util.List;
 
 import static vswe.stevesfactory.utils.VectorHelper.isInside;
 
-public class StrictTableLayout<T extends IWidget & RelocatableWidgetMixin> implements ILayout<T> {
+public class StrictTableLayout {
 
     public enum GrowDirection {
         UP {
@@ -76,7 +76,6 @@ public class StrictTableLayout<T extends IWidget & RelocatableWidgetMixin> imple
                 isInside(x + width, y, mx, my);
     }
 
-
     public GrowDirection stackDirection;
     public GrowDirection overflowDirection;
     public int componentMargin;
@@ -87,10 +86,11 @@ public class StrictTableLayout<T extends IWidget & RelocatableWidgetMixin> imple
         this.componentMargin = componentMargin;
     }
 
-    @Override
-    public List<T> reflow(Dimension bounds, List<T> widgets) {
+    @CanIgnoreReturnValue
+    public <T extends IWidget & RelocatableWidgetMixin> List<T> reflow(Dimension bounds, List<T> widgets) {
         Preconditions.checkArgument(isWidgetDimensionsIdentical(widgets));
 
+        // TODO add borders to container widgets so that we don't have to simulate borders here
         int nextX = componentMargin;
         int nextY = componentMargin;
         int headX = nextX;
@@ -115,16 +115,11 @@ public class StrictTableLayout<T extends IWidget & RelocatableWidgetMixin> imple
         return widgets;
     }
 
-    @Override
-    public LayoutType getType() {
-        return LayoutType.StatedLayout;
-    }
-
     /**
      * Test whether all widgets have the same dimension or not. Currently this layout implementation does not support widgets with different
      * sizes.
      */
-    private boolean isWidgetDimensionsIdentical(List<T> widgets) {
+    private <T extends IWidget & RelocatableWidgetMixin> boolean isWidgetDimensionsIdentical(List<T> widgets) {
         if (widgets.isEmpty()) {
             return true;
         }

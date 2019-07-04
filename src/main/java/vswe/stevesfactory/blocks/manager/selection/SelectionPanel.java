@@ -13,7 +13,7 @@ import java.util.*;
 
 public class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> {
 
-    private static final StrictTableLayout<ComponentSelectionButton> LAYOUT = new StrictTableLayout<>(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
+    private static final StrictTableLayout LAYOUT = new StrictTableLayout(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
 
     private final ImmutableList<ComponentSelectionButton> staticIcons;
     private final List<ComponentSelectionButton> addendumIcons;
@@ -49,11 +49,6 @@ public class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton>
     }
 
     @Override
-    public ILayout<ComponentSelectionButton> getLayout() {
-        return LAYOUT;
-    }
-
-    @Override
     public IContainer<ComponentSelectionButton> addChildren(ComponentSelectionButton widget) {
         throw new UnsupportedOperationException();
     }
@@ -67,7 +62,7 @@ public class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton>
     public void reflow() {
         int w = getWidth();
         setWidth(Integer.MAX_VALUE);
-        getLayout().reflow(getDimensions(), getChildren());
+        LAYOUT.reflow(getDimensions(), getChildren());
         setWidth(w);
     }
 
