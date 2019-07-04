@@ -1,7 +1,6 @@
-package vswe.stevesfactory.library.gui.layout.flow;
+package vswe.stevesfactory.library.gui.layout;
 
 import vswe.stevesfactory.library.gui.core.IWidget;
-import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;

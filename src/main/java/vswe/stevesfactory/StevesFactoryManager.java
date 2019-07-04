@@ -1,5 +1,7 @@
 package vswe.stevesfactory;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;

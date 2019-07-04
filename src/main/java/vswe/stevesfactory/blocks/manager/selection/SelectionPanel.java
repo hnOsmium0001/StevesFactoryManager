@@ -6,8 +6,8 @@ import vswe.stevesfactory.blocks.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
 import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.layout.grid.StrictTableLayout;
-import vswe.stevesfactory.library.gui.layout.grid.StrictTableLayout.GrowDirection;
+import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
+import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 
 import java.util.*;
 

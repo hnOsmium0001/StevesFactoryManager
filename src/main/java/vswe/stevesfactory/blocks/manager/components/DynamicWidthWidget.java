@@ -1,5 +1,6 @@
 package vswe.stevesfactory.blocks.manager.components;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import vswe.stevesfactory.blocks.manager.FactoryManagerGUI;
 import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
@@ -9,9 +10,9 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 
-// TODO is the generic parameter still needed?
 public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractWidget implements IContainer<T>, RelocatableWidgetMixin, ResizableWidgetMixin, ContainerWidgetMixin<T> {
 
+    @CanIgnoreReturnValue
     public static List<DynamicWidthWidget<?>> reflowDynamicWidth(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {
         int usable = bounds.width;
         int nextX = 0;

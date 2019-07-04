@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
-import vswe.stevesfactory.library.gui.layout.flow.FlowLayout;
+import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
