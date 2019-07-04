@@ -9,9 +9,11 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
-public class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> {
+public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> {
 
     private static final StrictTableLayout LAYOUT = new StrictTableLayout(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
 
@@ -66,4 +68,9 @@ public class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton>
         setWidth(w);
     }
 
+    @Nonnull
+    @Override
+    public TopLevelWidget getParentWidget() {
+        return Objects.requireNonNull((TopLevelWidget) super.getParentWidget());
+    }
 }

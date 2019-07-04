@@ -14,11 +14,8 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
 
     @Override
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!isInside(mouseX, mouseY)) {
-            return false;
-        }
         for (T child : getChildren()) {
-            if (child.mouseClicked(mouseX, mouseY, button)) {
+            if (child.isInside(mouseX, mouseY) && child.mouseClicked(mouseX, mouseY, button)) {
                 return true;
             }
         }
@@ -27,24 +24,19 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
 
     @Override
     default boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (!isInside(mouseX, mouseY)) {
-            return false;
-        }
         for (T child : getChildren()) {
-            if (child.mouseReleased(mouseX, mouseY, button)) {
+            if (child.isInside(mouseX, mouseY) && child.mouseReleased(mouseX, mouseY, button)) {
                 return true;
             }
         }
         return false;
     }
 
+    // TODO contract
     @Override
     default boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
-        if (!isInside(mouseX, mouseY)) {
-            return false;
-        }
         for (T child : getChildren()) {
-            if (child.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY)) {
+            if (child.isInside(mouseX, mouseY) && child.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY)) {
                 return true;
             }
         }
@@ -53,11 +45,8 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
 
     @Override
     default boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled) {
-        if (!isInside(mouseX, mouseY)) {
-            return false;
-        }
         for (T child : getChildren()) {
-            if (child.mouseScrolled(mouseX, mouseY, amountScrolled)) {
+            if (child.isFocused() && child.mouseScrolled(mouseX, mouseY, amountScrolled)) {
                 return true;
             }
         }
@@ -67,7 +56,7 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
     @Override
     default boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         for (T child : getChildren()) {
-            if (child.keyPressed(keyCode, scanCode, modifiers)) {
+            if (child.isFocused() && child.keyPressed(keyCode, scanCode, modifiers)) {
                 return true;
             }
         }
@@ -77,7 +66,7 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
     @Override
     default boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         for (T child : getChildren()) {
-            if (child.keyReleased(keyCode, scanCode, modifiers)) {
+            if (child.isFocused() && child.keyReleased(keyCode, scanCode, modifiers)) {
                 return true;
             }
         }
@@ -87,7 +76,7 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
     @Override
     default boolean charTyped(char charTyped, int keyCode) {
         for (T child : getChildren()) {
-            if (child.charTyped(charTyped, keyCode)) {
+            if (child.isFocused() && child.charTyped(charTyped, keyCode)) {
                 return true;
             }
         }

@@ -81,6 +81,7 @@ public final class RenderingHelper {
     }
 
     public static void drawThickBeveledBox(int x1, int y1, int x2, int y2, int thickness, int topLeftColor, int bottomRightColor, int fillColor) {
+        GlStateManager.disableLighting();
         if (fillColor != -1) {
             drawRect(x1 + thickness, y1 + thickness, x2 - thickness, y2 - thickness, fillColor);
         }
@@ -170,8 +171,8 @@ public final class RenderingHelper {
     }
 
     public static void drawTexturePortion(int x1, int y1, int x2, int y2, ResourceLocation texture, int textureWidth, int textureHeight, int tx, int ty, int portionWidth, int portionHeight) {
-        float uFactor = 1 / textureWidth;
-        float vFactor = 1 / textureHeight;
+        float uFactor = 1.0F / (float) textureWidth;
+        float vFactor = 1.0F / (float) textureHeight;
         int tx2 = tx + portionWidth;
         int ty2 = ty + portionHeight;
         drawTexture(x1, y1, x2, y2, texture, tx * uFactor, ty * vFactor, tx2 * uFactor, ty2 * vFactor);

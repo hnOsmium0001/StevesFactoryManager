@@ -7,7 +7,7 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import java.util.*;
 import java.util.List;
 
-public class EditorPanel extends DynamicWidthWidget<FlowComponent> {
+public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
 
     private List<FlowComponent> children = new ArrayList<>();
 

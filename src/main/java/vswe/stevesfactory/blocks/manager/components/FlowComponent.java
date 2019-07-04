@@ -3,6 +3,7 @@ package vswe.stevesfactory.blocks.manager.components;
 import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.core.*;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.widget.TextField;
@@ -17,20 +18,28 @@ import java.util.*;
 public abstract class FlowComponent extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget> {
 
     public enum State {
-        EXPANDED(TextureWrapper.ofFlowComponent(63, 1, 124, 152),
-                TextureWrapper.ofFlowComponent(1, 21, 9, 10),
-                TextureWrapper.ofFlowComponent(10, 21, 9, 10)) {
-            @Override
-            public void changeState(FlowComponent flowComponent) {
-                flowComponent.collapse();
-            }
-        },
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
-                TextureWrapper.ofFlowComponent(1, 31, 9, 10),
-                TextureWrapper.ofFlowComponent(10, 31, 9, 10)) {
+                TextureWrapper.ofFlowComponent(0, 20, 9, 10),
+                TextureWrapper.ofFlowComponent(0, 30, 9, 10),
+                54, 5,
+                43, 6,
+                45, 3,
+                45, 11) {
             @Override
             public void changeState(FlowComponent flowComponent) {
                 flowComponent.expand();
+            }
+        },
+        EXPANDED(TextureWrapper.ofFlowComponent(64, 0, 124, 152),
+                TextureWrapper.ofFlowComponent(9, 20, 9, 10),
+                TextureWrapper.ofFlowComponent(9, 30, 9, 10),
+                114, 5,
+                103, 6,
+                105, 3,
+                105, 11) {
+            @Override
+            public void changeState(FlowComponent flowComponent) {
+                flowComponent.collapse();
             }
         };
 
@@ -38,12 +47,29 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         public final TextureWrapper toggleStateNormal;
         public final TextureWrapper toggleStateHovered;
 
+        public final int toggleStateButtonX;
+        public final int toggleStateButtonY;
+        public final int renameButtonX;
+        public final int renameButtonY;
+        public final int submitButtonX;
+        public final int submitButtonY;
+        public final int cancelButtonX;
+        public final int cancelButtonY;
+
         public final Dimension dimensions;
 
-        State(TextureWrapper background, TextureWrapper toggleStateNormal, TextureWrapper toggleStateHovered) {
+        State(TextureWrapper background, TextureWrapper toggleStateNormal, TextureWrapper toggleStateHovered, int toggleStateButtonX, int toggleStateButtonY, int renameButtonX, int renameButtonY, int submitButtonX, int submitButtonY, int cancelButtonX, int cancelButtonY) {
             this.background = background;
             this.toggleStateNormal = toggleStateNormal;
             this.toggleStateHovered = toggleStateHovered;
+            this.toggleStateButtonX = toggleStateButtonX;
+            this.toggleStateButtonY = toggleStateButtonY;
+            this.renameButtonX = renameButtonX;
+            this.renameButtonY = renameButtonY;
+            this.submitButtonX = submitButtonX;
+            this.submitButtonY = submitButtonY;
+            this.cancelButtonX = cancelButtonX;
+            this.cancelButtonY = cancelButtonY;
 
             this.dimensions = new Dimension(componentWidth(), componentHeight());
         }
@@ -62,7 +88,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     public static class ToggleStateButton extends AbstractIconButton {
 
         public ToggleStateButton(FlowComponent parent) {
-            super(55, 6, 9, 10);
+            super(-1, -1, 9, 10);
             onParentChanged(parent);
         }
 
@@ -92,15 +118,19 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         public BoxSizing getBoxSizing() {
             return BoxSizing.PHANTOM;
         }
+
+        public void updateTo(State state) {
+            setLocation(state.toggleStateButtonX, state.toggleStateButtonY);
+        }
     }
 
     public static class RenameButton extends AbstractIconButton {
 
-        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(33, 190, 9, 9);
-        public static final TextureWrapper HOVERING = TextureWrapper.ofFlowComponent(42, 190, 9, 9);
+        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(32, 188, 9, 9);
+        public static final TextureWrapper HOVERING = TextureWrapper.ofFlowComponent(41, 188, 9, 9);
 
         public RenameButton(FlowComponent parent) {
-            super(44, 7, 9, 9);
+            super(-1, -1, 9, 9);
             onParentChanged(parent);
         }
 
@@ -136,16 +166,21 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         public BoxSizing getBoxSizing() {
             return BoxSizing.PHANTOM;
         }
+
+        public void updateTo(State state) {
+            setLocation(state.renameButtonX, state.renameButtonY);
+        }
     }
 
     public static class SubmitButton extends AbstractIconButton {
 
-        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(33, 199, 7, 7);
-        public static final TextureWrapper HOVERING = TextureWrapper.ofFlowComponent(40, 199, 7, 7);
+        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(32, 197, 7, 7);
+        public static final TextureWrapper HOVERING = TextureWrapper.ofFlowComponent(39, 197, 7, 7);
 
         public SubmitButton(FlowComponent parent) {
-            super(46, 3, 7, 7);
+            super(-1, -1, 7, 7);
             onParentChanged(parent);
+            setEnabled(false);
         }
 
         @Override
@@ -180,18 +215,23 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         public BoxSizing getBoxSizing() {
             return BoxSizing.PHANTOM;
         }
+
+        public void updateTo(State state) {
+            setLocation(state.submitButtonX, state.submitButtonY);
+        }
     }
 
     public static class CancelButton extends AbstractIconButton {
 
-        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(33, 206, 7, 7);
-        public static final TextureWrapper HOVERING = TextureWrapper.ofFlowComponent(40, 206, 7, 7);
+        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(32, 204, 7, 7);
+        public static final TextureWrapper HOVERING = TextureWrapper.ofFlowComponent(39, 204, 7, 7);
 
         private String previousName;
 
         public CancelButton(FlowComponent parent) {
-            super(46, 12, 7, 7);
+            super(-1, -1, 7, 7);
             onParentChanged(parent);
+            setEnabled(false);
         }
 
         @Override
@@ -236,6 +276,10 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         public BoxSizing getBoxSizing() {
             return BoxSizing.PHANTOM;
         }
+
+        public void updateTo(State state) {
+            setLocation(state.cancelButtonX, state.cancelButtonY);
+        }
     }
 
     // TODO decided whether I want other widget to hold all the menus or not
@@ -253,15 +297,17 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     private List<Menu> menuComponents;
     private final List<IWidget> children;
 
-    private State state = State.COLLAPSED;
+    private State state;
 
-    public FlowComponent() {
+    public FlowComponent(EditorPanel parent) {
         super(0, 0);
+        onParentChanged(parent);
         this.toggleStateButton = new ToggleStateButton(this);
         this.renameButton = new RenameButton(this);
         this.submitButton = new SubmitButton(this);
         this.cancelButton = new CancelButton(this);
-        this.name = new TextField(0, 0, 0, 0);
+        // TODO exact number
+        this.name = new TextField(9, 9, 30, 10);
         this.name.onParentChanged(this);
         this.menuComponents = new ArrayList<>();
         this.children = new AbstractList<IWidget>() {
@@ -282,6 +328,9 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
                 return 5 + menuComponents.size();
             }
         };
+
+        this.state = State.COLLAPSED;
+        this.updateChildStates();
     }
 
     @Override
@@ -300,11 +349,20 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     public void expand() {
         Preconditions.checkState(state == State.COLLAPSED);
         state = State.EXPANDED;
+        updateChildStates();
     }
 
     public void collapse() {
         Preconditions.checkState(state == State.EXPANDED);
         state = State.COLLAPSED;
+        updateChildStates();
+    }
+
+    private void updateChildStates() {
+        toggleStateButton.updateTo(state);
+        renameButton.updateTo(state);
+        submitButton.updateTo(state);
+        cancelButton.updateTo(state);
     }
 
     public void toggleState() {
@@ -358,6 +416,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         getBackgroundTexture().draw(getAbsoluteX(), getAbsoluteY());
         // Renaming state (showing different buttons at different times) is handled inside the widgets' render method
         toggleStateButton.render(mouseX, mouseY, particleTicks);
@@ -370,6 +429,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
                 menu.render(mouseX, mouseY, particleTicks);
             }
         }
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     public FlowComponent getParentComponent() {

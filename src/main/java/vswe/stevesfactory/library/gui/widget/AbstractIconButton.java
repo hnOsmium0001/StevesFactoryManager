@@ -1,6 +1,7 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import vswe.stevesfactory.library.gui.TextureWrapper;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
@@ -18,10 +19,14 @@ public abstract class AbstractIconButton extends AbstractWidget implements Reloc
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        if (isInside(mouseX, mouseY) && isEnabled()) {
-            getTextureHovering().draw(getAbsoluteX(), getAbsoluteY());
-        } else {
-            getTextureNormal().draw(getAbsoluteX(), getAbsoluteY());
+        if (isEnabled()) {
+            RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+            if (isInside(mouseX, mouseY) && isEnabled()) {
+                getTextureHovering().draw(getAbsoluteX(), getAbsoluteY());
+            } else {
+                getTextureNormal().draw(getAbsoluteX(), getAbsoluteY());
+            }
+            RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
     }
 

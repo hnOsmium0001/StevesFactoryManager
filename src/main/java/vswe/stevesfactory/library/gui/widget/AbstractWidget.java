@@ -32,7 +32,7 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
 
     private int absX;
     private int absY;
-    private boolean enabled;
+    private boolean enabled = true;
 
     public AbstractWidget(int width, int height) {
         this(0, 0, width, height);
@@ -50,6 +50,7 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
     @Override
     public void onParentChanged(IWidget newParent) {
         this.parent = newParent;
+        this.window = newParent.getWindow();
         onParentPositionChanged();
     }
 

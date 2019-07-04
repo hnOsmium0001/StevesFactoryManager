@@ -80,10 +80,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         this.text = text;
         cursor = text.length();
         if (startOffset >= cursor) {
-            startOffset = cursor - 1;
-            if (startOffset < 0) {
-                startOffset = 0;
-            }
+            startOffset = Math.max(cursor - 1, 0);
         }
         return this;
     }
@@ -298,8 +295,8 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         ensureVisible();
 
         int color = 0;
-        int x = getPosition().x;
-        int y = getPosition().y;
+        int x = getAbsoluteX();
+        int y = getAbsoluteY();
         int width = getDimensions().width;
         int height = getDimensions().height;
 

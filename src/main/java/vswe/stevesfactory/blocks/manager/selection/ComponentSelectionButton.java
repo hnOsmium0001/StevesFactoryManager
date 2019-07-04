@@ -2,11 +2,16 @@ package vswe.stevesfactory.blocks.manager.selection;
 
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.blocks.manager.components.EditorPanel;
+import vswe.stevesfactory.blocks.manager.components.FlowComponent;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
+
+import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class ComponentSelectionButton extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
 
@@ -72,4 +77,21 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        EditorPanel editorPanel = getParentWidget().getParentWidget().editorPanel;
+        editorPanel.addChildren(new FlowComponent(editorPanel) {
+            {
+                setName("Test");
+                setLocation(10, 10);
+            }
+        });
+        return true;
+    }
+
+    @Nonnull
+    @Override
+    public SelectionPanel getParentWidget() {
+        return Objects.requireNonNull((SelectionPanel) super.getParentWidget());
+    }
 }
