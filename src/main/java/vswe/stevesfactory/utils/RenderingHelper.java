@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -21,6 +22,14 @@ public final class RenderingHelper {
 
     public static void bindTexture(ResourceLocation texture) {
         Minecraft.getInstance().getTextureManager().bindTexture(texture);
+    }
+
+    public static FontRenderer fontRenderer() {
+        return Minecraft.getInstance().fontRenderer;
+    }
+
+    public static int fontHeight() {
+        return fontRenderer().FONT_HEIGHT;
     }
 
     public static void useGradientGLStates() {
@@ -212,6 +221,35 @@ public final class RenderingHelper {
         GlStateManager.disableBlend();
         GlStateManager.enableAlphaTest();
         GlStateManager.enableTexture();
+    }
+
+    public static int getXForHorizontallyCenteredText(String text, int left, int right) {
+        int textWidth = fontRenderer().getStringWidth(text);
+        return getXForHorizontallyCenteredText(textWidth, left, right);
+    }
+
+    public static int getXForHorizontallyCenteredText(int width, int left, int right) {
+        return (left - right) / 2 - width / 2;
+    }
+
+    public static int getYForVerticallyCenteredText(int top, int bottom) {
+        return (top - bottom) / 2 - fontHeight() / 2;
+    }
+
+    public static void drawTextCenteredVertically(String text, int leftX, int top, int bottom, int color) {
+        int y = getYForVerticallyCenteredText(top, bottom);
+        fontRenderer().drawString(text, leftX, y, color);
+    }
+
+    public static void drawTextCenteredHorizontally(String text, int left, int right, int topY, int color) {
+        int x = getXForHorizontallyCenteredText(text, left, right);
+        fontRenderer().drawString(text, x, topY, color);
+    }
+
+    public static void drawTextCentered(String text, int top, int bottom, int left, int right, int color) {
+        int x = getXForHorizontallyCenteredText(text, left, right);
+        int y = getYForVerticallyCenteredText(top, bottom);
+        fontRenderer().drawString(text, x, y, color);
     }
 
 }

@@ -335,11 +335,12 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
 
     @Override
     public void reflow() {
+        // We ignore the buttons here on purpose, since their position are directly defined as coordinates
         FlowLayout.INSTANCE.reflow(getDimensions(), menuComponents);
     }
 
     @Override
-    public final FlowComponent addChildren(IWidget widget) {
+    public FlowComponent addChildren(IWidget widget) {
         if (widget instanceof Menu) {
             return addChildren(widget);
         } else {
@@ -348,7 +349,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     }
 
     @Override
-    public final FlowComponent addChildren(Collection<IWidget> widgets) {
+    public FlowComponent addChildren(Collection<IWidget> widgets) {
         for (IWidget widget : widgets) {
             addChildren(widget);
         }
