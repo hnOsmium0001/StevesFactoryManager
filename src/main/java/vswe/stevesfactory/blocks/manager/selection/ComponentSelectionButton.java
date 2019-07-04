@@ -11,11 +11,11 @@ import vswe.stevesfactory.utils.RenderingHelper;
 public class ComponentSelectionButton extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
 
     public enum Components {
-        TRIGGER("trigger.png"),
-        ITEM_IMPORT("item_import.png"),
-        ITEM_EXPORT("item_export.png"),
-        ITEM_CONDITION("item_condition.png"),
-        FLOW_CONTROL("flow_control.png"),
+        TRIGGER("trigger"),
+        ITEM_IMPORT("item_import"),
+        ITEM_EXPORT("item_export"),
+        ITEM_CONDITION("item_condition"),
+        FLOW_CONTROL("flow_control"),
         FLUID_IMPORT("fluid_import"),
         FLUID_EXPORT("fluid_export"),
         FLUID_CONDITION("fluid_condition"),
@@ -34,7 +34,7 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
 
         Components(String fileName) {
             this.fileName = fileName;
-            this.texture = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/" + fileName);
+            this.texture = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/" + fileName + ".png");
         }
     }
 
