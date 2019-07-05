@@ -3,6 +3,7 @@ package vswe.stevesfactory.library.gui.widget;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import vswe.stevesfactory.library.gui.core.IContainer;
 import vswe.stevesfactory.library.gui.core.IWidget;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import java.awt.*;
@@ -90,9 +91,11 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWid
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         for (T child : children) {
             child.render(mouseX, mouseY, particleTicks);
         }
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     /**

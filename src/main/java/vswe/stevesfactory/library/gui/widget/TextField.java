@@ -9,6 +9,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -175,6 +176,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
 
     @Override
     public boolean charTyped(char typedChar, int keyCode) {
+        System.out.println("fff");
         // e.g. F1~12, insert
         // Char code of 0 will appear to be nothing
         if ((int) typedChar != 0) {
@@ -292,9 +294,13 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+
         ensureVisible();
 
-        int color = 0;
+        int color = isFocused() ? 0xffeeeeee
+                : isInside(mouseX, mouseY) ? 0xffdadada
+                : 0xffc6c6c6;
         int x = getAbsoluteX();
         int y = getAbsoluteY();
         int width = getDimensions().width;
@@ -336,6 +342,8 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
             int w = fontRenderer().getStringWidth(text.substring(startOffset, cursor));
             RenderingHelper.drawRect(x + 5 + w, y + 2, x + 5 + w + 1, y + height - 3, 0xff000000);
         }
+
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
 }

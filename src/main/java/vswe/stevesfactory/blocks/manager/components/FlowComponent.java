@@ -308,7 +308,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         this.submitButton = new SubmitButton(this);
         this.cancelButton = new CancelButton(this);
         // TODO exact number
-        this.name = new TextField(9, 9, 30, 10);
+        this.name = new TextField(9, 9, 80, 16);
         this.name.onParentChanged(this);
         this.menuComponents = new ArrayList<>();
         this.children = new AbstractList<IWidget>() {
@@ -418,18 +418,22 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+
         getBackgroundTexture().draw(getAbsoluteX(), getAbsoluteY());
+
         // Renaming state (showing different buttons at different times) is handled inside the widgets' render method
         toggleStateButton.render(mouseX, mouseY, particleTicks);
         renameButton.render(mouseX, mouseY, particleTicks);
         submitButton.render(mouseX, mouseY, particleTicks);
         cancelButton.render(mouseX, mouseY, particleTicks);
         name.render(mouseX, mouseY, particleTicks);
+
         if (state == State.EXPANDED) {
             for (Menu menu : menuComponents) {
                 menu.render(mouseX, mouseY, particleTicks);
             }
         }
+
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
@@ -441,5 +445,12 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         return childComponents;
     }
 
-
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        getWindow().changeFocus(this, true);
+        return false;
+    }
 }

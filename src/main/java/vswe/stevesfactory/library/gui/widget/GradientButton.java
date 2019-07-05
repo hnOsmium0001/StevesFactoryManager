@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.GLAllocation;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -170,12 +171,14 @@ public class GradientButton extends AbstractWidget implements RelocatableWidgetM
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         if (isInside(mouseX, mouseY) && getState() == State.NORMAL) {
             setState(State.HOVERING);
         } else if (getState() == State.HOVERING) {
             updateToRestingState();
         }
         GlStateManager.callList(bodyDL);
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     public State getState() {

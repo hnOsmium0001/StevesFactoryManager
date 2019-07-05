@@ -93,50 +93,57 @@ public interface IWindow {
 
     /**
      * @implSpec Propagate the event and pass it on to the children.
-     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
-     * continue. Note that this is valid only when the GUI is handling more than one windows.
+     * @implNote This method will be invoked regardless of state (e.g. whether the cursor is inside or not). Event capture method. Return
+     * {@code true} to stop propagation of the event to other widgets, otherwise the process would continue. Note that this is valid only
+     * when the GUI is handling more than one windows.
      */
     boolean mouseClicked(double mouseX, double mouseY, int button);
 
     /**
      * @implSpec Propagate the event and pass it on to the children.
-     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
-     * continue. Note that this is valid only when the GUI is handling more than one windows.
+     * @implNote This method will be invoked regardless of state (e.g. whether the cursor is inside or not). Event capture method. Return
+     * {@code true} to stop propagation of the event to other widgets, otherwise the process would continue. Note that this is valid only
+     * when the GUI is handling more than one windows.
      */
     boolean mouseReleased(double mouseX, double mouseY, int button);
 
     /**
      * @implSpec Propagate the event and pass it on to the children.
-     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
-     * continue. Note that this is valid only when the GUI is handling more than one windows.
+     * @implNote This method will be invoked regardless of state (e.g. whether the cursor is inside or not). Event capture method. Return
+     * {@code true} to stop propagation of the event to other widgets, otherwise the process would continue. Note that this is valid only
+     * when the GUI is handling more than one windows.
      */
     boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY);
 
     /**
      * @implSpec Propagate the event and pass it on to the children.
-     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
-     * continue. Note that this is valid only when the GUI is handling more than one windows.
+     * @implNote This method will be invoked regardless of state (e.g. whether this window is focused or not). Event capture method. Return
+     * {@code true} to stop propagation of the event to other widgets, otherwise the process would continue. Note that this is valid only
+     * when the GUI is handling more than one windows.
      */
     boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled);
 
     /**
      * @implSpec Propagate the event and pass it on to the children.
-     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
-     * continue. Note that this is valid only when the GUI is handling more than one windows.
+     * @implNote This method will be invoked regardless of state (e.g. whether this window is focused or not). Event capture method. Return
+     * {@code true} to stop propagation of the event to other widgets, otherwise the process would continue. Note that this is valid only
+     * when the GUI is handling more than one windows.
      */
     boolean keyPressed(int keyCode, int scanCode, int modifiers);
 
     /**
      * @implSpec Propagate the event and pass it on to the children.
-     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
-     * continue. Note that this is valid only when the GUI is handling more than one windows.
+     * @implNote This method will be invoked regardless of state (e.g. whether this window is focused or not). Event capture method. Return
+     * {@code true} to stop propagation of the event to other widgets, otherwise the process would continue. Note that this is valid only
+     * when the GUI is handling more than one windows.
      */
     boolean keyReleased(int keyCode, int scanCode, int modifiers);
 
     /**
      * @implSpec Propagate the event and pass it on to the children.
-     * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
-     * continue. Note that this is valid only when the GUI is handling more than one windows.
+     * @implNote This method will be invoked regardless of state (e.g. whether this window is focused or not). Event capture method. Return
+     * {@code true} to stop propagation of the event to other widgets, otherwise the process would continue. Note that this is valid only
+     * when the GUI is handling more than one windows.
      */
     boolean charTyped(char charTyped, int keyCode);
 

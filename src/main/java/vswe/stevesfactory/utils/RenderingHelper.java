@@ -81,12 +81,13 @@ public final class RenderingHelper {
     }
 
     public static void drawThickBeveledBox(int x1, int y1, int x2, int y2, int thickness, int topLeftColor, int bottomRightColor, int fillColor) {
-        GlStateManager.disableLighting();
+        GlStateManager.disableTexture();
+        drawRect(x1, y1, x2, y2, bottomRightColor);
+        drawRect(x1, y1, x2 - thickness, y2 - thickness, topLeftColor);
         if (fillColor != -1) {
             drawRect(x1 + thickness, y1 + thickness, x2 - thickness, y2 - thickness, fillColor);
         }
-        drawRect(x1, y1, x2, y2, bottomRightColor);
-        drawRect(x1, y1, x2 - thickness, y2 - thickness, topLeftColor);
+        GlStateManager.enableTexture();
     }
 
     public static void drawVerticalGradientRect(int x1, int y1, int x2, int y2, int color1, int color2) {

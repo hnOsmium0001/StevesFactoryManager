@@ -2,12 +2,13 @@ package vswe.stevesfactory.library.gui.widget;
 
 import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.gui.TextureWrapper;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;
 
-public class IconButton extends AbstractIconButton {
+public final class IconButton extends AbstractIconButton {
 
     private TextureWrapper textureNormal;
     private TextureWrapper textureHovering;
@@ -52,4 +53,10 @@ public class IconButton extends AbstractIconButton {
         Preconditions.checkArgument(textureNormal.getBounds().equals(textureHovering.getBounds()));
     }
 
+    @Override
+    public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+        super.render(mouseX, mouseY, particleTicks);
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
+    }
 }
