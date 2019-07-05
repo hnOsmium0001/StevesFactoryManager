@@ -66,7 +66,8 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
         updateAbsolutePosition();
     }
 
-    private void onRelativePositionChanged() {
+    @Override
+    public void onRelativePositionChanged() {
         updateAbsolutePosition();
     }
 
@@ -96,25 +97,6 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
 
     public int getAbsoluteYBR() {
         return getAbsoluteY() + getHeight();
-    }
-
-    @Override
-    public void setLocation(int x, int y) {
-        location.x = x;
-        location.y = y;
-        onRelativePositionChanged();
-    }
-
-    @Override
-    public void setX(int x) {
-        location.x = x;
-        onRelativePositionChanged();
-    }
-
-    @Override
-    public void setY(int y) {
-        location.y = y;
-        onRelativePositionChanged();
     }
 
     @Override

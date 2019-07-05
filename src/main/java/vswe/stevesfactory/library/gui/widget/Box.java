@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, RelocatableWidgetMixin, ResizableWidgetMixin, ContainerWidgetMixin<T> {
+public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin, ContainerWidgetMixin<T> {
 
     private List<T> children = new ArrayList<>();
     private List<T> childrenView = Collections.unmodifiableList(children);

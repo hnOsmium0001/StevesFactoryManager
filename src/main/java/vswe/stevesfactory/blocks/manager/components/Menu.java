@@ -14,7 +14,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public abstract class Menu extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableWidgetMixin, ResizableWidgetMixin {
+public abstract class Menu extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget>, ResizableWidgetMixin {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(1, 41, 9, 9),
@@ -32,12 +32,12 @@ public abstract class Menu extends AbstractWidget implements IContainer<IWidget>
             }
         };
 
-        public final TextureWrapper toggleStateNormal;
-        public final TextureWrapper toggleStateHovering;
+        public final TextureWrapper toggleStateNormalTexture;
+        public final TextureWrapper toggleStateHoveringTexture;
 
-        State(TextureWrapper toggleStateNormal, TextureWrapper toggleStateHovering) {
-            this.toggleStateNormal = toggleStateNormal;
-            this.toggleStateHovering = toggleStateHovering;
+        State(TextureWrapper toggleStateNormalTexture, TextureWrapper toggleStateHoveringTexture) {
+            this.toggleStateNormalTexture = toggleStateNormalTexture;
+            this.toggleStateHoveringTexture = toggleStateHoveringTexture;
         }
 
         public abstract void toggleStateFor(Menu menu);
@@ -52,12 +52,12 @@ public abstract class Menu extends AbstractWidget implements IContainer<IWidget>
 
         @Override
         public TextureWrapper getTextureNormal() {
-            return getParentWidget().state.toggleStateNormal;
+            return getParentWidget().state.toggleStateNormalTexture;
         }
 
         @Override
         public TextureWrapper getTextureHovering() {
-            return getParentWidget().state.toggleStateHovering;
+            return getParentWidget().state.toggleStateHoveringTexture;
         }
 
         @Override

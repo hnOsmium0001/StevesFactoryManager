@@ -14,16 +14,19 @@ public interface RelocatableWidgetMixin extends IWidget {
     }
 
     default void setLocation(int x, int y) {
-        setX(x);
-        setY(y);
+        getPosition().x = x;
+        getPosition().y = y;
+        onRelativePositionChanged();
     }
 
     default void setX(int x) {
         getPosition().x = x;
+        onRelativePositionChanged();
     }
 
     default void setY(int y) {
         getPosition().y = y;
+        onRelativePositionChanged();
     }
 
 }

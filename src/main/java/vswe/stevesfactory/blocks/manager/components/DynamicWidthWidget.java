@@ -10,7 +10,7 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 
-public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractWidget implements IContainer<T>, RelocatableWidgetMixin, ResizableWidgetMixin, ContainerWidgetMixin<T> {
+public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractWidget implements IContainer<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin, ContainerWidgetMixin<T> {
 
     @CanIgnoreReturnValue
     public static List<DynamicWidthWidget<?>> reflowDynamicWidth(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {

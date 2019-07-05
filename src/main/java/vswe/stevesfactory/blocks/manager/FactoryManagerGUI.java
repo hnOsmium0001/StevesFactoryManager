@@ -15,6 +15,7 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 
 import javax.annotation.Nonnull;
@@ -144,7 +145,7 @@ public class FactoryManagerGUI extends WidgetScreen {
 
     }
 
-    public static class TopLevelWidget extends AbstractWidget implements IContainer<DynamicWidthWidget<?>>, ContainerWidgetMixin<DynamicWidthWidget<?>> {
+    public static class TopLevelWidget extends AbstractWidget implements IContainer<DynamicWidthWidget<?>>, RelocatableContainerMixin<DynamicWidthWidget<?>>, ContainerWidgetMixin<DynamicWidthWidget<?>> {
 
         public final SelectionPanel selectionPanel;
         public final EditorPanel editorPanel;
@@ -152,10 +153,10 @@ public class FactoryManagerGUI extends WidgetScreen {
 
         private TopLevelWidget(PrimaryWindow window) {
             super(window.getContentDimensions().width, window.getContentDimensions().height);
-            this.onWindowChanged(window, this);
-            this.selectionPanel = new SelectionPanel(this, getWindow());
-            this.editorPanel = new EditorPanel(this, getWindow());
+            this.selectionPanel = new SelectionPanel(this, window);
+            this.editorPanel = new EditorPanel(this, window);
             this.children = ImmutableList.of(selectionPanel, editorPanel);
+            this.onWindowChanged(window, this);
             this.reflow();
         }
 

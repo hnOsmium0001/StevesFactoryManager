@@ -9,13 +9,14 @@ import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public abstract class FlowComponent extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget> {
+public abstract class FlowComponent extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget> {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
@@ -439,4 +440,6 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     public FlowComponent[] getChildComponents() {
         return childComponents;
     }
+
+
 }

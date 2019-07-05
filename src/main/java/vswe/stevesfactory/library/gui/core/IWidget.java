@@ -55,6 +55,8 @@ public interface IWidget extends IRenderable {
      */
     void onParentChanged(IWidget newParent);
 
+    void onRelativePositionChanged();
+
     void onWindowChanged(IWindow newWindow, IWidget newParent);
 
     void onParentPositionChanged();
