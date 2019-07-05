@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.core;
+package vswe.stevesfactory.library;
 
 import net.minecraft.client.gui.IRenderable;
 import net.minecraftforge.api.distmarker.Dist;

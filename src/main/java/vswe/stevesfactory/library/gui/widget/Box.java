@@ -1,8 +1,8 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import vswe.stevesfactory.library.gui.core.IContainer;
-import vswe.stevesfactory.library.gui.core.IWidget;
+import vswe.stevesfactory.library.IContainer;
+import vswe.stevesfactory.library.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 

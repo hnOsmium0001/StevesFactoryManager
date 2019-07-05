@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.core;
+package vswe.stevesfactory.library;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 

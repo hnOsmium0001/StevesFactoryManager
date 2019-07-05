@@ -1,6 +1,6 @@
 package vswe.stevesfactory.library.gui.layout;
 
-import vswe.stevesfactory.library.gui.core.IWidget;
+import vswe.stevesfactory.library.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 public class AligningFlowLayout extends FlowLayout {

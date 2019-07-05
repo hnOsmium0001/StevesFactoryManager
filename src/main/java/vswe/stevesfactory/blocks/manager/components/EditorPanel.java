@@ -1,7 +1,8 @@
 package vswe.stevesfactory.blocks.manager.components;
 
 import vswe.stevesfactory.blocks.manager.FactoryManagerGUI;
-import vswe.stevesfactory.library.gui.core.*;
+import vswe.stevesfactory.library.IContainer;
+import vswe.stevesfactory.library.IWindow;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 
 import java.util.*;

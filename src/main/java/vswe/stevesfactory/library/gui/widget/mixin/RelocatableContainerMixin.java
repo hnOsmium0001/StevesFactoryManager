@@ -2,8 +2,8 @@ package vswe.stevesfactory.library.gui.widget.mixin;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
-import vswe.stevesfactory.library.gui.core.IContainer;
-import vswe.stevesfactory.library.gui.core.IWidget;
+import vswe.stevesfactory.library.IContainer;
+import vswe.stevesfactory.library.IWidget;
 
 import java.util.List;
 

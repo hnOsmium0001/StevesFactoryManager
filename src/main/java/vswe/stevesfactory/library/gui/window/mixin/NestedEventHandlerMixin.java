@@ -1,7 +1,7 @@
 package vswe.stevesfactory.library.gui.window.mixin;
 
-import vswe.stevesfactory.library.gui.core.IWidget;
-import vswe.stevesfactory.library.gui.core.IWindow;
+import vswe.stevesfactory.library.IWidget;
+import vswe.stevesfactory.library.IWindow;
 
 public interface NestedEventHandlerMixin extends IWindow {
 
