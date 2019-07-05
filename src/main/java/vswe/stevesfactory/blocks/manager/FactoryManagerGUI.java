@@ -85,7 +85,7 @@ public class FactoryManagerGUI extends WidgetScreen {
         }
 
         @Override
-        public List<IWidget> getChildren() {
+        public List<? extends IWidget> getChildren() {
             return ImmutableList.of(topLevel);
         }
 
