@@ -119,15 +119,18 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (windows.stream().noneMatch(window -> window.getLeft().keyPressed(keyCode, scanCode, modifiers))) {
+            if (primaryWindow.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+        }
+
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
         if (keyCode == KeyEvent.VK_E) {
             Minecraft.getInstance().player.closeScreen();
             return true;
-        }
-        if (windows.stream().noneMatch(window -> window.getLeft().keyPressed(keyCode, scanCode, modifiers))) {
-            primaryWindow.keyPressed(keyCode, scanCode, modifiers);
         }
         return true;
     }

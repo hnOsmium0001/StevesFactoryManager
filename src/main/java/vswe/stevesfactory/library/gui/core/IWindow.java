@@ -66,7 +66,7 @@ public interface IWindow {
     /**
      * Helper method to set focus of a specific element. Notice this would cancel the originally focus element. Implementations should not
      * override this method unless it is using a special focus handler that is not compatible with the default implementation of this
-     * method.g
+     * method.
      */
     default boolean changeFocus(IWidget widget, boolean focus) {
         if (focus && widget.isEnabled()) {

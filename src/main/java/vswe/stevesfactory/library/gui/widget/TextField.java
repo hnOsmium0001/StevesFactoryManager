@@ -8,39 +8,18 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
-import javax.annotation.Nullable;
 import java.awt.*;
-import java.awt.datatransfer.*;
-import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 public class TextField extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
 
     public static final int SECONDARY_BUTTON = 1;
-
-    public static Clipboard getAwtClipboard() {
-        return Toolkit.getDefaultToolkit().getSystemClipboard();
-    }
-
-    @Nullable
-    public static String getClipboardString() {
-        try {
-            return (String) getAwtClipboard().getData(DataFlavor.stringFlavor);
-        } catch (UnsupportedFlavorException | IOException e) {
-            StevesFactoryManager.logger.error("Exception when getting clipboard contents", e);
-            return null;
-        }
-    }
-
-    public static void setClipboardString(String text) {
-        getAwtClipboard().setContents(new StringSelection(text), null);
-    }
 
     private String text = "";
     private int cursor = 0;
@@ -102,57 +81,58 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown()) {
             switch (keyCode) {
-                case KeyEvent.VK_C: {
+                case GLFW.GLFW_KEY_C: {
                     copyText();
                     break;
                 }
-                case KeyEvent.VK_V: {
+                case GLFW.GLFW_KEY_V: {
                     pasteText();
                     break;
                 }
-                case KeyEvent.VK_X: {
+                case GLFW.GLFW_KEY_X: {
                     cutText();
                     break;
                 }
-                case KeyEvent.VK_A: {
+                case GLFW.GLFW_KEY_A: {
                     selectAll();
                     break;
                 }
             }
         } else {
             switch (keyCode) {
-                case KeyEvent.VK_ESCAPE:
-                case KeyEvent.VK_ENTER:
-                case KeyEvent.VK_DOWN:
-                case KeyEvent.VK_UP:
-                case KeyEvent.VK_TAB: {
+                case GLFW.GLFW_KEY_ESCAPE:
+                    getWindow().changeFocus(this, false);
+                case GLFW.GLFW_KEY_ENTER:
+                case GLFW.GLFW_KEY_DOWN:
+                case GLFW.GLFW_KEY_UP:
+                case GLFW.GLFW_KEY_TAB: {
                     return false;
                 }
-                case KeyEvent.VK_HOME: {
+                case GLFW.GLFW_KEY_HOME: {
                     updateSelection();
                     cursor = 0;
                     break;
                 }
-                case KeyEvent.VK_END: {
+                case GLFW.GLFW_KEY_END: {
                     updateSelection();
                     cursor = text.length();
                     break;
                 }
-                case KeyEvent.VK_LEFT: {
+                case GLFW.GLFW_KEY_LEFT: {
                     updateSelection();
                     if (cursor > 0) {
                         cursor--;
                     }
                     break;
                 }
-                case KeyEvent.VK_RIGHT: {
+                case GLFW.GLFW_KEY_RIGHT: {
                     updateSelection();
                     if (cursor < text.length()) {
                         cursor++;
                     }
                     break;
                 }
-                case KeyEvent.VK_BACK_SPACE: {
+                case GLFW.GLFW_KEY_BACKSPACE: {
                     if (isRegionSelected()) {
                         replaceSelectedRegion("");
                     } else if (!text.isEmpty() && cursor > 0) {
@@ -161,7 +141,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
                     }
                     break;
                 }
-                case KeyEvent.VK_DELETE: {
+                case GLFW.GLFW_KEY_DELETE: {
                     if (isRegionSelected()) {
                         replaceSelectedRegion("");
                     } else if (cursor < text.length()) {
@@ -176,7 +156,6 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
 
     @Override
     public boolean charTyped(char typedChar, int keyCode) {
-        System.out.println("fff");
         // e.g. F1~12, insert
         // Char code of 0 will appear to be nothing
         if ((int) typedChar != 0) {
@@ -193,27 +172,23 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
 
     private void copyText() {
         if (isRegionSelected()) {
-            setClipboardString(getSelectedText());
+            minecraft().keyboardListener.setClipboardString(getSelectedText());
         }
     }
 
     private void pasteText() {
-        String data = getClipboardString();
-        if (data == null) {
-            return;
-        }
-
+        String text = minecraft().keyboardListener.getClipboardString();
         if (isRegionSelected()) {
-            replaceSelectedRegion(data);
+            replaceSelectedRegion(text);
         } else {
-            text = text.substring(0, cursor) + data + text.substring(cursor);
+            this.text = this.text.substring(0, cursor) + text + this.text.substring(cursor);
         }
-        cursor += data.length();
+        cursor += text.length();
     }
 
     private void cutText() {
         if (isRegionSelected()) {
-            setClipboardString(getSelectedText());
+            minecraft().keyboardListener.setClipboardString(getSelectedText());
             replaceSelectedRegion("");
         }
     }
@@ -268,9 +243,11 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     }
 
     private void updateSelection() {
-        if (Screen.hasShiftDown() && !isRegionSelected()) {
+        if (Screen.hasShiftDown()) {
             // Don't clear selection as long as shift is pressed
-            selection = cursor;
+            if (!isRegionSelected()) {
+                selection = cursor;
+            }
         } else {
             clearSelection();
         }
@@ -340,7 +317,8 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
 
         if (isFocused()) {
             int w = fontRenderer().getStringWidth(text.substring(startOffset, cursor));
-            RenderingHelper.drawRect(x + 5 + w, y + 2, x + 5 + w + 1, y + height - 3, 0xff000000);
+            int cx = x + 5 + w;
+            RenderingHelper.drawRect(cx, y + 2, cx + 1, getAbsoluteYBR() - 3, 0xff000000);
         }
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);

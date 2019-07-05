@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+import vswe.stevesfactory.StevesFactoryManager;
 
 public final class RenderingHelper {
 
@@ -52,6 +53,7 @@ public final class RenderingHelper {
     }
 
     public static void drawRect(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {
+        GlStateManager.disableTexture();
         BufferBuilder renderer = getRenderer();
         renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         renderer.pos(x, y, 0.0D).color(red, green, blue, alpha).endVertex();
@@ -74,7 +76,7 @@ public final class RenderingHelper {
         GlStateManager.enableColorLogicOp();
         GlStateManager.logicOp(logicOp);
 
-        drawRect(x, y, width, height, red, green, blue, 255);
+        drawRect(x, y, x + width, y + height, red, green, blue, 255);
 
         GlStateManager.disableColorLogicOp();
         GlStateManager.enableTexture();

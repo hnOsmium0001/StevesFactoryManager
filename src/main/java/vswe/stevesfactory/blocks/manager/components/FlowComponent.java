@@ -450,7 +450,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        getWindow().changeFocus(this, true);
+        getWindow().setFocusedWidget(this);
         return false;
     }
 }
