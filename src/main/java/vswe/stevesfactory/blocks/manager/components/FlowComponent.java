@@ -142,6 +142,8 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
                 FlowComponent parent = getParentWidget();
                 parent.submitButton.setEnabled(true);
                 parent.cancelButton.setEnabled(true);
+                parent.name.setEditable(true);
+                getWindow().setFocusedWidget(parent.name);
                 return true;
             }
             return false;
@@ -191,6 +193,9 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
                 FlowComponent parent = getParentWidget();
                 parent.cancelButton.setEnabled(false);
                 parent.renameButton.setEnabled(true);
+                parent.name.scrollToFront();
+                parent.name.setEditable(false);
+                getWindow().changeFocus(parent.name, false);
                 return true;
             }
             return false;
@@ -243,6 +248,9 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
                 parent.submitButton.setEnabled(false);
                 parent.renameButton.setEnabled(true);
                 parent.setName(previousName);
+                parent.name.scrollToFront();
+                parent.name.setEditable(false);
+                getWindow().changeFocus(parent.name, false);
                 previousName = "";
                 return true;
             }
@@ -253,7 +261,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         public void setEnabled(boolean enabled) {
             super.setEnabled(enabled);
             if (enabled) {
-                previousName = getParentWidget().getName();
+                this.previousName = getParentWidget().getName();
             }
         }
 
@@ -307,8 +315,10 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         this.renameButton = new RenameButton(this);
         this.submitButton = new SubmitButton(this);
         this.cancelButton = new CancelButton(this);
-        // TODO exact number
-        this.name = new TextField(9, 9, 80, 16);
+        // The cursor looks a bit to short (and cute) with these numbers, might want change them?
+        this.name = new TextField(8, 8, 37, 10)
+                .setBackgroundStyle(TextField.BackgroundStyle.NONE)
+                .setEditable(false);
         this.name.onParentChanged(this);
         this.menuComponents = new ArrayList<>();
         this.children = new AbstractList<IWidget>() {
@@ -350,12 +360,16 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     public void expand() {
         Preconditions.checkState(state == State.COLLAPSED);
         state = State.EXPANDED;
+
+        name.setWidth(96);
         updateChildStates();
     }
 
     public void collapse() {
         Preconditions.checkState(state == State.EXPANDED);
         state = State.COLLAPSED;
+
+        name.setWidth(37);
         updateChildStates();
     }
 
@@ -376,6 +390,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
 
     public void setName(String name) {
         this.name.setText(name);
+        this.cancelButton.previousName = getName();
     }
 
     @Override

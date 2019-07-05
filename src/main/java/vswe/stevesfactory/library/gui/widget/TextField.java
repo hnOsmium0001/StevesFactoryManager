@@ -9,17 +9,48 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.awt.*;
 
-public class TextField extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
+public class TextField extends AbstractWidget implements RelocatableWidgetMixin, ResizableWidgetMixin, LeafWidgetMixin {
+
+    public enum BackgroundStyle {
+        NONE {
+            @Override
+            public void render(int x1, int y1, int x2, int y2, boolean hovered, boolean focused) {
+            }
+        },
+        THICK_BEVELED {
+            @Override
+            public void render(int x1, int y1, int x2, int y2, boolean hovered, boolean focused) {
+                int color = focused ? 0xffeeeeee
+                        : hovered ? 0xffdadada
+                        : 0xffc6c6c6;
+                RenderingHelper.drawThickBeveledBox(x1, y1, x2 - 1, y2 - 1, 1, 0xff2b2b2b, 0xffffffff, color);
+            }
+        },
+        RED_OUTLINE {
+            @Override
+            public void render(int x1, int y1, int x2, int y2, boolean hovered, boolean focused) {
+                if (focused) {
+                    RenderingHelper.drawRect(x1, y1, x2, y2, 0xffcf191f);
+                    RenderingHelper.drawVerticalGradientRect(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0xff191919, 0xff313131);
+                } else {
+                    RenderingHelper.drawRect(x1, y1, x2, y2, 0xff6d0b0e);
+                    RenderingHelper.drawRect(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0xff1c1c1c);
+                }
+            }
+        };
+
+        public abstract void render(int x1, int y1, int x2, int y2, boolean hovered, boolean focused);
+    }
 
     public static final int SECONDARY_BUTTON = 1;
+
+    private BackgroundStyle backgroundStyle = BackgroundStyle.THICK_BEVELED;
 
     private String text = "";
     private int cursor = 0;
@@ -194,6 +225,13 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     }
 
     @CanIgnoreReturnValue
+    public TextField scrollToFront() {
+        cursor = 0;
+        startOffset = 0;
+        return this;
+   }
+
+    @CanIgnoreReturnValue
     public TextField selectAll() {
         return setSelection(0, text.length());
     }
@@ -275,17 +313,14 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
 
         ensureVisible();
 
-        int color = isFocused() ? 0xffeeeeee
-                : isInside(mouseX, mouseY) ? 0xffdadada
-                : 0xffc6c6c6;
         int x = getAbsoluteX();
         int y = getAbsoluteY();
-        int width = getDimensions().width;
-        int height = getDimensions().height;
+        int x2 = getAbsoluteXBR();
+        int y2 = getAbsoluteYBR();
 
-        RenderingHelper.drawThickBeveledBox(x, y, x + width - 1, y + height - 1, 1, 0xff2b2b2b, 0xffffffff, color);
+        backgroundStyle.render(x, y, x2, y2, isInside(mouseX, mouseY), isFocused());
 
-        String renderedText = fontRenderer().trimStringToWidth(this.text.substring(startOffset), width - 10);
+        String renderedText = fontRenderer().trimStringToWidth(this.text.substring(startOffset), getDimensions().width - 10);
         int textX = x + 5;
         int textY = y + calculateVerticalOffset();
         if (isEnabled()) {
@@ -318,10 +353,19 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         if (isFocused()) {
             int w = fontRenderer().getStringWidth(text.substring(startOffset, cursor));
             int cx = x + 5 + w;
-            RenderingHelper.drawRect(cx, y + 2, cx + 1, getAbsoluteYBR() - 3, 0xff000000);
+            RenderingHelper.drawRect(cx, y + 2, cx + 1, y2 - 3, 0xff000000);
         }
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
+    public BackgroundStyle getBackgroundStyle() {
+        return backgroundStyle;
+    }
+
+    @CanIgnoreReturnValue
+    public TextField setBackgroundStyle(BackgroundStyle backgroundStyle) {
+        this.backgroundStyle = backgroundStyle;
+        return this;
+    }
 }
