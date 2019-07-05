@@ -5,7 +5,7 @@ import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
-import vswe.stevesfactory.library.gui.core.IWindow;
+import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
 
 import java.awt.event.KeyEvent;

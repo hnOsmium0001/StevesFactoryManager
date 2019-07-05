@@ -1,8 +1,9 @@
 package vswe.stevesfactory.blocks.manager.components;
 
 import com.google.common.base.Preconditions;
+import vswe.stevesfactory.library.gui.IContainer;
+import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;

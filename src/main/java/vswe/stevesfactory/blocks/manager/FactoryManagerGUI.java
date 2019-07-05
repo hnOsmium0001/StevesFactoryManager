@@ -9,8 +9,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 import vswe.stevesfactory.blocks.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.blocks.manager.components.EditorPanel;
 import vswe.stevesfactory.blocks.manager.selection.SelectionPanel;
+import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
-import vswe.stevesfactory.library.gui.core.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
@@ -110,7 +110,11 @@ public class FactoryManagerGUI extends WidgetScreen {
 
         @Override
         public void setFocusedWidget(@Nullable IWidget widget) {
-            focusedWidget = MoreObjects.firstNonNull(widget, topLevel);
+            if (focusedWidget != widget) {
+                focusedWidget.onFocusChanged(false);
+                focusedWidget = MoreObjects.firstNonNull(widget, topLevel);
+                focusedWidget.onFocusChanged(true);
+            }
         }
 
         public Rectangle getScreenBounds() {

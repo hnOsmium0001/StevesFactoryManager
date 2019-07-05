@@ -1,6 +1,6 @@
 package vswe.stevesfactory.library.gui.window;
 
-import vswe.stevesfactory.library.gui.core.IWindow;
+import vswe.stevesfactory.library.gui.IWindow;
 
 import java.awt.*;
 

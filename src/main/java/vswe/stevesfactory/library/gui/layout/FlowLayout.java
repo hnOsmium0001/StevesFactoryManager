@@ -1,6 +1,6 @@
 package vswe.stevesfactory.library.gui.layout;
 
-import vswe.stevesfactory.library.gui.core.IWidget;
+import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;

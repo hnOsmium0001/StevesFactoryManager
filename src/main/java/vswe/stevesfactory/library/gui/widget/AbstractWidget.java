@@ -2,8 +2,8 @@ package vswe.stevesfactory.library.gui.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import vswe.stevesfactory.library.gui.core.IWidget;
-import vswe.stevesfactory.library.gui.core.IWindow;
+import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
