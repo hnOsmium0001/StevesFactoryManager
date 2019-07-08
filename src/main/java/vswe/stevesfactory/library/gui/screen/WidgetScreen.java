@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.screen;
 
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -94,13 +95,15 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Set<ActionMenu> clickDiscards = this.actionMenus.get(DiscardCondition.UNFOCUSED_CLICK);
-        for (ActionMenu actionMenu : clickDiscards) {
+        clickDiscards.removeIf(actionMenu -> {
             if (!actionMenu.isInside(mouseX, mouseY)) {
                 actionMenu.onDiscard();
-                clickDiscards.remove(actionMenu);
                 removeActionMenuAsWindow(actionMenu);
+                return true;
             }
-        }
+            return false;
+        });
+
         if (windows.stream().anyMatch(window -> window.getLeft().mouseClicked(mouseX, mouseY, button))) {
             return true;
         } else {
@@ -192,11 +195,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     private void removeActionMenuAsWindow(ActionMenu actionMenu) {
-        for (Pair<IWindow, IWindowPositionHandler> pair : windows) {
-            if (pair.getLeft() == actionMenu) {
-                windows.remove(pair);
-            }
-        }
+        windows.removeIf(pair -> pair.getLeft() == actionMenu);
     }
 
 }

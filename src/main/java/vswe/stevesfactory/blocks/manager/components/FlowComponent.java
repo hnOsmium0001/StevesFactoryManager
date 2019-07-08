@@ -470,13 +470,17 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        getWindow().setFocusedWidget(this);
 
+        if (!isInside(mouseX, mouseY)) {
+            return false;
+        }
+
+        getWindow().setFocusedWidget(this);
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             ((WidgetScreen) minecraft().currentScreen).openActionMenu(ActionMenu.atCursor((int) mouseX, (int) mouseY, ImmutableList.of(
                     new DefaultEntry(null, "gui.sfm.ActionMenu.Delete")
             )), DiscardCondition.UNFOCUSED_CLICK);
         }
-        return false;
+        return true;
     }
 }
