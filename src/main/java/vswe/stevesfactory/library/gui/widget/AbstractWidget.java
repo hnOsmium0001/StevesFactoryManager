@@ -72,8 +72,22 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
     }
 
     private void updateAbsolutePosition() {
-        absX = parent.getAbsoluteX() + getX();
-        absY = parent.getAbsoluteY() + getY();
+        absX = getParentAbsXSafe() + getX();
+        absY = getParentAbsYSafe() + getY();
+    }
+
+    private int getParentAbsXSafe() {
+        if (parent != null) {
+            return parent.getAbsoluteX();
+        }
+        return window.getX();
+    }
+
+    private int getParentAbsYSafe() {
+        if (parent != null) {
+            return parent.getAbsoluteY();
+        }
+        return window.getY();
     }
 
     @Override

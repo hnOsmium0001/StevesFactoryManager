@@ -38,6 +38,6 @@ public interface IEntry extends IWidget, RelocatableWidgetMixin {
 
     @Override
     default int getHeight() {
-        return ICON_HEIGHT + MARGIN_SIDES * 2;
+        return MARGIN_SIDES + ICON_HEIGHT + MARGIN_SIDES;
     }
 }

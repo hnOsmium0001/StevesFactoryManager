@@ -53,8 +53,13 @@ public final class RenderingHelper {
         GlStateManager.disableBlend();
         GlStateManager.color3f(1.0F, 1.0F, 1.0F);
     }
+
     public static void drawRect(Point point, Dimension dimensions, int red, int green, int blue, int alpha) {
         drawRect(point.x, point.y, point.x + dimensions.width, point.y + dimensions.width, red, green, blue, alpha);
+    }
+
+    public static void drawRect(int x, int y, Dimension dimensions, int red, int green, int blue, int alpha) {
+        drawRect(x, y, x + dimensions.width, y + dimensions.height, red, green, blue, alpha);
     }
 
     public static void drawRect(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {

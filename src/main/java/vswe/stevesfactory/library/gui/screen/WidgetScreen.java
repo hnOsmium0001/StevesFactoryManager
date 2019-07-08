@@ -32,7 +32,6 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     private List<Pair<IWindow, IWindowPositionHandler>> windows = new ArrayList<>();
 
     private Map<DiscardCondition, Set<ActionMenu>> actionMenus = new HashMap<>();
-
     {
         actionMenus.put(DiscardCondition.UNFOCUSED_CLICK, new HashSet<>());
         actionMenus.put(DiscardCondition.EXIT_HOVER, new HashSet<>());
@@ -187,7 +186,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     // Action menu support
     ///////////////////////////////////////////////////////////////////////////
 
-    public void addActionMenu(ActionMenu actionMenu, DiscardCondition discardCondition) {
+    public void openActionMenu(ActionMenu actionMenu, DiscardCondition discardCondition) {
         actionMenus.get(discardCondition).add(actionMenu);
         windows.add(Pair.of(actionMenu, DUMMY_POSITION_HANDLER));
     }

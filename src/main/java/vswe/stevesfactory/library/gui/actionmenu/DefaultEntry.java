@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.actionmenu;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
@@ -21,6 +22,8 @@ public class DefaultEntry extends AbstractWidget implements IEntry, LeafWidgetMi
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        GlStateManager.enableTexture();
+
         int x = getAbsoluteX();
         int y = getAbsoluteY();
         ResourceLocation icon = getIcon();

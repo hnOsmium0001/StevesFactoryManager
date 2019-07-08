@@ -1,5 +1,10 @@
 {
   "itemGroup.sfm": "Steve's Factory Manager",
+
   "block.sfm.factory_manager": "Factory Manager",
-  "block.sfm.cable": "Inventory Cable"
+  "block.sfm.cable": "Inventory Cable",
+
+  "gui.sfm.ActionMenu.Delete": "Delete",
+  "gui.sfm.ActionMenu.Copy": "Copy",
+  "gui.sfm.ActionMenu.Cut": "Cut"
 }

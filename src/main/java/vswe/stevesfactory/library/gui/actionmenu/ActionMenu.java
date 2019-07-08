@@ -1,7 +1,6 @@
 package vswe.stevesfactory.library.gui.actionmenu;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.IWidget;
 import vswe.stevesfactory.library.IWindow;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
@@ -12,7 +11,12 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 
-public abstract class ActionMenu implements IWindow, NestedEventHandlerMixin {
+public class ActionMenu implements IWindow, NestedEventHandlerMixin {
+
+    public static ActionMenu atCursor(double mouseX, double mouseY, List<? extends IEntry> entries) {
+        return new ActionMenu((int) mouseX, (int) mouseY, entries) {
+        };
+    }
 
     private final Point position;
     private final List<? extends IEntry> entries;
@@ -49,7 +53,7 @@ public abstract class ActionMenu implements IWindow, NestedEventHandlerMixin {
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderingHelper.drawRect(position, border, 94, 94, 94, 255);
-        RenderingHelper.drawRect(position, dimensions, 157, 157, 157, 255);
+        RenderingHelper.drawRect(getContentX(), getContentY(), dimensions, 157, 157, 157, 255);
         for (IEntry entry : entries) {
             entry.render(mouseX, mouseY, particleTicks);
         }
@@ -78,11 +82,6 @@ public abstract class ActionMenu implements IWindow, NestedEventHandlerMixin {
     }
 
     @Override
-    public int getBorderSize() {
-        return 1;
-    }
-
-    @Override
     public Dimension getContentDimensions() {
         return dimensions;
     }
@@ -95,6 +94,11 @@ public abstract class ActionMenu implements IWindow, NestedEventHandlerMixin {
     @Override
     public Point getPosition() {
         return position;
+    }
+
+    @Override
+    public int getBorderSize() {
+        return 1;
     }
 
     public void onDiscard() {

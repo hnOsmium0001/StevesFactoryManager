@@ -1,12 +1,16 @@
 package vswe.stevesfactory.blocks.manager.components;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.IContainer;
 import vswe.stevesfactory.library.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
+import vswe.stevesfactory.library.gui.actionmenu.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
@@ -467,6 +471,12 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
             return true;
         }
         getWindow().setFocusedWidget(this);
+
+        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            ((WidgetScreen) minecraft().currentScreen).openActionMenu(ActionMenu.atCursor((int) mouseX, (int) mouseY, ImmutableList.of(
+                    new DefaultEntry(null, "gui.sfm.ActionMenu.Delete")
+            )), DiscardCondition.UNFOCUSED_CLICK);
+        }
         return false;
     }
 }
