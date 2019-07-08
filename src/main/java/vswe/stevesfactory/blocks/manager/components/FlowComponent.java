@@ -321,7 +321,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         this.submitButton = new SubmitButton(this);
         this.cancelButton = new CancelButton(this);
         // The cursor looks a bit to short (and cute) with these numbers, might want change them?
-        this.name = new TextField(8, 8, 37, 10)
+        this.name = new TextField(8, 8, 35, 10)
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setEditable(false);
         this.name.onParentChanged(this);

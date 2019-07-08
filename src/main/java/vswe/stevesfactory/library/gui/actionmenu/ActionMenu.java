@@ -3,6 +3,7 @@ package vswe.stevesfactory.library.gui.actionmenu;
 import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.IWidget;
 import vswe.stevesfactory.library.IWindow;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -22,8 +23,8 @@ public class ActionMenu implements IWindow, NestedEventHandlerMixin {
     private final List<? extends IEntry> entries;
     private IEntry focusedEntry;
 
-    private final Dimension dimensions = new Dimension();
-    private final Dimension border = new Dimension();
+    private final Dimension contents;
+    private final Dimension border;
 
     public ActionMenu(int x, int y, List<? extends IEntry> entries) {
         this(new Point(x, y), entries);
@@ -34,29 +35,31 @@ public class ActionMenu implements IWindow, NestedEventHandlerMixin {
 
         this.position = position;
         this.entries = entries;
-        this.dimensions.width = entries.stream()
+        this.contents = new Dimension();
+        this.contents.width = entries.stream()
                 .max(Comparator.comparingInt(IEntry::getWidth))
                 .orElseThrow(IllegalArgumentException::new)
                 .getWidth();
-        this.dimensions.height = entries.size() * IEntry.ICON_HEIGHT;
-        this.border.width = dimensions.width + getBorderSize() * 2;
-        this.border.height = dimensions.height + getBorderSize() * 2;
+        this.contents.height = entries.size() * IEntry.ICON_HEIGHT;
+        this.border = RenderingHelper.toBorder(contents, getBorderSize());
 
-        int y = getContentY();
+        int y = 0;
         for (IEntry e : entries) {
             e.onWindowChanged(this, null);
-            e.setLocation(getContentX(), y);
+            e.setLocation(0, y);
             y += e.getHeight();
         }
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         RenderingHelper.drawRect(position, border, 94, 94, 94, 255);
-        RenderingHelper.drawRect(getContentX(), getContentY(), dimensions, 157, 157, 157, 255);
+        RenderingHelper.drawRect(getContentX(), getContentY(), contents, 157, 157, 157, 255);
         for (IEntry entry : entries) {
             entry.render(mouseX, mouseY, particleTicks);
         }
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     @Nullable
@@ -83,7 +86,7 @@ public class ActionMenu implements IWindow, NestedEventHandlerMixin {
 
     @Override
     public Dimension getContentDimensions() {
-        return dimensions;
+        return contents;
     }
 
     @Override

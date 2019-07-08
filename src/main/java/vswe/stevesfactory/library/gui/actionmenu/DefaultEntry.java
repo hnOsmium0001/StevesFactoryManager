@@ -2,6 +2,7 @@ package vswe.stevesfactory.library.gui.actionmenu;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -18,10 +19,14 @@ public class DefaultEntry extends AbstractWidget implements IEntry, LeafWidgetMi
         super(-1, -1);
         this.icon = icon;
         this.translationKey = translationKey;
+        Dimension bounds = getDimensions();
+        bounds.width = IEntry.super.getWidth();
+        bounds.height = IEntry.super.getHeight();
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         GlStateManager.enableTexture();
 
         int x = getAbsoluteX();
@@ -35,16 +40,7 @@ public class DefaultEntry extends AbstractWidget implements IEntry, LeafWidgetMi
 
         int textX = x + MARGIN_SIDES + ICON_WIDTH + 4;
         RenderingHelper.drawTextCenteredVertically(getText(), textX, y, getAbsoluteYBR(), 0xffffffff);
-    }
-
-    @Override
-    public Dimension getDimensions() {
-        Dimension bounds = super.getDimensions();
-        if (bounds.width == -1 && bounds.height == -1) {
-            bounds.width = IEntry.super.getWidth();
-            bounds.height = IEntry.super.getHeight();
-        }
-        return bounds;
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     @Nullable

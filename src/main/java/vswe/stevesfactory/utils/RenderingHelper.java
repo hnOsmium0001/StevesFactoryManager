@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
-import vswe.stevesfactory.StevesFactoryManager;
 
 import java.awt.*;
 
@@ -55,7 +54,7 @@ public final class RenderingHelper {
     }
 
     public static void drawRect(Point point, Dimension dimensions, int red, int green, int blue, int alpha) {
-        drawRect(point.x, point.y, point.x + dimensions.width, point.y + dimensions.width, red, green, blue, alpha);
+        drawRect(point.x, point.y, point.x + dimensions.width, point.y + dimensions.height, red, green, blue, alpha);
     }
 
     public static void drawRect(int x, int y, Dimension dimensions, int red, int green, int blue, int alpha) {
@@ -241,17 +240,29 @@ public final class RenderingHelper {
         GlStateManager.enableTexture();
     }
 
-    public static int getXForHorizontallyCenteredText(String text, int left, int right) {
-        int textWidth = fontRenderer().getStringWidth(text);
-        return getXForHorizontallyCenteredText(textWidth, left, right);
+    public static int getXForAlignedRight(int right, int width) {
+        return right - width;
     }
 
-    public static int getXForHorizontallyCenteredText(int width, int left, int right) {
-        return (left - right) / 2 - width / 2;
+    public static int getXForAlignedCenter(int left, int right, int width) {
+        return left + (right - left) / 2 - width / 2;
+    }
+
+    public static int getYForAlignedCenter(int top, int bottom, int height) {
+        return top + (bottom - top) / 2 - height / 2;
+    }
+
+    public static int getYForAlignedBottom(int bottom, int height) {
+        return bottom - height;
+    }
+
+    public static int getXForHorizontallyCenteredText(String text, int left, int right) {
+        int textWidth = fontRenderer().getStringWidth(text);
+        return getXForAlignedCenter(textWidth, left, right);
     }
 
     public static int getYForVerticallyCenteredText(int top, int bottom) {
-        return (top - bottom) / 2 - fontHeight() / 2;
+        return getYForAlignedCenter(top, bottom, fontHeight());
     }
 
     public static void drawTextCenteredVertically(String text, int leftX, int top, int bottom, int color) {
@@ -268,6 +279,10 @@ public final class RenderingHelper {
         int x = getXForHorizontallyCenteredText(text, left, right);
         int y = getYForVerticallyCenteredText(top, bottom);
         fontRenderer().drawString(text, x, y, color);
+    }
+
+    public static Dimension toBorder(Dimension contents, int borderSize) {
+        return new Dimension(contents.width + borderSize * 2, contents.height + borderSize * 2);
     }
 
 }

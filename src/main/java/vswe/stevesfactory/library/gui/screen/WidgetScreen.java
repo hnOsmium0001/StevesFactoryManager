@@ -1,6 +1,5 @@
 package vswe.stevesfactory.library.gui.screen;
 
-import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -13,8 +12,8 @@ import vswe.stevesfactory.library.gui.actionmenu.DiscardCondition;
 import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
@@ -33,6 +32,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     private List<Pair<IWindow, IWindowPositionHandler>> windows = new ArrayList<>();
 
     private Map<DiscardCondition, Set<ActionMenu>> actionMenus = new HashMap<>();
+
     {
         actionMenus.put(DiscardCondition.UNFOCUSED_CLICK, new HashSet<>());
         actionMenus.put(DiscardCondition.EXIT_HOVER, new HashSet<>());

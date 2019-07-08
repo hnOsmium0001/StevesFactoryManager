@@ -2,6 +2,7 @@ package vswe.stevesfactory.library.gui.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.IWidget;
 import vswe.stevesfactory.library.IWindow;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
@@ -28,8 +29,8 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
     private IWindow window;
 
     private IWidget parent;
-    // Cached because this might reach all the up to the root node by recursion on getAbsoluteX/Y
 
+    // Cached because this might reach all the up to the root node by recursion on getAbsoluteX/Y
     private int absX;
     private int absY;
     private boolean enabled = true;
@@ -80,14 +81,14 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
         if (parent != null) {
             return parent.getAbsoluteX();
         }
-        return window.getX();
+        return window.getContentX();
     }
 
     private int getParentAbsYSafe() {
         if (parent != null) {
             return parent.getAbsoluteY();
         }
-        return window.getY();
+        return window.getContentY();
     }
 
     @Override
