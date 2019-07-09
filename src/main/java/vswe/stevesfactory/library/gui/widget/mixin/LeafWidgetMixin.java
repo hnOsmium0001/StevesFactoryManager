@@ -6,6 +6,7 @@ public interface LeafWidgetMixin extends IWidget {
 
     @Override
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
+        getWindow().setFocusedWidget(this);
         return false;
     }
 

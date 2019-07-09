@@ -315,6 +315,10 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     private State state;
     private ActionMenu openedActionMenu;
 
+    // Temporary data
+    private int initialDragLocalX;
+    private int initialDragLocalY;
+
     public FlowComponent(EditorPanel parent, int amountChildNodes) {
         super(0, 0);
         onParentChanged(parent);
@@ -465,24 +469,36 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-
         if (!isInside(mouseX, mouseY)) {
             return false;
         }
 
+        initialDragLocalX = (int) mouseX - getAbsoluteX();
+        initialDragLocalY = (int) mouseY - getAbsoluteY();
         getWindow().setFocusedWidget(this);
+
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             openActionMenu(mouseX, mouseY);
         }
         return true;
     }
 
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
+        if (isFocused()) {
+            EditorPanel parent = getParentWidget();
+            setLocation((int) mouseX - parent.getAbsoluteX() - initialDragLocalX, (int) mouseY - parent.getAbsoluteY() - initialDragLocalY);
+            return true;
+        }
+        return false;
+    }
+
     private void openActionMenu(double mouseX, double mouseY) {
         openedActionMenu = ActionMenu.atCursor((int) mouseX, (int) mouseY, ImmutableList.of(
                 new CallbackEntry(new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/delete.png"), "gui.sfm.ActionMenu.Delete", button -> {
                     removeSelf();
-                    // Delay this to avoide ConcurrentModificationException
-                    WidgetScreen.getCurrentScreen().scheduleTask(screen -> screen.discardActionMenu(openedActionMenu));
+                    // Delay this to avoid ConcurrentModificationException
+                    WidgetScreen.getCurrentScreen().deferDiscardActionMenu(openedActionMenu);
                 }),
                 new DefaultEntry(null, "gui.sfm.ActionMenu.Cut"),
                 new DefaultEntry(null, "gui.sfm.ActionMenu.Copy"),

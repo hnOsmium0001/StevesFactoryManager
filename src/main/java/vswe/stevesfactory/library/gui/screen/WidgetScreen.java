@@ -195,6 +195,10 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         addWindow(actionMenu, DUMMY_POSITION_HANDLER);
     }
 
+    public void deferDiscardActionMenu(ActionMenu actionMenu) {
+        scheduleTask(self -> self.discardActionMenu(actionMenu));
+    }
+
     public void discardActionMenu(ActionMenu actionMenu) {
         for (Set<ActionMenu> value : actionMenus.values()) {
             removeActionMenus(value, actionMenu::equals);
