@@ -61,7 +61,7 @@ public final class RenderEventDispatcher {
         public abstract void postRender(IWindow widget, int mx, int my);
     }
 
-    private static Type activeInstance = Type.DISABLED;
+    private static Type activeInstance = Type.ENABLED;
 
     public static void onPreRender(IWidget widget, int mx, int my) {
         activeInstance.preRender(widget, mx, my);

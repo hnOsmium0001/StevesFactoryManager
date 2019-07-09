@@ -17,6 +17,8 @@ import static vswe.stevesfactory.utils.RenderingHelper.vertexTransparentRect;
 
 public class BoxHighlighting {
 
+    public static boolean enabled = true;
+
     public static final int CONTENTS = 0x99ff9d82;
     public static final int BORDER = 0x993b86ff;
     public static final float BORDER_A = BORDER >> 24 & 255;
@@ -25,6 +27,9 @@ public class BoxHighlighting {
     public static final float BORDER_B = BORDER & 255;
 
     public static boolean tryDraw(IWidget widget, int mx, int my) {
+        if (!enabled) {
+            return false;
+        }
         if (widget.isInside(mx, my)) {
             if (widget instanceof IContainer<?>) {
                 for (IWidget child : ((IContainer<?>) widget).getChildren()) {
@@ -62,6 +67,9 @@ public class BoxHighlighting {
     }
 
     public static boolean tryDraw(IWindow window, int mx, int my) {
+        if (!enabled) {
+            return false;
+        }
         if (window.isInside(mx, my)) {
             for (IWidget child : window.getChildren()) {
                 if (child.isInside(mx, my)) {
