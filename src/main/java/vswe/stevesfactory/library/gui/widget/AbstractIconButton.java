@@ -33,5 +33,4 @@ public abstract class AbstractIconButton extends AbstractWidget implements Reloc
     public abstract TextureWrapper getTextureNormal();
 
     public abstract TextureWrapper getTextureHovering();
-
 }

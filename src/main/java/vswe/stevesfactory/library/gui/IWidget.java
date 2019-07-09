@@ -108,5 +108,4 @@ public interface IWidget extends IRenderable {
      * continue.
      */
     boolean charTyped(char charTyped, int keyCode);
-
 }

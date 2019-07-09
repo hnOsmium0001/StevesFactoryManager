@@ -37,5 +37,4 @@ public final class Icon extends AbstractWidget implements RelocatableWidgetMixin
     public void setTexture(TextureWrapper texture) {
         this.texture = texture;
     }
-
 }

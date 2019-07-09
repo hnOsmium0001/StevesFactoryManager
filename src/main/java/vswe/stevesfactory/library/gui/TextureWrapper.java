@@ -71,5 +71,4 @@ public class TextureWrapper {
     public int getPortionHeight() {
         return portionHeight;
     }
-
 }

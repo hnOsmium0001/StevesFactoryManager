@@ -1,12 +1,17 @@
 package vswe.stevesfactory.blocks.manager.components;
 
 import com.google.common.base.Preconditions;
-import vswe.stevesfactory.library.gui.IContainer;
-import vswe.stevesfactory.library.gui.IWidget;
-import vswe.stevesfactory.library.gui.TextureWrapper;
+import com.google.common.collect.ImmutableList;
+import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.ArrayUtils;
+import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.gui.actionmenu.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
@@ -308,8 +313,9 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     private final List<IWidget> children;
 
     private State state;
+    private ActionMenu openedActionMenu;
 
-    public FlowComponent(EditorPanel parent) {
+    public FlowComponent(EditorPanel parent, int amountChildNodes) {
         super(0, 0);
         onParentChanged(parent);
         this.toggleStateButton = new ToggleStateButton(this);
@@ -317,7 +323,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         this.submitButton = new SubmitButton(this);
         this.cancelButton = new CancelButton(this);
         // The cursor looks a bit to short (and cute) with these numbers, might want change them?
-        this.name = new TextField(8, 8, 37, 10)
+        this.name = new TextField(8, 8, 35, 10)
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setEditable(false);
         this.name.onParentChanged(this);
@@ -340,6 +346,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
                 return 5 + menuComponents.size();
             }
         };
+        this.childComponents = new FlowComponent[amountChildNodes];
 
         this.state = State.COLLAPSED;
         this.updateChildStates();
@@ -453,6 +460,63 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+
+        if (!isInside(mouseX, mouseY)) {
+            return false;
+        }
+
+        getWindow().setFocusedWidget(this);
+        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            openActionMenu(mouseX, mouseY);
+        }
+        return true;
+    }
+
+    private void openActionMenu(double mouseX, double mouseY) {
+        openedActionMenu = ActionMenu.atCursor((int) mouseX, (int) mouseY, ImmutableList.of(
+                new CallbackEntry(new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/delete.png"), "gui.sfm.ActionMenu.Delete", button -> {
+                    removeSelf();
+                    // Delay this to avoide ConcurrentModificationException
+                    WidgetScreen.getCurrentScreen().scheduleTask(screen -> screen.discardActionMenu(openedActionMenu));
+                }),
+                new DefaultEntry(null, "gui.sfm.ActionMenu.Cut"),
+                new DefaultEntry(null, "gui.sfm.ActionMenu.Copy"),
+                new DefaultEntry(null, "gui.sfm.ActionMenu.Paste")
+        ));
+        WidgetScreen.getCurrentScreen().openActionMenu(openedActionMenu, DiscardCondition.UNFOCUSED_CLICK);
+    }
+
+    public void removeSelf() {
+        if (parentComponent != null) {
+            parentComponent.removeChildConnection(this);
+        }
+
+        for (FlowComponent child : childComponents) {
+            if (child != null) {
+                child.removeParentConnection();
+            }
+        }
+
+        getParentWidget().removeFlowComponent(this);
+    }
+
+    public void removeChildConnection(FlowComponent child) {
+        removeChildConnection(ArrayUtils.indexOf(childComponents, child));
+    }
+
+    public void removeChildConnection(int i) {
+        childComponents[i] = null;
+    }
+
+    public void removeParentConnection() {
+        parentComponent = null;
+    }
+
     public FlowComponent getParentComponent() {
         return parentComponent;
     }
@@ -461,12 +525,9 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         return childComponents;
     }
 
+    @Nonnull
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
-        getWindow().setFocusedWidget(this);
-        return false;
+    public EditorPanel getParentWidget() {
+        return Objects.requireNonNull((EditorPanel) super.getParentWidget());
     }
 }

@@ -78,5 +78,4 @@ public final class RenderEventDispatcher {
     public static void onPostRender(IWindow window, int mx, int my) {
         activeInstance.postRender(window, mx, my);
     }
-
 }

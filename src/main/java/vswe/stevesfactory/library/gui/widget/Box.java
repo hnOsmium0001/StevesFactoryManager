@@ -129,5 +129,4 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWid
     public void reflow() {
         layout.accept(children);
     }
-
 }

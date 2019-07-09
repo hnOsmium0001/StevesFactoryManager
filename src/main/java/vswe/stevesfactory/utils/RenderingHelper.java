@@ -10,7 +10,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
-import vswe.stevesfactory.StevesFactoryManager;
+
+import java.awt.*;
 
 public final class RenderingHelper {
 
@@ -52,6 +53,14 @@ public final class RenderingHelper {
         GlStateManager.color3f(1.0F, 1.0F, 1.0F);
     }
 
+    public static void drawRect(Point point, Dimension dimensions, int red, int green, int blue, int alpha) {
+        drawRect(point.x, point.y, point.x + dimensions.width, point.y + dimensions.height, red, green, blue, alpha);
+    }
+
+    public static void drawRect(int x, int y, Dimension dimensions, int red, int green, int blue, int alpha) {
+        drawRect(x, y, x + dimensions.width, y + dimensions.height, red, green, blue, alpha);
+    }
+
     public static void drawRect(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {
         GlStateManager.disableTexture();
         BufferBuilder renderer = getRenderer();
@@ -61,6 +70,10 @@ public final class RenderingHelper {
         renderer.pos(x2, y2, 0.0D).color(red, green, blue, alpha).endVertex();
         renderer.pos(x2, y, 0.0D).color(red, green, blue, alpha).endVertex();
         Tessellator.getInstance().draw();
+    }
+
+    public static void drawRect(Point point, Dimension dimensions, int color) {
+        drawRect(point.x, point.y, point.x + dimensions.width, point.y + dimensions.width, color);
     }
 
     public static void drawRect(int x, int y, int x2, int y2, int color) {
@@ -227,33 +240,52 @@ public final class RenderingHelper {
         GlStateManager.enableTexture();
     }
 
-    public static int getXForHorizontallyCenteredText(String text, int left, int right) {
-        int textWidth = fontRenderer().getStringWidth(text);
-        return getXForHorizontallyCenteredText(textWidth, left, right);
+    public static int getXForAlignedRight(int right, int width) {
+        return right - width;
     }
 
-    public static int getXForHorizontallyCenteredText(int width, int left, int right) {
-        return (left - right) / 2 - width / 2;
+    public static int getXForAlignedCenter(int left, int right, int width) {
+        return left + (right - left) / 2 - width / 2;
+    }
+
+    public static int getYForAlignedCenter(int top, int bottom, int height) {
+        return top + (bottom - top) / 2 - height / 2;
+    }
+
+    public static int getYForAlignedBottom(int bottom, int height) {
+        return bottom - height;
+    }
+
+    public static int getXForHorizontallyCenteredText(String text, int left, int right) {
+        int textWidth = fontRenderer().getStringWidth(text);
+        return getXForAlignedCenter(textWidth, left, right);
     }
 
     public static int getYForVerticallyCenteredText(int top, int bottom) {
-        return (top - bottom) / 2 - fontHeight() / 2;
+        return getYForAlignedCenter(top, bottom, fontHeight());
     }
 
     public static void drawTextCenteredVertically(String text, int leftX, int top, int bottom, int color) {
         int y = getYForVerticallyCenteredText(top, bottom);
+        GlStateManager.enableTexture();
         fontRenderer().drawString(text, leftX, y, color);
     }
 
     public static void drawTextCenteredHorizontally(String text, int left, int right, int topY, int color) {
         int x = getXForHorizontallyCenteredText(text, left, right);
+        GlStateManager.enableTexture();
         fontRenderer().drawString(text, x, topY, color);
     }
 
     public static void drawTextCentered(String text, int top, int bottom, int left, int right, int color) {
         int x = getXForHorizontallyCenteredText(text, left, right);
         int y = getYForVerticallyCenteredText(top, bottom);
+        GlStateManager.enableTexture();
         fontRenderer().drawString(text, x, y, color);
+    }
+
+    public static Dimension toBorder(Dimension contents, int borderSize) {
+        return new Dimension(contents.width + borderSize * 2, contents.height + borderSize * 2);
     }
 
 }

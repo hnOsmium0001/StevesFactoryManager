@@ -106,7 +106,6 @@ public final class BackgroundRenderer {
         private static void drawBottomRight(int x, int y) {
             plotVertexesTex(x, y, UNIT_LENGTH, UNIT_LENGTH, TX_BOTTOM_RIGHT, TY);
         }
-
     }
 
     /**
@@ -135,7 +134,6 @@ public final class BackgroundRenderer {
         private static void drawRight(int x, int y, int height) {
             plotVertexesTex(x, y, UNIT_LENGTH, height, TX_RIGHT, TY);
         }
-
     }
 
     private static final class BodyPiece {
@@ -143,7 +141,6 @@ public final class BackgroundRenderer {
         private static void draw(int x, int y, int width, int height) {
             plotVertexesColor(x, y, width, height, 0xC6, 0xC6, 0xC6, 0xFF);
         }
-
     }
 
     private static void plotVertexesTex(int x1, int y1, int width, int height, int tx, int ty) {
@@ -174,5 +171,4 @@ public final class BackgroundRenderer {
         BUFFER.pos(x1, y2, 0).color(red, green, yellow, alpha).endVertex();
         BUFFER.pos(x2, y2, 0).color(red, green, yellow, alpha).endVertex();
     }
-
 }

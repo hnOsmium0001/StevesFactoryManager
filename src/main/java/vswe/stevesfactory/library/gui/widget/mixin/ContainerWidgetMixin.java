@@ -102,5 +102,4 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
         }
         return false;
     }
-
 }

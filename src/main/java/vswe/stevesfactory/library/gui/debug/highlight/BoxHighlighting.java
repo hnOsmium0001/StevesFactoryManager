@@ -137,5 +137,4 @@ public class BoxHighlighting {
             y += fontRenderer.FONT_HEIGHT + 2;
         }
     }
-
 }

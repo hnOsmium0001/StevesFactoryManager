@@ -28,7 +28,7 @@ public interface IWindow {
         return getContentDimensions().height;
     }
 
-    List<IWidget> getChildren();
+    List<? extends IWidget> getChildren();
 
     Point getPosition();
 

@@ -38,5 +38,4 @@ public interface LeafWidgetMixin extends IWidget {
     default boolean charTyped(char charTyped, int keyCode) {
         return false;
     }
-
 }

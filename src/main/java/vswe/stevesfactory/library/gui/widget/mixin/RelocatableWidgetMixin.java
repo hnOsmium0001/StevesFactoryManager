@@ -28,5 +28,4 @@ public interface RelocatableWidgetMixin extends IWidget {
         getPosition().y = y;
         onRelativePositionChanged();
     }
-
 }

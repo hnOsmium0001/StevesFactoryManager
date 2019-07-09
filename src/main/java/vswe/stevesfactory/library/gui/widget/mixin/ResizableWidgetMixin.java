@@ -25,5 +25,4 @@ public interface ResizableWidgetMixin extends IWidget {
     default void setHeight(int height) {
         getDimensions().height = height;
     }
-
 }

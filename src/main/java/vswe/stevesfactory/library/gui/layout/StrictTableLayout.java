@@ -133,5 +133,4 @@ public class StrictTableLayout {
         }
         return true;
     }
-
 }

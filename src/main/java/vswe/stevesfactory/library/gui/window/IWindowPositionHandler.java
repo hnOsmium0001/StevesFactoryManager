@@ -8,5 +8,4 @@ import java.awt.*;
 public interface IWindowPositionHandler {
 
     Point resolve(IWindow window);
-
 }

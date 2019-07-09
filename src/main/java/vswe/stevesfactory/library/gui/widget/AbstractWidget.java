@@ -28,8 +28,8 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
     private IWindow window;
 
     private IWidget parent;
-    // Cached because this might reach all the up to the root node by recursion on getAbsoluteX/Y
 
+    // Cached because this might reach all the up to the root node by recursion on getAbsoluteX/Y
     private int absX;
     private int absY;
     private boolean enabled = true;
@@ -72,8 +72,22 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
     }
 
     private void updateAbsolutePosition() {
-        absX = parent.getAbsoluteX() + getX();
-        absY = parent.getAbsoluteY() + getY();
+        absX = getParentAbsXSafe() + getX();
+        absY = getParentAbsYSafe() + getY();
+    }
+
+    private int getParentAbsXSafe() {
+        if (parent != null) {
+            return parent.getAbsoluteX();
+        }
+        return window.getContentX();
+    }
+
+    private int getParentAbsYSafe() {
+        if (parent != null) {
+            return parent.getAbsoluteY();
+        }
+        return window.getContentY();
     }
 
     @Override
@@ -137,5 +151,4 @@ public abstract class AbstractWidget implements IWidget, ILayoutDataProvider, Wi
     public BoxSizing getBoxSizing() {
         return BoxSizing.BORDER_BOX;
     }
-
 }

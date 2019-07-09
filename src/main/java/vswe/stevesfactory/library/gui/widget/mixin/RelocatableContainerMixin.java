@@ -5,13 +5,13 @@ import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface RelocatableContainerMixin<T extends IWidget> extends IContainer<T>, RelocatableWidgetMixin {
 
     default void notifyChildrenForPositionChange() {
         // Prevent NPE when containers setting coordinates before child widgets get initialized
-        List<T> children = MoreObjects.firstNonNull(getChildren(), ImmutableList.of());
+        Collection<T> children = MoreObjects.firstNonNull(getChildren(), ImmutableList.of());
         for (T child : children) {
             child.onParentPositionChanged();
         }

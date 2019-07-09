@@ -23,5 +23,4 @@ public interface WidgetPositionMixin extends IWidget {
     default int getHeight() {
         return getDimensions().height;
     }
-
 }

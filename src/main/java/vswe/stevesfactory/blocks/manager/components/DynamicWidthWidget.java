@@ -70,5 +70,4 @@ public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractWidg
     public WidthOccupierType getWidthOccupier() {
         return widthOccupier;
     }
-
 }

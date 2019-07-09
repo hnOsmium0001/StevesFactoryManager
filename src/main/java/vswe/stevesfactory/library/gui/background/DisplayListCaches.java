@@ -49,5 +49,4 @@ public final class DisplayListCaches {
     public static int createVanillaStyleBackground(int x, int y, int width, int height) {
         return createVanillaStyleBackground(new Rectangle(x, y, width, height));
     }
-
 }
