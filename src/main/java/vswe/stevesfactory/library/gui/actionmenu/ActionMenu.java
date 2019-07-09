@@ -1,8 +1,7 @@
 package vswe.stevesfactory.library.gui.actionmenu;
 
 import com.google.common.base.Preconditions;
-import vswe.stevesfactory.library.IWidget;
-import vswe.stevesfactory.library.IWindow;
+import vswe.stevesfactory.library.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -40,7 +39,9 @@ public class ActionMenu implements IWindow, NestedEventHandlerMixin {
                 .max(Comparator.comparingInt(IEntry::getWidth))
                 .orElseThrow(IllegalArgumentException::new)
                 .getWidth();
-        this.contents.height = entries.size() * IEntry.ICON_HEIGHT;
+        this.contents.height = entries.stream()
+                .mapToInt(IEntry::getHeight)
+                .sum();
         this.border = RenderingHelper.toBorder(contents, getBorderSize());
 
         int y = 0;
@@ -54,8 +55,8 @@ public class ActionMenu implements IWindow, NestedEventHandlerMixin {
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        RenderingHelper.drawRect(position, border, 94, 94, 94, 255);
-        RenderingHelper.drawRect(getContentX(), getContentY(), contents, 157, 157, 157, 255);
+        RenderingHelper.drawRect(position, border, 75, 75, 75, 255);
+        RenderingHelper.drawRect(getContentX(), getContentY(), contents, 61, 61, 61, 255);
         for (IEntry entry : entries) {
             entry.render(mouseX, mouseY, particleTicks);
         }

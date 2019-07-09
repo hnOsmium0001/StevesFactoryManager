@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.screen;
 
+import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -14,8 +15,14 @@ import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public abstract class WidgetScreen extends Screen implements IGuiEventListener {
+
+    public static WidgetScreen getCurrentScreen() {
+        return (WidgetScreen) Minecraft.getInstance().currentScreen;
+    }
 
     private static final Point ORIGIN = new Point(0, 0);
     private static final IWindowPositionHandler DUMMY_POSITION_HANDLER = window -> ORIGIN;
@@ -30,16 +37,15 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     private IWindow primaryWindow;
     private List<Pair<IWindow, IWindowPositionHandler>> windows = new ArrayList<>();
+    private EnumMap<DiscardCondition, Set<ActionMenu>> actionMenus = new EnumMap<>(DiscardCondition.class);
 
-    private Map<DiscardCondition, Set<ActionMenu>> actionMenus = new HashMap<>();
-
-    {
-        actionMenus.put(DiscardCondition.UNFOCUSED_CLICK, new HashSet<>());
-        actionMenus.put(DiscardCondition.EXIT_HOVER, new HashSet<>());
-    }
+    private final Queue<Consumer<WidgetScreen>> tasks = new ArrayDeque<>();
 
     protected WidgetScreen(ITextComponent title) {
         super(title);
+        for (DiscardCondition condition : DiscardCondition.values()) {
+            actionMenus.put(condition, new HashSet<>());
+        }
     }
 
     @Override
@@ -50,6 +56,9 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public void tick() {
+        while (!tasks.isEmpty()) {
+            tasks.remove().accept(this);
+        }
     }
 
     protected void initializePrimaryWindow(IWindow primaryWindow) {
@@ -95,14 +104,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Set<ActionMenu> clickDiscards = this.actionMenus.get(DiscardCondition.UNFOCUSED_CLICK);
-        clickDiscards.removeIf(actionMenu -> {
-            if (!actionMenu.isInside(mouseX, mouseY)) {
-                actionMenu.onDiscard();
-                removeActionMenuAsWindow(actionMenu);
-                return true;
-            }
-            return false;
-        });
+        removeActionMenus(clickDiscards, a -> !a.isInside(mouseX, mouseY));
 
         if (windows.stream().anyMatch(window -> window.getLeft().mouseClicked(mouseX, mouseY, button))) {
             return true;
@@ -141,13 +143,8 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     // TODO add this event to widgets
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        Set<ActionMenu> clickDiscards = this.actionMenus.get(DiscardCondition.EXIT_HOVER);
-        for (ActionMenu actionMenu : clickDiscards) {
-            if (!actionMenu.isInside(mouseX, mouseY)) {
-                actionMenu.onDiscard();
-                clickDiscards.remove(actionMenu);
-            }
-        }
+        Set<ActionMenu> exitHoverDiscards = this.actionMenus.get(DiscardCondition.EXIT_HOVER);
+        removeActionMenus(exitHoverDiscards, a -> !a.isInside(mouseX, mouseY));
     }
 
     @Override
@@ -185,17 +182,37 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         }
     }
 
+    public void scheduleTask(Consumer<WidgetScreen> task) {
+        tasks.add(task);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Action menu support
     ///////////////////////////////////////////////////////////////////////////
 
     public void openActionMenu(ActionMenu actionMenu, DiscardCondition discardCondition) {
         actionMenus.get(discardCondition).add(actionMenu);
-        windows.add(Pair.of(actionMenu, DUMMY_POSITION_HANDLER));
+        addWindow(actionMenu, DUMMY_POSITION_HANDLER);
+    }
+
+    public void discardActionMenu(ActionMenu actionMenu) {
+        for (Set<ActionMenu> value : actionMenus.values()) {
+            removeActionMenus(value, actionMenu::equals);
+        }
+    }
+
+    private void removeActionMenus(Set<? extends ActionMenu> actionMenus, Predicate<ActionMenu> condition) {
+        actionMenus.removeIf(actionMenu -> {
+            if (condition.test(actionMenu)) {
+                actionMenu.onDiscard();
+                removeActionMenuAsWindow(actionMenu);
+                return true;
+            }
+            return false;
+        });
     }
 
     private void removeActionMenuAsWindow(ActionMenu actionMenu) {
         windows.removeIf(pair -> pair.getLeft() == actionMenu);
     }
-
 }

@@ -4,7 +4,9 @@
   "block.sfm.factory_manager": "Factory Manager",
   "block.sfm.cable": "Inventory Cable",
 
+  // Action menu names
   "gui.sfm.ActionMenu.Delete": "Delete",
+  "gui.sfm.ActionMenu.Cut": "Cut",
   "gui.sfm.ActionMenu.Copy": "Copy",
-  "gui.sfm.ActionMenu.Cut": "Cut"
+  "gui.sfm.ActionMenu.Paste": "Paste"
 }

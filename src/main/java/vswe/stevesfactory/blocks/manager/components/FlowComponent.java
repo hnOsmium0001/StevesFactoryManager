@@ -2,7 +2,10 @@ package vswe.stevesfactory.blocks.manager.components;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.IContainer;
 import vswe.stevesfactory.library.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
@@ -312,8 +315,9 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     private final List<IWidget> children;
 
     private State state;
+    private ActionMenu openedActionMenu;
 
-    public FlowComponent(EditorPanel parent) {
+    public FlowComponent(EditorPanel parent, int amountChildNodes) {
         super(0, 0);
         onParentChanged(parent);
         this.toggleStateButton = new ToggleStateButton(this);
@@ -344,6 +348,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
                 return 5 + menuComponents.size();
             }
         };
+        this.childComponents = new FlowComponent[amountChildNodes];
 
         this.state = State.COLLAPSED;
         this.updateChildStates();
@@ -457,14 +462,6 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
-    public FlowComponent getParentComponent() {
-        return parentComponent;
-    }
-
-    public FlowComponent[] getChildComponents() {
-        return childComponents;
-    }
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
@@ -477,10 +474,62 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
 
         getWindow().setFocusedWidget(this);
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            ((WidgetScreen) minecraft().currentScreen).openActionMenu(ActionMenu.atCursor((int) mouseX, (int) mouseY, ImmutableList.of(
-                    new DefaultEntry(null, "gui.sfm.ActionMenu.Delete")
-            )), DiscardCondition.UNFOCUSED_CLICK);
+            openActionMenu(mouseX, mouseY);
         }
         return true;
+    }
+
+    private void openActionMenu(double mouseX, double mouseY) {
+        openedActionMenu = ActionMenu.atCursor((int) mouseX, (int) mouseY, ImmutableList.of(
+                new CallbackEntry(new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/delete.png"), "gui.sfm.ActionMenu.Delete", button -> {
+                    removeSelf();
+                    // Delay this to avoide ConcurrentModificationException
+                    WidgetScreen.getCurrentScreen().scheduleTask(screen -> screen.discardActionMenu(openedActionMenu));
+                }),
+                new DefaultEntry(null, "gui.sfm.ActionMenu.Cut"),
+                new DefaultEntry(null, "gui.sfm.ActionMenu.Copy"),
+                new DefaultEntry(null, "gui.sfm.ActionMenu.Paste")
+        ));
+        WidgetScreen.getCurrentScreen().openActionMenu(openedActionMenu, DiscardCondition.UNFOCUSED_CLICK);
+    }
+
+    public void removeSelf() {
+        if (parentComponent != null) {
+            parentComponent.removeChildConnection(this);
+        }
+
+        for (FlowComponent child : childComponents) {
+            if (child != null) {
+                child.removeParentConnection();
+            }
+        }
+
+        getParentWidget().removeFlowComponent(this);
+    }
+
+    public void removeChildConnection(FlowComponent child) {
+        removeChildConnection(ArrayUtils.indexOf(childComponents, child));
+    }
+
+    public void removeChildConnection(int i) {
+        childComponents[i] = null;
+    }
+
+    public void removeParentConnection() {
+        parentComponent = null;
+    }
+
+    public FlowComponent getParentComponent() {
+        return parentComponent;
+    }
+
+    public FlowComponent[] getChildComponents() {
+        return childComponents;
+    }
+
+    @Nonnull
+    @Override
+    public EditorPanel getParentWidget() {
+        return Objects.requireNonNull((EditorPanel) super.getParentWidget());
     }
 }

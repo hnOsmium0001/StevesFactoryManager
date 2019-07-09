@@ -6,19 +6,19 @@ import vswe.stevesfactory.library.IWindow;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 
 import java.util.*;
-import java.util.List;
 
 public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
 
-    private List<FlowComponent> children = new ArrayList<>();
+    private Set<FlowComponent> children = new HashSet<>();
+    private Collection<FlowComponent> childrenView = Collections.unmodifiableCollection(children);
 
     public EditorPanel(FactoryManagerGUI.TopLevelWidget parent, IWindow window) {
         super(parent, window, WidthOccupierType.MAX_WIDTH);
     }
 
     @Override
-    public List<FlowComponent> getChildren() {
-        return children;
+    public Collection<FlowComponent> getChildren() {
+        return childrenView;
     }
 
     @Override
@@ -42,5 +42,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
 
     @Override
     public void reflow() {
+    }
+
+    public void removeFlowComponent(FlowComponent flowComponent) {
+        children.remove(flowComponent);
     }
 }

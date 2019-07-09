@@ -2,11 +2,12 @@ package vswe.stevesfactory.library;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 public interface IContainer<T extends IWidget> extends IWidget {
 
-    List<T> getChildren();
+    Collection<T> getChildren();
 
     void reflow();
 

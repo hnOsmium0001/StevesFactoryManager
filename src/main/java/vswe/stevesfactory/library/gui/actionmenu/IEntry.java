@@ -12,10 +12,6 @@ import static vswe.stevesfactory.utils.RenderingHelper.fontRenderer;
 
 public interface IEntry extends IWidget, RelocatableWidgetMixin {
 
-    int MARGIN_SIDES = 2;
-    int ICON_WIDTH = 16;
-    int ICON_HEIGHT = 16;
-
     /**
      * This icon must have a size of 16*16, and action menus will assume so to function. Failure to do so might create undefined behaviors.
      */
@@ -30,14 +26,4 @@ public interface IEntry extends IWidget, RelocatableWidgetMixin {
 
     @Override
     Dimension getDimensions();
-
-    @Override
-    default int getWidth() {
-        return MARGIN_SIDES + ICON_WIDTH + 4 + fontRenderer().getStringWidth(getText()) + MARGIN_SIDES;
-    }
-
-    @Override
-    default int getHeight() {
-        return MARGIN_SIDES + ICON_HEIGHT + MARGIN_SIDES;
-    }
 }
