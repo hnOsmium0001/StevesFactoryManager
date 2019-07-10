@@ -22,7 +22,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public abstract class FlowComponent extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget> {
+public abstract class FlowComponent extends AbstractWidget implements Comparable<IZIndexProvider>, IZIndexProvider, IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget> {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
@@ -314,6 +314,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
 
     private State state;
     private ActionMenu openedActionMenu;
+    private int zIndex;
 
     // Temporary data
     private int initialDragLocalX;
@@ -500,6 +501,7 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
                     // Delay this to avoid ConcurrentModificationException
                     WidgetScreen.getCurrentScreen().deferDiscardActionMenu(openedActionMenu);
                 }),
+                // TODO implement these
                 new DefaultEntry(null, "gui.sfm.ActionMenu.Cut"),
                 new DefaultEntry(null, "gui.sfm.ActionMenu.Copy"),
                 new DefaultEntry(null, "gui.sfm.ActionMenu.Paste")
@@ -545,5 +547,20 @@ public abstract class FlowComponent extends AbstractWidget implements IContainer
     @Override
     public EditorPanel getParentWidget() {
         return Objects.requireNonNull((EditorPanel) super.getParentWidget());
+    }
+
+    @Override
+    public int getZIndex() {
+        return zIndex;
+    }
+
+    @Override
+    public void setZIndex(int z) {
+        this.zIndex = z;
+    }
+
+    @Override
+    public int compareTo(IZIndexProvider that) {
+        return this.getZIndex() - that.getZIndex();
     }
 }

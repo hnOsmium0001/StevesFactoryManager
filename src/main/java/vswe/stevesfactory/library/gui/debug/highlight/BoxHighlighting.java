@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.gui.widget.IZIndexProvider;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.awt.*;
@@ -55,6 +56,19 @@ public class BoxHighlighting {
     }
 
     public static void overlayInfo(IWidget widget) {
+        if (widget instanceof IZIndexProvider) {
+            overlayInfo(new String[]{
+                    widget + ":",
+                    "X=" + widget.getX(),
+                    "Y=" + widget.getY(),
+                    "AbsX=" + widget.getAbsoluteX(),
+                    "AbsY=" + widget.getAbsoluteY(),
+                    "Width=" + widget.getWidth(),
+                    "Height=" + widget.getHeight(),
+                    "Z=" + ((IZIndexProvider) widget).getZIndex()
+            });
+            return;
+        }
         overlayInfo(new String[]{
                 widget + ":",
                 "X=" + widget.getX(),
