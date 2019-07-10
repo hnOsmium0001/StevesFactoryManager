@@ -2,7 +2,6 @@ package vswe.stevesfactory.library.gui.debug;
 
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.IWindow;
-import vswe.stevesfactory.library.gui.debug.highlight.BoxHighlighting;
 
 public final class RenderEventDispatcher {
 

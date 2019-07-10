@@ -1,6 +1,7 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import vswe.stevesfactory.library.gui.TextureWrapper;
+import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
@@ -22,7 +23,7 @@ public abstract class AbstractIconButton extends AbstractWidget implements Reloc
         if (isEnabled()) {
             RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
             if (isInside(mouseX, mouseY) && isEnabled()) {
-                getTextureHovering().draw(getAbsoluteX(), getAbsoluteY());
+                getTextureHovered().draw(getAbsoluteX(), getAbsoluteY());
             } else {
                 getTextureNormal().draw(getAbsoluteX(), getAbsoluteY());
             }
@@ -32,5 +33,12 @@ public abstract class AbstractIconButton extends AbstractWidget implements Reloc
 
     public abstract TextureWrapper getTextureNormal();
 
-    public abstract TextureWrapper getTextureHovering();
+    public abstract TextureWrapper getTextureHovered();
+
+    @Override
+    public void provideInformation(ITextReceiver receiver) {
+        super.provideInformation(receiver);
+        receiver.line("NormalTexture=" + getTextureNormal());
+        receiver.line("HoveredTexture=" + getTextureHovered());
+    }
 }

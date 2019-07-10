@@ -56,7 +56,7 @@ public abstract class Menu extends AbstractWidget implements IContainer<IWidget>
         }
 
         @Override
-        public TextureWrapper getTextureHovering() {
+        public TextureWrapper getTextureHovered() {
             return getParentWidget().state.toggleStateHoveringTexture;
         }
 

@@ -1,6 +1,7 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import vswe.stevesfactory.library.gui.TextureWrapper;
+import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
@@ -36,5 +37,11 @@ public final class Icon extends AbstractWidget implements RelocatableWidgetMixin
 
     public void setTexture(TextureWrapper texture) {
         this.texture = texture;
+    }
+
+    @Override
+    public void provideInformation(ITextReceiver receiver) {
+        super.provideInformation(receiver);
+        receiver.line("Texture=" + texture);
     }
 }

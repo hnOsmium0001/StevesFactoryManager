@@ -9,6 +9,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -367,5 +368,23 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     public TextField setBackgroundStyle(BackgroundStyle backgroundStyle) {
         this.backgroundStyle = backgroundStyle;
         return this;
+    }
+
+    private String getSelectedTextSafe() {
+        if (isRegionSelected()) {
+            return getSelectedText();
+        }
+        return "";
+    }
+
+    @Override
+    public void provideInformation(ITextReceiver receiver) {
+        super.provideInformation(receiver);
+        receiver.line("Text=" + text);
+        receiver.line("StartOffset=" + startOffset);
+        receiver.line("Cursor=" + cursor);
+        receiver.line("SelectionStart=" + getSelectionStart());
+        receiver.line("SelectionEnd=" + getSelectionEnd());
+        receiver.line("SelectedText=" + getSelectedTextSafe());
     }
 }

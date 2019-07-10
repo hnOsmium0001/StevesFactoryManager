@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui;
 
+import com.google.common.base.MoreObjects;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -70,5 +71,18 @@ public class TextureWrapper {
 
     public int getPortionHeight() {
         return portionHeight;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("texture", texture)
+                .add("textureWidth", textureWidth)
+                .add("textureHeight", textureHeight)
+                .add("tx", tx)
+                .add("ty", ty)
+                .add("portionWidth", portionWidth)
+                .add("portionHeight", portionHeight)
+                .toString();
     }
 }

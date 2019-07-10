@@ -29,7 +29,7 @@ public final class IconButton extends AbstractIconButton {
     }
 
     @Override
-    public TextureWrapper getTextureHovering() {
+    public TextureWrapper getTextureHovered() {
         return textureHovering;
     }
 

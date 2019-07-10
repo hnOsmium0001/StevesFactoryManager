@@ -8,6 +8,7 @@ import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.actionmenu.*;
+import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
@@ -105,7 +106,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
         }
 
         @Override
-        public TextureWrapper getTextureHovering() {
+        public TextureWrapper getTextureHovered() {
             return getParentWidget().getState().toggleStateHovered;
         }
 
@@ -161,7 +162,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
         }
 
         @Override
-        public TextureWrapper getTextureHovering() {
+        public TextureWrapper getTextureHovered() {
             return HOVERING;
         }
 
@@ -213,7 +214,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
         }
 
         @Override
-        public TextureWrapper getTextureHovering() {
+        public TextureWrapper getTextureHovered() {
             return HOVERING;
         }
 
@@ -277,7 +278,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
         }
 
         @Override
-        public TextureWrapper getTextureHovering() {
+        public TextureWrapper getTextureHovered() {
             return HOVERING;
         }
 
@@ -562,5 +563,11 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
     @Override
     public int compareTo(IZIndexProvider that) {
         return this.getZIndex() - that.getZIndex();
+    }
+
+    @Override
+    public void provideInformation(ITextReceiver receiver) {
+        super.provideInformation(receiver);
+        receiver.line("Z=" + this.getZIndex());
     }
 }

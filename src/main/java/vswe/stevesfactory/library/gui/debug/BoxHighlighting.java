@@ -1,22 +1,59 @@
-package vswe.stevesfactory.library.gui.debug.highlight;
+package vswe.stevesfactory.library.gui.debug;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.*;
-import vswe.stevesfactory.library.gui.widget.IZIndexProvider;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.awt.*;
 
-import static vswe.stevesfactory.utils.RenderingHelper.drawTransparentRect;
-import static vswe.stevesfactory.utils.RenderingHelper.vertexTransparentRect;
+import static vswe.stevesfactory.utils.RenderingHelper.*;
 
 public class BoxHighlighting {
+
+    public interface IInspectionInfoProvider {
+
+        void provideInformation(ITextReceiver receiver);
+    }
+
+    private static final ITextReceiver DEFAULT_INFO_RENDERER = new ITextReceiver() {
+        private static final int STARTING_X = 1;
+        private static final int STARTING_Y = 1;
+        private int x;
+        private int y;
+
+        {
+            reset();
+        }
+
+        @Override
+        public void reset() {
+            x = STARTING_X;
+            y = STARTING_Y;
+        }
+
+        @Override
+        public void string(String text) {
+            fontRenderer().drawString(text, x, y, Color.WHITE.getRGB());
+            x += fontRenderer().getStringWidth(text);
+        }
+
+        @Override
+        public void line(String line) {
+            fontRenderer().drawString(line, STARTING_X, y, Color.WHITE.getRGB());
+            nextLine();
+        }
+
+        @Override
+        public void nextLine() {
+            x = STARTING_X;
+            y += fontHeight() + 2;
+        }
+    };
 
     public static boolean enabled = true;
 
@@ -56,28 +93,21 @@ public class BoxHighlighting {
     }
 
     public static void overlayInfo(IWidget widget) {
-        if (widget instanceof IZIndexProvider) {
-            overlayInfo(new String[]{
-                    widget + ":",
-                    "X=" + widget.getX(),
-                    "Y=" + widget.getY(),
-                    "AbsX=" + widget.getAbsoluteX(),
-                    "AbsY=" + widget.getAbsoluteY(),
-                    "Width=" + widget.getWidth(),
-                    "Height=" + widget.getHeight(),
-                    "Z=" + ((IZIndexProvider) widget).getZIndex()
-            });
-            return;
+        GlStateManager.pushMatrix();
+        GlStateManager.scalef(0.5F, 0.5F, 1.0F);
+        DEFAULT_INFO_RENDERER.reset();
+        if (widget instanceof IInspectionInfoProvider) {
+            ((IInspectionInfoProvider) widget).provideInformation(DEFAULT_INFO_RENDERER);
+        } else {
+            DEFAULT_INFO_RENDERER.line(widget + ":");
+            DEFAULT_INFO_RENDERER.line("X=" + widget.getX());
+            DEFAULT_INFO_RENDERER.line("Y=" + widget.getY());
+            DEFAULT_INFO_RENDERER.line("AbsX=" + widget.getAbsoluteX());
+            DEFAULT_INFO_RENDERER.line("AbsY=" + widget.getAbsoluteY());
+            DEFAULT_INFO_RENDERER.line("Width=" + widget.getWidth());
+            DEFAULT_INFO_RENDERER.line("Height=" + widget.getHeight());
         }
-        overlayInfo(new String[]{
-                widget + ":",
-                "X=" + widget.getX(),
-                "Y=" + widget.getY(),
-                "AbsX=" + widget.getAbsoluteX(),
-                "AbsY=" + widget.getAbsoluteY(),
-                "Width=" + widget.getWidth(),
-                "Height=" + widget.getHeight()
-        });
+        GlStateManager.popMatrix();
     }
 
     public static boolean tryDraw(IWindow window, int mx, int my) {
@@ -128,27 +158,23 @@ public class BoxHighlighting {
     }
 
     public static void overlayInfo(IWindow window) {
-        overlayInfo(new String[]{
-                window + ":",
-                "X=" + window.getX(),
-                "Y=" + window.getY(),
-                "Width=" + window.getWidth(),
-                "Height=" + window.getHeight(),
-                "ContentX=" + window.getContentX(),
-                "ContentY=" + window.getContentY(),
-                "ContentWidth=" + window.getContentWidth(),
-                "ContentHeight=" + window.getContentHeight(),
-                "BorderSize=" + window.getBorderSize()
-        });
-    }
-
-    private static void overlayInfo(String[] texts) {
-        int x = 1;
-        int y = 1;
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        for (String s : texts) {
-            fontRenderer.drawString(s, x, y, Color.WHITE.getRGB());
-            y += fontRenderer.FONT_HEIGHT + 2;
+        GlStateManager.pushMatrix();
+        GlStateManager.scalef(0.5F, 0.5F, 1.0F);
+        DEFAULT_INFO_RENDERER.reset();
+        if (window instanceof IInspectionInfoProvider) {
+            ((IInspectionInfoProvider) window).provideInformation(DEFAULT_INFO_RENDERER);
+        } else {
+            DEFAULT_INFO_RENDERER.line(window + ":");
+            DEFAULT_INFO_RENDERER.line("X=" + window.getX());
+            DEFAULT_INFO_RENDERER.line("Y=" + window.getY());
+            DEFAULT_INFO_RENDERER.line("Width=" + window.getWidth());
+            DEFAULT_INFO_RENDERER.line("Height=" + window.getHeight());
+            DEFAULT_INFO_RENDERER.line("ContentX=" + window.getContentX());
+            DEFAULT_INFO_RENDERER.line("ContentY=" + window.getContentY());
+            DEFAULT_INFO_RENDERER.line("ContentWidth=" + window.getContentWidth());
+            DEFAULT_INFO_RENDERER.line("ContentHeight=" + window.getContentHeight());
+            DEFAULT_INFO_RENDERER.line("BorderSize=" + window.getBorderSize());
         }
+        GlStateManager.popMatrix();
     }
 }
