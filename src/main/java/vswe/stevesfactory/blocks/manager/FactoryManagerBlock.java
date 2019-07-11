@@ -32,7 +32,7 @@ public class FactoryManagerBlock extends BaseBlock {
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof FactoryManagerTileEntity) {
                 FactoryManagerTileEntity manager = (FactoryManagerTileEntity) tile;
-                manager.openGUI(player);
+                manager.activate(player);
                 tryDump(manager);
             }
         } else {
@@ -57,5 +57,4 @@ public class FactoryManagerBlock extends BaseBlock {
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new FactoryManagerTileEntity();
     }
-
 }

@@ -51,5 +51,4 @@ public class CableBlock extends BaseBlock {
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new CableTileEntity();
     }
-
 }

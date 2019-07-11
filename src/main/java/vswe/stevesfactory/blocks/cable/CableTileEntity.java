@@ -50,6 +50,7 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
 
     @Override
     public void updateLinks() {
+        assert world != null;
         StevesFactoryManager.logger.debug("Updating links of CableTileEntity at {}", pos);
         NetworkHelper.updateLinkType(world, linkingStatus);
 
@@ -97,6 +98,7 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
     }
 
     private List<INetworkController> getJoinedNetworkControllers() {
+        assert world != null;
         return NetworkHelper.getNetworksAt(world, joinedNetworks);
     }
 
@@ -122,5 +124,4 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
 
         return super.write(compound);
     }
-
 }

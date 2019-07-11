@@ -26,8 +26,8 @@ import java.util.List;
 
 public class FactoryManagerGUI extends WidgetScreen {
 
-    public static final float WIDTH_PROPORTION = 2f / 3f;
-    public static final float HEIGHT_PROPORTION = 3f / 4f;
+    public static final float WIDTH_PROPORTION = 2F / 3F;
+    public static final float HEIGHT_PROPORTION = 3F / 4F;
 
     protected FactoryManagerGUI() {
         super(new TranslationTextComponent("gui.sfm.factoryManager.title"));
@@ -146,7 +146,6 @@ public class FactoryManagerGUI extends WidgetScreen {
             int height = (int) (scaledHeight() * HEIGHT_PROPORTION);
             setScreenBounds(width, height);
         }
-
     }
 
     public static class TopLevelWidget extends AbstractWidget implements IContainer<DynamicWidthWidget<?>>, RelocatableContainerMixin<DynamicWidthWidget<?>>, ContainerWidgetMixin<DynamicWidthWidget<?>> {
@@ -214,5 +213,4 @@ public class FactoryManagerGUI extends WidgetScreen {
             DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);
         }
     }
-
 }

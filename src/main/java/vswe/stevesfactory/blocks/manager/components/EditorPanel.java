@@ -100,6 +100,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     private static class DescendingTreeSetBackedUnmodifiableCollection<E> extends AbstractCollection<E> {
+
         private final TreeSet<E> s;
 
         public DescendingTreeSetBackedUnmodifiableCollection(TreeSet<E> s) {

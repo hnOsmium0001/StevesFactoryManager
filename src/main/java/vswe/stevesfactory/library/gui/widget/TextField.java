@@ -230,7 +230,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         cursor = 0;
         startOffset = 0;
         return this;
-   }
+    }
 
     @CanIgnoreReturnValue
     public TextField selectAll() {

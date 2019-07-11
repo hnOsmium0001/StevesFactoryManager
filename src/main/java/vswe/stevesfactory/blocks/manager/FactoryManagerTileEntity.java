@@ -20,8 +20,7 @@ import vswe.stevesfactory.utils.*;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -59,15 +58,15 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public void tick() {
+        assert world != null;
         if (!world.isRemote) {
             // TODO logic
         }
     }
 
-    public void openGUI(PlayerEntity player) {
-        StevesFactoryManager.logger.debug("Player {} tried to open the GUI of a factory manager at {}", player, pos);
+    public void activate(PlayerEntity player) {
+        StevesFactoryManager.logger.debug("Player {} activated a factory manager at {}", player, pos);
         search();
-        // TODO gui
     }
 
     private void search() {
@@ -84,6 +83,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     private void search(BlockPos center) {
+        assert world != null;
         StevesFactoryManager.logger.trace("Searching at cable {}", center);
         for (Direction direction : VectorHelper.DIRECTIONS) {
             BlockPos neighbor = center.offset(direction);
@@ -102,6 +102,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     private void removeAllCableFromNetwork() {
+        assert world != null;
         StevesFactoryManager.logger.trace("Started removing all cables from the network {}", pos);
         for (BlockPos pos : connectedCables) {
             @Nullable
@@ -113,6 +114,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     public void dump() {
+        assert world != null;
         Logger logger = StevesFactoryManager.logger;
         logger.debug("======== Dumping Factory Manager at {} ========", pos);
 
@@ -136,8 +138,9 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public void removeCable(BlockPos cable) {
+        assert world != null;
         connectedCables.remove(cable);
-        ((ICable) world.getTileEntity(cable)).onLeaveNetwork(this);
+        Objects.requireNonNull((ICable) world.getTileEntity(cable)).onLeaveNetwork(this);
     }
 
     @Override
@@ -176,20 +179,8 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public void updateLinks() {
+        assert world != null;
         NetworkHelper.updateLinkType(world, linkingStatus);
-
-//        for (Direction direction : VectorHelper.DIRECTIONS) {
-//            BlockPos pos1 = this.pos.offset(direction);
-//            // Remove both correct and incorrect links, and add the correct ones back
-//            network.removeLink(pos1);
-//
-//            TileEntity tile = world.getTileEntity(pos1);
-//            if (tile != null) {
-//                if (NetworkHelper.shouldLink(tile)) {
-//                    network.addLink(pos1);
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -243,5 +234,4 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
         return super.write(compound);
     }
-
 }
