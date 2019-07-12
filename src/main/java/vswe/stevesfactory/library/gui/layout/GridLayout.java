@@ -1,20 +1,31 @@
 package vswe.stevesfactory.library.gui.layout;
 
 import com.google.common.base.Preconditions;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
+import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Layout widgets on a non-fixed dimension grid, where each row and column have their individual size. The widgets are layed on the grid so
+ * that they cover a rectangle of cells.
+ * <p>
+ * See CSS Grid Layout. This class is meant to replicate the mechanics of it.
+ */
 public class GridLayout {
 
-    private int gridGap;
+    private IContainer<?> bondWidget;
+    private int gridGap = 0;
 
     private int rows;
     private int columns;
-    private int[] rowWidths;
-    private int[] colHeights;
+    private int[] rowHeights;
+    private int[] columnWidths;
 
     /**
      * A map of where the child widgets should occupy. See CSS Grid's {@code grid-template-areas}. Each element is the ID (index) of the
@@ -22,33 +33,68 @@ public class GridLayout {
      */
     private int[][] areas;
 
-    public GridLayout gap(int gridGap) {
+    public GridLayout(IContainer<?> bondWidget) {
+        this.bondWidget = bondWidget;
+    }
+
+    @CanIgnoreReturnValue
+    public GridLayout gridGap(int gridGap) {
         Preconditions.checkArgument(gridGap >= 0);
         this.gridGap = gridGap;
         return this;
     }
 
+    @CanIgnoreReturnValue
     public GridLayout rows(int rows) {
         Preconditions.checkArgument(rows > 0);
         this.rows = rows;
+        if (rowHeights != null && rows != rowHeights.length) {
+            rowHeights = null;
+        }
         return this;
     }
 
-    // TODO support fractions
-    public GridLayout widths(int... rowWidths) {
-        return this;
-    }
-
-    public GridLayout heights(int... colHeights) {
-        return this;
-    }
-
+    @CanIgnoreReturnValue
     public GridLayout columns(int columns) {
         Preconditions.checkArgument(columns > 0);
         this.columns = columns;
+        if (columnWidths != null && columns != columnWidths.length) {
+            columnWidths = null;
+        }
         return this;
     }
 
+    /**
+     * The width of each column will be {@code n/s} pixels of the width of the bond widget minus the gaps, where {@code n} is the array
+     * element, {@code s} is the <i>sum</i> of all elements in the array.
+     */
+    @CanIgnoreReturnValue
+    public GridLayout widths(int... widthFactors) {
+        int sum = Arrays.stream(widthFactors).sum();
+        int usableWidth = getDimensions().width - getHorizontalSumGaps();
+        for (int i = 0; i < widthFactors.length; i++) {
+            float factor = (float) widthFactors[i] / sum;
+            columnWidths[i] = (int) (usableWidth * factor);
+        }
+        return this;
+    }
+
+    /**
+     * The width of each row will be {@code n/s} pixels of the height of the bond widget minus the gaps, where {@code n} is the array
+     * element, {@code s} is the <i>sum</i> of all elements in the array.
+     */
+    @CanIgnoreReturnValue
+    public GridLayout heights(int... heightFactors) {
+        int sum = Arrays.stream(heightFactors).sum();
+        int usableHeight = getDimensions().height - getVerticalSumGaps();
+        for (int i = 0; i < heightFactors.length; i++) {
+            float factor = (float) heightFactors[i] / sum;
+            rowHeights[i] = (int) (usableHeight * factor);
+        }
+        return this;
+    }
+
+    @CanIgnoreReturnValue
     public GridLayout areas(int... areas) {
         Preconditions.checkArgument(areas.length == rows * columns);
         for (int y = 0; y < columns; y++) {
@@ -94,7 +140,7 @@ public class GridLayout {
     private int getPxAt(int gx) {
         int result = 0;
         for (int i = 0; i < gx; i++) {
-            result += rowWidths[i] + gridGap;
+            result += columnWidths[i] + gridGap;
         }
         return result;
     }
@@ -102,16 +148,44 @@ public class GridLayout {
     private int getPyAt(int gy) {
         int result = 0;
         for (int i = 0; i < gy; i++) {
-            result += colHeights[i] + gridGap;
+            result += rowHeights[i] + gridGap;
         }
         return result;
     }
 
     private int getPx2At(int gx) {
-        return getPxAt(gx) + rowWidths[gx];
+        return getPxAt(gx) + columnWidths[gx];
     }
 
     private int getPy2At(int gy) {
-        return getPyAt(gy) + colHeights[gy];
+        return getPyAt(gy) + rowHeights[gy];
+    }
+
+    public IContainer<?> getBondWidget() {
+        return bondWidget;
+    }
+
+    public Dimension getDimensions() {
+        return bondWidget.getDimensions();
+    }
+
+    public int getGridGap() {
+        return gridGap;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    private int getHorizontalSumGaps() {
+        return (columns - 1) * gridGap;
+    }
+
+    private int getVerticalSumGaps() {
+        return (rows - 1) * gridGap;
     }
 }
