@@ -3,21 +3,24 @@ package vswe.stevesfactory.library.gui.widget;
 import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
 import java.awt.*;
+import java.util.function.IntConsumer;
 
-public final class IconButton extends AbstractIconButton {
+public final class IconButton extends AbstractIconButton implements ResizableWidgetMixin {
 
     private TextureWrapper textureNormal;
     private TextureWrapper textureHovering;
+    private IntConsumer onClick;
 
-    public IconButton(int x, int y, int width, int height, TextureWrapper textureNormal, TextureWrapper textureHovering) {
-        super(x, y, width, height);
+    public IconButton(int x, int y, TextureWrapper textureNormal, TextureWrapper textureHovering) {
+        super(x, y, 0, 0);
         this.setTextures(textureNormal, textureHovering);
     }
 
     public IconButton(Point location, Dimension dimensions, TextureWrapper textureNormal, TextureWrapper textureHovering) {
-        super(location, dimensions);
+        super(location, new Dimension());
         this.setTextures(textureNormal, textureHovering);
     }
 
@@ -34,17 +37,21 @@ public final class IconButton extends AbstractIconButton {
     public void setTextureNormal(TextureWrapper textureNormal) {
         checkArguments(textureNormal, textureHovering);
         this.textureNormal = textureNormal;
+        this.setDimensions(textureNormal.getPortionWidth(), textureNormal.getPortionHeight());
     }
 
     public void setTextureHovering(TextureWrapper textureHovering) {
         checkArguments(textureNormal, textureHovering);
         this.textureHovering = textureHovering;
+        this.setDimensions(textureHovering.getPortionWidth(), textureHovering.getPortionHeight());
     }
 
     public void setTextures(TextureWrapper textureNormal, TextureWrapper textureHovering) {
         checkArguments(textureNormal, textureHovering);
         this.textureNormal = textureNormal;
         this.textureHovering = textureHovering;
+        // Either one is fine, since we checked that they are the same size
+        this.setDimensions(textureNormal.getPortionWidth(), textureNormal.getPortionHeight());
     }
 
     private static void checkArguments(TextureWrapper textureNormal, TextureWrapper textureHovering) {
@@ -56,5 +63,11 @@ public final class IconButton extends AbstractIconButton {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         super.render(mouseX, mouseY, particleTicks);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        onClick.accept(button);
+        return true;
     }
 }

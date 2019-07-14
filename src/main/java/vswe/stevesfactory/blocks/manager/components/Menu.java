@@ -2,6 +2,7 @@ package vswe.stevesfactory.blocks.manager.components;
 
 import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
@@ -147,12 +148,14 @@ public abstract class Menu extends AbstractWidget implements IContainer<IWidget>
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         HEADING_BOX.draw(getAbsoluteX(), getAbsoluteY());
         renderHeadingText();
         toggleStateButton.render(mouseX, mouseY, particleTicks);
         if (state == State.EXPANDED) {
             renderContents(mouseX, mouseY, particleTicks);
         }
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
     }
 
     public void renderHeadingText() {
