@@ -20,6 +20,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
     private TreeSet<FlowComponent> children = new TreeSet<>();
     private Collection<FlowComponent> childrenView = new DescendingTreeSetBackedUnmodifiableCollection<>(children);
     private int nextZIndex = 0;
+    private int nextID = 0;
 
     public EditorPanel(FactoryManagerGUI.TopLevelWidget parent, IWindow window) {
         super(parent, window, WidthOccupierType.MAX_WIDTH);
@@ -27,7 +28,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
 
     @Override
     public Collection<FlowComponent> getChildren() {
-
         return childrenView;
     }
 
@@ -95,6 +95,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
     private void updateChild(FlowComponent child) {
         children.remove(child);
         children.add(child);
+    }
+
+    int nextID() {
+        return nextID++;
     }
 
     @MethodsReturnNonnullByDefault

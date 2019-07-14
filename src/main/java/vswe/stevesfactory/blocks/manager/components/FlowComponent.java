@@ -300,6 +300,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
 
     // TODO decided whether I want other widget to hold all the menus or not
 
+    private final int id;
     // Even though flow control components might have multiple parents, it is not important to the execution flow
     private FlowComponent parentComponent;
     // Use array here because it would always have a fixed size
@@ -311,6 +312,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
     private CancelButton cancelButton;
     private TextField name;
     private List<Menu> menuComponents;
+    // A list that refers to all the widgets above
     private final List<IWidget> children;
 
     private State state;
@@ -323,6 +325,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
 
     public FlowComponent(EditorPanel parent, int amountChildNodes) {
         super(0, 0);
+        this.id = parent.nextID();
         onParentChanged(parent);
         this.toggleStateButton = new ToggleStateButton(this);
         this.renameButton = new RenameButton(this);
@@ -548,6 +551,10 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
     @Override
     public EditorPanel getParentWidget() {
         return Objects.requireNonNull((EditorPanel) super.getParentWidget());
+    }
+
+    public int getID() {
+        return id;
     }
 
     @Override
