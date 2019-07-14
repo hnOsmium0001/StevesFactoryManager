@@ -2,8 +2,11 @@ package vswe.stevesfactory.library.gui.layout;
 
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.widget.INamedElement;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
@@ -39,28 +42,19 @@ public class GridLayout {
 
     @CanIgnoreReturnValue
     public GridLayout gridGap(int gridGap) {
-        Preconditions.checkArgument(gridGap >= 0);
-        this.gridGap = gridGap;
+        setGridGap(gridGap);
         return this;
     }
 
     @CanIgnoreReturnValue
     public GridLayout rows(int rows) {
-        Preconditions.checkArgument(rows > 0);
-        this.rows = rows;
-        if (rowHeights != null && rows != rowHeights.length) {
-            rowHeights = null;
-        }
+        setRows(rows);
         return this;
     }
 
     @CanIgnoreReturnValue
     public GridLayout columns(int columns) {
-        Preconditions.checkArgument(columns > 0);
-        this.columns = columns;
-        if (columnWidths != null && columns != columnWidths.length) {
-            columnWidths = null;
-        }
+        setColumns(columns);
         return this;
     }
 
@@ -70,12 +64,7 @@ public class GridLayout {
      */
     @CanIgnoreReturnValue
     public GridLayout widths(int... widthFactors) {
-        int sum = Arrays.stream(widthFactors).sum();
-        int usableWidth = getDimensions().width - getHorizontalSumGaps();
-        for (int i = 0; i < widthFactors.length; i++) {
-            float factor = (float) widthFactors[i] / sum;
-            columnWidths[i] = (int) (usableWidth * factor);
-        }
+        setColumnWidths(widthFactors);
         return this;
     }
 
@@ -85,41 +74,59 @@ public class GridLayout {
      */
     @CanIgnoreReturnValue
     public GridLayout heights(int... heightFactors) {
-        int sum = Arrays.stream(heightFactors).sum();
-        int usableHeight = getDimensions().height - getVerticalSumGaps();
-        for (int i = 0; i < heightFactors.length; i++) {
-            float factor = (float) heightFactors[i] / sum;
-            rowHeights[i] = (int) (usableHeight * factor);
-        }
+        setRowHeights(heightFactors);
         return this;
     }
 
     @CanIgnoreReturnValue
     public GridLayout areas(int... areas) {
-        Preconditions.checkArgument(areas.length == rows * columns);
-        for (int y = 0; y < columns; y++) {
-            System.arraycopy(areas, y * columns, this.areas[y], 0, rows);
-        }
+        this.setAreas(areas);
         return this;
     }
 
-    // TODO support named areas
+    /**
+     * A special version of the regular reflow mechanism, where areas can be named. The names should come from the widgets; if some names
+     * are not defined, it will use the first widget in the list by default.
+     */
+    public <T extends IWidget & INamedElement & RelocatableWidgetMixin & ResizableWidgetMixin> void reflow(List<T> widgets, String[] template) {
+        int[][] areas = new int[rows][columns];
+        Object2IntMap<String> m = new Object2IntOpenHashMap<>();
+        for (int i = 0; i < widgets.size(); i++) {
+            T widget = widgets.get(i);
+            m.put(widget.getID(), i);
+        }
+        // Check for no repeating names
+        Preconditions.checkArgument(m.size() == widgets.size());
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < columns; x++) {
+                areas[y][x] = m.getInt(template[y * columns + x]);
+            }
+        }
+        reflow(widgets, areas);
+    }
+
+    public <T extends IWidget & RelocatableWidgetMixin & ResizableWidgetMixin> void reflow(List<T> widgets) {
+        reflow(widgets, this.areas);
+    }
 
     // px/py stands for "Pixel-position x/y"
     // gx/gy stands for "Grid x/y"
-    public <T extends IWidget & RelocatableWidgetMixin & ResizableWidgetMixin> void applyBoxes(List<T> widgets) {
-        int maxIndex = 0;
+    public <T extends IWidget & RelocatableWidgetMixin & ResizableWidgetMixin> void reflow(List<T> widgets, int[][] areas) {
         for (int gy = 0; gy < areas.length; gy++) {
             int[] row = areas[gy];
             for (int gx = 0; gx < row.length; gx++) {
                 int cell = row[gx];
-
-                maxIndex = Math.max(maxIndex, cell);
-                if (maxIndex > widgets.size()) {
-                    throw new IllegalArgumentException();
+                // Discard nonexistent indexes
+                if (cell > widgets.size()) {
+                    continue;
                 }
 
                 T widget = widgets.get(cell);
+                if (!BoxSizing.shouldIncludeWidget(widget)) {
+                    continue;
+                }
+
                 int px = getPxAt(gx);
                 int py = getPyAt(gy);
                 // Expand the first vertex towards top left
@@ -187,5 +194,52 @@ public class GridLayout {
 
     private int getVerticalSumGaps() {
         return (rows - 1) * gridGap;
+    }
+
+    public void setGridGap(int gridGap) {
+        Preconditions.checkArgument(gridGap >= 0);
+        this.gridGap = gridGap;
+    }
+
+    public void setRows(int rows) {
+        Preconditions.checkArgument(rows > 0);
+        this.rows = rows;
+        if (rowHeights != null && rows != rowHeights.length) {
+            rowHeights = null;
+        }
+    }
+
+    public void setColumns(int columns) {
+        Preconditions.checkArgument(columns > 0);
+        this.columns = columns;
+        if (columnWidths != null && columns != columnWidths.length) {
+            columnWidths = null;
+        }
+    }
+
+    public void setColumnWidths(int[] widthFactors) {
+        int sum = Arrays.stream(widthFactors).sum();
+        int usableWidth = getDimensions().width - getHorizontalSumGaps();
+        for (int i = 0; i < widthFactors.length; i++) {
+            float factor = (float) widthFactors[i] / sum;
+            columnWidths[i] = (int) (usableWidth * factor);
+        }
+    }
+
+    public void setRowHeights(int[] heightFactors) {
+        int sum = Arrays.stream(heightFactors).sum();
+        int usableHeight = getDimensions().height - getVerticalSumGaps();
+        for (int i = 0; i < heightFactors.length; i++) {
+            float factor = (float) heightFactors[i] / sum;
+            rowHeights[i] = (int) (usableHeight * factor);
+        }
+    }
+
+    public void setAreas(int[] areas) {
+        Preconditions.checkArgument(areas.length == rows * columns);
+        this.areas = new int[rows][columns];
+        for (int y = 0; y < rows; y++) {
+            System.arraycopy(areas, y * columns, this.areas[y], 0, rows);
+        }
     }
 }
