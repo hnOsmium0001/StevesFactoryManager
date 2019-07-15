@@ -76,5 +76,4 @@ public class ModBlocks {
     public static void finishLoading() {
         pendingBlocks = null;
     }
-
 }

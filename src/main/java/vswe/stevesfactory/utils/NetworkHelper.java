@@ -64,5 +64,4 @@ public final class NetworkHelper {
         }
         return result;
     }
-
 }

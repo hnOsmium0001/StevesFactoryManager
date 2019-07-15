@@ -17,5 +17,4 @@ public final class CapabilityHelper {
         }
         return provider.getCapability(cap).isPresent();
     }
-
 }

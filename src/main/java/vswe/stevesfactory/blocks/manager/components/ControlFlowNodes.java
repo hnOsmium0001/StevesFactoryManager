@@ -187,7 +187,6 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
     public ControlFlowNodes(FlowComponent parent, int amountNodes, Function<ControlFlowNodes, ? extends Node> factory) {
         super(0, Node.HEIGHT);
         onParentChanged(parent);
-        updateTo(parent.getState());
         this.nodes = Stream.generate(() -> factory.apply(this)).limit(amountNodes).collect(ImmutableList.toImmutableList());
     }
 

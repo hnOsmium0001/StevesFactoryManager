@@ -57,12 +57,12 @@ public class BoxHighlighting {
 
     public static boolean enabled = true;
 
-    public static final int CONTENTS = 0x99ff9d82;
-    public static final int BORDER = 0x993b86ff;
-    public static final float BORDER_A = BORDER >> 24 & 255;
-    public static final float BORDER_R = BORDER >> 16 & 255;
-    public static final float BORDER_G = BORDER >> 8 & 255;
-    public static final float BORDER_B = BORDER & 255;
+    public static final int CONTENTS = 0x88589ee0;
+    public static final int BORDER = 0x88e38a42;
+    public static final int BORDER_A = BORDER >> 24 & 255;
+    public static final int BORDER_R = BORDER >> 16 & 255;
+    public static final int BORDER_G = BORDER >> 8 & 255;
+    public static final int BORDER_B = BORDER & 255;
 
     public static boolean tryDraw(IWidget widget, int mx, int my) {
         if (!enabled) {
@@ -99,7 +99,8 @@ public class BoxHighlighting {
         if (widget instanceof IInspectionInfoProvider) {
             ((IInspectionInfoProvider) widget).provideInformation(DEFAULT_INFO_RENDERER);
         } else {
-            DEFAULT_INFO_RENDERER.line(widget + ":");
+            DEFAULT_INFO_RENDERER.line("(default inspection info)");
+            DEFAULT_INFO_RENDERER.line(widget.toString());
             DEFAULT_INFO_RENDERER.line("X=" + widget.getX());
             DEFAULT_INFO_RENDERER.line("Y=" + widget.getY());
             DEFAULT_INFO_RENDERER.line("AbsX=" + widget.getAbsoluteX());
@@ -139,15 +140,15 @@ public class BoxHighlighting {
             int y2 = y + window.getHeight();
             int bs = window.getBorderSize();
 
-            vertexTransparentRect(buffer, x, y, x2 - bs, y + bs, BORDER_A, BORDER_R, BORDER_G, BORDER_B);
-            vertexTransparentRect(buffer, x2 - bs, y, x2, y2 - bs, BORDER_A, BORDER_R, BORDER_G, BORDER_B);
-            vertexTransparentRect(buffer, x + bs, y2 - bs, x2, y2, BORDER_A, BORDER_R, BORDER_G, BORDER_B);
-            vertexTransparentRect(buffer, x, y + bs, x + bs, y2, BORDER_A, BORDER_R, BORDER_G, BORDER_B);
+            RenderingHelper.rectVertices(x, y, x2 - bs, y + bs, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
+            RenderingHelper.rectVertices(x2 - bs, y, x2, y2 - bs, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
+            RenderingHelper.rectVertices(x + bs, y2 - bs, x2, y2, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
+            RenderingHelper.rectVertices(x, y + bs, x + bs, y2, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
         }
         {
             int cx = window.getContentX();
             int cy = window.getContentY();
-            vertexTransparentRect(buffer, cx, cy, cx + window.getContentWidth(), cy + window.getContentHeight(), CONTENTS);
+            RenderingHelper.rectVertices(cx, cy, cx + window.getContentWidth(), cy + window.getContentHeight(), CONTENTS);
         }
         tessellator.draw();
         RenderingHelper.postDrawTransparentRect();
@@ -164,7 +165,8 @@ public class BoxHighlighting {
         if (window instanceof IInspectionInfoProvider) {
             ((IInspectionInfoProvider) window).provideInformation(DEFAULT_INFO_RENDERER);
         } else {
-            DEFAULT_INFO_RENDERER.line(window + ":");
+            DEFAULT_INFO_RENDERER.line("(default inspection info)");
+            DEFAULT_INFO_RENDERER.line(window.toString());
             DEFAULT_INFO_RENDERER.line("X=" + window.getX());
             DEFAULT_INFO_RENDERER.line("Y=" + window.getY());
             DEFAULT_INFO_RENDERER.line("Width=" + window.getWidth());

@@ -61,27 +61,38 @@ public final class RenderingHelper {
         drawRect(x, y, x + dimensions.width, y + dimensions.height, red, green, blue, alpha);
     }
 
-    public static void drawRect(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {
-        GlStateManager.disableTexture();
-        BufferBuilder renderer = getRenderer();
-        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        renderer.pos(x, y, 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos(x, y2, 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos(x2, y2, 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos(x2, y, 0.0D).color(red, green, blue, alpha).endVertex();
-        Tessellator.getInstance().draw();
-    }
-
     public static void drawRect(Point point, Dimension dimensions, int color) {
         drawRect(point.x, point.y, point.x + dimensions.width, point.y + dimensions.width, color);
     }
 
+    public static void drawRect(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {
+        GlStateManager.disableTexture();
+        getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        rectVertices(x, y, x2, y2, red, green, blue, alpha);
+        Tessellator.getInstance().draw();
+    }
+
     public static void drawRect(int x, int y, int x2, int y2, int color) {
+        GlStateManager.disableTexture();
+        getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        rectVertices(x, y, x2, y2, color);
+        Tessellator.getInstance().draw();
+    }
+
+    public static void rectVertices(int x, int y, int x2, int y2, int color) {
         int alpha = (color >> 24) & 255;
         int red = (color >> 16) & 255;
         int green = (color >> 8) & 255;
         int blue = color & 255;
-        drawRect(x, y, x2, y2, red, green, blue, alpha);
+        rectVertices(x, y, x2, y2, red, green, blue, alpha);
+    }
+
+    public static void rectVertices(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {
+        BufferBuilder renderer = getRenderer();
+        renderer.pos(x, y, 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x, y2, 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x2, y2, 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x2, y, 0.0D).color(red, green, blue, alpha).endVertex();
     }
 
     public static void drawColorLogic(int x, int y, int width, int height, int red, int green, int blue, GlStateManager.LogicOp logicOp) {
@@ -200,31 +211,8 @@ public final class RenderingHelper {
 
     public static void drawTransparentRect(int x1, int y1, int x2, int y2, int color) {
         preDrawTransparentRect();
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        vertexTransparentRect(buffer, x1, y1, x2, y2, color);
-        tessellator.draw();
-
+        drawRect(x1, y1, x2, y2, color);
         postDrawTransparentRect();
-    }
-
-    // These methods should be used for drawing multiple rectangles at once
-
-    public static void vertexTransparentRect(BufferBuilder buffer, int x1, int y1, int x2, int y2, int color) {
-        float a = color >> 24 & 255;
-        float r = color >> 16 & 255;
-        float g = color >> 8 & 255;
-        float b = color & 255;
-        vertexTransparentRect(buffer, x1, y1, x2, y2, a, r, g, b);
-    }
-
-    public static void vertexTransparentRect(BufferBuilder buffer, int x1, int y1, int x2, int y2, float a, float r, float g, float b) {
-        buffer.pos(x1, y1, 0.0F).color(r, g, b, a).endVertex();
-        buffer.pos(x1, y2, 0.0F).color(r, g, b, a).endVertex();
-        buffer.pos(x2, y2, 0.0F).color(r, g, b, a).endVertex();
-        buffer.pos(x2, y1, 0.0F).color(r, g, b, a).endVertex();
     }
 
     public static void preDrawTransparentRect() {
@@ -287,5 +275,4 @@ public final class RenderingHelper {
     public static Dimension toBorder(Dimension contents, int borderSize) {
         return new Dimension(contents.width + borderSize * 2, contents.height + borderSize * 2);
     }
-
 }

@@ -45,5 +45,4 @@ public class RegistryObjectBuilder<T extends IForgeRegistryEntry<T>, B> {
         }
         return product;
     }
-
 }

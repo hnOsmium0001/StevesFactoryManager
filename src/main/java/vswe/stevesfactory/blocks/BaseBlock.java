@@ -18,7 +18,6 @@ public abstract class BaseBlock extends Block {
         super(properties);
     }
 
-
     /**
      * Don't override this method for the purpose of getting triggers on block removal. Instead, override {@link #onBlockHarvested(World,
      * BlockPos, BlockState, PlayerEntity)}.
@@ -39,5 +38,4 @@ public abstract class BaseBlock extends Block {
         }
         super.onBlockHarvested(world, pos, state, player);
     }
-
 }

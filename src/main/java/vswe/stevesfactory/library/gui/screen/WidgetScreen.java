@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.actionmenu.DiscardCondition;
@@ -50,6 +51,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     protected void init() {
+        StevesFactoryManager.logger.trace("(Re)initialized widget-based GUI {}", this);
         primaryWindow = null;
         windows.clear();
     }

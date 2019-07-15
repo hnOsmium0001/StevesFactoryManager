@@ -40,5 +40,4 @@ public class ModItems {
     public static Properties defaultItemProperties() {
         return new Properties().group(creativeTab);
     }
-
 }

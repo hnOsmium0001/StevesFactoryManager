@@ -30,5 +30,4 @@ public abstract class BaseTileEntity extends TileEntity {
     public Iterable<BlockPos> getNeighbors() {
         return neighbors;
     }
-
 }

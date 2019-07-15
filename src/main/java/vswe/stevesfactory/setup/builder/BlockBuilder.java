@@ -154,5 +154,4 @@ public final class BlockBuilder<T extends TileEntity> {
     public ResourceLocation getRegistryName() {
         return registryName;
     }
-
 }

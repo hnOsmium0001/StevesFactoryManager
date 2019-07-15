@@ -29,5 +29,4 @@ public class CompositeUnmodifiableList<E> extends AbstractList<E> {
     public int size() {
         return list1.size() + list2.size();
     }
-
 }
