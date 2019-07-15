@@ -3,7 +3,6 @@ package vswe.stevesfactory.blocks.manager.components;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.*;
@@ -302,15 +301,17 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
 
     private final int id;
     // Even though flow control components might have multiple parents, it is not important to the execution flow
-    private FlowComponent parentComponent;
+//    private FlowComponent parentComponent;
     // Use array here because it would always have a fixed size
-    private FlowComponent[] childComponents;
+//    private FlowComponent[] childComponents;
 
     private ToggleStateButton toggleStateButton;
     private RenameButton renameButton;
     private SubmitButton submitButton;
     private CancelButton cancelButton;
     private TextField name;
+    private final ControlFlowNodes inputNodes;
+    private final ControlFlowNodes outputNodes;
     private List<Menu> menuComponents;
     // A list that refers to all the widgets above
     private final List<IWidget> children;
@@ -323,10 +324,12 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
     private int initialDragLocalX;
     private int initialDragLocalY;
 
-    public FlowComponent(EditorPanel parent, int amountChildNodes) {
+    public FlowComponent(EditorPanel parent, int amountInputsNodes, int amountChildNodes) {
         super(0, 0);
-        this.id = parent.nextID();
         onParentChanged(parent);
+        this.id = parent.nextID();
+//        this.childComponents = new FlowComponent[amountChildNodes];
+
         this.toggleStateButton = new ToggleStateButton(this);
         this.renameButton = new RenameButton(this);
         this.submitButton = new SubmitButton(this);
@@ -336,6 +339,8 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setEditable(false);
         this.name.onParentChanged(this);
+        this.inputNodes = ControlFlowNodes.inputNodes(this, amountInputsNodes);
+        this.outputNodes = ControlFlowNodes.outputNodes(this, amountChildNodes);
         this.menuComponents = new ArrayList<>();
         this.children = new AbstractList<IWidget>() {
             @Override
@@ -346,16 +351,17 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
                     case 2: return submitButton;
                     case 3: return cancelButton;
                     case 4: return name;
+                    case 5: return inputNodes;
+                    case 6: return outputNodes;
                     default: return menuComponents.get(i);
                 }
             }
 
             @Override
             public int size() {
-                return 5 + menuComponents.size();
+                return 7 + menuComponents.size();
             }
         };
-        this.childComponents = new FlowComponent[amountChildNodes];
 
         this.state = State.COLLAPSED;
         this.updateChildStates();
@@ -395,6 +401,8 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
         renameButton.updateTo(state);
         submitButton.updateTo(state);
         cancelButton.updateTo(state);
+        inputNodes.updateTo(state);
+        outputNodes.updateTo(state);
     }
 
     public void toggleState() {
@@ -459,6 +467,8 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
         submitButton.render(mouseX, mouseY, particleTicks);
         cancelButton.render(mouseX, mouseY, particleTicks);
         name.render(mouseX, mouseY, particleTicks);
+        inputNodes.render(mouseX, mouseY, particleTicks);
+        outputNodes.render(mouseX, mouseY, particleTicks);
 
         if (state == State.EXPANDED) {
             for (Menu menu : menuComponents) {
@@ -514,37 +524,18 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
     }
 
     public void removeSelf() {
-        if (parentComponent != null) {
-            parentComponent.removeChildConnection(this);
-        }
-
-        for (FlowComponent child : childComponents) {
-            if (child != null) {
-                child.removeParentConnection();
-            }
-        }
+        inputNodes.removeAllConnections();
+        outputNodes.removeAllConnections();
 
         getParentWidget().removeFlowComponent(this);
     }
 
-    public void removeChildConnection(FlowComponent child) {
-        removeChildConnection(ArrayUtils.indexOf(childComponents, child));
+    public ControlFlowNodes getInputNodes() {
+        return inputNodes;
     }
 
-    public void removeChildConnection(int i) {
-        childComponents[i] = null;
-    }
-
-    public void removeParentConnection() {
-        parentComponent = null;
-    }
-
-    public FlowComponent getParentComponent() {
-        return parentComponent;
-    }
-
-    public FlowComponent[] getChildComponents() {
-        return childComponents;
+    public ControlFlowNodes getOutputNodes() {
+        return outputNodes;
     }
 
     @Nonnull
