@@ -10,7 +10,7 @@ import java.util.List;
 
 import static vswe.stevesfactory.utils.VectorHelper.isInside;
 
-public class StrictTableLayout {
+public final class StrictTableLayout {
 
     public enum GrowDirection {
         UP {
@@ -118,15 +118,15 @@ public class StrictTableLayout {
      * Test whether all widgets have the same dimension or not. Currently this layout implementation does not support widgets with different
      * sizes.
      */
-    private <T extends IWidget & RelocatableWidgetMixin> boolean isWidgetDimensionsIdentical(List<T> widgets) {
+    private boolean isWidgetDimensionsIdentical(List<? extends IWidget> widgets) {
         if (widgets.isEmpty()) {
             return true;
         }
 
-        T first = widgets.get(0);
+        IWidget first = widgets.get(0);
         int commonWidth = first.getWidth();
         int commonHeight = first.getHeight();
-        for (T widget : widgets) {
+        for (IWidget widget : widgets) {
             if (commonWidth != widget.getWidth() || commonHeight != widget.getHeight()) {
                 return false;
             }
