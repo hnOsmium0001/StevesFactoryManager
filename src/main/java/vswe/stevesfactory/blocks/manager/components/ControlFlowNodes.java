@@ -254,6 +254,13 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
         }
     }
 
+    @Override
+    public void onParentPositionChanged() {
+        super.onParentPositionChanged();
+        // AbstractWidget overrides the method, therefore we need to trigger this manually here9
+        notifyChildrenForPositionChange();
+    }
+
     @Nonnull
     @Override
     public FlowComponent getParentWidget() {

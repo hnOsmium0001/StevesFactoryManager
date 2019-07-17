@@ -8,11 +8,12 @@ import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
+import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> {
+public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> implements ContainerWidgetMixin<ComponentSelectionButton> {
 
     private static final StrictTableLayout LAYOUT = new StrictTableLayout(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
 
@@ -75,6 +76,9 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
         if (isInside(mouseX, mouseY)) {
             getWindow().setFocusedWidget(this);
             return true;
