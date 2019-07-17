@@ -66,6 +66,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
                 return true;
             }
         }
+        if (isInside(mouseX, mouseY)) {
+            getWindow().setFocusedWidget(this);
+            return true;
+        }
         return false;
     }
 

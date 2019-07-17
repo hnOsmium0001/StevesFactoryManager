@@ -72,4 +72,13 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
     public TopLevelWidget getParentWidget() {
         return Objects.requireNonNull((TopLevelWidget) super.getParentWidget());
     }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (isInside(mouseX, mouseY)) {
+            getWindow().setFocusedWidget(this);
+            return true;
+        }
+        return false;
+    }
 }

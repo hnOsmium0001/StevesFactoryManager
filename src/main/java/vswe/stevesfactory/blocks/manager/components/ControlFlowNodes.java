@@ -115,8 +115,9 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
 
     private static final class InputNode extends Node {
 
-        private static final TextureWrapper INPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 58, WIDTH, HEIGHT);
-        private static final TextureWrapper INPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 58, WIDTH, HEIGHT);
+        private static final TextureWrapper INPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 64, WIDTH, HEIGHT);
+        private static final TextureWrapper INPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 64, WIDTH, HEIGHT);
+
 
         public InputNode(ControlFlowNodes parent) {
             super(parent);
@@ -141,8 +142,8 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
 
     private static final class OutputNode extends Node {
 
-        private static final TextureWrapper OUTPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 64, WIDTH, HEIGHT);
-        private static final TextureWrapper OUTPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 64, WIDTH, HEIGHT);
+        private static final TextureWrapper OUTPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 58, WIDTH, HEIGHT);
+        private static final TextureWrapper OUTPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 58, WIDTH, HEIGHT);
 
         public OutputNode(ControlFlowNodes parent) {
             super(parent);

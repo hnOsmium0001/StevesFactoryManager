@@ -25,16 +25,15 @@ public abstract class AbstractWidget implements IWidget, BoxHighlighting.IInspec
     }
 
     private Point location;
-
     private Dimension dimensions;
-    private IWindow window;
+    private boolean enabled = true;
 
+    private IWindow window;
     private IWidget parent;
 
     // Cached because this might reach all the up to the root node by recursion on getAbsoluteX/Y
     private int absX;
     private int absY;
-    private boolean enabled = true;
 
     public AbstractWidget(int width, int height) {
         this(0, 0, width, height);
@@ -163,5 +162,6 @@ public abstract class AbstractWidget implements IWidget, BoxHighlighting.IInspec
         receiver.line("AbsY=" + this.getAbsoluteY());
         receiver.line("Width=" + this.getWidth());
         receiver.line("Height=" + this.getHeight());
+        receiver.line("Enabled=" + this.isEnabled());
     }
 }

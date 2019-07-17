@@ -380,6 +380,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     @Override
     public void provideInformation(ITextReceiver receiver) {
         super.provideInformation(receiver);
+        receiver.line("Editable=" + editable);
         receiver.line("Text=" + text);
         receiver.line("StartOffset=" + startOffset);
         receiver.line("Cursor=" + cursor);
