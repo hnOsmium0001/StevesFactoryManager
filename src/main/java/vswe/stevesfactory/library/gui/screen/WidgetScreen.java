@@ -7,9 +7,11 @@ import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.library.gui.IWindow;
+import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.actionmenu.DiscardCondition;
+import vswe.stevesfactory.library.gui.debug.Inspections;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
 
 import java.awt.*;
@@ -42,6 +44,8 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     private final Queue<Consumer<WidgetScreen>> tasks = new ArrayDeque<>();
 
+    private final WidgetTreeInspections overlayCondition = new WidgetTreeInspections();
+
     protected WidgetScreen(ITextComponent title) {
         super(title);
         for (DiscardCondition condition : DiscardCondition.values()) {
@@ -54,6 +58,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         StevesFactoryManager.logger.trace("(Re)initialized widget-based GUI {}", this);
         primaryWindow = null;
         windows.clear();
+        RenderEventDispatcher.listeners.put(Inspections.class, overlayCondition);
     }
 
     @Override
@@ -80,11 +85,12 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         // Dark background overlay
         renderBackground();
 
+        overlayCondition.startCycle();
         primaryWindow.render(mouseX, mouseY, particleTicks);
         for (Pair<IWindow, IWindowPositionHandler> pair : windows) {
-            IWindow window = pair.getLeft();
-            window.render(mouseX, mouseY, particleTicks);
+            pair.getLeft().render(mouseX, mouseY, particleTicks);
         }
+        overlayCondition.endCycle();
 
         // This should do nothing because we are not adding vanilla buttons
         super.render(mouseX, mouseY, particleTicks);

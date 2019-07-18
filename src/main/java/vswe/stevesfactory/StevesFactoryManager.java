@@ -16,7 +16,7 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import vswe.stevesfactory.library.gui.debug.BoxHighlighting;
+import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.setup.ModItems;
 
@@ -75,15 +75,15 @@ public class StevesFactoryManager {
                 .literal("InspectionBoxHighlighting")
                 .executes(context -> {
                     // Query setting
-                    context.getSource().sendFeedback(new StringTextComponent("Entry InspectionBoxHighlighting is currently set to: " + BoxHighlighting.enabled), true);
+                    context.getSource().sendFeedback(new StringTextComponent("Entry InspectionBoxHighlighting is currently set to: " + Inspections.enabled), true);
                     return 0;
                 })
                 .then(Commands
                         .argument("value", BoolArgumentType.bool())
                         .executes(context -> {
                             // Set setting
-                            BoxHighlighting.enabled = BoolArgumentType.getBool(context, "value");
-                            context.getSource().sendFeedback(new StringTextComponent("Entry InspectionBoxHighlighting is now set to " + BoxHighlighting.enabled), true);
+                            Inspections.enabled = BoolArgumentType.getBool(context, "value");
+                            context.getSource().sendFeedback(new StringTextComponent("Entry InspectionBoxHighlighting is now set to " + Inspections.enabled), true);
                             return 0;
                         }));
     }

@@ -3,78 +3,37 @@ package vswe.stevesfactory.library.gui.debug;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.IWindow;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class RenderEventDispatcher {
 
     private RenderEventDispatcher() {
     }
 
-    private enum Type {
-        ENABLED {
-            @Override
-            public void preRender(IWidget widget, int mx, int my) {
-
-            }
-
-            @Override
-            public void preRender(IWindow widget, int mx, int my) {
-
-            }
-
-            @Override
-            public void postRender(IWidget widget, int mx, int my) {
-
-                BoxHighlighting.tryDraw(widget, mx, my);
-            }
-
-            @Override
-            public void postRender(IWindow widget, int mx, int my) {
-
-                BoxHighlighting.tryDraw(widget, mx, my);
-            }
-        },
-        DISABLED {
-            // Do nothing at all
-            @Override
-            public void preRender(IWidget widget, int mx, int my) {
-            }
-
-            @Override
-            public void preRender(IWindow widget, int mx, int my) {
-            }
-
-            @Override
-            public void postRender(IWidget widget, int mx, int my) {
-            }
-
-            @Override
-            public void postRender(IWindow widget, int mx, int my) {
-            }
-        };
-
-        public abstract void preRender(IWidget widget, int mx, int my);
-
-        public abstract void preRender(IWindow widget, int mx, int my);
-
-        public abstract void postRender(IWidget widget, int mx, int my);
-
-        public abstract void postRender(IWindow widget, int mx, int my);
-    }
-
-    private static Type activeInstance = Type.ENABLED;
+    public static final Map<Class<? extends IRenderEventListener>, IRenderEventListener> listeners = new HashMap<>();
 
     public static void onPreRender(IWidget widget, int mx, int my) {
-        activeInstance.preRender(widget, mx, my);
+        for (IRenderEventListener listener : listeners.values()) {
+            listener.onPreRender(widget, mx, my);
+        }
     }
 
     public static void onPreRender(IWindow window, int mx, int my) {
-        activeInstance.preRender(window, mx, my);
+        for (IRenderEventListener listener : listeners.values()) {
+            listener.onPreRender(window, mx, my);
+        }
     }
 
     public static void onPostRender(IWidget widget, int mx, int my) {
-        activeInstance.postRender(widget, mx, my);
+        for (IRenderEventListener listener : listeners.values()) {
+            listener.onPostRender(widget, mx, my);
+        }
     }
 
     public static void onPostRender(IWindow window, int mx, int my) {
-        activeInstance.postRender(window, mx, my);
+        for (IRenderEventListener listener : listeners.values()) {
+            listener.onPostRender(window, mx, my);
+        }
     }
 }

@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.IWindow;
-import vswe.stevesfactory.library.gui.debug.BoxHighlighting;
+import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
@@ -14,7 +14,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.WidgetPositionMixin;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public abstract class AbstractWidget implements IWidget, BoxHighlighting.IInspectionInfoProvider, ILayoutDataProvider, WidgetPositionMixin, RelocatableWidgetMixin {
+public abstract class AbstractWidget implements IWidget, Inspections.IInspectionInfoProvider, ILayoutDataProvider, WidgetPositionMixin, RelocatableWidgetMixin {
 
     public static Minecraft minecraft() {
         return Minecraft.getInstance();
