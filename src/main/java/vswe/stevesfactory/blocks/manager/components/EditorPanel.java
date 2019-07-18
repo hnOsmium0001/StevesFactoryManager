@@ -1,7 +1,9 @@
 package vswe.stevesfactory.blocks.manager.components;
 
 import mcp.MethodsReturnNonnullByDefault;
+import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.blocks.manager.FactoryManagerGUI;
+import vswe.stevesfactory.blocks.manager.components.ControlFlowNodes.Node;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -21,6 +23,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
     private Collection<FlowComponent> childrenView = new DescendingTreeSetBackedUnmodifiableCollection<>(children);
     private int nextZIndex = 0;
     private int nextID = 0;
+
+    // Node connection state
+    private Node selectedNode;
 
     public EditorPanel(FactoryManagerGUI.TopLevelWidget parent, IWindow window) {
         super(parent, window, WidthOccupierType.MAX_WIDTH);
@@ -50,6 +55,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+        if (selectedNode != null) {
+            Node.drawConnectionLine(selectedNode, mouseX, mouseY);
+        }
         // Iterate in ascending order for rendering as a special case
         for (FlowComponent child : children) {
             child.render(mouseX, mouseY, particleTicks);
@@ -59,8 +67,15 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // Cancel node selection
+        if (selectedNode != null && button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            selectedNode = null;
+            return true;
+        }
+
         // All other events will be iterated in descending order
         for (FlowComponent child : getChildren()) {
+            // We know all child widgets are FlowComponent's, which is a container, therefore we can ignore whether the mouse is in box or not
             if (child.mouseClicked(mouseX, mouseY, button)) {
                 raiseComponentToTop(child);
                 return true;
@@ -104,6 +119,27 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
     int nextID() {
         return nextID++;
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Node selection logic
+    ///////////////////////////////////////////////////////////////////////////
+
+    public void startConnection(Node source) {
+        selectedNode = source;
+    }
+
+    public boolean tryFinishConnection(Node target) {
+        if (selectedNode != null && selectedNode.shouldConnect(target) && target.shouldConnect(selectedNode)) {
+            target.connect(selectedNode);
+            selectedNode = null;
+            return true;
+        }
+        return false;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Node selection logic end
+    ///////////////////////////////////////////////////////////////////////////
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault

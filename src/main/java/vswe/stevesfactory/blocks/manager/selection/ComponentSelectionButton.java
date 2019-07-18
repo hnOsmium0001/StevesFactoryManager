@@ -80,7 +80,7 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         EditorPanel editorPanel = getParentWidget().getParentWidget().editorPanel;
-        editorPanel.addChildren(new FlowComponent(editorPanel, 0, 3) {
+        editorPanel.addChildren(new FlowComponent(editorPanel, 1, 3) {
             {
                 setName("Test");
                 setLocation(10, 10);

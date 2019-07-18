@@ -2,6 +2,7 @@ package vswe.stevesfactory.blocks.manager.components;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
@@ -34,10 +35,10 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
             GlStateManager.disableTexture();
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
             GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-            GL11.glLineWidth(8);
+            GL11.glLineWidth(6);
             GL11.glBegin(GL11.GL_LINES);
             {
-                GlStateManager.color4f(64, 64, 64, 255);
+                GlStateManager.color3f(64F, 64F, 64F);
                 GL11.glVertex3f(x1, y1, -10);
                 GL11.glVertex3f(x2, y2, -10);
             }
@@ -62,6 +63,11 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
          * @implSpec Implementations should invoke the parameter node's {@link #onConnect(Node)} method with itself as the parameter.
          */
         public void connect(Node other) {
+            // Ensure one node only ever connects to at most one other node
+            // If we don't disconnect, the old connected node and the new node will both link to this node
+            if (pairedNode != null) {
+                pairedNode.disconnect();
+            }
             pairedNode = other;
             other.onConnect(this);
         }
@@ -70,7 +76,14 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
          * Called when {@link #connect(Node)} gets invoked on the paired node.
          */
         protected void onConnect(Node source) {
+            if (pairedNode != null) {
+                pairedNode.disconnect();
+            }
             pairedNode = source;
+        }
+
+        public boolean shouldConnect(Node other) {
+            return other.getParentFlowComponent() != this.getParentFlowComponent();
         }
 
         /**
@@ -93,6 +106,23 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
             pairedNode = null;
         }
 
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            switch (button) {
+                case GLFW.GLFW_MOUSE_BUTTON_LEFT:
+                    EditorPanel editor = getParentFlowComponent().getParentWidget();
+                    // If failed to finish connection (a connection has not been started yet)
+                    if (!editor.tryFinishConnection(this)) {
+                        editor.startConnection(this);
+                    }
+                    break;
+                case GLFW.GLFW_MOUSE_BUTTON_RIGHT:
+                    disconnect();
+                    break;
+            }
+            return true;
+        }
+
         @Nullable
         public Node getPairedNode() {
             return pairedNode;
@@ -111,6 +141,10 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
         public ControlFlowNodes getParentWidget() {
             return (ControlFlowNodes) Objects.requireNonNull(super.getParentWidget());
         }
+
+        public FlowComponent getParentFlowComponent() {
+            return getParentWidget().getParentWidget();
+        }
     }
 
     private static final class InputNode extends Node {
@@ -121,6 +155,27 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
 
         public InputNode(ControlFlowNodes parent) {
             super(parent);
+        }
+
+        @Override
+        public void connect(Node other) {
+            if (other instanceof InputNode) {
+                throw new IllegalArgumentException();
+            }
+            super.connect(other);
+        }
+
+        @Override
+        protected void onConnect(Node source) {
+            if (source instanceof InputNode) {
+                throw new IllegalArgumentException();
+            }
+            super.onConnect(source);
+        }
+
+        @Override
+        public boolean shouldConnect(Node other) {
+            return other instanceof OutputNode && super.shouldConnect(other);
         }
 
         @Override
@@ -147,6 +202,27 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
 
         public OutputNode(ControlFlowNodes parent) {
             super(parent);
+        }
+
+        @Override
+        public void connect(Node other) {
+            if (other instanceof OutputNode) {
+                throw new IllegalArgumentException();
+            }
+            super.connect(other);
+        }
+
+        @Override
+        protected void onConnect(Node source) {
+            if (source instanceof OutputNode) {
+                throw new IllegalArgumentException();
+            }
+            super.onConnect(source);
+        }
+
+        @Override
+        public boolean shouldConnect(Node other) {
+            return other instanceof InputNode && super.shouldConnect(other);
         }
 
         @Override
