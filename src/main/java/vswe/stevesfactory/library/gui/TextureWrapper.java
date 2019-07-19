@@ -42,7 +42,11 @@ public class TextureWrapper {
     public void draw(int x, int y) {
         int x2 = x + portionWidth;
         int y2 = y + portionHeight;
-        RenderingHelper.drawTexturePortion(x, y, x2, y2, texture, textureWidth, textureHeight, tx, ty, portionWidth, portionHeight);
+        float uFactor = 1.0F / (float) textureWidth;
+        float vFactor = 1.0F / (float) textureHeight;
+        int tx2 = tx + portionWidth;
+        int ty2 = ty + portionHeight;
+        RenderingHelper.drawTexture(x, y, x2, y2, getZLevel(), texture, tx * uFactor, ty * vFactor, tx2 * uFactor, ty2 * vFactor);
     }
 
     public Dimension getBounds() {
@@ -65,6 +69,10 @@ public class TextureWrapper {
         return ty;
     }
 
+    public float getZLevel() {
+        return 0F;
+    }
+
     public int getPortionWidth() {
         return portionWidth;
     }
@@ -85,4 +93,24 @@ public class TextureWrapper {
                 .add("portionHeight", portionHeight)
                 .toString();
     }
+
+    public TextureWrapper withZ(float z) {
+        return new TextureWrapperWithZ(this, z);
+    }
+
+    private static class TextureWrapperWithZ extends TextureWrapper {
+
+        private float zLevel;
+
+        public TextureWrapperWithZ(TextureWrapper source, float zLevel) {
+            super(source.texture, source.textureWidth, source.textureHeight, source.tx, source.ty, source.portionWidth, source.portionHeight);
+            this.zLevel = zLevel;
+        }
+
+        @Override
+        public float getZLevel() {
+            return zLevel;
+        }
+    }
+
 }

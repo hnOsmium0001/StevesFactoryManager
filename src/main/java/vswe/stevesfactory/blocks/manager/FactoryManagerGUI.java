@@ -138,7 +138,7 @@ public class FactoryManagerGUI extends WidgetScreen {
         }
 
         private void updateBackgroundDL() {
-            backgroundDL = DisplayListCaches.createVanillaStyleBackground(new Rectangle(screenBounds));
+            backgroundDL = DisplayListCaches.createVanillaStyleBackground(new Rectangle(screenBounds), 0F);
         }
 
         private void updateScreenBounds() {

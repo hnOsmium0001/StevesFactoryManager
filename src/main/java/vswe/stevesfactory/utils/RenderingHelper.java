@@ -179,6 +179,10 @@ public final class RenderingHelper {
     }
 
     public static void drawTexture(int x1, int y1, int x2, int y2, ResourceLocation texture, float u1, float v1, float u2, float v2) {
+        drawTexture(x1, y1, x2, y2, 0F, texture, u1, v1, u2, v2);
+    }
+
+    public static void drawTexture(int x1, int y1, int x2, int y2, float z, ResourceLocation texture, float u1, float v1, float u2, float v2) {
         GlStateManager.enableTexture();
         GlStateManager.disableLighting();
         GlStateManager.color3f(1.0F, 1.0F, 1.0F);
@@ -186,10 +190,10 @@ public final class RenderingHelper {
 
         BufferBuilder buffer = getRenderer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos(x1, y1, 0.0F).tex(u1, v1).endVertex();
-        buffer.pos(x1, y2, 0.0F).tex(u1, v2).endVertex();
-        buffer.pos(x2, y2, 0.0F).tex(u2, v2).endVertex();
-        buffer.pos(x2, y1, 0.0F).tex(u2, v1).endVertex();
+        buffer.pos(x1, y1, z).tex(u1, v1).endVertex();
+        buffer.pos(x1, y2, z).tex(u1, v2).endVertex();
+        buffer.pos(x2, y2, z).tex(u2, v2).endVertex();
+        buffer.pos(x2, y1, z).tex(u2, v1).endVertex();
         Tessellator.getInstance().draw();
     }
 
@@ -198,11 +202,15 @@ public final class RenderingHelper {
     }
 
     public static void drawTexturePortion(int x1, int y1, int x2, int y2, ResourceLocation texture, int textureWidth, int textureHeight, int tx, int ty, int portionWidth, int portionHeight) {
+        drawTexturePortion(x1, y1, x2, y2, 0F, texture, textureWidth, textureHeight, tx, ty, portionWidth, portionHeight);
+    }
+
+    public static void drawTexturePortion(int x1, int y1, int x2, int y2, float z, ResourceLocation texture, int textureWidth, int textureHeight, int tx, int ty, int portionWidth, int portionHeight) {
         float uFactor = 1.0F / (float) textureWidth;
         float vFactor = 1.0F / (float) textureHeight;
         int tx2 = tx + portionWidth;
         int ty2 = ty + portionHeight;
-        drawTexture(x1, y1, x2, y2, texture, tx * uFactor, ty * vFactor, tx2 * uFactor, ty2 * vFactor);
+        drawTexture(x1, y1, x2, y2, z, texture, tx * uFactor, ty * vFactor, tx2 * uFactor, ty2 * vFactor);
     }
 
     public static void drawTexture256(int x1, int y1, int x2, int y2, ResourceLocation texture, int tx, int ty, int portionWidth, int portionHeight) {

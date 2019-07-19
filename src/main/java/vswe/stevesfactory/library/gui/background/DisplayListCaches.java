@@ -28,6 +28,10 @@ public final class DisplayListCaches {
             .build();
 
     public static int createVanillaStyleBackground(Rectangle rectangle) {
+        return createVanillaStyleBackground(rectangle, 0F);
+    }
+
+    public static int createVanillaStyleBackground(Rectangle rectangle, float z) {
         try {
             return VANILLA_BACKGROUND_CACHE.get(rectangle, () -> {
                 StevesFactoryManager.logger.info("Created background display list with size {}", rectangle);
@@ -35,7 +39,7 @@ public final class DisplayListCaches {
                 int id = GLAllocation.generateDisplayLists(1);
                 GlStateManager.newList(id, GL11.GL_COMPILE);
                 {
-                    BackgroundRenderer.drawVanillaStyle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+                    BackgroundRenderer.drawVanillaStyle(rectangle.x, rectangle.y, rectangle.width, rectangle.height, z);
                 }
                 GlStateManager.endList();
                 return id;

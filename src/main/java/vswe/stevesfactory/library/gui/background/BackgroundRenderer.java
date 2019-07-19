@@ -25,6 +25,8 @@ public final class BackgroundRenderer {
     private static final ResourceLocation TEXTURE = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/generic_components.png");
     private static final int UNIT_LENGTH = 4;
     private static final float UV_MULTIPLIER = 1f / 256f;
+    
+    private static float zLevel = 0F;
 
     /**
      * Draw a vanilla styled GUI background on the given position with the given width and height.
@@ -39,11 +41,13 @@ public final class BackgroundRenderer {
      * @param y      top y of the result, including border
      * @param width  width of the result, including both borders and must be larger than 8
      * @param height height of the result, including both borders and must be larger than 8
+     * @param z      z level that will be used for drawing and put into the depth buffer
      */
-    public static void drawVanillaStyle(int x, int y, int width, int height) {
+    public static void drawVanillaStyle(int x, int y, int width, int height, float z) {
         Preconditions.checkArgument(width >= 8 && height >= 8);
 
         RenderingHelper.useTextureGLStates();
+        zLevel = z;
 
         BUFFER.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         Minecraft.getInstance().getTextureManager().bindTexture(TEXTURE);
@@ -155,10 +159,10 @@ public final class BackgroundRenderer {
         float v2 = ty2 * UV_MULTIPLIER;
 
         // Bottom Left -> Top Left -> Top Right -> Bottom Right
-        BUFFER.pos(x2, y1, 0).tex(u2, v1).endVertex();
-        BUFFER.pos(x1, y1, 0).tex(u1, v1).endVertex();
-        BUFFER.pos(x1, y2, 0).tex(u1, v2).endVertex();
-        BUFFER.pos(x2, y2, 0).tex(u2, v2).endVertex();
+        BUFFER.pos(x2, y1, zLevel).tex(u2, v1).endVertex();
+        BUFFER.pos(x1, y1, zLevel).tex(u1, v1).endVertex();
+        BUFFER.pos(x1, y2, zLevel).tex(u1, v2).endVertex();
+        BUFFER.pos(x2, y2, zLevel).tex(u2, v2).endVertex();
     }
 
     private static void plotVertexesColor(int x1, int y1, int width, int height, int red, int green, int yellow, int alpha) {
@@ -166,9 +170,9 @@ public final class BackgroundRenderer {
         int y2 = y1 + height;
 
         // Bottom Left -> Top Left -> Top Right -> Bottom Right
-        BUFFER.pos(x2, y1, 0).color(red, green, yellow, alpha).endVertex();
-        BUFFER.pos(x1, y1, 0).color(red, green, yellow, alpha).endVertex();
-        BUFFER.pos(x1, y2, 0).color(red, green, yellow, alpha).endVertex();
-        BUFFER.pos(x2, y2, 0).color(red, green, yellow, alpha).endVertex();
+        BUFFER.pos(x2, y1, zLevel).color(red, green, yellow, alpha).endVertex();
+        BUFFER.pos(x1, y1, zLevel).color(red, green, yellow, alpha).endVertex();
+        BUFFER.pos(x1, y2, zLevel).color(red, green, yellow, alpha).endVertex();
+        BUFFER.pos(x2, y2, zLevel).color(red, green, yellow, alpha).endVertex();
     }
 }

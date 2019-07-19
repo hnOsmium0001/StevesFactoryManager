@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
 
     /**
-     * This is a tree set (ordered set) is for handling z-index of the flow components.
+     * This is a tree set (ordered set) because handling z-index of the flow components need things to be sorted.
      */
     private TreeSet<FlowComponent> children = new TreeSet<>();
     private Collection<FlowComponent> childrenView = new DescendingTreeSetBackedUnmodifiableCollection<>(children);
@@ -58,6 +58,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
         if (selectedNode != null) {
             Node.drawConnectionLine(selectedNode, mouseX, mouseY);
         }
+
         // Iterate in ascending order for rendering as a special case
         for (FlowComponent child : children) {
             child.render(mouseX, mouseY, particleTicks);

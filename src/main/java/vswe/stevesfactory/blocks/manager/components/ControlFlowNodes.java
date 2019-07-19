@@ -31,6 +31,7 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
         }
 
         public static void drawConnectionLine(int x1, int y1, int x2, int y2) {
+//            GlStateManager.enableDepthTest();
             GlStateManager.disableDepthTest();
             GlStateManager.disableTexture();
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
@@ -39,11 +40,10 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
             GL11.glBegin(GL11.GL_LINES);
             {
                 GlStateManager.color3f(64F, 64F, 64F);
-                GL11.glVertex3f(x1, y1, -10);
-                GL11.glVertex3f(x2, y2, -10);
+                GL11.glVertex3f(x1, y1, 0.9F);
+                GL11.glVertex3f(x2, y2, 0.9F);
             }
             GL11.glEnd();
-            GlStateManager.enableDepthTest();
             GlStateManager.enableTexture();
         }
 
