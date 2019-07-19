@@ -1,5 +1,6 @@
 package vswe.stevesfactory.blocks.manager.selection;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.blocks.manager.components.EditorPanel;
@@ -15,7 +16,7 @@ import java.util.Objects;
 
 public class ComponentSelectionButton extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
 
-    public enum Components {
+    public enum Component {
         TRIGGER("trigger"),
         ITEM_IMPORT("item_import"),
         ITEM_EXPORT("item_export"),
@@ -34,12 +35,12 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
         SIGN_UPDATER("sign_updater"),
         CONFIGURATIONS("configurations");
 
-        public final String fileName;
+        public final String id;
         public final ResourceLocation texture;
 
-        Components(String fileName) {
-            this.fileName = fileName;
-            this.texture = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/" + fileName + ".png");
+        Component(String id) {
+            this.id = id;
+            this.texture = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/" + id + ".png");
         }
     }
 
@@ -49,16 +50,12 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
     public static final int WIDTH = 16;
     public static final int HEIGHT = 16;
 
-    private final ResourceLocation texture;
+    private final Component component;
 
-    public ComponentSelectionButton(SelectionPanel parent, Components component) {
-        this(parent, component.texture);
-    }
-
-    public ComponentSelectionButton(SelectionPanel parent, ResourceLocation texture) {
+    public ComponentSelectionButton(SelectionPanel parent, Component component) {
         super(0, 0, WIDTH, HEIGHT);
         onWindowChanged(parent.getWindow(), parent);
-        this.texture = texture;
+        this.component = component;
     }
 
     @Override
@@ -73,7 +70,7 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
         } else {
             RenderingHelper.drawCompleteTexture(x1, y1, x2, y2, BACKGROUND_NORMAL);
         }
-        RenderingHelper.drawCompleteTexture(x1, y1, x2, y2, texture);
+        RenderingHelper.drawCompleteTexture(x1, y1, x2, y2, getTexture());
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
@@ -82,12 +79,16 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
         EditorPanel editorPanel = getParentWidget().getParentWidget().editorPanel;
         editorPanel.addChildren(new FlowComponent(editorPanel, 1, 3) {
             {
-                setName("Test");
+                setName(I18n.format("gui.sfm.Component." + component.id));
                 setLocation(10, 10);
             }
         });
         getWindow().setFocusedWidget(this);
         return true;
+    }
+
+    public ResourceLocation getTexture() {
+        return component.texture;
     }
 
     @Nonnull

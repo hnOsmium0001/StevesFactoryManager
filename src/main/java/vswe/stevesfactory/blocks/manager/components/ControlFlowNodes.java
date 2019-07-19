@@ -31,8 +31,8 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
         }
 
         public static void drawConnectionLine(int x1, int y1, int x2, int y2) {
-//            GlStateManager.enableDepthTest();
-            GlStateManager.disableDepthTest();
+            GlStateManager.enableDepthTest();
+//            GlStateManager.disableDepthTest();
             GlStateManager.disableTexture();
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
             GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);

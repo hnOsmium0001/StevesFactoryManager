@@ -8,5 +8,24 @@
   "gui.sfm.ActionMenu.Delete": "Delete",
   "gui.sfm.ActionMenu.Cut": "Cut",
   "gui.sfm.ActionMenu.Copy": "Copy",
-  "gui.sfm.ActionMenu.Paste": "Paste"
+  "gui.sfm.ActionMenu.Paste": "Paste",
+
+  // Component buttons
+  "gui.sfm.Component.trigger": "Trigger",
+  "gui.sfm.Component.item_import": "Input",
+  "gui.sfm.Component.item_export": "Output",
+  "gui.sfm.Component.item_condition": "Condition",
+  "gui.sfm.Component.flow_control": "Flow",
+  "gui.sfm.Component.fluid_import": "Input (F)",
+  "gui.sfm.Component.fluid_export": "Output (F)",
+  "gui.sfm.Component.fluid_condition": "Condition (F)",
+  "gui.sfm.Component.redstone_emitter": "Emitter",
+  "gui.sfm.Component.redstone_condition": "Condition (R)",
+  "gui.sfm.Component.craft_item": "Crafter",
+  "gui.sfm.Component.for_each": "For Each",
+  "gui.sfm.Component.group": "Group",
+  "gui.sfm.Component.group_io": "Node",
+  "gui.sfm.Component.camouflage": "Camouflage",
+  "gui.sfm.Component.sign_updater": "Sign",
+  "gui.sfm.Component.configurations": "User Preferences"
 }

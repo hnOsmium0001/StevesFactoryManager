@@ -25,7 +25,7 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
         super(parent, window, WidthOccupierType.MIN_WIDTH);
 
         ImmutableList.Builder<ComponentSelectionButton> icons = ImmutableList.builder();
-        for (ComponentSelectionButton.Components value : ComponentSelectionButton.Components.values()) {
+        for (ComponentSelectionButton.Component value : ComponentSelectionButton.Component.values()) {
             icons.add(new ComponentSelectionButton(this, value));
         }
         this.staticIcons = icons.build();
