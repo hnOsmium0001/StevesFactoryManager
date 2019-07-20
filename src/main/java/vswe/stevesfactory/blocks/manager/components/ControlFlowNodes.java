@@ -31,19 +31,21 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
         }
 
         public static void drawConnectionLine(int x1, int y1, int x2, int y2) {
+            // TODO make connection lines render under all flow components
+            // depth doesn't seem to be working
             GlStateManager.enableDepthTest();
-//            GlStateManager.disableDepthTest();
             GlStateManager.disableTexture();
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
             GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
             GL11.glLineWidth(6);
+            GL11.glColor3f(94F / 255F, 94F / 255F, 94F / 255F);
             GL11.glBegin(GL11.GL_LINES);
             {
-                GlStateManager.color3f(64F, 64F, 64F);
-                GL11.glVertex3f(x1, y1, 0.9F);
-                GL11.glVertex3f(x2, y2, 0.9F);
+                GL11.glVertex3f(x1, y1, 0F);
+                GL11.glVertex3f(x2, y2, 0F);
             }
             GL11.glEnd();
+            GL11.glColor3f(1F, 1F, 1F);
             GlStateManager.enableTexture();
         }
 
@@ -237,11 +239,11 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
 
         @Override
         public void render(int mouseX, int mouseY, float particleTicks) {
-            super.render(mouseX, mouseY, particleTicks);
             InputNode other = getPairedNode();
             if (other != null) {
                 drawConnectionLine(this, other);
             }
+            super.render(mouseX, mouseY, particleTicks);
         }
 
         @Nullable

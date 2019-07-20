@@ -2,7 +2,6 @@ package vswe.stevesfactory.blocks.manager.components;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
@@ -402,6 +401,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
         inputNodes.setY(-Node.HEIGHT);
         outputNodes.updateTo(state);
         outputNodes.setY(getHeight());
+        name.scrollToFront();
     }
 
     public void toggleState() {
@@ -423,10 +423,6 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
     }
 
     public FlowComponent addChildren(Menu menu) {
-        // TODO remove this limit by adding a scrolling list to the menus
-        if (menuComponents.size() >= 5) {
-            throw new IllegalStateException();
-        }
         menuComponents.add(menu);
         return this;
     }

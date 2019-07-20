@@ -89,10 +89,10 @@ public final class RenderingHelper {
 
     public static void rectVertices(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {
         BufferBuilder renderer = getRenderer();
-        renderer.pos(x, y, 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos(x, y2, 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos(x2, y2, 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos(x2, y, 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x, y, 0F).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x, y2, 0F).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x2, y2, 0F).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x2, y, 0F).color(red, green, blue, alpha).endVertex();
     }
 
     public static void drawColorLogic(int x, int y, int width, int height, int red, int green, int blue, GlStateManager.LogicOp logicOp) {
@@ -135,10 +135,10 @@ public final class RenderingHelper {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(x2, y1, 0.0F).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x1, y1, 0.0F).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x1, y2, 0.0F).color(f5, f6, f7, f4).endVertex();
-        buffer.pos(x2, y2, 0.0F).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x2, y1, 0F).color(f1, f2, f3, f).endVertex();
+        buffer.pos(x1, y1, 0F).color(f1, f2, f3, f).endVertex();
+        buffer.pos(x1, y2, 0F).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x2, y2, 0F).color(f5, f6, f7, f4).endVertex();
         tessellator.draw();
 
         GlStateManager.shadeModel(GL11.GL_FLAT);
@@ -166,20 +166,16 @@ public final class RenderingHelper {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(x1, y1, 0.0F).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x1, y2, 0.0F).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x2, y2, 0.0F).color(f5, f6, f7, f4).endVertex();
-        buffer.pos(x2, y1, 0.0F).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x1, y1, 0F).color(f1, f2, f3, f).endVertex();
+        buffer.pos(x1, y2, 0F).color(f1, f2, f3, f).endVertex();
+        buffer.pos(x2, y2, 0F).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x2, y1, 0F).color(f5, f6, f7, f4).endVertex();
         tessellator.draw();
 
         GlStateManager.shadeModel(GL11.GL_FLAT);
         GlStateManager.disableBlend();
         GlStateManager.enableAlphaTest();
         GlStateManager.enableTexture();
-    }
-
-    public static void drawTexture(int x1, int y1, int x2, int y2, ResourceLocation texture, float u1, float v1, float u2, float v2) {
-        drawTexture(x1, y1, x2, y2, 0F, texture, u1, v1, u2, v2);
     }
 
     public static void drawTexture(int x1, int y1, int x2, int y2, float z, ResourceLocation texture, float u1, float v1, float u2, float v2) {
@@ -197,12 +193,8 @@ public final class RenderingHelper {
         Tessellator.getInstance().draw();
     }
 
-    public static void drawCompleteTexture(int x1, int y1, int x2, int y2, ResourceLocation texture) {
-        drawTexture(x1, y1, x2, y2, texture, 0.0F, 0.0F, 1.0F, 1.0F);
-    }
-
-    public static void drawTexturePortion(int x1, int y1, int x2, int y2, ResourceLocation texture, int textureWidth, int textureHeight, int tx, int ty, int portionWidth, int portionHeight) {
-        drawTexturePortion(x1, y1, x2, y2, 0F, texture, textureWidth, textureHeight, tx, ty, portionWidth, portionHeight);
+    public static void drawTexture(int x1, int y1, int x2, int y2, ResourceLocation texture, float u1, float v1, float u2, float v2) {
+        drawTexture(x1, y1, x2, y2, 0F, texture, u1, v1, u2, v2);
     }
 
     public static void drawTexturePortion(int x1, int y1, int x2, int y2, float z, ResourceLocation texture, int textureWidth, int textureHeight, int tx, int ty, int portionWidth, int portionHeight) {
@@ -211,6 +203,18 @@ public final class RenderingHelper {
         int tx2 = tx + portionWidth;
         int ty2 = ty + portionHeight;
         drawTexture(x1, y1, x2, y2, z, texture, tx * uFactor, ty * vFactor, tx2 * uFactor, ty2 * vFactor);
+    }
+
+    public static void drawTexturePortion(int x1, int y1, int x2, int y2, ResourceLocation texture, int textureWidth, int textureHeight, int tx, int ty, int portionWidth, int portionHeight) {
+        drawTexturePortion(x1, y1, x2, y2, 0F, texture, textureWidth, textureHeight, tx, ty, portionWidth, portionHeight);
+    }
+
+    public static void drawCompleteTexture(int x1, int y1, int x2, int y2, float z, ResourceLocation texture) {
+        drawTexture(x1, y1, x2, y2, z, texture, 0.0F, 0.0F, 1.0F, 1.0F);
+    }
+
+    public static void drawCompleteTexture(int x1, int y1, int x2, int y2, ResourceLocation texture) {
+        drawCompleteTexture(x1, y1, x2, y2, 0F, texture);
     }
 
     public static void drawTexture256(int x1, int y1, int x2, int y2, ResourceLocation texture, int tx, int ty, int portionWidth, int portionHeight) {

@@ -17,6 +17,7 @@ import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
+import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

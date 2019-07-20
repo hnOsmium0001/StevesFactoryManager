@@ -143,7 +143,7 @@ public final class BackgroundRenderer {
     private static final class BodyPiece {
 
         private static void draw(int x, int y, int width, int height) {
-            plotVertexesColor(x, y, width, height, 0xC6, 0xC6, 0xC6, 0xFF);
+            plotVertexesColor(x, y, width, height, 198, 198, 198, 255);
         }
     }
 
