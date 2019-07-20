@@ -21,7 +21,7 @@ class WidgetTreeInspections extends Inspections {
                 renderOverlayInfo(widget);
             }
         } else if (renderedComponent instanceof IWindow) {
-            IWindow window = (IWindow) this.renderedComponent;
+            IWindow window = (IWindow) renderedComponent;
             renderBox(window);
             if (Screen.hasControlDown()) {
                 renderOverlayInfo(window);
@@ -32,14 +32,14 @@ class WidgetTreeInspections extends Inspections {
     @Override
     public boolean shouldRender(IWidget target, int mx, int my) {
         renderedComponent = target;
-        // We don't want to draw the component at all (in this place, but after all components has been rendered in this frame)
+        // We don't want to draw the component at all (not in this place, but after all components has been rendered in this frame)
         return false;
     }
 
     @Override
     public boolean shouldRender(IWindow target, int mx, int my) {
-        // Similar to widget's logic
         renderedComponent = target;
+        // Similar to widget's logic
         return false;
     }
 

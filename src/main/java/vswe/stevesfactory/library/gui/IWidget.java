@@ -108,4 +108,6 @@ public interface IWidget extends IRenderable {
      * continue.
      */
     boolean charTyped(char charTyped, int keyCode);
+
+    void mouseMoved(double mouseX, double mouseY);
 }

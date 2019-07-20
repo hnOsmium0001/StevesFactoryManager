@@ -39,4 +39,8 @@ public interface LeafWidgetMixin extends IWidget {
     default boolean charTyped(char charTyped, int keyCode) {
         return false;
     }
+
+    @Override
+    default void mouseMoved(double mouseX, double mouseY) {
+    }
 }

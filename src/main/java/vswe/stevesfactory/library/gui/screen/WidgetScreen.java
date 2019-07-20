@@ -6,7 +6,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
@@ -45,7 +44,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     private final Queue<Consumer<WidgetScreen>> tasks = new ArrayDeque<>();
 
-    private final WidgetTreeInspections overlayCondition = new WidgetTreeInspections();
+    private final WidgetTreeInspections inspectionHandler = new WidgetTreeInspections();
 
     protected WidgetScreen(ITextComponent title) {
         super(title);
@@ -59,7 +58,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         StevesFactoryManager.logger.trace("(Re)initialized widget-based GUI {}", this);
         primaryWindow = null;
         windows.clear();
-        RenderEventDispatcher.listeners.put(Inspections.class, overlayCondition);
+        RenderEventDispatcher.listeners.put(Inspections.class, inspectionHandler);
     }
 
     @Override
@@ -86,12 +85,12 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         // Dark background overlay
         renderBackground();
 
-        overlayCondition.startCycle();
+        inspectionHandler.startCycle();
         primaryWindow.render(mouseX, mouseY, particleTicks);
         for (Pair<IWindow, IWindowPositionHandler> pair : windows) {
             pair.getLeft().render(mouseX, mouseY, particleTicks);
         }
-        overlayCondition.endCycle();
+        inspectionHandler.endCycle();
 
         // This should do nothing because we are not adding vanilla buttons
         super.render(mouseX, mouseY, particleTicks);
@@ -112,7 +111,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Set<ActionMenu> clickDiscards = this.actionMenus.get(DiscardCondition.UNFOCUSED_CLICK);
+        Set<ActionMenu> clickDiscards = actionMenus.get(DiscardCondition.UNFOCUSED_CLICK);
         removeActionMenus(clickDiscards, a -> !a.isInside(mouseX, mouseY));
 
         if (windows.stream().anyMatch(window -> window.getLeft().mouseClicked(mouseX, mouseY, button))) {
@@ -149,11 +148,15 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         }
     }
 
-    // TODO add this event to widgets
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         Set<ActionMenu> exitHoverDiscards = this.actionMenus.get(DiscardCondition.EXIT_HOVER);
         removeActionMenus(exitHoverDiscards, a -> !a.isInside(mouseX, mouseY));
+
+        for (Pair<IWindow, IWindowPositionHandler> window : windows) {
+            window.getLeft().mouseMoved(mouseX, mouseY);
+        }
+        primaryWindow.mouseMoved(mouseX, mouseY);
     }
 
     @Override
@@ -174,13 +177,14 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         return false;
     }
 
-    // TODO apparently it became untranslated again
-//    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-//        if (windows.stream().noneMatch(window -> window.getLeft().keyReleased(keyCode, scanCode, modifiers))) {
-//            primaryWindow.keyReleased(keyCode, scanCode, modifiers);
-//        }
-//        return true;
-//    }
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (windows.stream().anyMatch(window -> window.getLeft().keyReleased(keyCode, scanCode, modifiers))) {
+            return true;
+        } else {
+            return primaryWindow.keyReleased(keyCode, scanCode, modifiers);
+        }
+    }
 
     @Override
     public boolean charTyped(char charTyped, int keyCode) {

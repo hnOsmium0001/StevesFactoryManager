@@ -89,7 +89,7 @@ public abstract class Inspections implements IRenderEventListener {
     public static final int BORDER_G = BORDER >> 8 & 255;
     public static final int BORDER_B = BORDER & 255;
 
-    // Mark these final because to enforce the master switch on subclasses too.
+    // Mark these final to enforce the master switch on subclasses
 
     @CanIgnoreReturnValue
     public final boolean tryRender(IWidget widget, int mx, int my) {

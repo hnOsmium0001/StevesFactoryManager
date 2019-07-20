@@ -108,6 +108,13 @@ public interface NestedEventHandlerMixin extends IWindow {
     }
 
     @Override
+    default void mouseMoved(double mouseX, double mouseY) {
+        for (IWidget child : getChildren()) {
+            child.mouseMoved(mouseX, mouseY);
+        }
+    }
+
+    @Override
     default void onRemoved() {
         for (IWidget child : getChildren()) {
             child.onDestruct();

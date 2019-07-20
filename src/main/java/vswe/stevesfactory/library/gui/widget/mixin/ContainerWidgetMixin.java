@@ -102,4 +102,11 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
         }
         return false;
     }
+
+    @Override
+    default void mouseMoved(double mouseX, double mouseY) {
+        for (T child : getChildren()) {
+            child.mouseMoved(mouseX, mouseY);
+        }
+    }
 }
