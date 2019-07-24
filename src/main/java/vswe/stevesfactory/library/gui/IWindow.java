@@ -32,6 +32,11 @@ public interface IWindow {
 
     Point getPosition();
 
+    default void setPosition(int x, int y) {
+        getPosition().x = x;
+        getPosition().y = y;
+    }
+
     default int getX() {
         return getPosition().x;
     }
