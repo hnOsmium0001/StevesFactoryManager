@@ -15,7 +15,7 @@ import vswe.stevesfactory.library.gui.window.DiscardCondition;
 import vswe.stevesfactory.library.gui.window.IPopupWindow;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public abstract class WidgetScreen extends Screen implements IGuiEventListener {
@@ -39,7 +39,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     private Object2LongMap<IPopupWindow> lifespanCache = new Object2LongOpenHashMap<>();
 
-    private final Queue<Function<WidgetScreen, Boolean>> tasks = new ArrayDeque<>();
+    private final Queue<Consumer<WidgetScreen>> tasks = new ArrayDeque<>();
 
     private final WidgetTreeInspections inspectionHandler = new WidgetTreeInspections();
 
@@ -77,10 +77,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     @Override
     public void tick() {
         while (!tasks.isEmpty()) {
-            // TODO fix
-            if (tasks.peek().apply(this)) {
-                tasks.remove();
-            }
+            tasks.remove().accept(this);
         }
 
         long currentTime = Minecraft.getInstance().world.getGameTime();
@@ -225,7 +222,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         }
     }
 
-    public void scheduleTask(Function<WidgetScreen, Boolean> task) {
+    public void scheduleTask(Consumer<WidgetScreen> task) {
         tasks.add(task);
     }
 
@@ -250,10 +247,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     public void deferRemovePopupWindow(IPopupWindow popup) {
-        scheduleTask(self -> {
-            self.removePopupWindow(popup);
-            return true;
-        });
+        scheduleTask(self -> self.removePopupWindow(popup));
     }
 
     private void removePopupWindows(Set<? extends IPopupWindow> popupWindows, Predicate<IPopupWindow> condition) {
