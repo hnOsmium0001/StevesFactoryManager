@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.window.DiscardCondition;
+import vswe.stevesfactory.library.gui.window.IPopupWindow;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -12,7 +14,7 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 
-public class ActionMenu implements IWindow, NestedEventHandlerMixin {
+public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
 
     public static ActionMenu atCursor(double mouseX, double mouseY, List<? extends IEntry> entries) {
         return new ActionMenu((int) mouseX, (int) mouseY, entries) {
@@ -106,6 +108,23 @@ public class ActionMenu implements IWindow, NestedEventHandlerMixin {
         return 1;
     }
 
-    public void onDiscard() {
+    @Override
+    public int getLifespan() {
+        return -1;
+    }
+
+    @Override
+    public boolean isDraggable() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldDrag(double mouseX, double mouseY) {
+        return false;
+    }
+
+    @Override
+    public DiscardCondition getDiscardCondition() {
+        return DiscardCondition.UNFOCUSED_CLICK;
     }
 }

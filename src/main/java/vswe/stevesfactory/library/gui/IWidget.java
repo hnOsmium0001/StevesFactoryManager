@@ -46,7 +46,7 @@ public interface IWidget extends IRenderable {
     default void onFocusChanged(boolean focus) {
     }
 
-    default void onDestruct() {
+    default void onRemoved() {
     }
 
     /**

@@ -1,22 +1,19 @@
 package vswe.stevesfactory.library.gui.screen;
 
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
-import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.library.gui.*;
-import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
-import vswe.stevesfactory.library.gui.actionmenu.DiscardCondition;
+import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.window.IWindowPositionHandler;
+import vswe.stevesfactory.library.gui.window.DiscardCondition;
+import vswe.stevesfactory.library.gui.window.IPopupWindow;
 
-import java.awt.*;
-import java.util.List;
-import java.util.Queue;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -27,9 +24,6 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         return (WidgetScreen) Minecraft.getInstance().currentScreen;
     }
 
-    private static final Point ORIGIN = new Point(0, 0);
-    private static final IWindowPositionHandler DUMMY_POSITION_HANDLER = window -> ORIGIN;
-
     public static int scaledWidth() {
         return Minecraft.getInstance().mainWindow.getScaledWidth();
     }
@@ -39,25 +33,43 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     private IWindow primaryWindow;
-    private List<Pair<IWindow, IWindowPositionHandler>> windows = new ArrayList<>();
-    private EnumMap<DiscardCondition, Set<ActionMenu>> actionMenus = new EnumMap<>(DiscardCondition.class);
+    private List<IWindow> regularWindows = new ArrayList<>();
+    private EnumMap<DiscardCondition, Set<IPopupWindow>> popupWindows = new EnumMap<>(DiscardCondition.class);
+    private Collection<IWindow> windows;
 
     private final Queue<Consumer<WidgetScreen>> tasks = new ArrayDeque<>();
+    private final Object2LongMap<IPopupWindow> lifespanCache = new Object2LongOpenHashMap<>();
 
     private final WidgetTreeInspections inspectionHandler = new WidgetTreeInspections();
 
     protected WidgetScreen(ITextComponent title) {
         super(title);
         for (DiscardCondition condition : DiscardCondition.values()) {
-            actionMenus.put(condition, new HashSet<>());
+            popupWindows.put(condition, new HashSet<>());
         }
+        windows = createWindowReferences();
+    }
+
+    private WindowCollection createWindowReferences() {
+        // Internal usages only
+        @SuppressWarnings("unchecked") Collection<IWindow>[] arr = new Collection[popupWindows.size() + 1];
+        arr[0] = regularWindows;
+        int i = 1;
+        for (Set<IPopupWindow> set : popupWindows.values()) {
+            // All downwards casting
+            @SuppressWarnings("unchecked") Collection<IWindow> c = (Collection<IWindow>) (Collection<? extends IWindow>) set;
+            arr[i] = c;
+            i++;
+        }
+        return new WindowCollection(arr);
     }
 
     @Override
     protected void init() {
         StevesFactoryManager.logger.trace("(Re)initialized widget-based GUI {}", this);
         primaryWindow = null;
-        windows.clear();
+        regularWindows.clear();
+        popupWindows.forEach((c, s) -> s.clear());
         RenderEventDispatcher.listeners.put(Inspections.class, inspectionHandler);
     }
 
@@ -65,6 +77,15 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     public void tick() {
         while (!tasks.isEmpty()) {
             tasks.remove().accept(this);
+        }
+
+        long currentTime = Minecraft.getInstance().world.getGameTime();
+        for (Object2LongMap.Entry<IPopupWindow> entry : lifespanCache.object2LongEntrySet()) {
+            long diff = currentTime - entry.getLongValue();
+            IPopupWindow popup = entry.getKey();
+            if (diff >= popup.getLifespan()) {
+                deferRemovePopupWindow(popup);
+            }
         }
     }
 
@@ -82,13 +103,13 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        // Dark background overlay
+        // Dark transparent overlay
         renderBackground();
 
         inspectionHandler.startCycle();
         primaryWindow.render(mouseX, mouseY, particleTicks);
-        for (Pair<IWindow, IWindowPositionHandler> pair : windows) {
-            pair.getLeft().render(mouseX, mouseY, particleTicks);
+        for (IWindow window : windows) {
+            window.render(mouseX, mouseY, particleTicks);
         }
         inspectionHandler.endCycle();
 
@@ -96,25 +117,21 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         super.render(mouseX, mouseY, particleTicks);
     }
 
-    public void addWindow(IWindow window, IWindowPositionHandler positionHandler) {
-        addWindow(Pair.of(window, positionHandler));
-    }
-
-    public void addWindow(Pair<IWindow, IWindowPositionHandler> window) {
-        windows.add(window);
+    public void addWindow(IWindow window) {
+        regularWindows.add(window);
     }
 
     public void clearWindows() {
-        windows.forEach(window -> window.getLeft().onRemoved());
-        windows.clear();
+        regularWindows.forEach(IWindow::onRemoved);
+        regularWindows.clear();
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Set<ActionMenu> clickDiscards = actionMenus.get(DiscardCondition.UNFOCUSED_CLICK);
-        removeActionMenus(clickDiscards, a -> !a.isInside(mouseX, mouseY));
+        Set<IPopupWindow> clickDiscards = popupWindows.get(DiscardCondition.UNFOCUSED_CLICK);
+        removePopupWindows(clickDiscards, p -> !p.isInside(mouseX, mouseY));
 
-        if (windows.stream().anyMatch(window -> window.getLeft().mouseClicked(mouseX, mouseY, button))) {
+        if (windows.stream().anyMatch(window -> window.mouseClicked(mouseX, mouseY, button))) {
             return true;
         } else {
             return primaryWindow.mouseClicked(mouseX, mouseY, button);
@@ -123,7 +140,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (windows.stream().anyMatch(window -> window.getLeft().mouseReleased(mouseX, mouseY, button))) {
+        if (windows.stream().anyMatch(window -> window.mouseReleased(mouseX, mouseY, button))) {
             return true;
         } else {
             return primaryWindow.mouseReleased(mouseX, mouseY, button);
@@ -132,7 +149,16 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
-        if (windows.stream().anyMatch(window -> window.getLeft().mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY))) {
+        // Dragging popup windows
+        for (Set<IPopupWindow> windows : popupWindows.values()) {
+            for (IPopupWindow popup : windows) {
+                if (popup.isDraggable() && popup.shouldDrag(mouseX, mouseY)) {
+                    popup.setPosition((int) mouseX, (int) mouseY);
+                }
+            }
+        }
+
+        if (windows.stream().anyMatch(window -> window.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY))) {
             return true;
         } else {
             return primaryWindow.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY);
@@ -141,7 +167,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled) {
-        if (windows.stream().anyMatch(window -> window.getLeft().mouseScrolled(mouseX, mouseY, amountScrolled))) {
+        if (windows.stream().anyMatch(window -> window.mouseScrolled(mouseX, mouseY, amountScrolled))) {
             return true;
         } else {
             return primaryWindow.mouseScrolled(mouseX, mouseY, amountScrolled);
@@ -150,18 +176,18 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        Set<ActionMenu> exitHoverDiscards = this.actionMenus.get(DiscardCondition.EXIT_HOVER);
-        removeActionMenus(exitHoverDiscards, a -> !a.isInside(mouseX, mouseY));
+        Set<IPopupWindow> exitHoverDiscards = popupWindows.get(DiscardCondition.EXIT_HOVER);
+        removePopupWindows(exitHoverDiscards, p -> !p.isInside(mouseX, mouseY));
 
-        for (Pair<IWindow, IWindowPositionHandler> window : windows) {
-            window.getLeft().mouseMoved(mouseX, mouseY);
+        for (IWindow window : regularWindows) {
+            window.mouseMoved(mouseX, mouseY);
         }
         primaryWindow.mouseMoved(mouseX, mouseY);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (windows.stream().anyMatch(window -> window.getLeft().keyPressed(keyCode, scanCode, modifiers))) {
+        if (windows.stream().anyMatch(window -> window.keyPressed(keyCode, scanCode, modifiers))) {
             return true;
         } else if (primaryWindow.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
@@ -179,7 +205,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (windows.stream().anyMatch(window -> window.getLeft().keyReleased(keyCode, scanCode, modifiers))) {
+        if (windows.stream().anyMatch(window -> window.keyReleased(keyCode, scanCode, modifiers))) {
             return true;
         } else {
             return primaryWindow.keyReleased(keyCode, scanCode, modifiers);
@@ -188,7 +214,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean charTyped(char charTyped, int keyCode) {
-        if (windows.stream().anyMatch(window -> window.getLeft().charTyped(charTyped, keyCode))) {
+        if (windows.stream().anyMatch(window -> window.charTyped(charTyped, keyCode))) {
             return true;
         } else {
             return primaryWindow.charTyped(charTyped, keyCode);
@@ -200,36 +226,36 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Action menu support
+    // Popup window support
     ///////////////////////////////////////////////////////////////////////////
 
-    public void openActionMenu(ActionMenu actionMenu, DiscardCondition discardCondition) {
-        actionMenus.get(discardCondition).add(actionMenu);
-        addWindow(actionMenu, DUMMY_POSITION_HANDLER);
-    }
-
-    public void deferDiscardActionMenu(ActionMenu actionMenu) {
-        scheduleTask(self -> self.discardActionMenu(actionMenu));
-    }
-
-    public void discardActionMenu(ActionMenu actionMenu) {
-        for (Set<ActionMenu> value : actionMenus.values()) {
-            removeActionMenus(value, actionMenu::equals);
+    public void addPopupWindow(IPopupWindow popup) {
+        if (popup.getLifespan() == 0) {
+            StevesFactoryManager.logger.debug("The popup {} has a lifespan of 0, therefore it is removed immediately", popup);
+            return;
+        }
+        popupWindows.get(popup.getDiscardCondition()).add(popup);
+        if (popup.getLifespan() > -1) {
+            lifespanCache.put(popup, Minecraft.getInstance().world.getGameTime());
         }
     }
 
-    private void removeActionMenus(Set<? extends ActionMenu> actionMenus, Predicate<ActionMenu> condition) {
-        actionMenus.removeIf(actionMenu -> {
+    public void removePopupWindow(IPopupWindow popup) {
+        popupWindows.get(popup.getDiscardCondition()).remove(popup);
+        popup.onRemoved();
+    }
+
+    public void deferRemovePopupWindow(IPopupWindow popup) {
+        scheduleTask(self -> self.removePopupWindow(popup));
+    }
+
+    private void removePopupWindows(Set<? extends IPopupWindow> popupWindows, Predicate<IPopupWindow> condition) {
+        popupWindows.removeIf(actionMenu -> {
             if (condition.test(actionMenu)) {
-                actionMenu.onDiscard();
-                removeActionMenuAsWindow(actionMenu);
+                actionMenu.onRemoved();
                 return true;
             }
             return false;
         });
-    }
-
-    private void removeActionMenuAsWindow(ActionMenu actionMenu) {
-        windows.removeIf(pair -> pair.getLeft() == actionMenu);
     }
 }
