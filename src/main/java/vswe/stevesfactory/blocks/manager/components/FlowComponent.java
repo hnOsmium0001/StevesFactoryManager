@@ -516,7 +516,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
                 new DefaultEntry(null, "gui.sfm.ActionMenu.Copy"),
                 new DefaultEntry(null, "gui.sfm.ActionMenu.Paste")
         ));
-        WidgetScreen.getCurrentScreen().openActionMenu(openedActionMenu, DiscardCondition.UNFOCUSED_CLICK);
+        WidgetScreen.getCurrentScreen().addPopupWindow(openedActionMenu);
     }
 
     public void removeSelf() {

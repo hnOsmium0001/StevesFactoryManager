@@ -1,5 +1,7 @@
 package vswe.stevesfactory.library.gui.screen;
 
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -7,7 +9,6 @@ import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.IWindow;
-import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.DiscardCondition;
@@ -35,6 +36,8 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     private List<IWindow> regularWindows = new ArrayList<>();
     private EnumMap<DiscardCondition, Set<IPopupWindow>> popupWindows = new EnumMap<>(DiscardCondition.class);
     private Collection<IWindow> windows;
+
+    private Object2LongMap<IPopupWindow> lifespanCache = new Object2LongOpenHashMap<>();
 
     private final Queue<Function<WidgetScreen, Boolean>> tasks = new ArrayDeque<>();
 
@@ -77,6 +80,15 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
             // TODO fix
             if (tasks.peek().apply(this)) {
                 tasks.remove();
+            }
+        }
+
+        long currentTime = Minecraft.getInstance().world.getGameTime();
+        for (Object2LongMap.Entry<IPopupWindow> entry : lifespanCache.object2LongEntrySet()) {
+            long diff = currentTime - entry.getLongValue();
+            IPopupWindow popup = entry.getKey();
+            if (diff >= popup.getLifespan()) {
+                deferRemovePopupWindow(popup);
             }
         }
     }
@@ -218,19 +230,18 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Action menu support
-    ///////////////////////////////////////////////////////////////////////////
-
-    public void openActionMenu(ActionMenu actionMenu, DiscardCondition discardCondition) {
-        popupWindows.get(discardCondition).add(actionMenu);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
     // Popup window support
     ///////////////////////////////////////////////////////////////////////////
 
     public void addPopupWindow(IPopupWindow popup) {
+        if (popup.getLifespan() == 0) {
+            StevesFactoryManager.logger.debug("The popup {} has a lifespan of 0, therefore it is removed immediately", popup);
+            return;
+        }
         popupWindows.get(popup.getDiscardCondition()).add(popup);
+        if (popup.getLifespan() > -1) {
+            lifespanCache.put(popup, Minecraft.getInstance().world.getGameTime());
+        }
     }
 
     public void removePopupWindow(IPopupWindow popup) {
@@ -249,14 +260,9 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         popupWindows.removeIf(actionMenu -> {
             if (condition.test(actionMenu)) {
                 actionMenu.onRemoved();
-//                removeActionMenuAsWindow(actionMenu);
                 return true;
             }
             return false;
         });
     }
-
-    //    private void removeActionMenuAsWindow(ActionMenu actionMenu) {
-//        regularWindows.removeIf(a -> a == actionMenu);
-//    }
 }
