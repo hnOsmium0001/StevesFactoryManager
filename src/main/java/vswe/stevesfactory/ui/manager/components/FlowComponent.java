@@ -1,11 +1,11 @@
-package vswe.stevesfactory.blocks.manager.components;
+package vswe.stevesfactory.ui.manager.components;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.blocks.manager.components.ControlFlowNodes.Node;
+import vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.actionmenu.*;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
@@ -17,7 +17,6 @@ import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
-import vswe.stevesfactory.library.gui.window.DiscardCondition;
 
 import javax.annotation.Nonnull;
 import java.awt.*;

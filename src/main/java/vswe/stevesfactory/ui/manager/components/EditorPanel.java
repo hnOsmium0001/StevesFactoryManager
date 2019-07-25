@@ -1,9 +1,9 @@
-package vswe.stevesfactory.blocks.manager.components;
+package vswe.stevesfactory.ui.manager.components;
 
 import mcp.MethodsReturnNonnullByDefault;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.blocks.manager.FactoryManagerGUI;
-import vswe.stevesfactory.blocks.manager.components.ControlFlowNodes.Node;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
+import vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;

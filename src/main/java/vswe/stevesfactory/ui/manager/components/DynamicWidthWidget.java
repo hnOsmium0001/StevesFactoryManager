@@ -1,7 +1,7 @@
-package vswe.stevesfactory.blocks.manager.components;
+package vswe.stevesfactory.ui.manager.components;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import vswe.stevesfactory.blocks.manager.FactoryManagerGUI;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.*;

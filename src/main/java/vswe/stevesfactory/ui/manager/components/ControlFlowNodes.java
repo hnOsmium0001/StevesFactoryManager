@@ -1,4 +1,4 @@
-package vswe.stevesfactory.blocks.manager.components;
+package vswe.stevesfactory.ui.manager.components;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static vswe.stevesfactory.blocks.manager.components.ControlFlowNodes.Node;
+import static vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
 
 public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>, ContainerWidgetMixin<Node>, RelocatableContainerMixin<Node>, ResizableWidgetMixin {
 

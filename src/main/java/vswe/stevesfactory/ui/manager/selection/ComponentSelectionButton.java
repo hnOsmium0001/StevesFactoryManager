@@ -1,10 +1,10 @@
-package vswe.stevesfactory.blocks.manager.selection;
+package vswe.stevesfactory.ui.manager.selection;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.blocks.manager.components.EditorPanel;
-import vswe.stevesfactory.blocks.manager.components.FlowComponent;
+import vswe.stevesfactory.ui.manager.components.EditorPanel;
+import vswe.stevesfactory.ui.manager.components.FlowComponent;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;

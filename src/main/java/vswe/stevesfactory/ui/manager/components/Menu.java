@@ -1,4 +1,4 @@
-package vswe.stevesfactory.blocks.manager.components;
+package vswe.stevesfactory.ui.manager.components;
 
 import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.library.gui.*;

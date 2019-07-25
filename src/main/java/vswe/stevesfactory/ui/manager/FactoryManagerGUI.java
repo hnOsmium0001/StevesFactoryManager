@@ -1,4 +1,4 @@
-package vswe.stevesfactory.blocks.manager;
+package vswe.stevesfactory.ui.manager;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -6,9 +6,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TranslationTextComponent;
-import vswe.stevesfactory.blocks.manager.components.DynamicWidthWidget;
-import vswe.stevesfactory.blocks.manager.components.EditorPanel;
-import vswe.stevesfactory.blocks.manager.selection.SelectionPanel;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -17,7 +14,9 @@ import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.ui.manager.components.DynamicWidthWidget;
+import vswe.stevesfactory.ui.manager.components.EditorPanel;
+import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,7 +29,7 @@ public class FactoryManagerGUI extends WidgetScreen {
     public static final float WIDTH_PROPORTION = 2F / 3F;
     public static final float HEIGHT_PROPORTION = 3F / 4F;
 
-    protected FactoryManagerGUI() {
+    public FactoryManagerGUI() {
         super(new TranslationTextComponent("gui.sfm.factoryManager.title"));
     }
 
