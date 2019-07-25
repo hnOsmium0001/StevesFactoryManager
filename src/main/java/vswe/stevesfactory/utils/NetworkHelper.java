@@ -1,8 +1,10 @@
 package vswe.stevesfactory.utils;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -10,6 +12,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
+import vswe.stevesfactory.api.logic.IProcedure;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -63,5 +66,11 @@ public final class NetworkHelper {
             }
         }
         return result;
+    }
+
+    public static IProcedure retreiveProcedure(CompoundNBT tag) {
+        ResourceLocation id = new ResourceLocation(tag.getString("ID"));
+        // TODO
+        throw new IllegalArgumentException("Unable to find a procedure registered as " + id + "!");
     }
 }
