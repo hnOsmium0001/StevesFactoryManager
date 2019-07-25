@@ -8,13 +8,14 @@ import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
-import vswe.stevesfactory.library.gui.window.DiscardCondition;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.window.DiscardCondition;
 import vswe.stevesfactory.library.gui.window.IPopupWindow;
 
 import java.util.*;
-import java.util.function.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
@@ -32,12 +33,8 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     private IWindow primaryWindow;
     private List<IWindow> regularWindows = new ArrayList<>();
-
-    // TODO remove
     private EnumMap<DiscardCondition, Set<IPopupWindow>> popupWindows = new EnumMap<>(DiscardCondition.class);
-
-    // TODO custom data structure
-    private Collection<IWindow> windows = null;
+    private Collection<IWindow> windows;
 
     private final Queue<Function<WidgetScreen, Boolean>> tasks = new ArrayDeque<>();
 
@@ -48,6 +45,21 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         for (DiscardCondition condition : DiscardCondition.values()) {
             popupWindows.put(condition, new HashSet<>());
         }
+        windows = createWindowReferences();
+    }
+
+    private WindowCollection createWindowReferences() {
+        // Internal usages only
+        @SuppressWarnings("unchecked") Collection<IWindow>[] arr = new Collection[popupWindows.size() + 1];
+        arr[0] = regularWindows;
+        int i = 1;
+        for (Set<IPopupWindow> set : popupWindows.values()) {
+            // All downwards casting
+            @SuppressWarnings("unchecked") Collection<IWindow> c = (Collection<IWindow>) (Collection<? extends IWindow>) set;
+            arr[i] = c;
+            i++;
+        }
+        return new WindowCollection(arr);
     }
 
     @Override
@@ -88,7 +100,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
         inspectionHandler.startCycle();
         primaryWindow.render(mouseX, mouseY, particleTicks);
-        for (IWindow window : regularWindows) {
+        for (IWindow window : windows) {
             window.render(mouseX, mouseY, particleTicks);
         }
         inspectionHandler.endCycle();
@@ -111,7 +123,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         Set<IPopupWindow> clickDiscards = popupWindows.get(DiscardCondition.UNFOCUSED_CLICK);
         removePopupWindows(clickDiscards, p -> !p.isInside(mouseX, mouseY));
 
-        if (regularWindows.stream().anyMatch(window -> window.mouseClicked(mouseX, mouseY, button))) {
+        if (windows.stream().anyMatch(window -> window.mouseClicked(mouseX, mouseY, button))) {
             return true;
         } else {
             return primaryWindow.mouseClicked(mouseX, mouseY, button);
@@ -120,7 +132,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (regularWindows.stream().anyMatch(window -> window.mouseReleased(mouseX, mouseY, button))) {
+        if (windows.stream().anyMatch(window -> window.mouseReleased(mouseX, mouseY, button))) {
             return true;
         } else {
             return primaryWindow.mouseReleased(mouseX, mouseY, button);
@@ -133,12 +145,12 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         for (Set<IPopupWindow> windows : popupWindows.values()) {
             for (IPopupWindow popup : windows) {
                 if (popup.isDraggable() && popup.shouldDrag(mouseX, mouseY)) {
-                    popup.setPosition((int)mouseX, (int)mouseY);
+                    popup.setPosition((int) mouseX, (int) mouseY);
                 }
             }
         }
 
-        if (regularWindows.stream().anyMatch(window -> window.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY))) {
+        if (windows.stream().anyMatch(window -> window.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY))) {
             return true;
         } else {
             return primaryWindow.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY);
@@ -147,7 +159,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled) {
-        if (regularWindows.stream().anyMatch(window -> window.mouseScrolled(mouseX, mouseY, amountScrolled))) {
+        if (windows.stream().anyMatch(window -> window.mouseScrolled(mouseX, mouseY, amountScrolled))) {
             return true;
         } else {
             return primaryWindow.mouseScrolled(mouseX, mouseY, amountScrolled);
@@ -167,7 +179,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (regularWindows.stream().anyMatch(window -> window.keyPressed(keyCode, scanCode, modifiers))) {
+        if (windows.stream().anyMatch(window -> window.keyPressed(keyCode, scanCode, modifiers))) {
             return true;
         } else if (primaryWindow.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
@@ -185,7 +197,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (regularWindows.stream().anyMatch(window -> window.keyReleased(keyCode, scanCode, modifiers))) {
+        if (windows.stream().anyMatch(window -> window.keyReleased(keyCode, scanCode, modifiers))) {
             return true;
         } else {
             return primaryWindow.keyReleased(keyCode, scanCode, modifiers);
@@ -194,7 +206,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean charTyped(char charTyped, int keyCode) {
-        if (regularWindows.stream().anyMatch(window -> window.charTyped(charTyped, keyCode))) {
+        if (windows.stream().anyMatch(window -> window.charTyped(charTyped, keyCode))) {
             return true;
         } else {
             return primaryWindow.charTyped(charTyped, keyCode);
