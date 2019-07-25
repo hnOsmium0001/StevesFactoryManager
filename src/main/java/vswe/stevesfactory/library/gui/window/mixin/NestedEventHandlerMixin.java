@@ -117,7 +117,7 @@ public interface NestedEventHandlerMixin extends IWindow {
     @Override
     default void onRemoved() {
         for (IWidget child : getChildren()) {
-            child.onDestruct();
+            child.onRemoved();
         }
     }
 }

@@ -187,6 +187,7 @@ public class GradientButton extends AbstractWidget implements RelocatableWidgetM
 
     public void setState(State state) {
         this.state = state;
+        GLAllocation.deleteDisplayLists(bodyDL);
         bodyDL = createOrGetList(getAbsoluteX(), getAbsoluteY(), getAbsoluteXBR(), getAbsoluteYBR(), state);
     }
 }

@@ -1,23 +1,23 @@
 package vswe.stevesfactory.library.gui.screen;
 
+import com.mojang.datafixers.types.Func;
+import it.unimi.dsi.fastutil.objects.Object2BooleanFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
-import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
+import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.actionmenu.DiscardCondition;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.window.IPopupWindow;
 
-import java.util.List;
-import java.util.Queue;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
@@ -34,10 +34,12 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     private IWindow primaryWindow;
-    private List<IWindow> windows = new ArrayList<>();
-    private EnumMap<DiscardCondition, Set<ActionMenu>> actionMenus = new EnumMap<>(DiscardCondition.class);
+    private List<IWindow> regularWindows = new ArrayList<>();
+    private List<IPopupWindow> popupWindows = new ArrayList<>();
 
-    private final Queue<Consumer<WidgetScreen>> tasks = new ArrayDeque<>();
+    // TODO remove
+    private EnumMap<DiscardCondition, Set<ActionMenu>> actionMenus = new EnumMap<>(DiscardCondition.class);
+    private final Queue<Function<WidgetScreen, Boolean>> tasks = new ArrayDeque<>();
 
     private final WidgetTreeInspections inspectionHandler = new WidgetTreeInspections();
 
@@ -52,14 +54,17 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     protected void init() {
         StevesFactoryManager.logger.trace("(Re)initialized widget-based GUI {}", this);
         primaryWindow = null;
-        windows.clear();
+        regularWindows.clear();
+        popupWindows.clear();
         RenderEventDispatcher.listeners.put(Inspections.class, inspectionHandler);
     }
 
     @Override
     public void tick() {
         while (!tasks.isEmpty()) {
-            tasks.remove().accept(this);
+            if (tasks.peek().apply(this)) {
+                tasks.remove();
+            }
         }
     }
 
@@ -77,12 +82,12 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        // Dark background overlay
+        // Dark transparent overlay
         renderBackground();
 
         inspectionHandler.startCycle();
         primaryWindow.render(mouseX, mouseY, particleTicks);
-        for (IWindow window : windows) {
+        for (IWindow window : regularWindows) {
             window.render(mouseX, mouseY, particleTicks);
         }
         inspectionHandler.endCycle();
@@ -92,12 +97,12 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     public void addWindow(IWindow window) {
-        windows.add(window);
+        regularWindows.add(window);
     }
 
     public void clearWindows() {
-        windows.forEach(IWindow::onRemoved);
-        windows.clear();
+        regularWindows.forEach(IWindow::onRemoved);
+        regularWindows.clear();
     }
 
     @Override
@@ -105,7 +110,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         Set<ActionMenu> clickDiscards = actionMenus.get(DiscardCondition.UNFOCUSED_CLICK);
         removeActionMenus(clickDiscards, a -> !a.isInside(mouseX, mouseY));
 
-        if (windows.stream().anyMatch(window -> window.mouseClicked(mouseX, mouseY, button))) {
+        if (regularWindows.stream().anyMatch(window -> window.mouseClicked(mouseX, mouseY, button))) {
             return true;
         } else {
             return primaryWindow.mouseClicked(mouseX, mouseY, button);
@@ -114,7 +119,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (windows.stream().anyMatch(window -> window.mouseReleased(mouseX, mouseY, button))) {
+        if (regularWindows.stream().anyMatch(window -> window.mouseReleased(mouseX, mouseY, button))) {
             return true;
         } else {
             return primaryWindow.mouseReleased(mouseX, mouseY, button);
@@ -123,7 +128,12 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
-        if (windows.stream().anyMatch(window -> window.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY))) {
+        for (IPopupWindow popup : popupWindows) {
+            if (popup.isDraggable() && popup.shouldDrag(mouseX, mouseY)) {
+                popup.setPosition((int)mouseX, (int)mouseY);
+            }
+        }
+        if (regularWindows.stream().anyMatch(window -> window.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY))) {
             return true;
         } else {
             return primaryWindow.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY);
@@ -132,7 +142,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled) {
-        if (windows.stream().anyMatch(window -> window.mouseScrolled(mouseX, mouseY, amountScrolled))) {
+        if (regularWindows.stream().anyMatch(window -> window.mouseScrolled(mouseX, mouseY, amountScrolled))) {
             return true;
         } else {
             return primaryWindow.mouseScrolled(mouseX, mouseY, amountScrolled);
@@ -144,7 +154,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         Set<ActionMenu> exitHoverDiscards = this.actionMenus.get(DiscardCondition.EXIT_HOVER);
         removeActionMenus(exitHoverDiscards, a -> !a.isInside(mouseX, mouseY));
 
-        for (IWindow window : windows) {
+        for (IWindow window : regularWindows) {
             window.mouseMoved(mouseX, mouseY);
         }
         primaryWindow.mouseMoved(mouseX, mouseY);
@@ -152,7 +162,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (windows.stream().anyMatch(window -> window.keyPressed(keyCode, scanCode, modifiers))) {
+        if (regularWindows.stream().anyMatch(window -> window.keyPressed(keyCode, scanCode, modifiers))) {
             return true;
         } else if (primaryWindow.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
@@ -170,7 +180,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (windows.stream().anyMatch(window -> window.keyReleased(keyCode, scanCode, modifiers))) {
+        if (regularWindows.stream().anyMatch(window -> window.keyReleased(keyCode, scanCode, modifiers))) {
             return true;
         } else {
             return primaryWindow.keyReleased(keyCode, scanCode, modifiers);
@@ -179,14 +189,14 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean charTyped(char charTyped, int keyCode) {
-        if (windows.stream().anyMatch(window -> window.charTyped(charTyped, keyCode))) {
+        if (regularWindows.stream().anyMatch(window -> window.charTyped(charTyped, keyCode))) {
             return true;
         } else {
             return primaryWindow.charTyped(charTyped, keyCode);
         }
     }
 
-    public void scheduleTask(Consumer<WidgetScreen> task) {
+    public void scheduleTask(Function<WidgetScreen, Boolean> task) {
         tasks.add(task);
     }
 
@@ -200,7 +210,10 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     public void deferDiscardActionMenu(ActionMenu actionMenu) {
-        scheduleTask(self -> self.discardActionMenu(actionMenu));
+        scheduleTask(self -> {
+            self.discardActionMenu(actionMenu);
+            return true;
+        });
     }
 
     public void discardActionMenu(ActionMenu actionMenu) {
@@ -221,6 +234,19 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     private void removeActionMenuAsWindow(ActionMenu actionMenu) {
-        windows.removeIf(a -> a == actionMenu);
+        regularWindows.removeIf(a -> a == actionMenu);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Popup window support
+    ///////////////////////////////////////////////////////////////////////////
+
+    public void addPopupWindow(IPopupWindow popup) {
+        popup.initialize(popupWindows.size());
+        popupWindows.add(popup);
+    }
+
+    public void removePopupWindow(int id) {
+        popupWindows.remove(id);
     }
 }

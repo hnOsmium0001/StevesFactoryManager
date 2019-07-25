@@ -153,5 +153,4 @@ public interface IWindow {
     boolean charTyped(char charTyped, int keyCode);
 
     void mouseMoved(double mouseX, double mouseY);
-
 }
