@@ -1,17 +1,14 @@
 package vswe.stevesfactory.library.gui.screen;
 
-import com.mojang.datafixers.types.Func;
-import it.unimi.dsi.fastutil.objects.Object2BooleanFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
-import vswe.stevesfactory.library.gui.actionmenu.DiscardCondition;
+import vswe.stevesfactory.library.gui.window.DiscardCondition;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.IPopupWindow;
@@ -35,10 +32,13 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     private IWindow primaryWindow;
     private List<IWindow> regularWindows = new ArrayList<>();
-    private List<IPopupWindow> popupWindows = new ArrayList<>();
 
     // TODO remove
-    private EnumMap<DiscardCondition, Set<ActionMenu>> actionMenus = new EnumMap<>(DiscardCondition.class);
+    private EnumMap<DiscardCondition, Set<IPopupWindow>> popupWindows = new EnumMap<>(DiscardCondition.class);
+
+    // TODO custom data structure
+    private Collection<IWindow> windows = null;
+
     private final Queue<Function<WidgetScreen, Boolean>> tasks = new ArrayDeque<>();
 
     private final WidgetTreeInspections inspectionHandler = new WidgetTreeInspections();
@@ -46,7 +46,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     protected WidgetScreen(ITextComponent title) {
         super(title);
         for (DiscardCondition condition : DiscardCondition.values()) {
-            actionMenus.put(condition, new HashSet<>());
+            popupWindows.put(condition, new HashSet<>());
         }
     }
 
@@ -55,13 +55,14 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         StevesFactoryManager.logger.trace("(Re)initialized widget-based GUI {}", this);
         primaryWindow = null;
         regularWindows.clear();
-        popupWindows.clear();
+        popupWindows.forEach((c, s) -> s.clear());
         RenderEventDispatcher.listeners.put(Inspections.class, inspectionHandler);
     }
 
     @Override
     public void tick() {
         while (!tasks.isEmpty()) {
+            // TODO fix
             if (tasks.peek().apply(this)) {
                 tasks.remove();
             }
@@ -107,8 +108,8 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Set<ActionMenu> clickDiscards = actionMenus.get(DiscardCondition.UNFOCUSED_CLICK);
-        removeActionMenus(clickDiscards, a -> !a.isInside(mouseX, mouseY));
+        Set<IPopupWindow> clickDiscards = popupWindows.get(DiscardCondition.UNFOCUSED_CLICK);
+        removePopupWindows(clickDiscards, p -> !p.isInside(mouseX, mouseY));
 
         if (regularWindows.stream().anyMatch(window -> window.mouseClicked(mouseX, mouseY, button))) {
             return true;
@@ -128,11 +129,15 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
-        for (IPopupWindow popup : popupWindows) {
-            if (popup.isDraggable() && popup.shouldDrag(mouseX, mouseY)) {
-                popup.setPosition((int)mouseX, (int)mouseY);
+        // Dragging popup windows
+        for (Set<IPopupWindow> windows : popupWindows.values()) {
+            for (IPopupWindow popup : windows) {
+                if (popup.isDraggable() && popup.shouldDrag(mouseX, mouseY)) {
+                    popup.setPosition((int)mouseX, (int)mouseY);
+                }
             }
         }
+
         if (regularWindows.stream().anyMatch(window -> window.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY))) {
             return true;
         } else {
@@ -151,8 +156,8 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        Set<ActionMenu> exitHoverDiscards = this.actionMenus.get(DiscardCondition.EXIT_HOVER);
-        removeActionMenus(exitHoverDiscards, a -> !a.isInside(mouseX, mouseY));
+        Set<IPopupWindow> exitHoverDiscards = popupWindows.get(DiscardCondition.EXIT_HOVER);
+        removePopupWindows(exitHoverDiscards, p -> !p.isInside(mouseX, mouseY));
 
         for (IWindow window : regularWindows) {
             window.mouseMoved(mouseX, mouseY);
@@ -205,36 +210,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     ///////////////////////////////////////////////////////////////////////////
 
     public void openActionMenu(ActionMenu actionMenu, DiscardCondition discardCondition) {
-        actionMenus.get(discardCondition).add(actionMenu);
-        addWindow(actionMenu);
-    }
-
-    public void deferDiscardActionMenu(ActionMenu actionMenu) {
-        scheduleTask(self -> {
-            self.discardActionMenu(actionMenu);
-            return true;
-        });
-    }
-
-    public void discardActionMenu(ActionMenu actionMenu) {
-        for (Set<ActionMenu> value : actionMenus.values()) {
-            removeActionMenus(value, actionMenu::equals);
-        }
-    }
-
-    private void removeActionMenus(Set<? extends ActionMenu> actionMenus, Predicate<ActionMenu> condition) {
-        actionMenus.removeIf(actionMenu -> {
-            if (condition.test(actionMenu)) {
-                actionMenu.onDiscard();
-                removeActionMenuAsWindow(actionMenu);
-                return true;
-            }
-            return false;
-        });
-    }
-
-    private void removeActionMenuAsWindow(ActionMenu actionMenu) {
-        regularWindows.removeIf(a -> a == actionMenu);
+        popupWindows.get(discardCondition).add(actionMenu);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -242,11 +218,33 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     ///////////////////////////////////////////////////////////////////////////
 
     public void addPopupWindow(IPopupWindow popup) {
-        popup.initialize(popupWindows.size());
-        popupWindows.add(popup);
+        popupWindows.get(popup.getDiscardCondition()).add(popup);
     }
 
-    public void removePopupWindow(int id) {
-        popupWindows.remove(id);
+    public void removePopupWindow(IPopupWindow popup) {
+        popupWindows.get(popup.getDiscardCondition()).remove(popup);
+        popup.onRemoved();
     }
+
+    public void deferRemovePopupWindow(IPopupWindow popup) {
+        scheduleTask(self -> {
+            self.removePopupWindow(popup);
+            return true;
+        });
+    }
+
+    private void removePopupWindows(Set<? extends IPopupWindow> popupWindows, Predicate<IPopupWindow> condition) {
+        popupWindows.removeIf(actionMenu -> {
+            if (condition.test(actionMenu)) {
+                actionMenu.onRemoved();
+//                removeActionMenuAsWindow(actionMenu);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    //    private void removeActionMenuAsWindow(ActionMenu actionMenu) {
+//        regularWindows.removeIf(a -> a == actionMenu);
+//    }
 }

@@ -17,6 +17,7 @@ import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
+import vswe.stevesfactory.library.gui.window.DiscardCondition;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -508,7 +509,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
                 new CallbackEntry(new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/delete.png"), "gui.sfm.ActionMenu.Delete", button -> {
                     removeSelf();
                     // Delay this to avoid ConcurrentModificationException
-                    WidgetScreen.getCurrentScreen().deferDiscardActionMenu(openedActionMenu);
+                    WidgetScreen.getCurrentScreen().deferRemovePopupWindow(openedActionMenu);
                 }),
                 // TODO implement these
                 new DefaultEntry(null, "gui.sfm.ActionMenu.Cut"),
