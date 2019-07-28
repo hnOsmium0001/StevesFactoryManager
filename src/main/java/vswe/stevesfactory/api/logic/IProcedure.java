@@ -23,7 +23,7 @@ public interface IProcedure {
 
     /**
      * Serialize the procedure into a retrievable NBT format. This NBT compound should be able to be put into any factory with the same
-     * registry name as this, and results in an equivalent procedure object using {@link IProceduralFactory#retrieveInstance(CompoundNBT)}.
+     * registry name as this, and results in an equivalent procedure object using {@link IProcedureFactory#retrieveInstance(CompoundNBT)}.
      *
      * @implSpec The resulting NBT must contain an entry with the key "{@code ID}", associated with the registry name of the procedure.
      * @implNote The default implementation of this method has the ID entry written. Unless child implementations have a special need,

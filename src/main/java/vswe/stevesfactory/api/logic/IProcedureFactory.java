@@ -1,13 +1,11 @@
 package vswe.stevesfactory.api.logic;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.blocks.manager.components.FlowComponent;
 
-public interface IProceduralFactory<P extends IProcedure> {
-
-    ResourceLocation getRegistryName();
+public interface IProcedureFactory<P extends IProcedure> extends IForgeRegistryEntry<IProcedureFactory<?>> {
 
     /**
      * Create a blank procedure object.
