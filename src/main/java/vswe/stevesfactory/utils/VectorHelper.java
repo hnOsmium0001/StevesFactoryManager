@@ -55,20 +55,14 @@ public final class VectorHelper {
         int dy = neighbor.getY() - center.getY();
         int dz = neighbor.getZ() - center.getZ();
         switch (calculateDirectionBits(dx, dy, dz)) {
-            case DOWN_BITS:
-                return Direction.DOWN;
-            case UP_BITS:
-                return Direction.UP;
-            case NORTH_BITS:
-                return Direction.NORTH;
-            case SOUTH_BITS:
-                return Direction.SOUTH;
-            case WEST_BITS:
-                return Direction.WEST;
-            case EAST_BITS:
-                return Direction.EAST;
+            case DOWN_BITS: return Direction.DOWN;
+            case UP_BITS: return Direction.UP;
+            case NORTH_BITS: return Direction.NORTH;
+            case SOUTH_BITS: return Direction.SOUTH;
+            case WEST_BITS: return Direction.WEST;
+            case EAST_BITS: return Direction.EAST;
+            default: return null;
         }
-        return null;
     }
 
     public static boolean isInside(int x, int y, int mx, int my) {
@@ -78,8 +72,7 @@ public final class VectorHelper {
     public static boolean isInside(int x, int y, int bx1, int by1, int bx2, int by2) {
         return x >= bx1 &&
                 x < bx2 &&
-                y >= bx1 &&
+                y >= by1 &&
                 y < by2;
     }
-
 }

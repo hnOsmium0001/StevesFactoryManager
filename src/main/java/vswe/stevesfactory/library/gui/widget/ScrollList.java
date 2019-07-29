@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.widget.scroll;
+package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.AbstractGui;
@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
 import vswe.stevesfactory.utils.Utils;
@@ -21,7 +20,7 @@ import java.util.*;
 /**
  * Code adapted from {@link net.minecraftforge.client.gui.ScrollPanel}
  */
-public abstract class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T> {
+public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T> {
 
     private boolean scrolling;
     protected float scrollDistance;
@@ -104,19 +103,18 @@ public abstract class ScrollList<T extends IWidget & RelocatableWidgetMixin> ext
         GL11.glScissor((int) (left * scale), (int) (minecraft().mainWindow.getHeight() - (bottom * scale)),
                 (int) (width * scale), (int) (height * scale));
 
-//        int baseY = top + getBorder() - (int) scrollDistance;
         for (T child : getChildren()) {
             child.render(mouseX, mouseY, partialTicks);
         }
         drawOverlay();
 
-        GlStateManager.disableDepthTest();
 
         int extraHeight = (getContentHeight() + getBorder()) - height;
         if (extraHeight > 0) {
             int barHeight = getBarHeight();
             int barTop = Utils.lowerBound((int) scrollDistance * (height - barHeight) / extraHeight + top, top);
 
+            GlStateManager.disableDepthTest();
             GlStateManager.disableTexture();
             renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
             renderer.pos(barLeftX, bottom, 0.0D).tex(0.0D, 1.0D).color(0x00, 0x00, 0x00, 0xFF).endVertex();
@@ -134,12 +132,9 @@ public abstract class ScrollList<T extends IWidget & RelocatableWidgetMixin> ext
             renderer.pos(barLeftX + getBarWidth() - 1, barTop, 0.0D).tex(1.0D, 0.0D).color(0xC0, 0xC0, 0xC0, 0xFF).endVertex();
             renderer.pos(barLeftX, barTop, 0.0D).tex(0.0D, 0.0D).color(0xC0, 0xC0, 0xC0, 0xFF).endVertex();
             tess.draw();
+            GlStateManager.enableTexture();
         }
 
-        GlStateManager.enableTexture();
-        GlStateManager.shadeModel(GL11.GL_FLAT);
-        GlStateManager.enableAlphaTest();
-        GlStateManager.disableBlend();
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
@@ -180,8 +175,10 @@ public abstract class ScrollList<T extends IWidget & RelocatableWidgetMixin> ext
     @Override
     public void reflow() {
         int offset = (int) -scrollDistance;
+        int y = getBorder();
         for (T child : children) {
-            child.moveY(offset);
+            child.setY(y + offset);
+            y += child.getHeight() + getMarginMiddle();
         }
     }
 
@@ -201,22 +198,30 @@ public abstract class ScrollList<T extends IWidget & RelocatableWidgetMixin> ext
         return false;
     }
 
-    protected abstract int getContentHeight();
+    protected int getContentHeight() {
+        int contentHeight = 0;
+        for (T child : children) {
+            contentHeight += child.getHeight() + getMarginMiddle();
+        }
+        // Remove last unnecessary border
+        return contentHeight - getMarginMiddle();
+    }
 
     public int getBarHeight() {
         int height = getHeight();
-        int barHeight = (height * height) / getContentHeight();
+        return MathHelper.clamp((height * height) / getContentHeight(), 32, height - getBorder() * 2);
+    }
 
-        if (barHeight < 32) barHeight = 32;
-
-        if (barHeight > height - getBorder() * 2)
-            barHeight = height - getBorder() * 2;
-
-        return barHeight;
+    public int getFirstRowY() {
+        return getAbsoluteY() + getBorder();
     }
 
     public int getScrollAmount() {
         return 20;
+    }
+
+    public int getMarginMiddle() {
+        return 10;
     }
 
     public int getMaxScroll() {

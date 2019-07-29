@@ -1,7 +1,9 @@
 package vswe.stevesfactory.library.gui.widget.scroll;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.widget.*;
@@ -10,44 +12,44 @@ import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import java.util.*;
 
-import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.DOWN_RIGHT_4_STRICT_TABLE;
-
-public abstract class ScrollController<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin {
+/**
+ * Code adapted from Steve's Factory Manager 2 by Vswe/gigabte101.
+ */
+public class WrappingListView<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin {
 
     private int itemsPerRow = 5;
     private int visibleRows = 2;
-    private int startX = 5;
-    private int scrollingUpperLimit = getSearchBoxY() + getSearchBoxHeight();
+    private int viewX = 5;
+    private int viewY = getSearchBoxY() + getSearchBoxHeight();
     private boolean disabledScroll;
-
-    private int offset;
     private boolean hasSearchBox;
+    private int offset;
 
     // Unfortunately we can't add these into children without making the children type plain IWidget
     private TextField searchBox;
-    private ScrollArrow scrollUpArrow;
-    private ScrollArrow scrollDownArrow;
-    private List<T> children;
-
+    private Arrow scrollUpArrow;
+    private Arrow scrollDownArrow;
+    private List<T> children = new ArrayList<>();
     private List<T> searchResults;
 
-    public ScrollController(boolean hasSearchBox) {
-        this(hasSearchBox ? "" : null);
+    public WrappingListView(IWidget parent, boolean hasSearchBox) {
+        this(parent, hasSearchBox ? "" : null);
     }
 
-    public ScrollController(String defaultText) {
-        this(defaultText, ScrollArrow.up(-1, -1), ScrollArrow.down(-1, -1));
+    public WrappingListView(IWidget parent, String defaultText) {
+        this(parent, defaultText, Arrow.up(-1, -1), Arrow.down(-1, -1));
         scrollUpArrow.setLocation(getArrowX(), getArrowUpY());
         scrollDownArrow.setLocation(getArrowX(), getArrowDownY());
     }
 
-    public ScrollController(String defaultText, ScrollArrow up, ScrollArrow down) {
+    public WrappingListView(IWidget parent, String defaultText, Arrow up, Arrow down) {
         // TODO
-        super(0, 0);
+        super(80, 80);
+        onParentChanged(parent);
 
         // Too lazy to add text change events, just make pressing enter update search
         this.hasSearchBox = defaultText != null;
-        this.searchBox = new TextField(getSearchBoxX(), getSearchBoxY(), getSearchBoxWidth(), getSearchBoxHeight()).setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
+        this.searchBox = createSearchBox();
         this.searchBox.setEnabled(hasSearchBox);
         this.searchBox.setText(MoreObjects.firstNonNull(defaultText, ""));
 
@@ -56,6 +58,22 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         this.scrollDownArrow = down;
         this.scrollDownArrow.onParentChanged(this);
         updateSearch();
+    }
+
+    private TextField createSearchBox() {
+        TextField t = new TextField(getSearchBoxX(), getSearchBoxY(), getSearchBoxWidth(), getSearchBoxHeight()) {
+            @Override
+            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+                if (keyCode == GLFW.GLFW_KEY_ENTER) {
+                    updateSearch();
+                    return true;
+                }
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
+        };
+        t.onParentChanged(this);
+        t.setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
+        return t;
     }
 
     protected List<T> searchItems(String search) {
@@ -68,44 +86,26 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         return result;
     }
 
-    public void setX(int val) {
-        startX = val;
+    public void setScrollingSectionX(int val) {
+        viewX = val;
     }
 
-    public int getScrollingStartX() {
-        return startX;
+    public int getScrollingSectionX() {
+        return viewX;
     }
 
-    public int getScrollingStartY() {
-        return scrollingUpperLimit + 3;
+    public int getScrollingSectionY() {
+        return viewY + 3;
     }
 
-    private int getFirstRow() {
-        return (scrollingUpperLimit + offset - getScrollingStartY()) / getItemSizeWithMargin();
+    private int getFirstRowY() {
+//        return (viewY + offset - getScrollingSectionY()) / getItemSizeWithMargin();
+        return getScrollingSectionY() - offset;
     }
-
-//    private List<Point> getItemCoordinates() {
-//        List<Point> points = new ArrayList<>();
-//
-//        int start = getFirstRow();
-//        for (int row = start; row < start + visibleRows + 1; row++) {
-//            for (int col = 0; col < itemsPerRow; col++) {
-//                int id = row * itemsPerRow + col;
-//                if (id >= 0 && id < children.size()) {
-//                    int x = getScrollingStartX() + ITEM_SIZE_WITH_MARGIN * col;
-//                    int y = getScrollingStartY() + row * ITEM_SIZE_WITH_MARGIN - offset;
-//                    if (y > scrollingUpperLimit && y + ITEM_SIZE < FlowComponent.getMenuOpenSize()) {
-//                    points.add(new Point(x, y));
-//                    }
-//                }
-//            }
-//        }
-//        return points;
-//    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isInside(mouseX, mouseY)) {
+        if (!isInside(mouseX, mouseY)) {
             return false;
         }
 
@@ -116,7 +116,11 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
 //                break;
 //            }
 //        }
-        ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button);
+        // Set focused wid
+        getWindow().setFocusedWidget(this);
+        if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
         searchBox.mouseClicked(mouseX, mouseY, button);
         scrollUpArrow.mouseClicked(mouseX, mouseY, button);
         scrollDownArrow.mouseClicked(mouseX, mouseY, button);
@@ -125,21 +129,27 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        searchBox.render(mouseX, mouseY, particleTicks);
         // TODO add search status
 //            if (searchBox.getText().length() > 0 || children.size() > 0) {
 //                gui.drawString(Localization.ITEMS_FOUND.toString() + " " + children.size(), getStatusTextX, getStatusTextY, 0.7F, 0x404040);
 //            }
 
+        searchBox.render(mouseX, mouseY, particleTicks);
         scrollUpArrow.render(mouseX, mouseY, particleTicks);
         scrollDownArrow.render(mouseX, mouseY, particleTicks);
-        // TODO glScissor rule
+
+
+        double scale = minecraft().mainWindow.getGuiScaleFactor();
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor((int) (getAbsoluteX() * scale), (int) (minecraft().mainWindow.getHeight() - (getAbsoluteYBR() * scale)),
+                (int) (getWidth() * scale), (int) (getHeight() * scale));
         for (T child : searchResults) {
             int cy = child.getAbsoluteY();
-            int sy = getScrollingStartY();
+            int sy = getScrollingSectionY();
             if (cy > sy && cy <= sy + getDisplayHeight())
                 child.render(mouseX, mouseY, particleTicks);
         }
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
     // TODO figure out what is this
@@ -172,6 +182,8 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
             offset = max;
             scrollDownArrow.setEnabled(false);
         }
+
+        reflow();
     }
 
     public void scrollUp(int change) {
@@ -196,33 +208,44 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
     }
 
     @Override
-    public ScrollController<T> addChildren(T widget) {
+    public WrappingListView<T> addChildren(T widget) {
+        Preconditions.checkArgument(widget.getWidth() == getItemSize() && widget.getHeight() == getItemSize());
         children.add(widget);
         return this;
     }
 
     @Override
-    public ScrollController<T> addChildren(Collection<T> widgets) {
-        children.addAll(widgets);
+    public WrappingListView<T> addChildren(Collection<T> widgets) {
+        for (T widget : widgets) {
+            addChildren(widget);
+        }
         return this;
     }
 
     @Override
     public void reflow() {
-        DOWN_RIGHT_4_STRICT_TABLE.reflow(getDimensions(), children);
-        int top = getFirstRow();
-        for (T child : children) {
-            child.setY(top + offset);
-        }
-    }
+//        DOWN_RIGHT_4_STRICT_TABLE.reflow(getDimensions(), children);
 
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ENTER) {
-            updateSearch();
-            return true;
+        int x = getScrollingSectionX();
+        int y = getFirstRowY();
+        for (T child : children) {
+            child.setLocation(x, y);
+            x += getItemSizeWithMargin();
+            y += getItemSizeWithMargin();
         }
-        return false;
+
+//        for (int row = start; row < start + visibleRows + 1; row++) {
+//            for (int col = 0; col < itemsPerRow; col++) {
+//                int id = row * itemsPerRow + col;
+//                if (id >= 0 && id < children.size()) {
+//                    int x = getScrollingSectionX() + getItemSizeWithMargin() * col;
+//                    int y = getScrollingSectionY() + row * getMargin() - offset;
+//                    if (y > viewY && y + ITEM_SIZE < FlowComponent.getMenuOpenSize()) {
+//                        points.add(new Point(x, y));
+//                    }
+//                }
+//            }
+//        }
     }
 
     public void updateScrolling() {
@@ -243,7 +266,7 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
     }
 
     public void setItemUpperLimit(int n) {
-        scrollingUpperLimit = n;
+        viewY = n;
     }
 
     public int getDisplayHeight() {

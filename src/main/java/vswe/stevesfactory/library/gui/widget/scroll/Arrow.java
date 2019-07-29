@@ -9,15 +9,15 @@ import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public abstract class ScrollArrow extends AbstractIconButton implements LeafWidgetMixin, RelocatableWidgetMixin {
+public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixin, RelocatableWidgetMixin {
 
     private static final TextureWrapper UP_NORMAL = TextureWrapper.ofFlowComponent(0, 152, 10, 6);
     private static final TextureWrapper UP_HOVERED = UP_NORMAL.right(10);
     private static final TextureWrapper UP_CLICKED = UP_HOVERED.right(10);
     private static final TextureWrapper UP_DISABLED = UP_CLICKED.right(10);
 
-    public static ScrollArrow up(int x, int y) {
-        return new ScrollArrow(x, y) {
+    public static Arrow up(int x, int y) {
+        return new Arrow(x, y) {
             @Override
             public TextureWrapper getTextureNormal() {
                 return UP_NORMAL;
@@ -56,8 +56,8 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
     private static final TextureWrapper DOWN_CLICKED = UP_CLICKED.down(6);
     private static final TextureWrapper DOWN_DISABLED = UP_DISABLED.down(6);
 
-    public static ScrollArrow down(int x, int y) {
-        return new ScrollArrow(x, y) {
+    public static Arrow down(int x, int y) {
+        return new Arrow(x, y) {
             @Override
             public TextureWrapper getTextureNormal() {
                 return DOWN_NORMAL;
@@ -93,7 +93,7 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
 
     private boolean clicked;
 
-    public ScrollArrow(int x, int y) {
+    public Arrow(int x, int y) {
         super(x, y, 10, 6);
     }
 
@@ -144,7 +144,7 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
 
     @Nonnull
     @Override
-    public ScrollController getParentWidget() {
-        return Objects.requireNonNull((ScrollController) super.getParentWidget());
+    public WrappingListView getParentWidget() {
+        return Objects.requireNonNull((WrappingListView) super.getParentWidget());
     }
 }

@@ -128,7 +128,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
             logger.debug("    {}: {}", pos, world.getTileEntity(pos));
         }
 
-        logger.debug("======== Finished umping Factory Manager ========");
+        logger.debug("======== Finished dumping Factory Manager ========");
     }
 
     @Override
