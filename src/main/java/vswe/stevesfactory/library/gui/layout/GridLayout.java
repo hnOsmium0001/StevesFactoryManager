@@ -93,7 +93,7 @@ public class GridLayout {
         Object2IntMap<String> m = new Object2IntOpenHashMap<>();
         for (int i = 0; i < widgets.size(); i++) {
             T widget = widgets.get(i);
-            m.put(widget.getID(), i);
+            m.put(widget.getName(), i);
         }
         // Check for no repeating names
         Preconditions.checkArgument(m.size() == widgets.size());

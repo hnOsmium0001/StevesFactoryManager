@@ -94,6 +94,26 @@ public class TextureWrapper {
                 .toString();
     }
 
+    public TextureWrapper offset(int x, int y) {
+        return new TextureWrapper(texture, textureWidth, textureHeight, tx + x, ty + y, portionWidth, portionHeight);
+    }
+
+    public TextureWrapper down(int y) {
+        return offset(0, y);
+    }
+
+    public TextureWrapper up(int y) {
+        return offset(0, -y);
+    }
+
+    public TextureWrapper right(int x) {
+        return offset(x, 0);
+    }
+
+    public TextureWrapper left(int x) {
+        return offset(-x, 0);
+    }
+
     public TextureWrapper withZ(float z) {
         return new TextureWrapperWithZ(this, z);
     }

@@ -1,21 +1,19 @@
 package vswe.stevesfactory.ui.manager.selection;
 
 import com.google.common.collect.ImmutableList;
-import vswe.stevesfactory.ui.manager.FactoryManagerGUI.TopLevelWidget;
-import vswe.stevesfactory.ui.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
-import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI.TopLevelWidget;
+import vswe.stevesfactory.ui.manager.components.DynamicWidthWidget;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> implements ContainerWidgetMixin<ComponentSelectionButton> {
+import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.DOWN_RIGHT_4_STRICT_TABLE;
 
-    private static final StrictTableLayout LAYOUT = new StrictTableLayout(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
+public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> implements ContainerWidgetMixin<ComponentSelectionButton> {
 
     private final ImmutableList<ComponentSelectionButton> staticIcons;
     private final List<ComponentSelectionButton> addendumIcons;
@@ -32,7 +30,7 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
         this.addendumIcons = new ArrayList<>();
         this.icons = CompositeUnmodifiableList.of(staticIcons, addendumIcons);
 
-        // Reset position of the components using a table LAYOUT
+        // Reset position of the components using a table DOWN_RIGHT_4_STRICT_TABLE
         reflow();
     }
 
@@ -64,7 +62,7 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
     public void reflow() {
         int w = getWidth();
         setWidth(Integer.MAX_VALUE);
-        LAYOUT.reflow(getDimensions(), getChildren());
+        DOWN_RIGHT_4_STRICT_TABLE.reflow(getDimensions(), getChildren());
         setWidth(w);
     }
 

@@ -1,15 +1,20 @@
-package vswe.stevesfactory.library.gui.widget;
+package vswe.stevesfactory.library.gui.widget.scroll;
 
+import com.google.common.base.MoreObjects;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.widget.TextField;
+import vswe.stevesfactory.library.gui.widget.*;
+import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
-import vswe.stevesfactory.utils.VectorHelper;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
-public abstract class ScrollController<T extends IWidget> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin {
+import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.DOWN_RIGHT_4_STRICT_TABLE;
+
+public abstract class ScrollController<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin {
 
     private static final int ITEM_SIZE = 16;
     private static final int ITEM_SIZE_WITH_MARGIN = 20;
@@ -36,6 +41,8 @@ public abstract class ScrollController<T extends IWidget> extends AbstractWidget
     private static final int AMOUNT_TEXT_X = 75;
     private static final int AMOUNT_TEXT_Y = 9;
 
+    private static final int SCROLL_SPEED = 100;
+
     private int itemsPerRow = 5;
     private int visibleRows = 2;
     private int startX = 5;
@@ -45,12 +52,16 @@ public abstract class ScrollController<T extends IWidget> extends AbstractWidget
     private int offset;
     private int dir;
     private boolean clicked;
-    private boolean selected;
-    private List<T> result;
+    private boolean hasSearchBox;
 
+    // Unfortunately we can't add these into children without making the children type plain IWidget
     private TextField searchBox;
-    private IWidget scrollUpArrow;
-    private IWidget scrollDownArrow;
+    private ScrollArrow scrollUpArrow;
+    private ScrollArrow scrollDownArrow;
+    private List<T> children;
+
+    private List<T> searchResults;
+
 
     public ScrollController(boolean hasSearchBox) {
         this(hasSearchBox ? "" : null);
@@ -59,8 +70,8 @@ public abstract class ScrollController<T extends IWidget> extends AbstractWidget
     public ScrollController(String defaultText) {
         // TODO
         super(0, 0);
-        if (defaultText != null) {
-            // TODO
+//        if (defaultText != null) {
+        // TODO
 //            searchBox = new TextBoxLogic(Integer.MAX_VALUE, SEARCH_BOX_WIDTH - SEARCH_BOX_TEXT_X * 2)
 //            {
 //                @Override
@@ -68,22 +79,35 @@ public abstract class ScrollController<T extends IWidget> extends AbstractWidget
 //                {
 //                    if (getText().length() > 0)
 //                    {
-//                        updateSearch();
+//                        searchItems();
 //                    } else
 //                    {
-//                        result.clear();
+//                        children.clear();
 //                        updateScrolling();
 //                    }
 //                }
 //            };
-            searchBox = new TextField(0, 0, SEARCH_BOX_WIDTH, SEARCH_BOX_HEIGHT);
-            searchBox.setText(defaultText);
-        }
+//        }
 
+        this.hasSearchBox = defaultText != null;
+        this.searchBox = new TextField(0, 0, SEARCH_BOX_WIDTH, SEARCH_BOX_HEIGHT).setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
+        this.searchBox.setEnabled(hasSearchBox);
+        this.searchBox.setText(MoreObjects.firstNonNull(defaultText, ""));
+
+        this.scrollUpArrow = ScrollArrow.up(this, ARROW_X, ARROW_Y_UP);
+        this.scrollDownArrow = ScrollArrow.down(this, ARROW_X, ARROW_Y_DOWN);
         updateSearch();
     }
 
-    protected abstract List<T> updateSearch(String search, boolean all);
+    protected List<T> searchItems(String search) {
+        List<T> result = new ArrayList<>();
+        for (T child : children) {
+            if (search.equals(child.getName())) {
+                result.add(child);
+            }
+        }
+        return result;
+    }
 
     public void setX(int val) {
         startX = val;
@@ -108,7 +132,7 @@ public abstract class ScrollController<T extends IWidget> extends AbstractWidget
         for (int row = start; row < start + visibleRows + 1; row++) {
             for (int col = 0; col < itemsPerRow; col++) {
                 int id = row * itemsPerRow + col;
-                if (id >= 0 && id < result.size()) {
+                if (id >= 0 && id < children.size()) {
                     int x = getScrollingStartX() + ITEM_SIZE_WITH_MARGIN * col;
                     int y = getScrollingStartY() + row * ITEM_SIZE_WITH_MARGIN - offset;
                     // TODO
@@ -124,30 +148,19 @@ public abstract class ScrollController<T extends IWidget> extends AbstractWidget
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (VectorHelper.isInside((int) mouseX, (int) mouseY, SEARCH_BOX_X, SEARCH_BOX_Y, SEARCH_BOX_WIDTH, SEARCH_BOX_HEIGHT)) {
-            if (button == 0 || !selected) {
-                selected = !selected;
-            } else if (hasSearchBox()) {
-                searchBox.setText("");
-            }
-        }
-
         ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button);
 //        List<Point> points = getItemCoordinates();
 //        for (Point point : points) {
 //            if (VectorHelper.isInside((int) mouseX, (int)mouseY, point.x, point.y, ITEM_SIZE, ITEM_SIZE)) {
-//                onClick(result.get(point.id), mouseX, mouseY, button);
+//                onClick(children.get(point.id), mouseX, mouseY, button);
 //                break;
 //            }
 //        }
 
-        if (inArrowBounds(true, mouseX, mouseY)) {
-            clicked = true;
-            dir = 1;
-        } else if (inArrowBounds(false, mouseX, mouseY)) {
-            clicked = true;
-            dir = -1;
-        }
+        searchBox.mouseClicked(mouseX, mouseY, button);
+        scrollUpArrow.mouseClicked(mouseX, mouseY, button);
+        scrollDownArrow.mouseClicked(mouseX, mouseY, button);
+        return true;
     }
 
 
@@ -157,89 +170,88 @@ public abstract class ScrollController<T extends IWidget> extends AbstractWidget
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        if (hasSearchBox()) {
-            searchBox.render(mouseX, mouseY, particleTicks);
-//            int srcBoxY = selected ? 1 : 0;
-//            RenderingHelper.drawTexturePortion(SEARCH_BOX_X, SEARCH_BOX_Y, SEARCH_BOX_SRC_X, SEARCH_BOX_SRC_Y + srcBoxY * SEARCH_BOX_HEIGHT, SEARCH_BOX_WIDTH, SEARCH_BOX_HEIGHT);
-//            gui.drawString(searchBox.getText(), SEARCH_BOX_X + SEARCH_BOX_TEXT_X, SEARCH_BOX_Y + SEARCH_BOX_TEXT_Y, 0xFFFFFF);
-//
-//            if (selected) {
-//                gui.drawCursor(SEARCH_BOX_X + searchBox.getCursorPosition(gui) + CURSOR_X, SEARCH_BOX_Y + CURSOR_Y, CURSOR_Z, 0xFFFFFFFF);
+        searchBox.render(mouseX, mouseY, particleTicks);
+        // TODO add search status
+//            if (searchBox.getText().length() > 0 || children.size() > 0) {
+//                gui.drawString(Localization.ITEMS_FOUND.toString() + " " + children.size(), AMOUNT_TEXT_X, AMOUNT_TEXT_Y, 0.7F, 0x404040);
 //            }
-//
-//            if (searchBox.getText().length() > 0 || result.size() > 0) {
-//                gui.drawString(Localization.ITEMS_FOUND.toString() + " " + result.size(), AMOUNT_TEXT_X, AMOUNT_TEXT_Y, 0.7F, 0x404040);
-//            }
-        }
 
-        if (result.size() > 0) {
-            // TODO implement hiding arrows when can't scroll anymore
-            scrollUpArrow.render(mouseX, mouseY, particleTicks);
-            scrollDownArrow.render(mouseX, mouseY, particleTicks);
-
-            List<Point> points = getItemCoordinates();
-            for (Point point : points) {
-                draw(gui, result.get(point.id), point.x, point.y, CollisionHelper.inBounds(point.x, point.y, ITEM_SIZE, ITEM_SIZE, mX, mY));
-            }
+        scrollUpArrow.render(mouseX, mouseY, particleTicks);
+        scrollDownArrow.render(mouseX, mouseY, particleTicks);
+        // TODO glScissor rule
+        for (T child : searchResults) {
+            child.render(mouseX, mouseY, particleTicks);
         }
     }
 
-    private static final int SCROLL_SPEED = 100;
+    // TODO figure out what is this
+//    private float dt;
+//
+//    public void update(float particleTicks) {
+//        if (clicked) {
+//            particleTicks += dt;
+//            int change = (int) (particleTicks * SCROLL_SPEED);
+//            dt = particleTicks - (change / (float) SCROLL_SPEED);
+//
+//            scroll(change * dir);
+//        }
+//    }
 
-    private float left;
-
-    public void update(float particleTicks) {
-        if (clicked && canScroll) {
-            particleTicks += left;
-            int change = (int) (particleTicks * SCROLL_SPEED);
-            left = particleTicks - (change / (float) SCROLL_SPEED);
-
-
-            moveOffset(change * dir);
+    public void scroll(int change) {
+        if (disabledScroll) {
+            return;
         }
-    }
-
-    private void moveOffset(int change) {
-        offset += change;
+        offset += change / -20;
         int min = 0;
-        int max = ((int) (Math.ceil(((float) result.size() / itemsPerRow)) - visibleRows)) * ITEM_SIZE_WITH_MARGIN - (ITEM_SIZE_WITH_MARGIN - ITEM_SIZE);
+        int max = ((int) (Math.ceil(((float) children.size() / itemsPerRow)) - visibleRows)) * ITEM_SIZE_WITH_MARGIN - (ITEM_SIZE_WITH_MARGIN - ITEM_SIZE);
+        scrollUpArrow.setEnabled(true);
+        scrollDownArrow.setEnabled(true);
         if (offset < min) {
             offset = min;
+            scrollUpArrow.setEnabled(false);
         } else if (offset > max) {
             offset = max;
+            scrollDownArrow.setEnabled(false);
         }
     }
 
-    private void drawArrow(boolean down, int mX, int mY) {
-        // TODO
-//        if (canScroll) {
-//            int srcArrowX = canScroll ? clicked && down == (dir == 1) ? 2 : inArrowBounds(down, mX, mY) ? 1 : 0 : 3;
-//            int srcArrowY = down ? 1 : 0;
-//
-//            RenderingHelper.drawTexturePortion(ARROW_X, down ? ARROW_Y_DOWN : ARROW_Y_UP, ARROW_SRC_X + srcArrowX * ARROW_WIDTH, ARROW_SRC_Y + srcArrowY * ARROW_HEIGHT, TextureWrapper.FLOW_COMPONENTS, ARROW_WIDTH, ARROW_HEIGHT);
-//        }
+    public void scrollUp() {
+        scroll(SCROLL_SPEED);
     }
 
-    private boolean inArrowBounds(boolean down, int mX, int mY) {
-        return CollisionHelper.inBounds(ARROW_X, down ? ARROW_Y_DOWN : ARROW_Y_UP, ARROW_WIDTH, ARROW_HEIGHT, mX, mY);
+    public void scrollDown() {
+        scroll(-SCROLL_SPEED);
     }
 
-    public void drawMouseOver(GuiManager gui, int mX, int mY) {
-        List<Point> points = getItemCoordinates();
-        for (Point point : points) {
-            if (CollisionHelper.inBounds(point.x, point.y, ITEM_SIZE, ITEM_SIZE, mX, mY)) {
-                drawMouseOver(gui, result.get(point.id), mX, mY);
-            }
-        }
+    @Override
+    public List<T> getChildren() {
+        return children;
     }
 
+    @Override
+    public ScrollController<T> addChildren(T widget) {
+        children.add(widget);
+        return this;
+    }
+
+    @Override
+    public ScrollController<T> addChildren(Collection<T> widgets) {
+        children.addAll(widgets);
+        return this;
+    }
+
+    @Override
+    public void reflow() {
+        DOWN_RIGHT_4_STRICT_TABLE.reflow(getDimensions(), children);
+    }
 
     public void updateScrolling() {
-        boolean canScroll = result.size() > itemsPerRow * visibleRows;
+        boolean canScroll = children.size() > itemsPerRow * visibleRows;
         if (!canScroll) {
             offset = 0;
-            scrollUpArrow =
         }
+        scrollUpArrow.setEnabled(canScroll);
+        scrollDownArrow.setEnabled(canScroll);
     }
 
     public void setItemsPerRow(int n) {
@@ -250,21 +262,18 @@ public abstract class ScrollController<T extends IWidget> extends AbstractWidget
         visibleRows = n;
     }
 
+
     public void setItemUpperLimit(int n) {
         scrollingUpperLimit = n;
     }
 
     public void updateSearch() {
         if (hasSearchBox()) {
-            result = updateSearch(searchBox.getText().toLowerCase(), searchBox.getText().toLowerCase().equals(".all"));
+            searchResults = searchBox.getText().isEmpty() ? children : searchItems(searchBox.getText().toLowerCase());
         } else {
-            result = updateSearch("", false);
+            searchResults = children;
         }
         updateScrolling();
-    }
-
-    public List<T> getResult() {
-        return result;
     }
 
     public void setText(String s) {
@@ -274,12 +283,6 @@ public abstract class ScrollController<T extends IWidget> extends AbstractWidget
 
     public String getText() {
         return searchBox.getText();
-    }
-
-    public void doScroll(int scroll) {
-        if (!disabledScroll) {
-            moveOffset(scroll / -20);
-        }
     }
 
     public void setDisabledScroll(boolean disabledScroll) {

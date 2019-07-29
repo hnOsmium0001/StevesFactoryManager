@@ -9,6 +9,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
+import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
@@ -25,6 +27,16 @@ import java.util.Collection;
 import java.util.List;
 
 public class FactoryManagerGUI extends WidgetScreen {
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Common layout objects
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static final StrictTableLayout DOWN_RIGHT_4_STRICT_TABLE = new StrictTableLayout(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
+
+    ///////////////////////////////////////////////////////////////////////////
+    // GUI code
+    ///////////////////////////////////////////////////////////////////////////
 
     public static final float WIDTH_PROPORTION = 2F / 3F;
     public static final float HEIGHT_PROPORTION = 3F / 4F;
