@@ -1,6 +1,5 @@
 package vswe.stevesfactory.api;
 
-import com.google.common.base.Preconditions;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -16,15 +15,20 @@ public class SFMAPI {
     private static IForgeRegistry<IProcedureFactory<?>> procedures;
 
     public static IForgeRegistry<IProcedureFactory<?>> getProceduresRegistry() {
-        Preconditions.checkNotNull(procedures, "Trying to access the registry sfm:procedures before it was created");
+        if (procedures == null) {
+            procedures = RegistryManager.ACTIVE.getRegistry(IProcedureFactory.class);
+        }
         return procedures;
     }
 
     @SubscribeEvent
+    @SuppressWarnings("unchecked")
     public static void onRegistryCreation(RegistryEvent.NewRegistry event) {
-        procedures = new RegistryBuilder<IProcedureFactory<?>>()
-                .setName(new ResourceLocation(StevesFactoryManager.MODID, "procedures"))
-                .create();
+        makeRegistry(new ResourceLocation(StevesFactoryManager.MODID, "procedures"), IProcedureFactory.class).create();
     }
 
+    // Somehow inlining this method would create an compile error
+    private static <T extends IForgeRegistryEntry<T>> RegistryBuilder<T> makeRegistry(ResourceLocation name, Class<T> type) {
+        return new RegistryBuilder<T>().setName(name).setType(type);
+    }
 }

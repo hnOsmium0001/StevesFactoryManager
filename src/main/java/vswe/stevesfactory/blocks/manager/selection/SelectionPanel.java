@@ -1,6 +1,9 @@
 package vswe.stevesfactory.blocks.manager.selection;
 
 import com.google.common.collect.ImmutableList;
+import vswe.stevesfactory.api.SFMAPI;
+import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.IProcedureFactory;
 import vswe.stevesfactory.blocks.manager.FactoryManagerGUI.TopLevelWidget;
 import vswe.stevesfactory.blocks.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
@@ -24,16 +27,21 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
     public SelectionPanel(TopLevelWidget parent, IWindow window) {
         super(parent, window, WidthOccupierType.MIN_WIDTH);
 
-        ImmutableList.Builder<ComponentSelectionButton> icons = ImmutableList.builder();
-        for (ComponentSelectionButton.Component value : ComponentSelectionButton.Component.values()) {
-            icons.add(new ComponentSelectionButton(this, value));
-        }
-        this.staticIcons = icons.build();
+        this.staticIcons = createStaticIcons();
         this.addendumIcons = new ArrayList<>();
         this.icons = CompositeUnmodifiableList.of(staticIcons, addendumIcons);
 
         // Reset position of the components using a table LAYOUT
         reflow();
+    }
+
+    @SuppressWarnings("unchecked")
+    private ImmutableList<ComponentSelectionButton> createStaticIcons() {
+        ImmutableList.Builder<ComponentSelectionButton> icons = ImmutableList.builder();
+        for (IProcedureFactory<?> factory : SFMAPI.getProceduresRegistry().getValues()) {
+            icons.add(new ComponentSelectionButton(this, (IProcedureFactory<IProcedure>) factory));
+        }
+        return icons.build();
     }
 
     @Override

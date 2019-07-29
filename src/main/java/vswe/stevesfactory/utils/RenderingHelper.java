@@ -10,8 +10,10 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+import vswe.stevesfactory.StevesFactoryManager;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public final class RenderingHelper {
 
@@ -286,5 +288,25 @@ public final class RenderingHelper {
 
     public static Dimension toBorder(Dimension contents, int borderSize) {
         return new Dimension(contents.width + borderSize * 2, contents.height + borderSize * 2);
+    }
+
+    public static ResourceLocation linkTexture(String path) {
+        return new ResourceLocation(StevesFactoryManager.MODID, "textures/" + path);
+    }
+
+    public static ResourceLocation linkTexture(String seg1, String seg2) {
+        return new ResourceLocation(StevesFactoryManager.MODID, "textures/" + seg1 + "/" + seg2);
+    }
+
+    public static ResourceLocation linkTexture(String seg1, String seg2, String seg3) {
+        return new ResourceLocation(StevesFactoryManager.MODID, "textures/" + seg1 + "/" + seg2 + "/" + seg3);
+    }
+
+    public static ResourceLocation linkTexture(String... segments) {
+        StringBuilder path = new StringBuilder("textures/");
+        for (String segment : segments) {
+            path.append(segment).append("/");
+        }
+        return new ResourceLocation(StevesFactoryManager.MODID, path.toString());
     }
 }

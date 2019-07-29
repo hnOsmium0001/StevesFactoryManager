@@ -1,10 +1,10 @@
 package vswe.stevesfactory.blocks.manager.selection;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.IProcedureFactory;
 import vswe.stevesfactory.blocks.manager.components.EditorPanel;
-import vswe.stevesfactory.blocks.manager.components.FlowComponent;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
@@ -16,43 +16,15 @@ import java.util.Objects;
 
 public class ComponentSelectionButton extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
 
-    public enum Component {
-        TRIGGER("trigger"),
-        ITEM_IMPORT("item_import"),
-        ITEM_EXPORT("item_export"),
-        ITEM_CONDITION("item_condition"),
-        FLOW_CONTROL("flow_control"),
-        FLUID_IMPORT("fluid_import"),
-        FLUID_EXPORT("fluid_export"),
-        FLUID_CONDITION("fluid_condition"),
-        REDSTONE_EMITTER("redstone_emitter"),
-        REDSTONE_CONDITION("redstone_condition"),
-        CRAFT_ITEM("craft_item"),
-        FOR_EACH("for_each"),
-        GROUP("group"),
-        GROUP_IO("group_io"),
-        CAMOUFLAGE("camouflage"),
-        SIGN_UPDATER("sign_updater"),
-        CONFIGURATIONS("configurations");
-
-        public final String id;
-        public final ResourceLocation texture;
-
-        Component(String id) {
-            this.id = id;
-            this.texture = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/" + id + ".png");
-        }
-    }
-
     private static final ResourceLocation BACKGROUND_NORMAL = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_background/background_normal.png");
     private static final ResourceLocation BACKGROUND_HOVERED = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_background/background_hovered.png");
 
     public static final int WIDTH = 16;
     public static final int HEIGHT = 16;
 
-    private final Component component;
+    private final IProcedureFactory<IProcedure> component;
 
-    public ComponentSelectionButton(SelectionPanel parent, Component component) {
+    public ComponentSelectionButton(SelectionPanel parent, IProcedureFactory<IProcedure> component) {
         super(0, 0, WIDTH, HEIGHT);
         onWindowChanged(parent.getWindow(), parent);
         this.component = component;
@@ -77,18 +49,14 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         EditorPanel editorPanel = getParentWidget().getParentWidget().editorPanel;
-        editorPanel.addChildren(new FlowComponent(editorPanel, 1, 3) {
-            {
-                setName(I18n.format("gui.sfm.Component." + component.id));
-                setLocation(10, 10);
-            }
-        });
+        // TODO actual instance transferring between sides
+        editorPanel.addChildren(component.createWidget(component.createInstance(null)));
         getWindow().setFocusedWidget(this);
         return true;
     }
 
     public ResourceLocation getTexture() {
-        return component.texture;
+        return component.getIcon();
     }
 
     @Nonnull

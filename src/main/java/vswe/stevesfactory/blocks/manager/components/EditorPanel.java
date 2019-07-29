@@ -38,6 +38,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
 
     @Override
     public IContainer<FlowComponent> addChildren(FlowComponent widget) {
+        widget.onParentChanged(this);
         widget.setZIndex(nextZIndex());
         children.add(widget);
         return this;
@@ -46,6 +47,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> {
     @Override
     public IContainer<FlowComponent> addChildren(Collection<FlowComponent> widgets) {
         for (FlowComponent widget : widgets) {
+            widget.onParentChanged(this);
             widget.setZIndex(nextZIndex());
         }
         children.addAll(widgets);
