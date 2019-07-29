@@ -125,6 +125,7 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         return (scrollingUpperLimit + offset - getScrollingStartY()) / ITEM_SIZE_WITH_MARGIN;
     }
 
+    // TODO reflow
     private List<Point> getItemCoordinates() {
         List<Point> points = new ArrayList<>();
 
@@ -180,6 +181,9 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         scrollDownArrow.render(mouseX, mouseY, particleTicks);
         // TODO glScissor rule
         for (T child : searchResults) {
+            int cy = child.getAbsoluteY();
+            int sy = getScrollingStartY();
+            if(cy > sy && cy <= sy + getDisplayHeight())
             child.render(mouseX, mouseY, particleTicks);
         }
     }
@@ -203,7 +207,8 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         }
         offset += change / -20;
         int min = 0;
-        int max = ((int) (Math.ceil(((float) children.size() / itemsPerRow)) - visibleRows)) * ITEM_SIZE_WITH_MARGIN - (ITEM_SIZE_WITH_MARGIN - ITEM_SIZE);
+        int size = getItemSizeWithMargin();
+        int max = ((int) (Math.ceil(((float) children.size() / itemsPerRow)) - visibleRows)) * size - (size - ITEM_SIZE);
         scrollUpArrow.setEnabled(true);
         scrollDownArrow.setEnabled(true);
         if (offset < min) {
@@ -216,11 +221,11 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
     }
 
     public void scrollUp() {
-        scroll(SCROLL_SPEED);
+        scroll(getScrollSpeed());
     }
 
     public void scrollDown() {
-        scroll(-SCROLL_SPEED);
+        scroll(-getScrollSpeed());
     }
 
     @Override
@@ -262,9 +267,12 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         visibleRows = n;
     }
 
-
     public void setItemUpperLimit(int n) {
         scrollingUpperLimit = n;
+    }
+
+    public int getDisplayHeight() {
+        return visibleRows * getItemSizeWithMargin();
     }
 
     public void updateSearch() {
@@ -276,12 +284,12 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         updateScrolling();
     }
 
-    public void setText(String s) {
+    public void setSearchTarget(String s) {
         searchBox.setText(s);
         updateSearch();
     }
 
-    public String getText() {
+    public String getSearchTarget() {
         return searchBox.getText();
     }
 
@@ -291,5 +299,17 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
 
     public boolean hasSearchBox() {
         return searchBox != null;
+    }
+
+    public int getItemSize() {
+        return ITEM_SIZE;
+    }
+
+    public int getItemSizeWithMargin() {
+        return ITEM_SIZE_WITH_MARGIN;
+    }
+
+    public int getScrollSpeed() {
+        return SCROLL_SPEED;
     }
 }

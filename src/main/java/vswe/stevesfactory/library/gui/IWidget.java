@@ -83,13 +83,13 @@ public interface IWidget extends IRenderable {
      * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
      * continue.
      */
-    boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY);
+    boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY);
 
     /**
      * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would
      * continue.
      */
-    boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled);
+    boolean mouseScrolled(double mouseX, double mouseY, double scroll);
 
     /**
      * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would

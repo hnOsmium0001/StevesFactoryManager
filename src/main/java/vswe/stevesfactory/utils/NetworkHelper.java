@@ -41,8 +41,8 @@ public final class NetworkHelper {
             return false;
         }
         // TODO registry for capabilities
-        return CapabilityHelper.hasCapabilityAtAll(provider, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ||
-                CapabilityHelper.hasCapabilityAtAll(provider, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+        return Utils.hasCapabilityAtAll(provider, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ||
+                Utils.hasCapabilityAtAll(provider, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
     }
 
     @Nullable

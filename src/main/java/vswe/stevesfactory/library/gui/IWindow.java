@@ -118,7 +118,7 @@ public interface IWindow {
      * {@code true} to stop propagation of the event to other widgets, otherwise the process would continue. Note that this is valid only
      * when the GUI is handling more than one windows.
      */
-    boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY);
+    boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY);
 
     /**
      * @implSpec Propagate the event and pass it on to the children.
@@ -126,7 +126,7 @@ public interface IWindow {
      * {@code true} to stop propagation of the event to other widgets, otherwise the process would continue. Note that this is valid only
      * when the GUI is handling more than one windows.
      */
-    boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled);
+    boolean mouseScrolled(double mouseX, double mouseY, double scroll);
 
     /**
      * @implSpec Propagate the event and pass it on to the children.

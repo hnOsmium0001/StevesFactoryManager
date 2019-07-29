@@ -16,12 +16,12 @@ public interface LeafWidgetMixin extends IWidget {
     }
 
     @Override
-    default boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
+    default boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         return false;
     }
 
     @Override
-    default boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled) {
+    default boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
         return false;
     }
 

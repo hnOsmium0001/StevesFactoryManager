@@ -494,7 +494,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (isFocused()) {
             EditorPanel parent = getParentWidget();
             setLocation((int) mouseX - parent.getAbsoluteX() - initialDragLocalX, (int) mouseY - parent.getAbsoluteY() - initialDragLocalY);

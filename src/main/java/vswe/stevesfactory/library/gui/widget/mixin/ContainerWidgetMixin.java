@@ -39,12 +39,12 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
     }
 
     @Override
-    default boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
+    default boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         for (T child : getChildren()) {
             if (!(child instanceof IContainer<?>) && !child.isFocused()) {
                 continue;
             }
-            if (child.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY)) {
+            if (child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
                 return true;
             }
         }
@@ -52,12 +52,12 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
     }
 
     @Override
-    default boolean mouseScrolled(double mouseX, double mouseY, double amountScrolled) {
+    default boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
         for (T child : getChildren()) {
             if (!(child instanceof IContainer<?>) && !child.isInside(mouseX, mouseY)) {
                 continue;
             }
-            if (child.mouseScrolled(mouseX, mouseY, amountScrolled)) {
+            if (child.mouseScrolled(mouseX, mouseY, scroll)) {
                 return true;
             }
         }
