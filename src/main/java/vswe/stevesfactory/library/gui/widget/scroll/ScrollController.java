@@ -1,57 +1,26 @@
 package vswe.stevesfactory.library.gui.widget.scroll;
 
 import com.google.common.base.MoreObjects;
+import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
-import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 
-import java.awt.*;
-import java.util.List;
 import java.util.*;
 
 import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.DOWN_RIGHT_4_STRICT_TABLE;
 
 public abstract class ScrollController<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin {
 
-    private static final int ITEM_SIZE = 16;
-    private static final int ITEM_SIZE_WITH_MARGIN = 20;
-
-    private static final int ARROW_WIDTH = 10;
-    private static final int ARROW_HEIGHT = 6;
-    private static final int ARROW_SRC_X = 64;
-    private static final int ARROW_SRC_Y = 165;
-    private static final int ARROW_X = 105;
-    private static final int ARROW_Y_UP = 32;
-    private static final int ARROW_Y_DOWN = 42;
-
-    private static final int SEARCH_BOX_WIDTH = 64;
-    private static final int SEARCH_BOX_HEIGHT = 12;
-    private static final int SEARCH_BOX_SRC_X = 0;
-    private static final int SEARCH_BOX_SRC_Y = 165;
-    private static final int SEARCH_BOX_X = 5;
-    private static final int SEARCH_BOX_Y = 5;
-    private static final int SEARCH_BOX_TEXT_X = 3;
-    private static final int SEARCH_BOX_TEXT_Y = 3;
-    private static final int CURSOR_X = 2;
-    private static final int CURSOR_Y = 0;
-    private static final int CURSOR_Z = 5;
-    private static final int AMOUNT_TEXT_X = 75;
-    private static final int AMOUNT_TEXT_Y = 9;
-
-    private static final int SCROLL_SPEED = 100;
-
     private int itemsPerRow = 5;
     private int visibleRows = 2;
     private int startX = 5;
-    private int scrollingUpperLimit = SEARCH_BOX_Y + SEARCH_BOX_HEIGHT;
+    private int scrollingUpperLimit = getSearchBoxY() + getSearchBoxHeight();
     private boolean disabledScroll;
 
     private int offset;
-    private int dir;
-    private boolean clicked;
     private boolean hasSearchBox;
 
     // Unfortunately we can't add these into children without making the children type plain IWidget
@@ -62,40 +31,30 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
 
     private List<T> searchResults;
 
-
     public ScrollController(boolean hasSearchBox) {
         this(hasSearchBox ? "" : null);
     }
 
     public ScrollController(String defaultText) {
+        this(defaultText, ScrollArrow.up(-1, -1), ScrollArrow.down(-1, -1));
+        scrollUpArrow.setLocation(getArrowX(), getArrowUpY());
+        scrollDownArrow.setLocation(getArrowX(), getArrowDownY());
+    }
+
+    public ScrollController(String defaultText, ScrollArrow up, ScrollArrow down) {
         // TODO
         super(0, 0);
-//        if (defaultText != null) {
-        // TODO
-//            searchBox = new TextBoxLogic(Integer.MAX_VALUE, SEARCH_BOX_WIDTH - SEARCH_BOX_TEXT_X * 2)
-//            {
-//                @Override
-//                protected void textChanged()
-//                {
-//                    if (getText().length() > 0)
-//                    {
-//                        searchItems();
-//                    } else
-//                    {
-//                        children.clear();
-//                        updateScrolling();
-//                    }
-//                }
-//            };
-//        }
 
+        // Too lazy to add text change events, just make pressing enter update search
         this.hasSearchBox = defaultText != null;
-        this.searchBox = new TextField(0, 0, SEARCH_BOX_WIDTH, SEARCH_BOX_HEIGHT).setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
+        this.searchBox = new TextField(getSearchBoxX(), getSearchBoxY(), getSearchBoxWidth(), getSearchBoxHeight()).setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
         this.searchBox.setEnabled(hasSearchBox);
         this.searchBox.setText(MoreObjects.firstNonNull(defaultText, ""));
 
-        this.scrollUpArrow = ScrollArrow.up(this, ARROW_X, ARROW_Y_UP);
-        this.scrollDownArrow = ScrollArrow.down(this, ARROW_X, ARROW_Y_DOWN);
+        this.scrollUpArrow = up;
+        this.scrollUpArrow.onParentChanged(this);
+        this.scrollDownArrow = down;
+        this.scrollDownArrow.onParentChanged(this);
         updateSearch();
     }
 
@@ -122,34 +81,34 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
     }
 
     private int getFirstRow() {
-        return (scrollingUpperLimit + offset - getScrollingStartY()) / ITEM_SIZE_WITH_MARGIN;
+        return (scrollingUpperLimit + offset - getScrollingStartY()) / getItemSizeWithMargin();
     }
 
-    // TODO reflow
-    private List<Point> getItemCoordinates() {
-        List<Point> points = new ArrayList<>();
-
-        int start = getFirstRow();
-        for (int row = start; row < start + visibleRows + 1; row++) {
-            for (int col = 0; col < itemsPerRow; col++) {
-                int id = row * itemsPerRow + col;
-                if (id >= 0 && id < children.size()) {
-                    int x = getScrollingStartX() + ITEM_SIZE_WITH_MARGIN * col;
-                    int y = getScrollingStartY() + row * ITEM_SIZE_WITH_MARGIN - offset;
-                    // TODO
+//    private List<Point> getItemCoordinates() {
+//        List<Point> points = new ArrayList<>();
+//
+//        int start = getFirstRow();
+//        for (int row = start; row < start + visibleRows + 1; row++) {
+//            for (int col = 0; col < itemsPerRow; col++) {
+//                int id = row * itemsPerRow + col;
+//                if (id >= 0 && id < children.size()) {
+//                    int x = getScrollingStartX() + ITEM_SIZE_WITH_MARGIN * col;
+//                    int y = getScrollingStartY() + row * ITEM_SIZE_WITH_MARGIN - offset;
 //                    if (y > scrollingUpperLimit && y + ITEM_SIZE < FlowComponent.getMenuOpenSize()) {
-                    points.add(new Point(x, y));
+//                    points.add(new Point(x, y));
 //                    }
-                }
-            }
-        }
-
-        return points;
-    }
+//                }
+//            }
+//        }
+//        return points;
+//    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button);
+        if (isInside(mouseX, mouseY)) {
+            return false;
+        }
+
 //        List<Point> points = getItemCoordinates();
 //        for (Point point : points) {
 //            if (VectorHelper.isInside((int) mouseX, (int)mouseY, point.x, point.y, ITEM_SIZE, ITEM_SIZE)) {
@@ -157,16 +116,11 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
 //                break;
 //            }
 //        }
-
+        ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button);
         searchBox.mouseClicked(mouseX, mouseY, button);
         scrollUpArrow.mouseClicked(mouseX, mouseY, button);
         scrollDownArrow.mouseClicked(mouseX, mouseY, button);
         return true;
-    }
-
-
-    public void onRelease(int mX, int mY) {
-        clicked = false;
     }
 
     @Override
@@ -174,7 +128,7 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         searchBox.render(mouseX, mouseY, particleTicks);
         // TODO add search status
 //            if (searchBox.getText().length() > 0 || children.size() > 0) {
-//                gui.drawString(Localization.ITEMS_FOUND.toString() + " " + children.size(), AMOUNT_TEXT_X, AMOUNT_TEXT_Y, 0.7F, 0x404040);
+//                gui.drawString(Localization.ITEMS_FOUND.toString() + " " + children.size(), getStatusTextX, getStatusTextY, 0.7F, 0x404040);
 //            }
 
         scrollUpArrow.render(mouseX, mouseY, particleTicks);
@@ -183,8 +137,8 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         for (T child : searchResults) {
             int cy = child.getAbsoluteY();
             int sy = getScrollingStartY();
-            if(cy > sy && cy <= sy + getDisplayHeight())
-            child.render(mouseX, mouseY, particleTicks);
+            if (cy > sy && cy <= sy + getDisplayHeight())
+                child.render(mouseX, mouseY, particleTicks);
         }
     }
 
@@ -206,9 +160,9 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
             return;
         }
         offset += change / -20;
-        int min = 0;
         int size = getItemSizeWithMargin();
-        int max = ((int) (Math.ceil(((float) children.size() / itemsPerRow)) - visibleRows)) * size - (size - ITEM_SIZE);
+        int min = 0;
+        int max = (int) (Math.ceil(((float) children.size() / itemsPerRow)) - visibleRows) * size - (size - getItemSize());
         scrollUpArrow.setEnabled(true);
         scrollDownArrow.setEnabled(true);
         if (offset < min) {
@@ -220,11 +174,19 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
         }
     }
 
-    public void scrollUp() {
+    public void scrollUp(int change) {
+        scroll(change);
+    }
+
+    public void scrollUpUnit() {
         scroll(getScrollSpeed());
     }
 
-    public void scrollDown() {
+    public void scrollDown(int change) {
+        scroll(-change);
+    }
+
+    public void scrollDownUnit() {
         scroll(-getScrollSpeed());
     }
 
@@ -248,6 +210,19 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
     @Override
     public void reflow() {
         DOWN_RIGHT_4_STRICT_TABLE.reflow(getDimensions(), children);
+        int top = getFirstRow();
+        for (T child : children) {
+            child.setY(top + offset);
+        }
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ENTER) {
+            updateSearch();
+            return true;
+        }
+        return false;
     }
 
     public void updateScrolling() {
@@ -298,18 +273,95 @@ public abstract class ScrollController<T extends IWidget & INamedElement & Reloc
     }
 
     public boolean hasSearchBox() {
-        return searchBox != null;
+        return hasSearchBox;
+    }
+
+    public int getMargin() {
+        return 4;
     }
 
     public int getItemSize() {
-        return ITEM_SIZE;
+        return 16;
     }
 
     public int getItemSizeWithMargin() {
-        return ITEM_SIZE_WITH_MARGIN;
+        return getItemSize() + getMargin();
     }
 
     public int getScrollSpeed() {
-        return SCROLL_SPEED;
+        return 100;
+    }
+
+//    public int getArrowSrcX() {
+//        return 64;
+//    }
+//
+//    public int getArrowSrcY() {
+//        return 165;
+//    }
+//
+//    public int getSearchBoxSrcX() {
+//        return 0;
+//    }
+//
+//    public int getSearchBoxSrcY() {
+//        return 165;
+//    }
+//
+//    public int getSearchBoxTextX() {
+//        return 3;
+//    }
+//
+//    public int getSearchBoxTextY() {
+//        return 3;
+//    }
+//
+//    public int getCursorX() {
+//        return 2;
+//    }
+//
+//    public int getCursorY() {
+//        return 0;
+//    }
+//
+//    public int getCursorZ() {
+//        return 5;
+//    }
+
+    public int getArrowX() {
+        return 105;
+    }
+
+    public int getArrowUpY() {
+        return 32;
+    }
+
+    public int getArrowDownY() {
+        return 42;
+    }
+
+    public int getSearchBoxWidth() {
+        return 64;
+    }
+
+    public int getSearchBoxHeight() {
+        return 12;
+    }
+
+    public int getSearchBoxX() {
+        return 5;
+    }
+
+    public int getSearchBoxY() {
+        return 5;
+
+    }
+
+    public int getStatusTextX() {
+        return 75;
+    }
+
+    public int getStatusTextY() {
+        return 9;
     }
 }

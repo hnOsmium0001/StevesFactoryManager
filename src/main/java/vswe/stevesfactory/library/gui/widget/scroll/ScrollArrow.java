@@ -16,8 +16,8 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
     private static final TextureWrapper UP_CLICKED = UP_HOVERED.right(10);
     private static final TextureWrapper UP_DISABLED = UP_CLICKED.right(10);
 
-    public static ScrollArrow up(ScrollController<?> parent, int x, int y) {
-        return new ScrollArrow(parent, x, y) {
+    public static ScrollArrow up(int x, int y) {
+        return new ScrollArrow(x, y) {
             @Override
             public TextureWrapper getTextureNormal() {
                 return UP_NORMAL;
@@ -39,8 +39,13 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
             }
 
             @Override
+            public void update(float particleTicks) {
+                getParentWidget().scrollUpUnit();
+            }
+
+            @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                getParentWidget().scrollUp();
+                getParentWidget().scrollUpUnit();
                 return super.mouseClicked(mouseX, mouseY, button);
             }
         };
@@ -51,8 +56,8 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
     private static final TextureWrapper DOWN_CLICKED = UP_CLICKED.down(6);
     private static final TextureWrapper DOWN_DISABLED = UP_DISABLED.down(6);
 
-    public static ScrollArrow down(ScrollController<?> parent, int x, int y) {
-        return new ScrollArrow(parent, x, y) {
+    public static ScrollArrow down(int x, int y) {
+        return new ScrollArrow(x, y) {
             @Override
             public TextureWrapper getTextureNormal() {
                 return DOWN_NORMAL;
@@ -74,8 +79,13 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
             }
 
             @Override
+            public void update(float particleTicks) {
+                getParentWidget().scrollDownUnit();
+            }
+
+            @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                getParentWidget().scrollDown();
+                getParentWidget().scrollDownUnit();
                 return super.mouseClicked(mouseX, mouseY, button);
             }
         };
@@ -83,9 +93,8 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
 
     private boolean clicked;
 
-    public ScrollArrow(ScrollController<?> parent, int x, int y) {
+    public ScrollArrow(int x, int y) {
         super(x, y, 10, 6);
-        onParentChanged(parent);
     }
 
     @Override
@@ -116,6 +125,8 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
         clicked = false;
         return true;
     }
+
+    public abstract void update(float particleTicks);
 
     @Override
     public abstract TextureWrapper getTextureNormal();
