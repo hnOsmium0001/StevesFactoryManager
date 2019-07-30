@@ -10,7 +10,7 @@ public interface IProcedure {
 
     ResourceLocation getRegistryName();
 
-    List<? extends IProcedure> nexts();
+    IProcedure[] nexts();
 
     /**
      * Execute this procedure, and return the next procedure the control flow should go to.
@@ -26,12 +26,6 @@ public interface IProcedure {
      * registry name as this, and results in an equivalent procedure object using {@link IProcedureType#retrieveInstance(CompoundNBT)}.
      *
      * @implSpec The resulting NBT must contain an entry with the key "{@code ID}", associated with the registry name of the procedure.
-     * @implNote The default implementation of this method has the ID entry written. Unless child implementations have a special need,
-     * reusing this method stub is sufficient.
      */
-    default CompoundNBT serialize() {
-        CompoundNBT tag = new CompoundNBT();
-        tag.putString("ID", getRegistryName().toString());
-        return tag;
-    }
+    CompoundNBT serialize();
 }

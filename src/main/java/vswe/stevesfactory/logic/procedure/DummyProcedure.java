@@ -1,6 +1,6 @@
 package vswe.stevesfactory.logic.procedure;
 
-import com.google.common.collect.ImmutableList;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IExecutionContext;
@@ -8,11 +8,12 @@ import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public final class DummyProcedure implements IProcedure {
 
+
     private static final ResourceLocation NAME = new ResourceLocation(StevesFactoryManager.MODID, "dummy");
+    private static final IProcedure[] NEXTS_ARR = new IProcedure[0];
 
     public DummyProcedure(INetworkController controller) {
     }
@@ -23,13 +24,18 @@ public final class DummyProcedure implements IProcedure {
     }
 
     @Override
-    public List<? extends IProcedure> nexts() {
-        return ImmutableList.of();
+    public IProcedure[] nexts() {
+        return NEXTS_ARR;
     }
 
     @Nullable
     @Override
     public IProcedure execute(IExecutionContext context) {
         return null;
+    }
+
+    @Override
+    public CompoundNBT serialize() {
+        return new CompoundNBT();
     }
 }
