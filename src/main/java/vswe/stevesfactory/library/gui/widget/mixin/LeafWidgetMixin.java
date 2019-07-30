@@ -43,4 +43,8 @@ public interface LeafWidgetMixin extends IWidget {
     @Override
     default void mouseMoved(double mouseX, double mouseY) {
     }
+
+    @Override
+    default void update(float particleTicks) {
+    }
 }

@@ -153,6 +153,12 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
     }
 
     @Override
+    public void update(float particleTicks) {
+        f.update(particleTicks);
+        ContainerWidgetMixin.super.update(particleTicks);
+    }
+
+    @Override
     public void reflow() {
     }
 

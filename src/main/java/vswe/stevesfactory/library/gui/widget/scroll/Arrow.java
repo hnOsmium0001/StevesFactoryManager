@@ -40,14 +40,8 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
             }
 
             @Override
-            public void update(float particleTicks) {
-                getParentWidget().scrollUpUnit();
-            }
-
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                getParentWidget().scrollUpUnit();
-                return super.mouseClicked(mouseX, mouseY, button);
+            protected int getScrollDirectionMask() {
+                return -1;
             }
         };
     }
@@ -80,14 +74,8 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
             }
 
             @Override
-            public void update(float particleTicks) {
-                getParentWidget().scrollDownUnit();
-            }
-
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                getParentWidget().scrollDownUnit();
-                return super.mouseClicked(mouseX, mouseY, button);
+            protected int getScrollDirectionMask() {
+                return 1;
             }
         };
     }
@@ -127,7 +115,13 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
         return true;
     }
 
-    public abstract void update(float particleTicks);
+    @Override
+    public void update(float particleTicks) {
+        if (clicked) {
+            WrappingListView parent = getParentWidget();
+            parent.scroll(parent.getScrollSpeed() * getScrollDirectionMask());
+        }
+    }
 
     @Override
     public abstract TextureWrapper getTextureNormal();
@@ -154,4 +148,6 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
         super.provideInformation(receiver);
         receiver.line("Clicked=" + clicked);
     }
+
+    protected abstract int getScrollDirectionMask();
 }

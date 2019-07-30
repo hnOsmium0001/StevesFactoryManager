@@ -18,6 +18,44 @@ import java.awt.*;
 
 public class TextField extends AbstractWidget implements RelocatableWidgetMixin, ResizableWidgetMixin, LeafWidgetMixin {
 
+    public static TextField DUMMY = new TextField(0, 0, 0, 0) {
+        @Override
+        public boolean isEditable() {
+            return false;
+        }
+
+        @Override
+        public void render(int mouseX, int mouseY, float particleTicks) {
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            return false;
+        }
+
+        @Override
+        public boolean charTyped(char typedChar, int keyCode) {
+            return false;
+        }
+
+        @Override
+        public void setX(int x) {
+        }
+
+        @Override
+        public void setY(int y) {
+        }
+
+        @Override
+        public void onParentPositionChanged() {
+        }
+
+        @Override
+        public boolean isFocused() {
+            return false;
+        }
+    };
+
     public enum BackgroundStyle {
         NONE {
             @Override

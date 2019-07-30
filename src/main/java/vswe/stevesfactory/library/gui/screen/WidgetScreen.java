@@ -87,6 +87,12 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
                 deferRemovePopupWindow(popup);
             }
         }
+
+        float particleTicks = Minecraft.getInstance().getRenderPartialTicks();
+        for (IWindow window : windows) {
+            window.update(particleTicks);
+        }
+        primaryWindow.update(particleTicks);
     }
 
     protected void initializePrimaryWindow(IWindow primaryWindow) {

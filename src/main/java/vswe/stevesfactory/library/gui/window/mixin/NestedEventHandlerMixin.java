@@ -115,6 +115,13 @@ public interface NestedEventHandlerMixin extends IWindow {
     }
 
     @Override
+    default void update(float particleTicks) {
+        for (IWidget child : getChildren()) {
+            child.update(particleTicks);
+        }
+    }
+
+    @Override
     default void onRemoved() {
         for (IWidget child : getChildren()) {
             child.onRemoved();

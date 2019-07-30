@@ -109,4 +109,11 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
             child.mouseMoved(mouseX, mouseY);
         }
     }
+
+    @Override
+    default void update(float particleTicks) {
+        for (T child : getChildren()) {
+            child.update(particleTicks);
+        }
+    }
 }

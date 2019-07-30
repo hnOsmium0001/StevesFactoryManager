@@ -53,9 +53,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
 
         // Too lazy to add text change events, just make pressing enter update search
         this.hasSearchBox = defaultText != null;
-        this.searchBox = createSearchBox();
-        this.searchBox.setEnabled(hasSearchBox);
-        this.searchBox.setText(MoreObjects.firstNonNull(defaultText, ""));
+        this.searchBox = hasSearchBox ? createSearchBox(defaultText) : TextField.DUMMY;
 
         this.scrollUpArrow = Arrow.up(0, 0);
         this.scrollUpArrow.onParentChanged(this);
@@ -82,7 +80,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         updateSearch();
     }
 
-    private TextField createSearchBox() {
+    private TextField createSearchBox(String defaultText) {
         TextField t = new TextField(0, 0, getSearchBoxWidth(), getSearchBoxHeight()) {
             @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -95,6 +93,8 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         };
         t.onParentChanged(this);
         t.setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
+        t.setEnabled(hasSearchBox);
+        t.setText(defaultText);
         return t;
     }
 
@@ -165,19 +165,6 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
-
-    // TODO figure out what is this
-//    private float dt;
-//
-//    public void update(float particleTicks) {
-//        if (clicked) {
-//            particleTicks += dt;
-//            int change = (int) (particleTicks * SCROLL_SPEED);
-//            dt = particleTicks - (change / (float) SCROLL_SPEED);
-//
-//            scroll(change * dir);
-//        }
-//    }
 
     public void scroll(int change) {
         if (disabledScroll) {

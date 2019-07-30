@@ -110,4 +110,6 @@ public interface IWidget extends IRenderable {
     boolean charTyped(char charTyped, int keyCode);
 
     void mouseMoved(double mouseX, double mouseY);
+
+    void update(float particleTicks);
 }
