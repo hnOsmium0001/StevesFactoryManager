@@ -8,18 +8,18 @@ import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import java.awt.*;
 import java.util.function.IntConsumer;
 
-public final class IconButton extends AbstractIconButton implements ResizableWidgetMixin {
+public class SimpleIconButton extends AbstractIconButton implements ResizableWidgetMixin {
 
     private TextureWrapper textureNormal;
     private TextureWrapper textureHovering;
     private IntConsumer onClick;
 
-    public IconButton(int x, int y, TextureWrapper textureNormal, TextureWrapper textureHovering) {
+    public SimpleIconButton(int x, int y, TextureWrapper textureNormal, TextureWrapper textureHovering) {
         super(x, y, 0, 0);
         this.setTextures(textureNormal, textureHovering);
     }
 
-    public IconButton(Point location, Dimension dimensions, TextureWrapper textureNormal, TextureWrapper textureHovering) {
+    public SimpleIconButton(Point location, Dimension dimensions, TextureWrapper textureNormal, TextureWrapper textureHovering) {
         super(location, new Dimension());
         this.setTextures(textureNormal, textureHovering);
     }
@@ -69,5 +69,9 @@ public final class IconButton extends AbstractIconButton implements ResizableWid
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         onClick.accept(button);
         return true;
+    }
+
+    public void onClick(IntConsumer onClick) {
+        this.onClick = onClick;
     }
 }

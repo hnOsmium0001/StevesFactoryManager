@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 
 import java.util.function.IntConsumer;
 
-public final class ItemSlot extends AbstractSlot {
+public class ItemSlot extends AbstractSlot {
 
     private ItemStack renderedStack;
     private IntConsumer action;

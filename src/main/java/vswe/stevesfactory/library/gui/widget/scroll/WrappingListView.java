@@ -2,6 +2,7 @@ package vswe.stevesfactory.library.gui.widget.scroll;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IContainer;
@@ -12,6 +13,7 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.utils.VectorHelper;
 
 import java.awt.*;
 import java.util.List;
@@ -24,6 +26,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
 
     // Scrolling states
     private int offset;
+    private int rows;
     private boolean disabledScroll;
     private Rectangle contentArea = new Rectangle();
 
@@ -116,6 +119,23 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
     }
 
     @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+        if (!isInside(mouseX, mouseY)) {
+            return false;
+        }
+        int x1 = getAbsoluteX() + getScrollingSectionY();
+        int y1 = getAbsoluteY() + getScrollingSectionY();
+        int x2 = x1 + getScrollingSectionWidth();
+        int y2 = y1 + getScrollingSectionHeight();
+        if (!VectorHelper.isInside((int) mouseX, (int) mouseY, x1, y1, x2, y2)) {
+            return false;
+        }
+        // "Windows style scrolling": scroll wheel is controlling the page
+        scroll((int) scroll * -5);
+        return true;
+    }
+
+    @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         // TODO add search status
@@ -163,18 +183,17 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         if (disabledScroll) {
             return;
         }
-        offset += change / -20;
-        int size = getItemSizeWithMargin();
+        offset += change;
         int min = 0;
-        int max = (int) (Math.ceil(((float) children.size() / getItemsPerRow())) - getVisibleRows()) * size - (size - getItemSize());
-//        scrollUpArrow.setEnabled(true);
-//        scrollDownArrow.setEnabled(true);
+        int max = rows * getItemSizeWithMargin() - getVisibleRows() * getItemSizeWithMargin();
+        scrollUpArrow.setEnabled(true);
+        scrollDownArrow.setEnabled(true);
         if (offset < min) {
             offset = min;
-//            scrollUpArrow.setEnabled(false);
+            scrollUpArrow.setEnabled(false);
         } else if (offset > max) {
             offset = max;
-//            scrollDownArrow.setEnabled(false);
+            scrollDownArrow.setEnabled(false);
         }
 
         reflow();
@@ -215,6 +234,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         throw new UnsupportedOperationException();
     }
 
+    @CanIgnoreReturnValue
     public WrappingListView<T> addElement(T widget) {
         Preconditions.checkArgument(widget.getWidth() == getItemSize() && widget.getHeight() == getItemSize());
         contents.add(widget);
@@ -227,12 +247,14 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         int initialX = getScrollingSectionX();
         int x = initialX;
         int y = getFirstRowY();
+        rows = 1;
         for (T child : contents) {
             child.setLocation(x, y);
             x += getItemSizeWithMargin();
             if (x > contentArea.width) {
                 x = initialX;
                 y += getItemSizeWithMargin();
+                rows++;
             }
         }
     }
@@ -325,7 +347,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
     }
 
     public int getScrollSpeed() {
-        return 100;
+        return 5;
     }
 
     public int getSearchBoxWidth() {

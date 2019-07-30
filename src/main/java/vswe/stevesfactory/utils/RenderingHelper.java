@@ -34,6 +34,10 @@ public final class RenderingHelper {
         return fontRenderer().FONT_HEIGHT;
     }
 
+    public static int textWidth(String text) {
+        return fontRenderer().getStringWidth(text);
+    }
+
     public static void useGradientGLStates() {
         GlStateManager.disableTexture();
         GlStateManager.disableAlphaTest();

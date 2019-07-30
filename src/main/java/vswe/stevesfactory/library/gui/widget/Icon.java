@@ -9,7 +9,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;
 
-public final class Icon extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin, INamedElement {
+public class Icon extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin, INamedElement {
 
     private TextureWrapper texture;
 
