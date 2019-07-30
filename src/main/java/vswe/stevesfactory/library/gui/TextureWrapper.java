@@ -94,6 +94,10 @@ public class TextureWrapper {
                 .toString();
     }
 
+    public String getName() {
+        return texture.getPath();
+    }
+
     public TextureWrapper offset(int x, int y) {
         return new TextureWrapper(texture, textureWidth, textureHeight, tx + x, ty + y, portionWidth, portionHeight);
     }

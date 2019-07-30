@@ -6,16 +6,18 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
+import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.util.*;
 
 /**
  * Code adapted from Steve's Factory Manager 2 by Vswe/gigabte101.
  */
-public class WrappingListView<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin {
+public class WrappingListView<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget>, ResizableWidgetMixin {
 
     private int itemsPerRow = 5;
     private int visibleRows = 2;
@@ -29,7 +31,9 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
     private TextField searchBox;
     private Arrow scrollUpArrow;
     private Arrow scrollDownArrow;
-    private List<T> children = new ArrayList<>();
+    private List<T> contents = new ArrayList<>();
+    private List<IWidget> children;
+
     private List<T> searchResults;
 
     public WrappingListView(IWidget parent, boolean hasSearchBox) {
@@ -57,6 +61,23 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         this.scrollUpArrow.onParentChanged(this);
         this.scrollDownArrow = down;
         this.scrollDownArrow.onParentChanged(this);
+
+        this.children = new AbstractList<IWidget>() {
+            @Override
+            public IWidget get(int i) {
+                switch (i) {
+                    case 0: return searchBox;
+                    case 1: return scrollUpArrow;
+                    case 2: return scrollDownArrow;
+                    default: return contents.get(i - 3);
+                }
+            }
+
+            @Override
+            public int size() {
+                return 3 + contents.size();
+            }
+        };
         updateSearch();
     }
 
@@ -78,7 +99,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
 
     protected List<T> searchItems(String search) {
         List<T> result = new ArrayList<>();
-        for (T child : children) {
+        for (T child : contents) {
             if (search.equals(child.getName())) {
                 result.add(child);
             }
@@ -121,26 +142,24 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        searchBox.mouseClicked(mouseX, mouseY, button);
-        scrollUpArrow.mouseClicked(mouseX, mouseY, button);
-        scrollDownArrow.mouseClicked(mouseX, mouseY, button);
-        return true;
+        return false;
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         // TODO add search status
 //            if (searchBox.getText().length() > 0 || children.size() > 0) {
 //                gui.drawString(Localization.ITEMS_FOUND.toString() + " " + children.size(), getStatusTextX, getStatusTextY, 0.7F, 0x404040);
 //            }
 
+        RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXBR(), getAbsoluteYBR(), 0xaaffffff);
         searchBox.render(mouseX, mouseY, particleTicks);
         scrollUpArrow.render(mouseX, mouseY, particleTicks);
         scrollDownArrow.render(mouseX, mouseY, particleTicks);
 
-
         double scale = minecraft().mainWindow.getGuiScaleFactor();
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+//        GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor((int) (getAbsoluteX() * scale), (int) (minecraft().mainWindow.getHeight() - (getAbsoluteYBR() * scale)),
                 (int) (getWidth() * scale), (int) (getHeight() * scale));
         for (T child : searchResults) {
@@ -150,6 +169,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
                 child.render(mouseX, mouseY, particleTicks);
         }
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     // TODO figure out what is this
@@ -173,65 +193,74 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         int size = getItemSizeWithMargin();
         int min = 0;
         int max = (int) (Math.ceil(((float) children.size() / itemsPerRow)) - visibleRows) * size - (size - getItemSize());
-        scrollUpArrow.setEnabled(true);
-        scrollDownArrow.setEnabled(true);
+//        scrollUpArrow.setEnabled(true);
+//        scrollDownArrow.setEnabled(true);
         if (offset < min) {
             offset = min;
-            scrollUpArrow.setEnabled(false);
+//            scrollUpArrow.setEnabled(false);
         } else if (offset > max) {
             offset = max;
-            scrollDownArrow.setEnabled(false);
+//            scrollDownArrow.setEnabled(false);
         }
 
         reflow();
     }
 
     public void scrollUp(int change) {
-        scroll(change);
-    }
-
-    public void scrollUpUnit() {
-        scroll(getScrollSpeed());
-    }
-
-    public void scrollDown(int change) {
         scroll(-change);
     }
 
-    public void scrollDownUnit() {
+    public void scrollUpUnit() {
         scroll(-getScrollSpeed());
     }
 
+    public void scrollDown(int change) {
+        scroll(change);
+    }
+
+    public void scrollDownUnit() {
+        scroll(getScrollSpeed());
+    }
+
     @Override
-    public List<T> getChildren() {
+    public List<IWidget> getChildren() {
         return children;
     }
 
-    @Override
-    public WrappingListView<T> addChildren(T widget) {
-        Preconditions.checkArgument(widget.getWidth() == getItemSize() && widget.getHeight() == getItemSize());
-        children.add(widget);
-        return this;
+    public List<T> getContents() {
+        return contents;
     }
 
     @Override
-    public WrappingListView<T> addChildren(Collection<T> widgets) {
-        for (T widget : widgets) {
-            addChildren(widget);
-        }
+    public WrappingListView<T> addChildren(IWidget widget) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public WrappingListView<T> addChildren(Collection<IWidget> widgets) {
+        throw new UnsupportedOperationException();
+    }
+
+    public WrappingListView<T> addElement(T widget) {
+        Preconditions.checkArgument(widget.getWidth() == getItemSize() && widget.getHeight() == getItemSize());
+        contents.add(widget);
+        reflow();
         return this;
     }
 
     @Override
     public void reflow() {
-//        DOWN_RIGHT_4_STRICT_TABLE.reflow(getDimensions(), children);
-
-        int x = getScrollingSectionX();
+        int size = getItemSizeWithMargin();
+        int initialX = getScrollingSectionX();
+        int x = initialX;
         int y = getFirstRowY();
-        for (T child : children) {
+        for (T child : contents) {
             child.setLocation(x, y);
-            x += getItemSizeWithMargin();
-            y += getItemSizeWithMargin();
+            x += size;
+            if (x >= getWidth()) {
+                x = initialX;
+                y += size;
+            }
         }
 
 //        for (int row = start; row < start + visibleRows + 1; row++) {
@@ -275,9 +304,9 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
 
     public void updateSearch() {
         if (hasSearchBox()) {
-            searchResults = searchBox.getText().isEmpty() ? children : searchItems(searchBox.getText().toLowerCase());
+            searchResults = searchBox.getText().isEmpty() ? contents : searchItems(searchBox.getText().toLowerCase());
         } else {
-            searchResults = children;
+            searchResults = contents;
         }
         updateScrolling();
     }
@@ -352,7 +381,8 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
 //    }
 
     public int getArrowX() {
-        return 105;
+//        return 105;
+        return 0;
     }
 
     public int getArrowUpY() {
@@ -377,7 +407,6 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
 
     public int getSearchBoxY() {
         return 5;
-
     }
 
     public int getStatusTextX() {

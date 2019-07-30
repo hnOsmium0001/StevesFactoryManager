@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.widget;
 
+import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -8,17 +9,19 @@ import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;
 
-public final class Icon extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
+public final class Icon extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin, INamedElement {
 
     private TextureWrapper texture;
 
-    public Icon(int x, int y, int width, int height, TextureWrapper texture) {
-        super(x, y, width, height);
+    public Icon(IWidget parent, int x, int y, TextureWrapper texture) {
+        super(x, y, texture.getPortionWidth(), texture.getPortionHeight());
+        onParentChanged(parent);
         this.texture = texture;
     }
 
-    public Icon(Point location, Dimension dimensions, TextureWrapper texture) {
-        super(location, dimensions);
+    public Icon(IWidget parent, Point location, TextureWrapper texture) {
+        super(location, new Dimension(texture.getPortionWidth(), texture.getPortionHeight()));
+        onParentChanged(parent);
         this.texture = texture;
     }
 
@@ -43,5 +46,10 @@ public final class Icon extends AbstractWidget implements RelocatableWidgetMixin
     public void provideInformation(ITextReceiver receiver) {
         super.provideInformation(receiver);
         receiver.line("Texture=" + texture);
+    }
+
+    @Override
+    public String getName() {
+        return texture.toString();
     }
 }

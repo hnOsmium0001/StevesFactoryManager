@@ -1,6 +1,7 @@
 package vswe.stevesfactory.library.gui.widget.scroll;
 
 import vswe.stevesfactory.library.gui.TextureWrapper;
+import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
@@ -13,8 +14,8 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
 
     private static final TextureWrapper UP_NORMAL = TextureWrapper.ofFlowComponent(0, 152, 10, 6);
     private static final TextureWrapper UP_HOVERED = UP_NORMAL.right(10);
-    private static final TextureWrapper UP_CLICKED = UP_HOVERED.right(10);
-    private static final TextureWrapper UP_DISABLED = UP_CLICKED.right(10);
+    private static final TextureWrapper UP_CLICKED = UP_NORMAL.right(10 * 2);
+    private static final TextureWrapper UP_DISABLED = UP_NORMAL.right(10 * 3);
 
     public static Arrow up(int x, int y) {
         return new Arrow(x, y) {
@@ -91,7 +92,7 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
         };
     }
 
-    private boolean clicked;
+    private boolean clicked = false;
 
     public Arrow(int x, int y) {
         super(x, y, 10, 6);
@@ -101,10 +102,10 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         if (isEnabled()) {
-            if (isInside(mouseX, mouseY) && isEnabled()) {
-                getTextureHovered().draw(getAbsoluteX(), getAbsoluteY());
-            } else if (isClicked()) {
+            if (isClicked()) {
                 getTextureClicked().draw(getAbsoluteX(), getAbsoluteY());
+            } else if (isInside(mouseX, mouseY) && isEnabled()) {
+                getTextureHovered().draw(getAbsoluteX(), getAbsoluteY());
             } else {
                 getTextureNormal().draw(getAbsoluteX(), getAbsoluteY());
             }
@@ -146,5 +147,11 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
     @Override
     public WrappingListView getParentWidget() {
         return Objects.requireNonNull((WrappingListView) super.getParentWidget());
+    }
+
+    @Override
+    public void provideInformation(ITextReceiver receiver) {
+        super.provideInformation(receiver);
+        receiver.line("Clicked=" + clicked);
     }
 }
