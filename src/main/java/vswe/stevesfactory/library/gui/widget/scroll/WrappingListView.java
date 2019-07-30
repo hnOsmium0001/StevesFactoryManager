@@ -1,3 +1,7 @@
+/* Code adapted from Steve's Factory Manager 2 by Vswe/gigabte101.
+ * https://github.com/gigabit101/StevesFactoryManager/blob/2.0.X/src/main/java/vswe/stevesfactory/components/ScrollController.java
+ */
+
 package vswe.stevesfactory.library.gui.widget.scroll;
 
 import com.google.common.base.MoreObjects;
@@ -19,9 +23,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-/**
- * Code adapted from Steve's Factory Manager 2 by Vswe/gigabte101.
- */
+
 public class WrappingListView<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget>, ResizableWidgetMixin {
 
     // Scrolling states

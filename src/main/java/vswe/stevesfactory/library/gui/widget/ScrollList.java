@@ -1,3 +1,6 @@
+/* Code adapted from net.minecraftforge.client.gui.ScrollPanel
+ */
+
 package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -17,9 +20,6 @@ import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 
-/**
- * Code adapted from {@link net.minecraftforge.client.gui.ScrollPanel}
- */
 public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T> {
 
     private boolean scrolling;
