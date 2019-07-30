@@ -7,11 +7,14 @@ import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 
 /**
@@ -19,37 +22,31 @@ import java.util.*;
  */
 public class WrappingListView<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget>, ResizableWidgetMixin {
 
-    private int itemsPerRow = 5;
-    private int visibleRows = 2;
-    private int viewX = 5;
-    private int viewY = getSearchBoxY() + getSearchBoxHeight();
-    private boolean disabledScroll;
-    private boolean hasSearchBox;
+    // Scrolling states
     private int offset;
+    private boolean disabledScroll;
+    private Rectangle contentArea = new Rectangle();
 
-    // Unfortunately we can't add these into children without making the children type plain IWidget
+    // Search box states
+    private boolean hasSearchBox;
+    private List<T> searchResults;
+
+    // Child widgets
     private TextField searchBox;
     private Arrow scrollUpArrow;
     private Arrow scrollDownArrow;
     private List<T> contents = new ArrayList<>();
     private List<IWidget> children;
 
-    private List<T> searchResults;
-
     public WrappingListView(IWidget parent, boolean hasSearchBox) {
         this(parent, hasSearchBox ? "" : null);
     }
 
     public WrappingListView(IWidget parent, String defaultText) {
-        this(parent, defaultText, Arrow.up(-1, -1), Arrow.down(-1, -1));
-        scrollUpArrow.setLocation(getArrowX(), getArrowUpY());
-        scrollDownArrow.setLocation(getArrowX(), getArrowDownY());
-    }
-
-    public WrappingListView(IWidget parent, String defaultText, Arrow up, Arrow down) {
-        // TODO
         super(80, 80);
         onParentChanged(parent);
+
+        this.contentArea.setSize(getDimensions());
 
         // Too lazy to add text change events, just make pressing enter update search
         this.hasSearchBox = defaultText != null;
@@ -57,10 +54,11 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         this.searchBox.setEnabled(hasSearchBox);
         this.searchBox.setText(MoreObjects.firstNonNull(defaultText, ""));
 
-        this.scrollUpArrow = up;
+        this.scrollUpArrow = Arrow.up(0, 0);
         this.scrollUpArrow.onParentChanged(this);
-        this.scrollDownArrow = down;
+        this.scrollDownArrow = Arrow.down(0, 0);
         this.scrollDownArrow.onParentChanged(this);
+        this.alignArrows();
 
         this.children = new AbstractList<IWidget>() {
             @Override
@@ -82,7 +80,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
     }
 
     private TextField createSearchBox() {
-        TextField t = new TextField(getSearchBoxX(), getSearchBoxY(), getSearchBoxWidth(), getSearchBoxHeight()) {
+        TextField t = new TextField(0, 0, getSearchBoxWidth(), getSearchBoxHeight()) {
             @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
                 if (keyCode == GLFW.GLFW_KEY_ENTER) {
@@ -107,42 +105,14 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         return result;
     }
 
-    public void setScrollingSectionX(int val) {
-        viewX = val;
-    }
-
-    public int getScrollingSectionX() {
-        return viewX;
-    }
-
-    public int getScrollingSectionY() {
-        return viewY + 3;
-    }
-
-    private int getFirstRowY() {
-//        return (viewY + offset - getScrollingSectionY()) / getItemSizeWithMargin();
-        return getScrollingSectionY() - offset;
-    }
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!isInside(mouseX, mouseY)) {
             return false;
         }
 
-//        List<Point> points = getItemCoordinates();
-//        for (Point point : points) {
-//            if (VectorHelper.isInside((int) mouseX, (int)mouseY, point.x, point.y, ITEM_SIZE, ITEM_SIZE)) {
-//                onClick(children.get(point.id), mouseX, mouseY, button);
-//                break;
-//            }
-//        }
-        // Set focused wid
-        getWindow().setFocusedWidget(this);
-        if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
-        return false;
+        // TODO fix focus target for pressing enter
+        return ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -159,15 +129,19 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         scrollDownArrow.render(mouseX, mouseY, particleTicks);
 
         double scale = minecraft().mainWindow.getGuiScaleFactor();
-//        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor((int) (getAbsoluteX() * scale), (int) (minecraft().mainWindow.getHeight() - (getAbsoluteYBR() * scale)),
-                (int) (getWidth() * scale), (int) (getHeight() * scale));
+        int left = getAbsoluteX() + getScrollingSectionX();
+        int bottom = getAbsoluteY() + getScrollingSectionY() + contentArea.height;
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor((int) (left * scale), (int) (minecraft().mainWindow.getHeight() - (bottom * scale)),
+                (int) (contentArea.width * scale), (int) (contentArea.height * scale));
+
+        int sy = getScrollingSectionY();
         for (T child : searchResults) {
-            int cy = child.getAbsoluteY();
-            int sy = getScrollingSectionY();
-            if (cy > sy && cy <= sy + getDisplayHeight())
+            int cy = child.getY();
+            if (cy + child.getHeight() > sy && cy < sy + contentArea.height)
                 child.render(mouseX, mouseY, particleTicks);
         }
+
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
@@ -192,7 +166,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         offset += change / -20;
         int size = getItemSizeWithMargin();
         int min = 0;
-        int max = (int) (Math.ceil(((float) children.size() / itemsPerRow)) - visibleRows) * size - (size - getItemSize());
+        int max = (int) (Math.ceil(((float) children.size() / getItemsPerRow())) - getVisibleRows()) * size - (size - getItemSize());
 //        scrollUpArrow.setEnabled(true);
 //        scrollDownArrow.setEnabled(true);
         if (offset < min) {
@@ -250,56 +224,26 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
 
     @Override
     public void reflow() {
-        int size = getItemSizeWithMargin();
         int initialX = getScrollingSectionX();
         int x = initialX;
         int y = getFirstRowY();
         for (T child : contents) {
             child.setLocation(x, y);
-            x += size;
-            if (x >= getWidth()) {
+            x += getItemSizeWithMargin();
+            if (x > contentArea.width) {
                 x = initialX;
-                y += size;
+                y += getItemSizeWithMargin();
             }
         }
-
-//        for (int row = start; row < start + visibleRows + 1; row++) {
-//            for (int col = 0; col < itemsPerRow; col++) {
-//                int id = row * itemsPerRow + col;
-//                if (id >= 0 && id < children.size()) {
-//                    int x = getScrollingSectionX() + getItemSizeWithMargin() * col;
-//                    int y = getScrollingSectionY() + row * getMargin() - offset;
-//                    if (y > viewY && y + ITEM_SIZE < FlowComponent.getMenuOpenSize()) {
-//                        points.add(new Point(x, y));
-//                    }
-//                }
-//            }
-//        }
     }
 
     public void updateScrolling() {
-        boolean canScroll = children.size() > itemsPerRow * visibleRows;
+        boolean canScroll = contents.size() > getItemsPerRow() * getVisibleRows();
         if (!canScroll) {
             offset = 0;
         }
         scrollUpArrow.setEnabled(canScroll);
         scrollDownArrow.setEnabled(canScroll);
-    }
-
-    public void setItemsPerRow(int n) {
-        itemsPerRow = n;
-    }
-
-    public void setVisibleRows(int n) {
-        visibleRows = n;
-    }
-
-    public void setItemUpperLimit(int n) {
-        viewY = n;
-    }
-
-    public int getDisplayHeight() {
-        return visibleRows * getItemSizeWithMargin();
     }
 
     public void updateSearch() {
@@ -328,6 +272,46 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         return hasSearchBox;
     }
 
+    public Rectangle getContentArea() {
+        return contentArea;
+    }
+
+    public int getScrollingSectionX() {
+        return contentArea.x;
+    }
+
+    public int getScrollingSectionY() {
+        return contentArea.y;
+    }
+
+    public int getScrollingSectionWidth() {
+        return contentArea.width;
+    }
+
+    public int getScrollingSectionHeight() {
+        return contentArea.height;
+    }
+
+    public int getItemsPerRow() {
+        return (int) Math.ceil((double) contentArea.width / getItemSizeWithMargin());
+    }
+
+    public void setItemsPerRow(int itemsPerRow) {
+        contentArea.width = itemsPerRow * getItemSizeWithMargin() - getMargin();
+    }
+
+    public int getVisibleRows() {
+        return (int) Math.ceil((double) contentArea.height / getItemSizeWithMargin());
+    }
+
+    public void setVisibleRows(int visibleRows) {
+        contentArea.height = visibleRows * getItemSizeWithMargin() - getMargin();
+    }
+
+    private int getFirstRowY() {
+        return getScrollingSectionY() - offset;
+    }
+
     public int getMargin() {
         return 4;
     }
@@ -344,55 +328,6 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         return 100;
     }
 
-//    public int getArrowSrcX() {
-//        return 64;
-//    }
-//
-//    public int getArrowSrcY() {
-//        return 165;
-//    }
-//
-//    public int getSearchBoxSrcX() {
-//        return 0;
-//    }
-//
-//    public int getSearchBoxSrcY() {
-//        return 165;
-//    }
-//
-//    public int getSearchBoxTextX() {
-//        return 3;
-//    }
-//
-//    public int getSearchBoxTextY() {
-//        return 3;
-//    }
-//
-//    public int getCursorX() {
-//        return 2;
-//    }
-//
-//    public int getCursorY() {
-//        return 0;
-//    }
-//
-//    public int getCursorZ() {
-//        return 5;
-//    }
-
-    public int getArrowX() {
-//        return 105;
-        return 0;
-    }
-
-    public int getArrowUpY() {
-        return 32;
-    }
-
-    public int getArrowDownY() {
-        return 42;
-    }
-
     public int getSearchBoxWidth() {
         return 64;
     }
@@ -401,19 +336,32 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         return 12;
     }
 
-    public int getSearchBoxX() {
-        return 5;
-    }
-
-    public int getSearchBoxY() {
-        return 5;
-    }
-
     public int getStatusTextX() {
         return 75;
     }
 
     public int getStatusTextY() {
         return 9;
+    }
+
+    public Arrow getScrollUpArrow() {
+        return scrollUpArrow;
+    }
+
+    public Arrow getScrollDownArrow() {
+        return scrollDownArrow;
+    }
+
+    public TextField getSearchBox() {
+        return searchBox;
+    }
+
+    public void placeArrows(int x, int y) {
+        scrollUpArrow.setLocation(x, y);
+        alignArrows();
+    }
+
+    public void alignArrows() {
+        scrollDownArrow.setLocation(scrollUpArrow.getX(), scrollUpArrow.getY() + scrollUpArrow.getHeight() + getMargin());
     }
 }

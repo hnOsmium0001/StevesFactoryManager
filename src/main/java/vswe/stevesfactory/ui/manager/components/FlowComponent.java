@@ -349,7 +349,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
                     case 4: return name;
                     case 5: return inputNodes;
                     case 6: return outputNodes;
-                    default: return menuComponents.get(i);
+                    default: return menuComponents.get(i - 7);
                 }
             }
 
