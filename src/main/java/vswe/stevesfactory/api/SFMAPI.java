@@ -7,16 +7,16 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.registries.*;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.IProcedureFactory;
+import vswe.stevesfactory.api.logic.IProcedureType;
 
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
 public class SFMAPI {
 
-    private static IForgeRegistry<IProcedureFactory<?>> procedures;
+    private static IForgeRegistry<IProcedureType<?>> procedures;
 
-    public static IForgeRegistry<IProcedureFactory<?>> getProceduresRegistry() {
+    public static IForgeRegistry<IProcedureType<?>> getProceduresRegistry() {
         if (procedures == null) {
-            procedures = RegistryManager.ACTIVE.getRegistry(IProcedureFactory.class);
+            procedures = RegistryManager.ACTIVE.getRegistry(IProcedureType.class);
         }
         return procedures;
     }
@@ -24,7 +24,7 @@ public class SFMAPI {
     @SubscribeEvent
     @SuppressWarnings("unchecked")
     public static void onRegistryCreation(RegistryEvent.NewRegistry event) {
-        makeRegistry(new ResourceLocation(StevesFactoryManager.MODID, "procedures"), IProcedureFactory.class).create();
+        makeRegistry(new ResourceLocation(StevesFactoryManager.MODID, "procedures"), IProcedureType.class).create();
     }
 
     // Somehow inlining this method would create an compile error

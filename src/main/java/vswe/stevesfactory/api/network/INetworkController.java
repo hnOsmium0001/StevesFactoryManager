@@ -48,4 +48,5 @@ public interface INetworkController {
     @CanIgnoreReturnValue
     boolean removeLink(BlockPos pos);
 
+    boolean isRemoved();
 }

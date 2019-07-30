@@ -7,10 +7,10 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureFactory;
+import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.procedure.DummyProcedure;
-import vswe.stevesfactory.logic.procedure.SimpleProcedureFactory;
+import vswe.stevesfactory.logic.procedure.SimpleProcedureType;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.util.Arrays;
@@ -37,15 +37,15 @@ public enum Procedures {
     CONFIGURATIONS("configurations", DummyProcedure::new);
 
     public final String id;
-    public final IProcedureFactory<IProcedure> factory;
+    public final IProcedureType<IProcedure> factory;
 
     Procedures(String id, Function<INetworkController, IProcedure> constructor) {
         this.id = id;
-        this.factory = new SimpleProcedureFactory<>(constructor, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
+        this.factory = new SimpleProcedureType<>(constructor, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
         this.factory.setRegistryName(new ResourceLocation(StevesFactoryManager.MODID, id));
     }
 
-    public String getId() {
+    public String getPathComponent() {
         return id;
     }
 
@@ -53,16 +53,16 @@ public enum Procedures {
         return factory.getIcon();
     }
 
-    public IProcedureFactory<?> getFactory() {
+    public IProcedureType<?> getFactory() {
         return factory;
     }
 
-    private static final IProcedureFactory<?>[] FACTORIES = Arrays.stream(values())
+    private static final IProcedureType<?>[] FACTORIES = Arrays.stream(values())
             .map(Procedures::getFactory)
-            .toArray(IProcedureFactory[]::new);
+            .toArray(IProcedureType[]::new);
 
     @SubscribeEvent
-    public static void onProcedureRegister(RegistryEvent.Register<IProcedureFactory<?>> event) {
+    public static void onProcedureRegister(RegistryEvent.Register<IProcedureType<?>> event) {
         event.getRegistry().registerAll(Procedures.FACTORIES);
     }
 }

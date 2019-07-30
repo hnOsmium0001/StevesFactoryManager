@@ -3,7 +3,7 @@ package vswe.stevesfactory.blocks.manager.selection;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureFactory;
+import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.blocks.manager.components.EditorPanel;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
@@ -22,9 +22,9 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
     public static final int WIDTH = 16;
     public static final int HEIGHT = 16;
 
-    private final IProcedureFactory<IProcedure> component;
+    private final IProcedureType<IProcedure> component;
 
-    public ComponentSelectionButton(SelectionPanel parent, IProcedureFactory<IProcedure> component) {
+    public ComponentSelectionButton(SelectionPanel parent, IProcedureType<IProcedure> component) {
         super(0, 0, WIDTH, HEIGHT);
         onWindowChanged(parent.getWindow(), parent);
         this.component = component;

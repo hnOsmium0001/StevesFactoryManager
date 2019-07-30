@@ -6,7 +6,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.blocks.manager.components.FlowComponent;
 
-public interface IProcedureFactory<P extends IProcedure> extends IForgeRegistryEntry<IProcedureFactory<?>> {
+public interface IProcedureType<P extends IProcedure> extends IForgeRegistryEntry<IProcedureType<?>> {
 
     /**
      * Create a blank procedure object.

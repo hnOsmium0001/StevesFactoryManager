@@ -4,18 +4,18 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureFactory;
+import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.blocks.manager.components.FlowComponent;
 
 import java.util.function.Function;
 
-public class SimpleProcedureFactory<P extends IProcedure> extends ForgeRegistryEntry<IProcedureFactory<?>> implements IProcedureFactory<P> {
+public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntry<IProcedureType<?>> implements IProcedureType<P> {
 
     private final Function<INetworkController, P> constructor;
     private final ResourceLocation icon;
 
-    public SimpleProcedureFactory(Function<INetworkController, P> constructor, ResourceLocation icon) {
+    public SimpleProcedureType(Function<INetworkController, P> constructor, ResourceLocation icon) {
         this.constructor = constructor;
         this.icon = icon;
     }
