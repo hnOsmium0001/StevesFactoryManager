@@ -5,7 +5,9 @@ import com.google.common.collect.Multiset;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.*;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -15,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
+import vswe.stevesfactory.network.NetworkHandler;
+import vswe.stevesfactory.network.PacketTransferLinkables;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
@@ -157,6 +161,17 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         return linkedInventories.add(pos);
     }
 
+    @Override
+    public boolean addLinks(Collection<BlockPos> poses) {
+        StevesFactoryManager.logger.trace("Added {} links", poses.size());
+        return linkedInventories.addAll(poses);
+    }
+
+    @Override
+    public void removeAllLinks() {
+        linkedInventories.clear();
+    }
+
     /**
      * @return {@code true} always. See {@link Multiset#add(Object)} for details.
      */
@@ -210,7 +225,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         super.read(compound);
 
         linkingStatus = LinkingStatus.readFrom(compound.getCompound(KEY_LINKING_STATUS));
-        connectedCables = IOHelper.readBlockPosesHashSet(compound.getList(KEY_CONNECTED_CABLES, Constants.NBT.TAG_COMPOUND));
+        connectedCables = IOHelper.readBlockPoses(compound.getList(KEY_CONNECTED_CABLES, Constants.NBT.TAG_COMPOUND), new HashSet<>());
 
         ListNBT serializedInventories = compound.getList(KEY_LINKED_INVENTORIES, Constants.NBT.TAG_COMPOUND);
         linkedInventories.clear();
@@ -233,5 +248,10 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         compound.put(KEY_LINKED_INVENTORIES, serializedInventories);
 
         return super.write(compound);
+    }
+
+    public void sendLinkingDataToClient(ServerPlayerEntity client) {
+        PacketTransferLinkables pkt = new PacketTransferLinkables(pos, linkedInventories);
+        NetworkHandler.sendTo(client, pkt);
     }
 }

@@ -112,8 +112,8 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
         super.read(compound);
 
         linkingStatus = LinkingStatus.readFrom(compound.getCompound(KEY_LINKING_STATUS));
-        joinedNetworks = IOHelper.readBlockPosesArrayList(compound.getList(KEY_JOINED_NETWORKS, Constants.NBT.TAG_COMPOUND));
-        neighborInventories = IOHelper.readBlockPosesHashSet(compound.getList(KEY_NEIGHBOR_INVENTORIES, Constants.NBT.TAG_COMPOUND));
+        joinedNetworks = IOHelper.readBlockPoses(compound.getList(KEY_JOINED_NETWORKS, Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        neighborInventories = IOHelper.readBlockPoses(compound.getList(KEY_NEIGHBOR_INVENTORIES, Constants.NBT.TAG_COMPOUND), new HashSet<>());
     }
 
     @Override
