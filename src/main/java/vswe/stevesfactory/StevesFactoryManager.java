@@ -73,15 +73,15 @@ public class StevesFactoryManager {
     private static LiteralArgumentBuilder<CommandSource> inspectionBoxHighlighting() {
         return Commands
                 .literal("InspectionBoxHighlighting")
+                // Query setting
                 .executes(context -> {
-                    // Query setting
                     context.getSource().sendFeedback(new StringTextComponent("Entry InspectionBoxHighlighting is currently set to: " + Inspections.enabled), true);
                     return 0;
                 })
                 .then(Commands
                         .argument("value", BoolArgumentType.bool())
+                        // Set setting
                         .executes(context -> {
-                            // Set setting
                             Inspections.enabled = BoolArgumentType.getBool(context, "value");
                             context.getSource().sendFeedback(new StringTextComponent("Entry InspectionBoxHighlighting is now set to " + Inspections.enabled), true);
                             return 0;

@@ -56,7 +56,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         arr[0] = regularWindows;
         int i = 1;
         for (Set<IPopupWindow> set : popupWindows.values()) {
-            // All downwards casting
+            // Safe (downwards) covariant cast
             @SuppressWarnings("unchecked") Collection<IWindow> c = (Collection<IWindow>) (Collection<? extends IWindow>) set;
             arr[i] = c;
             i++;

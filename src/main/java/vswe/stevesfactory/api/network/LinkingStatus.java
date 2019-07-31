@@ -51,18 +51,12 @@ public final class LinkingStatus implements Iterable<Pair<Direction, LinkType>> 
 
     public LinkType get(Direction direction) {
         switch (direction) {
-            case DOWN:
-                return down;
-            case UP:
-                return up;
-            case NORTH:
-                return north;
-            case SOUTH:
-                return south;
-            case WEST:
-                return west;
-            case EAST:
-                return east;
+            case DOWN: return down;
+            case UP: return up;
+            case NORTH: return north;
+            case SOUTH: return south;
+            case WEST: return west;
+            case EAST: return east;
         }
         throw new IllegalArgumentException("Nonexistent direction " + direction);
     }
@@ -105,20 +99,13 @@ public final class LinkingStatus implements Iterable<Pair<Direction, LinkType>> 
             @Override
             protected Pair<Direction, LinkType> computeNext() {
                 switch (last++) {
-                    case 0:
-                        return Pair.of(Direction.DOWN, down);
-                    case 1:
-                        return Pair.of(Direction.UP, up);
-                    case 2:
-                        return Pair.of(Direction.NORTH, north);
-                    case 3:
-                        return Pair.of(Direction.SOUTH, south);
-                    case 4:
-                        return Pair.of(Direction.WEST, west);
-                    case 5:
-                        return Pair.of(Direction.EAST, east);
-                    default:
-                        return endOfData();
+                    case 0: return Pair.of(Direction.DOWN, down);
+                    case 1: return Pair.of(Direction.UP, up);
+                    case 2: return Pair.of(Direction.NORTH, north);
+                    case 3: return Pair.of(Direction.SOUTH, south);
+                    case 4: return Pair.of(Direction.WEST, west);
+                    case 5: return Pair.of(Direction.EAST, east);
+                    default: return endOfData();
                 }
             }
         };

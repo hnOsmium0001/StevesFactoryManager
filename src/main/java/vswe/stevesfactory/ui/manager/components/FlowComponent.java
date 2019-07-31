@@ -300,7 +300,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
 
     // TODO decided whether I want other widget to hold all the menus or not
 
-    private final int id;
+    private int id;
 
     private final ToggleStateButton toggleStateButton;
     private final RenameButton renameButton;
@@ -321,11 +321,8 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
     private int initialDragLocalX;
     private int initialDragLocalY;
 
-    public FlowComponent(EditorPanel parent, int amountInputsNodes, int amountOutputNodes) {
+    public FlowComponent(int amountInputsNodes, int amountOutputNodes) {
         super(0, 0);
-        onParentChanged(parent);
-        this.id = parent.nextID();
-
         this.toggleStateButton = new ToggleStateButton(this);
         this.renameButton = new RenameButton(this);
         this.submitButton = new SubmitButton(this);
@@ -501,6 +498,11 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
             return true;
         }
         return false;
+    }
+
+    public void onParentChanged(EditorPanel parent) {
+        onParentChanged((IWidget) parent);
+        id = parent.nextID();
     }
 
     private void openActionMenu(double mouseX, double mouseY) {

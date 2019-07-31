@@ -3,6 +3,7 @@ package vswe.stevesfactory.api.network;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Collection;
 import java.util.Set;
 
 public interface INetworkController {
@@ -41,6 +42,9 @@ public interface INetworkController {
     @CanIgnoreReturnValue
     boolean addLink(BlockPos pos);
 
+    @CanIgnoreReturnValue
+    boolean addLinks(Collection<BlockPos> poses);
+
     /**
      * @return {@code true} if the network has the position and successfully removed it.
      * @see #addLink(BlockPos)
@@ -48,4 +52,7 @@ public interface INetworkController {
     @CanIgnoreReturnValue
     boolean removeLink(BlockPos pos);
 
+    void removeAllLinks();
+
+    boolean isRemoved();
 }
