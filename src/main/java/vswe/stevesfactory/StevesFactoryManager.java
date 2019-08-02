@@ -7,9 +7,9 @@ import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.*;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.*;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -17,6 +17,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.library.gui.debug.Inspections;
+import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.setup.ModItems;
 
@@ -46,6 +47,9 @@ public class StevesFactoryManager {
 
     private void setup(final FMLCommonSetupEvent event) {
         instance = (StevesFactoryManager) ModLoadingContext.get().getActiveContainer().getMod();
+        DeferredWorkQueue.runLater(() -> {
+            NetworkHandler.register();
+        });
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {

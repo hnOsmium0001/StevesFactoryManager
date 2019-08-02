@@ -20,6 +20,7 @@ import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 
+// TODO test this class
 public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T> {
 
     private boolean scrolling;

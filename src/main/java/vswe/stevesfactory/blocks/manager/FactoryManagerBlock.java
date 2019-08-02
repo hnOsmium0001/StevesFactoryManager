@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import vswe.stevesfactory.blocks.BaseBlock;
+import vswe.stevesfactory.network.PacketRequestData;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
 import javax.annotation.Nullable;
@@ -37,7 +38,8 @@ public class FactoryManagerBlock extends BaseBlock {
                 tryDump(manager);
             }
         } else {
-            Minecraft.getInstance().displayGuiScreen(new FactoryManagerGUI());
+            PacketRequestData.requestLinkedInventories(world.getDimension().getType(), pos);
+            Minecraft.getInstance().displayGuiScreen(new FactoryManagerGUI(pos));
         }
         return true;
     }

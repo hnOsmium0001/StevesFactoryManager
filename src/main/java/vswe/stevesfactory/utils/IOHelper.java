@@ -1,12 +1,9 @@
 package vswe.stevesfactory.utils;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import vswe.stevesfactory.network.PacketTransferLinkables;
 
 import java.util.*;
 import java.util.function.IntFunction;

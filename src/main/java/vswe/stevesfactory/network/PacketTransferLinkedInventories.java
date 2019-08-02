@@ -11,20 +11,20 @@ import vswe.stevesfactory.utils.IOHelper;
 import java.util.*;
 import java.util.function.Supplier;
 
-public final class PacketTransferLinkables {
+public final class PacketTransferLinkedInventories {
 
-    public static void encode(PacketTransferLinkables msg, PacketBuffer buf) {
+    public static void encode(PacketTransferLinkedInventories msg, PacketBuffer buf) {
         buf.writeBlockPos(msg.controllerPos);
         IOHelper.writeBlockPoses(msg.linkedInventories, buf);
     }
 
-    public static PacketTransferLinkables decode(PacketBuffer buf) {
+    public static PacketTransferLinkedInventories decode(PacketBuffer buf) {
         BlockPos controllerPos = buf.readBlockPos();
         List<BlockPos> linkedInventories = IOHelper.readBlockPosesSized(buf, ArrayList::new);
-        return new PacketTransferLinkables(controllerPos, linkedInventories);
+        return new PacketTransferLinkedInventories(controllerPos, linkedInventories);
     }
 
-    public static void handle(PacketTransferLinkables msg, Supplier<NetworkEvent.Context> ctx) {
+    public static void handle(PacketTransferLinkedInventories msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             World world = Minecraft.getInstance().world;
             INetworkController controller = Objects.requireNonNull((INetworkController) world.getTileEntity(msg.controllerPos));
@@ -36,7 +36,7 @@ public final class PacketTransferLinkables {
     private BlockPos controllerPos;
     private Collection<BlockPos> linkedInventories;
 
-    public PacketTransferLinkables(BlockPos controllerPos, Collection<BlockPos> poses) {
+    public PacketTransferLinkedInventories(BlockPos controllerPos, Collection<BlockPos> poses) {
         this.controllerPos = controllerPos;
         this.linkedInventories = poses;
     }

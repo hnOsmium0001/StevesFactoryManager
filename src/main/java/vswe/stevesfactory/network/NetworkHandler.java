@@ -15,7 +15,7 @@ public final class NetworkHandler {
 
     public static final String PROTOCOL_VERSION = Integer.toString(0);
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
-            .named(new ResourceLocation(StevesFactoryManager.MODID, "Main"))
+            .named(new ResourceLocation(StevesFactoryManager.MODID, "main_channel"))
             .clientAcceptedVersions(PROTOCOL_VERSION::equals)
             .serverAcceptedVersions(PROTOCOL_VERSION::equals)
             .networkProtocolVersion(() -> PROTOCOL_VERSION)
@@ -31,10 +31,11 @@ public final class NetworkHandler {
     }
 
     private static void registerClient() {
-        registerMessage(PacketTransferLinkables.class, PacketTransferLinkables::encode, PacketTransferLinkables::decode, PacketTransferLinkables::handle);
+        registerMessage(PacketTransferLinkedInventories.class, PacketTransferLinkedInventories::encode, PacketTransferLinkedInventories::decode, PacketTransferLinkedInventories::handle);
     }
 
     private static void registerBoth() {
+        registerMessage(PacketRequestData.class, PacketRequestData::encode, PacketRequestData::decode, PacketRequestData::handle);
     }
 
     public static void sendTo(ServerPlayerEntity player, Object msg) {

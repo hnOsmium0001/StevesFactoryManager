@@ -7,7 +7,6 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.*;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -18,7 +17,7 @@ import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.network.NetworkHandler;
-import vswe.stevesfactory.network.PacketTransferLinkables;
+import vswe.stevesfactory.network.PacketTransferLinkedInventories;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
@@ -129,7 +128,11 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
         logger.debug("Linked inventories:");
         for (BlockPos pos : linkedInventories) {
-            logger.debug("    {}: {}", pos, world.getTileEntity(pos));
+            if (this.pos.equals(pos)) {
+                logger.debug("    This controller: {}", this);
+            } else {
+                logger.debug("    {}: {}", pos, world.getTileEntity(pos));
+            }
         }
 
         logger.debug("======== Finished dumping Factory Manager ========");
@@ -251,7 +254,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     public void sendLinkingDataToClient(ServerPlayerEntity client) {
-        PacketTransferLinkables pkt = new PacketTransferLinkables(pos, linkedInventories);
+        PacketTransferLinkedInventories pkt = new PacketTransferLinkedInventories(pos, linkedInventories);
         NetworkHandler.sendTo(client, pkt);
     }
 }

@@ -5,7 +5,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
+import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.blocks.manager.FactoryManagerTileEntity;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -28,10 +31,6 @@ import java.util.List;
 
 public class FactoryManagerGUI extends WidgetScreen {
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Common layout objects
-    ///////////////////////////////////////////////////////////////////////////
-
     public static final StrictTableLayout DOWN_RIGHT_4_STRICT_TABLE = new StrictTableLayout(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -41,8 +40,11 @@ public class FactoryManagerGUI extends WidgetScreen {
     public static final float WIDTH_PROPORTION = 2F / 3F;
     public static final float HEIGHT_PROPORTION = 3F / 4F;
 
-    public FactoryManagerGUI() {
+    private BlockPos controllerPos;
+
+    public FactoryManagerGUI(BlockPos controllerPos) {
         super(new TranslationTextComponent("gui.sfm.factoryManager.title"));
+        this.controllerPos = controllerPos;
     }
 
     @Override
@@ -60,6 +62,14 @@ public class FactoryManagerGUI extends WidgetScreen {
     @Override
     public PrimaryWindow getPrimaryWindow() {
         return (PrimaryWindow) super.getPrimaryWindow();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (System.currentTimeMillis() % 10000 > 2000) {
+            StevesFactoryManager.logger.info(((FactoryManagerTileEntity) Minecraft.getInstance().world.getTileEntity(controllerPos)).getLinkedInventories());
+        }
     }
 
     public static class PrimaryWindow implements IWindow, NestedEventHandlerMixin {

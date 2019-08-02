@@ -12,6 +12,7 @@ import vswe.stevesfactory.api.network.INetworkController;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+// TODO better solution for requesting data
 public final class PacketRequestData {
 
     private static PacketBuffer buffer() {
@@ -22,7 +23,7 @@ public final class PacketRequestData {
 
     public static void requestLinkedInventories(DimensionType dimension, BlockPos controllerPos) {
         PacketBuffer extra = buffer();
-        extra.writeResourceLocation(Objects.requireNonNull(dimension.getRegistryName()));
+        extra.writeResourceLocation(Objects.requireNonNull(DimensionType.getKey(dimension)));
         extra.writeBlockPos(controllerPos);
         NetworkHandler.sendToServer(new PacketRequestData(LINKED_INVENTORIES, extra));
     }
@@ -40,8 +41,9 @@ public final class PacketRequestData {
         return new PacketRequestData(id, extra);
     }
 
-    public static void handle(PacketRequestData msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketRequestData msg, Supplier<NetworkEvent.Context> ctxSupplier) {
+        NetworkEvent.Context ctx = ctxSupplier.get();
+        ctx.enqueueWork(() -> {
             switch (msg.id) {
                 case LINKED_INVENTORIES: {
                     DimensionType dimension = Objects.requireNonNull(DimensionType.byName(msg.extra.readResourceLocation()));
@@ -49,7 +51,7 @@ public final class PacketRequestData {
                     World world = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
                     INetworkController controller = Objects.requireNonNull((INetworkController) world.getTileEntity(controllerPos));
 
-                    NetworkHandler.sendTo(ctx.get().getSender(), new PacketTransferLinkables(controllerPos, controller.getLinkedInventories()));
+                    NetworkHandler.CHANNEL.reply(new PacketTransferLinkedInventories(controllerPos, controller.getLinkedInventories()), ctx);
                     break;
                 }
                 default: throw new IllegalArgumentException("Invalid request id " + msg.id);
