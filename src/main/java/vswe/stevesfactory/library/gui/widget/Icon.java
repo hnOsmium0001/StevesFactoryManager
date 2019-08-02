@@ -20,7 +20,7 @@ public class Icon extends AbstractWidget implements RelocatableWidgetMixin, Leaf
 
     public Icon(IWidget parent, Point location, TextureWrapper texture) {
         super(location, new Dimension(texture.getPortionWidth(), texture.getPortionHeight()));
-        onParentChanged(parent);
+        setParentWidget(parent);
         this.texture = texture;
     }
 

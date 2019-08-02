@@ -1,16 +1,36 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import vswe.stevesfactory.library.gui.*;
-import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import java.awt.*;
 import java.util.Collection;
+import java.util.Comparator;
 
 public abstract class AbstractContainer<T extends IWidget> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T> {
 
-    public AbstractContainer(int width, int height) {
-        super(width, height);
+    public static <T extends IWidget, W extends IContainer<T> & RelocatableContainerMixin<T> & ResizableWidgetMixin> void shrinkMinContent(W widget) {
+        if (widget.getChildren().isEmpty()) {
+            return;
+        }
+        T furthestRight = widget.getChildren().stream()
+                .max(Comparator.comparingInt(T::getX))
+                .orElseThrow(RuntimeException::new);
+        int width = furthestRight.getX() + furthestRight.getWidth();
+        T furthestDown = widget.getChildren().stream()
+                .max(Comparator.comparingInt(T::getY))
+                .orElseThrow(RuntimeException::new);
+        int height = furthestDown.getY() + furthestDown.getHeight();
+        widget.setDimensions(width, height);
+    }
+
+    public static <W extends IWidget & RelocatableWidgetMixin & ResizableWidgetMixin> void fillParentContainer(W widget) {
+        widget.setLocation(0, 0);
+        widget.setDimensions(widget.getParentWidget().getDimensions());
+    }
+
+    public AbstractContainer(IWindow window) {
+        super(window);
     }
 
     public AbstractContainer(int x, int y, int width, int height) {
@@ -22,15 +42,9 @@ public abstract class AbstractContainer<T extends IWidget> extends AbstractWidge
     }
 
     @Override
-    public void onParentChanged(IWidget newParent) {
-        super.onParentChanged(newParent);
-        ContainerWidgetMixin.super.onParentChanged(newParent);
-    }
-
-    @Override
-    public void onWindowChanged(IWindow newWindow, IWidget newParent) {
-        super.onWindowChanged(newWindow, newParent);
-        ContainerWidgetMixin.super.onWindowChanged(newWindow, newParent);
+    public void setParentWidget(IWidget newParent) {
+        super.setParentWidget(newParent);
+        ContainerWidgetMixin.super.setParentWidget(newParent);
     }
 
     @Override

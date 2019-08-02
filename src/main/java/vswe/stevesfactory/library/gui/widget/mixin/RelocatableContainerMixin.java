@@ -1,19 +1,16 @@
 package vswe.stevesfactory.library.gui.widget.mixin;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
-
-import java.util.Collection;
 
 public interface RelocatableContainerMixin<T extends IWidget> extends IContainer<T>, RelocatableWidgetMixin {
 
     default void notifyChildrenForPositionChange() {
         // Prevent NPE when containers setting coordinates before child widgets get initialized
-        Collection<T> children = MoreObjects.firstNonNull(getChildren(), ImmutableList.of());
-        for (T child : children) {
-            child.onParentPositionChanged();
+        if (getChildren() != null) {
+            for (T child : getChildren()) {
+                child.onParentPositionChanged();
+            }
         }
     }
 

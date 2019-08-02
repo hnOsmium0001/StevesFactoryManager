@@ -41,7 +41,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin, Relocat
     public TextAlignment textAlignment = TextAlignment.LEFT;
 
     public TextList(int width, int height, List<String> texts) {
-        super(width, height);
+        super(0, 0, width, height);
         this.texts = texts;
         this.textView = Collections.unmodifiableList(texts);
     }

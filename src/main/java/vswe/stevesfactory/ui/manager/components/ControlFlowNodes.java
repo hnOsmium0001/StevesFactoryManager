@@ -56,7 +56,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
 
         public Node(ControlFlowNodes parent) {
             super(0, 0, WIDTH, HEIGHT);
-            onParentChanged(parent);
+            setParentWidget(parent);
         }
 
         /**
@@ -264,7 +264,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
     private final ImmutableList<Node> nodes;
 
     public ControlFlowNodes(int amountNodes, Function<ControlFlowNodes, ? extends Node> factory) {
-        super(0, Node.HEIGHT);
+        super(0, 0, 0, Node.HEIGHT);
         this.nodes = Stream.generate(() -> factory.apply(this)).limit(amountNodes).collect(ImmutableList.toImmutableList());
     }
 

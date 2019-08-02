@@ -4,8 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.IWindow;
-import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
+import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
@@ -35,8 +35,13 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
     private int absX;
     private int absY;
 
-    public AbstractWidget(int width, int height) {
-        this(0, 0, width, height);
+    public AbstractWidget(IWindow window) {
+        this(0, 0, window.getContentDimensions().width, window.getContentDimensions().height);
+        this.window = window;
+    }
+
+    public AbstractWidget() {
+        this(0, 0, 0, 0);
     }
 
     public AbstractWidget(int x, int y, int width, int height) {
@@ -49,16 +54,9 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
     }
 
     @Override
-    public void onParentChanged(IWidget newParent) {
+    public void setParentWidget(IWidget newParent) {
         this.parent = newParent;
         this.window = newParent.getWindow();
-        onParentPositionChanged();
-    }
-
-    @Override
-    public void onWindowChanged(IWindow newWindow, IWidget newParent) {
-        this.window = newWindow;
-        this.parent = newParent;
         onParentPositionChanged();
     }
 
@@ -81,14 +79,45 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
         if (parent != null) {
             return parent.getAbsoluteX();
         }
-        return window.getContentX();
+        if (window != null) {
+            return window.getContentX();
+        }
+        return 0;
     }
 
     private int getParentAbsYSafe() {
         if (parent != null) {
             return parent.getAbsoluteY();
         }
-        return window.getContentY();
+        if (window != null) {
+            return window.getContentY();
+        }
+        return 0;
+    }
+
+    /**
+     * A safe version of {@code getParentWidget().getHeight()} that prevents NPE.
+     */
+    public int getParentHeight() {
+        if (parent != null) {
+            return parent.getHeight();
+        }
+        return 0;
+    }
+
+    /**
+     * A safe version of {@code getParentWidget().getWidth()} that prevents NPE.
+     */
+    public int getParentWidth() {
+        if (parent != null) {
+            return parent.getWidth();
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean isFocused() {
+        return getWindow().getFocusedWidget() == this;
     }
 
     @Override

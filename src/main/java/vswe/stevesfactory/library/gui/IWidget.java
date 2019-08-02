@@ -39,9 +39,7 @@ public interface IWidget extends IRenderable {
 
     void setEnabled(boolean enabled);
 
-    default boolean isFocused() {
-        return getWindow().getFocusedWidget() == this;
-    }
+    boolean isFocused();
 
     default void onFocusChanged(boolean focus) {
     }
@@ -53,13 +51,11 @@ public interface IWidget extends IRenderable {
      * @implSpec Calling this method should update the value returned by {@link #getParentWidget()} and trigger {@link
      * #onParentPositionChanged()}.
      */
-    void onParentChanged(IWidget newParent);
-
-    void onRelativePositionChanged();
-
-    void onWindowChanged(IWindow newWindow, IWidget newParent);
+    void setParentWidget(IWidget newParent);
 
     void onParentPositionChanged();
+
+    void onRelativePositionChanged();
 
     /**
      * @implNote Event capture method. Return {@code true} to stop propagation of the event to other widgets, otherwise the process would

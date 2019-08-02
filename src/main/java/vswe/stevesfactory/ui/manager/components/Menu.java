@@ -46,7 +46,7 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
 
         public ToggleStateButton(Menu parent) {
             super(110, 3, 9, 9);
-            onParentChanged(parent);
+            setParentWidget(parent);
         }
 
         @Override
@@ -82,7 +82,7 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
 
     public Menu() {
         // Start at a collapsed state
-        super(HEADING_BOX.getPortionWidth(), HEADING_BOX.getPortionHeight());
+        super(0, 0, HEADING_BOX.getPortionWidth(), HEADING_BOX.getPortionHeight());
         this.toggleStateButton = new ToggleStateButton(this);
         this.children = ImmutableList.of(toggleStateButton);
     }

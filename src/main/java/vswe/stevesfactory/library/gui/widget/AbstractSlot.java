@@ -13,7 +13,7 @@ import vswe.stevesfactory.utils.RenderingHelper;
 public abstract class AbstractSlot extends AbstractWidget implements IWidget, RelocatableWidgetMixin, LeafWidgetMixin {
 
     public AbstractSlot() {
-        super(16, 16);
+        super(0, 0, 16, 16);
     }
 
     @Override

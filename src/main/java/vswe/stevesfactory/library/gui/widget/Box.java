@@ -48,7 +48,7 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractCon
     @Override
     public Box<T> addChildren(T widget) {
         children.add(widget);
-        widget.onParentChanged(this);
+        widget.setParentWidget(this);
         reflow();
         return this;
     }
@@ -56,7 +56,7 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractCon
     @Override
     public Box<T> addChildren(Collection<T> widgets) {
         children.addAll(widgets);
-        widgets.forEach(widget -> widget.onParentChanged(this));
+        widgets.forEach(widget -> widget.setParentWidget(this));
         reflow();
         return this;
     }

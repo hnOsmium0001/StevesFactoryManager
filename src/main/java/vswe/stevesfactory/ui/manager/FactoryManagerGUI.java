@@ -7,17 +7,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
-import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.blocks.manager.FactoryManagerTileEntity;
-import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
-import vswe.stevesfactory.library.gui.widget.AbstractWidget;
-import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
+import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 import vswe.stevesfactory.ui.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.components.EditorPanel;
@@ -26,7 +23,6 @@ import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.Collection;
 import java.util.List;
 
 public class FactoryManagerGUI extends WidgetScreen {
@@ -162,18 +158,20 @@ public class FactoryManagerGUI extends WidgetScreen {
         }
     }
 
-    public static class TopLevelWidget extends AbstractWidget implements IContainer<DynamicWidthWidget<?>>, RelocatableContainerMixin<DynamicWidthWidget<?>>, ContainerWidgetMixin<DynamicWidthWidget<?>> {
+    public static class TopLevelWidget extends AbstractContainer<DynamicWidthWidget<?>> {
 
         public final SelectionPanel selectionPanel;
         public final EditorPanel editorPanel;
         private final ImmutableList<DynamicWidthWidget<?>> children;
 
         private TopLevelWidget(PrimaryWindow window) {
-            super(window.getContentDimensions().width, window.getContentDimensions().height);
+            super(window);
             this.selectionPanel = new SelectionPanel();
             this.editorPanel = new EditorPanel();
             this.children = ImmutableList.of(selectionPanel, editorPanel);
-            this.onWindowChanged(window, this);
+            System.out.println("init window");
+            // FIXME propagating parent reference
+            this.setParentWidget(this);
             this.reflow();
         }
 
@@ -184,15 +182,9 @@ public class FactoryManagerGUI extends WidgetScreen {
         }
 
         @Override
-        public void onWindowChanged(IWindow newWindow, IWidget newParent) {
+        public void setParentWidget(IWidget newParent) {
             Preconditions.checkArgument(newParent == this);
-            super.onWindowChanged(newWindow, this);
-            setLocation(newWindow.getContentX(), newWindow.getContentY());
-        }
-
-        @Override
-        public void onParentChanged(IWidget newParent) {
-            Preconditions.checkArgument(newParent == this);
+            super.setParentWidget(newParent);
         }
 
         @Override
@@ -206,16 +198,6 @@ public class FactoryManagerGUI extends WidgetScreen {
         }
 
         @Override
-        public TopLevelWidget addChildren(DynamicWidthWidget widget) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public TopLevelWidget addChildren(Collection<DynamicWidthWidget<?>> widgets) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public void render(int mouseX, int mouseY, float particleTicks) {
             // No render events for this object because it is technically internal for the window, and it has the exact size as the window
             selectionPanel.render(mouseX, mouseY, particleTicks);
@@ -225,6 +207,8 @@ public class FactoryManagerGUI extends WidgetScreen {
         @Override
         public void reflow() {
             DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);
+            selectionPanel.reflow();
+            editorPanel.reflow();
         }
     }
 }

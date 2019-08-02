@@ -28,7 +28,7 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
 
     public ComponentSelectionButton(SelectionPanel parent, IProcedureType<IProcedure> component) {
         super(0, 0, WIDTH, HEIGHT);
-        onWindowChanged(parent.getWindow(), parent);
+        this.setParentWidget(parent);
         this.component = component;
     }
 

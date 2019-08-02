@@ -27,9 +27,6 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
         this.staticIcons = createStaticIcons();
         this.addendumIcons = new ArrayList<>();
         this.icons = CompositeUnmodifiableList.of(staticIcons, addendumIcons);
-
-        // Reset position of the components using a table DOWN_RIGHT_4_STRICT_TABLE
-        reflow();
     }
 
     @SuppressWarnings("unchecked")

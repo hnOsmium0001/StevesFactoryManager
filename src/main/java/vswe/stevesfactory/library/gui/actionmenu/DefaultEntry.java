@@ -20,7 +20,7 @@ public class DefaultEntry extends AbstractWidget implements IEntry, LeafWidgetMi
     private final String translationKey;
 
     public DefaultEntry(@Nullable ResourceLocation icon, String translationKey) {
-        super(-1, -1);
+        super(0, 0, -1, -1);
         this.icon = icon;
         this.translationKey = translationKey;
         Dimension bounds = getDimensions();

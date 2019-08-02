@@ -5,7 +5,8 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.actionmenu.*;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -14,8 +15,6 @@ import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
-import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
 
 import javax.annotation.Nonnull;
@@ -97,7 +96,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
 
         public ToggleStateButton(FlowComponent parent) {
             super(-1, -1, 9, 10);
-            onParentChanged(parent);
+            setParentWidget(parent);
         }
 
         @Override
@@ -139,7 +138,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
 
         public RenameButton(FlowComponent parent) {
             super(-1, -1, 9, 9);
-            onParentChanged(parent);
+            setParentWidget(parent);
         }
 
         @Override
@@ -189,7 +188,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
 
         public SubmitButton(FlowComponent parent) {
             super(-1, -1, 7, 7);
-            onParentChanged(parent);
+            setParentWidget(parent);
             setEnabled(false);
         }
 
@@ -243,7 +242,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
 
         public CancelButton(FlowComponent parent) {
             super(-1, -1, 7, 7);
-            onParentChanged(parent);
+            setParentWidget(parent);
             setEnabled(false);
         }
 
@@ -322,7 +321,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
     private int initialDragLocalY;
 
     public FlowComponent(int amountInputsNodes, int amountOutputNodes) {
-        super(0, 0);
+        super(0, 0, 0, 0);
         this.toggleStateButton = new ToggleStateButton(this);
         this.renameButton = new RenameButton(this);
         this.submitButton = new SubmitButton(this);
@@ -331,7 +330,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         this.name = new TextField(8, 8, 35, 10)
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setEditable(false);
-        this.name.onParentChanged(this);
+        this.name.setParentWidget(this);
         this.inputNodes = ControlFlowNodes.inputNodes(amountInputsNodes);
         this.outputNodes = ControlFlowNodes.outputNodes(amountOutputNodes);
         this.menuComponents = new ArrayList<>();
@@ -501,7 +500,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
     }
 
     public void onParentChanged(EditorPanel parent) {
-        onParentChanged((IWidget) parent);
+        this.setParentWidget((IWidget) parent);
         id = parent.nextID();
     }
 

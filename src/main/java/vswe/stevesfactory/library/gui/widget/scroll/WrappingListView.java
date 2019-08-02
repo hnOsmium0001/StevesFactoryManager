@@ -13,7 +13,8 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
-import vswe.stevesfactory.library.gui.widget.mixin.*;
+import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 import vswe.stevesfactory.utils.VectorHelper;
 
@@ -46,8 +47,8 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
     }
 
     public WrappingListView(IWidget parent, String defaultText) {
-        super(80, 80);
-        onParentChanged(parent);
+        super(0, 0,80, 80);
+        this.setParentWidget(parent);
 
         this.contentArea.setSize(getDimensions());
 
@@ -56,9 +57,9 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         this.searchBox = hasSearchBox ? createSearchBox(defaultText) : TextField.DUMMY;
 
         this.scrollUpArrow = Arrow.up(0, 0);
-        this.scrollUpArrow.onParentChanged(this);
+        this.scrollUpArrow.setParentWidget(this);
         this.scrollDownArrow = Arrow.down(0, 0);
-        this.scrollDownArrow.onParentChanged(this);
+        this.scrollDownArrow.setParentWidget(this);
         this.alignArrows();
 
         this.children = new AbstractList<IWidget>() {
@@ -91,7 +92,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
         };
-        t.onParentChanged(this);
+        t.setParentWidget(this);
         t.setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
         t.setEnabled(hasSearchBox);
         t.setText(defaultText);

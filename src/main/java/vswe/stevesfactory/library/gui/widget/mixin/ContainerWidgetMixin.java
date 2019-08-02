@@ -117,16 +117,12 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
     }
 
     @Override
-    default void onParentChanged(IWidget newParent) {
-        for (IWidget child : getChildren()) {
-            child.onParentChanged(this);
-        }
-    }
-
-    @Override
-    default void onWindowChanged(IWindow newWindow, IWidget newParent) {
-        for (IWidget child : getChildren()) {
-            child.onWindowChanged(newWindow, this);
+    default void setParentWidget(IWidget newParent) {
+        // Pre-init execution safety
+        if (getChildren() != null) {
+            for (IWidget child : getChildren()) {
+                child.setParentWidget(this);
+            }
         }
     }
 }

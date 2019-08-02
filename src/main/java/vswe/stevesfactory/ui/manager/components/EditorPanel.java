@@ -36,7 +36,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
         super(WidthOccupierType.MAX_WIDTH);
         f = new WrappingListView<>(this, false);
         f.setDimensions(160, 100);
-        f.onParentChanged(this);
         TextureWrapper t = TextureWrapper.ofFlowComponent(0, 0, 16, 16);
         for (int i = 0; i < 64; i++) {
             int fi = i + 1;

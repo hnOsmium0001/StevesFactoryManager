@@ -31,7 +31,7 @@ public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends Abst
     private final int barLeftX;
 
     public ScrollList(int width, int height) {
-        super(width, height);
+        super(0, 0, width, height);
         this.barLeftX = getX() + width - getBarWidth();
     }
 
