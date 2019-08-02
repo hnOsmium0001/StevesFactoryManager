@@ -11,17 +11,17 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.opengl.GL11;
-import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.mixin.*;
+import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 
 // TODO test this class
-public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T> {
+public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends AbstractContainer<T> implements ResizableWidgetMixin {
 
     private boolean scrolling;
     protected float scrollDistance;
@@ -46,7 +46,7 @@ public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends Abst
             return onPanelClicked(mouseX - getAbsoluteX(), mouseY - getAbsoluteY() + (int) scrollDistance - getBorder(), button);
         }
 
-        ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button);
+        super.mouseClicked(mouseX, mouseY, button);
         return false;
     }
 
@@ -54,7 +54,7 @@ public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends Abst
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         boolean ret = scrolling;
         scrolling = false;
-        ContainerWidgetMixin.super.mouseReleased(mouseX, mouseY, button);
+        super.mouseReleased(mouseX, mouseY, button);
         return ret;
     }
 
@@ -68,7 +68,7 @@ public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends Abst
             reflow();
             return true;
         }
-        ContainerWidgetMixin.super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         return false;
     }
 
@@ -80,7 +80,7 @@ public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends Abst
             reflow();
             return true;
         }
-        ContainerWidgetMixin.super.mouseScrolled(mouseX, mouseY, scroll);
+        super.mouseScrolled(mouseX, mouseY, scroll);
         return false;
     }
 

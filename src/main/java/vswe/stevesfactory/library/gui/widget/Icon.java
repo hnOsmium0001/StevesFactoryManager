@@ -13,9 +13,8 @@ public class Icon extends AbstractWidget implements RelocatableWidgetMixin, Leaf
 
     private TextureWrapper texture;
 
-    public Icon(IWidget parent, int x, int y, TextureWrapper texture) {
+    public Icon(int x, int y, TextureWrapper texture) {
         super(x, y, texture.getPortionWidth(), texture.getPortionHeight());
-        onParentChanged(parent);
         this.texture = texture;
     }
 

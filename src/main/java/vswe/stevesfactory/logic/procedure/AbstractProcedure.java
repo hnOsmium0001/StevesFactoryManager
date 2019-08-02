@@ -10,12 +10,12 @@ import vswe.stevesfactory.api.network.INetworkController;
 
 import java.util.Objects;
 
-public abstract class Procedure extends ForgeRegistryEntry<IProcedureType<?>> implements IProcedure {
+public abstract class AbstractProcedure extends ForgeRegistryEntry<IProcedureType<?>> implements IProcedure {
 
     private INetworkController controller;
     private IProcedure[] nexts;
 
-    public Procedure(INetworkController controller, int possibleChildren) {
+    public AbstractProcedure(INetworkController controller, int possibleChildren) {
         this.setController(controller);
         this.nexts = new IProcedure[possibleChildren];
     }

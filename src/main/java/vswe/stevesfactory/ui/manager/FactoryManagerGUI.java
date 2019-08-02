@@ -64,14 +64,6 @@ public class FactoryManagerGUI extends WidgetScreen {
         return (PrimaryWindow) super.getPrimaryWindow();
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        if (System.currentTimeMillis() % 10000 > 2000) {
-            StevesFactoryManager.logger.info(((FactoryManagerTileEntity) Minecraft.getInstance().world.getTileEntity(controllerPos)).getLinkedInventories());
-        }
-    }
-
     public static class PrimaryWindow implements IWindow, NestedEventHandlerMixin {
 
         // The location and dimensions will be set in the constructor
@@ -178,8 +170,8 @@ public class FactoryManagerGUI extends WidgetScreen {
 
         private TopLevelWidget(PrimaryWindow window) {
             super(window.getContentDimensions().width, window.getContentDimensions().height);
-            this.selectionPanel = new SelectionPanel(this, window);
-            this.editorPanel = new EditorPanel(this, window);
+            this.selectionPanel = new SelectionPanel();
+            this.editorPanel = new EditorPanel();
             this.children = ImmutableList.of(selectionPanel, editorPanel);
             this.onWindowChanged(window, this);
             this.reflow();

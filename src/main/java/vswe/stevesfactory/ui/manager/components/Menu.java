@@ -3,9 +3,9 @@ package vswe.stevesfactory.ui.manager.components;
 import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
-import vswe.stevesfactory.library.gui.widget.AbstractWidget;
-import vswe.stevesfactory.library.gui.widget.mixin.*;
+import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;
@@ -13,7 +13,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public abstract class Menu extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget>, ResizableWidgetMixin {
+public abstract class Menu extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(1, 41, 9, 9),

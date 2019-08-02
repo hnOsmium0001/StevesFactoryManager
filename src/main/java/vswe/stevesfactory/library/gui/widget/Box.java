@@ -1,17 +1,17 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.mixin.*;
+import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
 import java.awt.*;
 import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin, ContainerWidgetMixin<T> {
+public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractContainer<T> implements ResizableWidgetMixin {
 
     private List<T> children = new ArrayList<>();
     private List<T> childrenView = Collections.unmodifiableList(children);
@@ -63,13 +63,13 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractWid
 
     @Override
     public Box<T> addChildren(Iterable<T> widgets) {
-        ContainerWidgetMixin.super.addChildren(widgets);
+        super.addChildren(widgets);
         return this;
     }
 
     @Override
     public Box<T> addChildren(Iterator<T> widgets) {
-        ContainerWidgetMixin.super.addChildren(widgets);
+        super.addChildren(widgets);
         return this;
     }
 

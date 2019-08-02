@@ -1,7 +1,6 @@
 package vswe.stevesfactory.library.gui.widget.mixin;
 
-import vswe.stevesfactory.library.gui.IContainer;
-import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.*;
 
 public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
 
@@ -114,6 +113,20 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
     default void update(float particleTicks) {
         for (T child : getChildren()) {
             child.update(particleTicks);
+        }
+    }
+
+    @Override
+    default void onParentChanged(IWidget newParent) {
+        for (IWidget child : getChildren()) {
+            child.onParentChanged(this);
+        }
+    }
+
+    @Override
+    default void onWindowChanged(IWindow newWindow, IWidget newParent) {
+        for (IWidget child : getChildren()) {
+            child.onWindowChanged(newWindow, this);
         }
     }
 }

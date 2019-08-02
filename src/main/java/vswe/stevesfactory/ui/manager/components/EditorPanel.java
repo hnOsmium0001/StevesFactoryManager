@@ -2,13 +2,12 @@ package vswe.stevesfactory.ui.manager.components;
 
 import mcp.MethodsReturnNonnullByDefault;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.gui.IContainer;
+import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.Icon;
-import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.widget.scroll.WrappingListView;
-import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -18,7 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public final class EditorPanel extends DynamicWidthWidget<FlowComponent> implements ContainerWidgetMixin<FlowComponent>, RelocatableContainerMixin<FlowComponent> {
+public final class EditorPanel extends DynamicWidthWidget<FlowComponent> implements RelocatableContainerMixin<FlowComponent> {
 
     /**
      * This is a tree set (ordered set) because handling z-index of the flow components need things to be sorted.
@@ -33,15 +32,15 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
 
     private WrappingListView<Icon> f;
 
-    public EditorPanel(FactoryManagerGUI.TopLevelWidget parent, IWindow window) {
-        super(parent, window, WidthOccupierType.MAX_WIDTH);
+    public EditorPanel() {
+        super(WidthOccupierType.MAX_WIDTH);
         f = new WrappingListView<>(this, false);
         f.setDimensions(160, 100);
         f.onParentChanged(this);
         TextureWrapper t = TextureWrapper.ofFlowComponent(0, 0, 16, 16);
         for (int i = 0; i < 64; i++) {
             int fi = i + 1;
-            f.addElement(new Icon(f, 0, 0, t) {
+            f.addElement(new Icon(0, 0, t) {
                 @Override
                 public void render(int mouseX, int mouseY, float particleTicks) {
                     super.render(mouseX, mouseY, particleTicks);
@@ -121,43 +120,43 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         f.mouseReleased(mouseX, mouseY, button);
-        return ContainerWidgetMixin.super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         f.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-        return ContainerWidgetMixin.super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
         f.mouseScrolled(mouseX, mouseY, scroll);
-        return ContainerWidgetMixin.super.mouseScrolled(mouseX, mouseY, scroll);
+        return super.mouseScrolled(mouseX, mouseY, scroll);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         f.keyPressed(keyCode, scanCode, modifiers);
-        return ContainerWidgetMixin.super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         f.keyReleased(keyCode, scanCode, modifiers);
-        return ContainerWidgetMixin.super.keyReleased(keyCode, scanCode, modifiers);
+        return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean charTyped(char charTyped, int keyCode) {
         f.charTyped(charTyped, keyCode);
-        return ContainerWidgetMixin.super.charTyped(charTyped, keyCode);
+        return super.charTyped(charTyped, keyCode);
     }
 
     @Override
     public void update(float particleTicks) {
         f.update(particleTicks);
-        ContainerWidgetMixin.super.update(particleTicks);
+        super.update(particleTicks);
     }
 
     @Override

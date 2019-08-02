@@ -5,8 +5,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
-import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import javax.annotation.Nonnull;
@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 import static vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
 
-public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>, ContainerWidgetMixin<Node>, RelocatableContainerMixin<Node>, ResizableWidgetMixin {
+public class ControlFlowNodes extends AbstractContainer<Node> implements ResizableWidgetMixin {
 
     public static abstract class Node extends AbstractIconButton implements IWidget, LeafWidgetMixin, RelocatableWidgetMixin {
 
@@ -253,19 +253,18 @@ public class ControlFlowNodes extends AbstractWidget implements IContainer<Node>
         }
     }
 
-    public static ControlFlowNodes inputNodes(FlowComponent parent, int amount) {
-        return new ControlFlowNodes(parent, amount, InputNode::new);
+    public static ControlFlowNodes inputNodes(int amount) {
+        return new ControlFlowNodes(amount, InputNode::new);
     }
 
-    public static ControlFlowNodes outputNodes(FlowComponent parent, int amount) {
-        return new ControlFlowNodes(parent, amount, OutputNode::new);
+    public static ControlFlowNodes outputNodes(int amount) {
+        return new ControlFlowNodes(amount, OutputNode::new);
     }
 
     private final ImmutableList<Node> nodes;
 
-    public ControlFlowNodes(FlowComponent parent, int amountNodes, Function<ControlFlowNodes, ? extends Node> factory) {
+    public ControlFlowNodes(int amountNodes, Function<ControlFlowNodes, ? extends Node> factory) {
         super(0, Node.HEIGHT);
-        onParentChanged(parent);
         this.nodes = Stream.generate(() -> factory.apply(this)).limit(amountNodes).collect(ImmutableList.toImmutableList());
     }
 

@@ -4,12 +4,10 @@
 
 package vswe.stevesfactory.library.gui.widget.scroll;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.TextField;
@@ -24,7 +22,7 @@ import java.util.List;
 import java.util.*;
 
 
-public class WrappingListView<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractWidget implements IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget>, ResizableWidgetMixin {
+public class WrappingListView<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
 
     // Scrolling states
     private int offset;
@@ -117,7 +115,7 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         }
 
         // TODO fix focus target for pressing enter
-        return ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.actionmenu.*;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
@@ -17,13 +16,14 @@ import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
+import vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public abstract class FlowComponent extends AbstractWidget implements Comparable<IZIndexProvider>, IZIndexProvider, IContainer<IWidget>, ContainerWidgetMixin<IWidget>, RelocatableContainerMixin<IWidget> {
+public abstract class FlowComponent extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
@@ -332,8 +332,8 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setEditable(false);
         this.name.onParentChanged(this);
-        this.inputNodes = ControlFlowNodes.inputNodes(this, amountInputsNodes);
-        this.outputNodes = ControlFlowNodes.outputNodes(this, amountOutputNodes);
+        this.inputNodes = ControlFlowNodes.inputNodes(amountInputsNodes);
+        this.outputNodes = ControlFlowNodes.outputNodes(amountOutputNodes);
         this.menuComponents = new ArrayList<>();
         this.children = new AbstractList<IWidget>() {
             @Override
@@ -473,7 +473,7 @@ public abstract class FlowComponent extends AbstractWidget implements Comparable
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
+        if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
         if (!isInside(mouseX, mouseY)) {

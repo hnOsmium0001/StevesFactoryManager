@@ -7,7 +7,6 @@ import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI.TopLevelWidget;
 import vswe.stevesfactory.ui.manager.components.DynamicWidthWidget;
 
@@ -16,14 +15,14 @@ import java.util.*;
 
 import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.DOWN_RIGHT_4_STRICT_TABLE;
 
-public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> implements ContainerWidgetMixin<ComponentSelectionButton> {
+public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionButton> {
 
     private final ImmutableList<ComponentSelectionButton> staticIcons;
     private final List<ComponentSelectionButton> addendumIcons;
     private final List<ComponentSelectionButton> icons;
 
-    public SelectionPanel(TopLevelWidget parent, IWindow window) {
-        super(parent, window, WidthOccupierType.MIN_WIDTH);
+    public SelectionPanel() {
+        super(WidthOccupierType.MIN_WIDTH);
 
         this.staticIcons = createStaticIcons();
         this.addendumIcons = new ArrayList<>();
@@ -82,7 +81,7 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (ContainerWidgetMixin.super.mouseClicked(mouseX, mouseY, button)) {
+        if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
         if (isInside(mouseX, mouseY)) {

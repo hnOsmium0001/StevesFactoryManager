@@ -1,5 +1,6 @@
 package vswe.stevesfactory.ui.manager.selection;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedure;
@@ -9,6 +10,7 @@ import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.ui.manager.components.EditorPanel;
+import vswe.stevesfactory.ui.manager.components.FlowComponent;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;
@@ -50,7 +52,9 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         EditorPanel editorPanel = getParentWidget().getParentWidget().editorPanel;
         // TODO actual instance transferring between sides
-        editorPanel.addChildren(component.createWidget(component.createInstance(null)));
+        FlowComponent flowComponent = component.createWidget(component.createInstance(null));
+        flowComponent.setName(I18n.format("gui.sfm.Component." + component.getRegistryName().getPath()));
+        editorPanel.addChildren(flowComponent);
         getWindow().setFocusedWidget(this);
         return true;
     }

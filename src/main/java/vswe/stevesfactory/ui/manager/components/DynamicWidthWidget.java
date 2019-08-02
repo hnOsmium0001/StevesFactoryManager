@@ -1,16 +1,17 @@
 package vswe.stevesfactory.ui.manager.components;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.IWindow;
+import vswe.stevesfactory.library.gui.widget.AbstractContainer;
+import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.library.gui.*;
-import vswe.stevesfactory.library.gui.widget.AbstractWidget;
-import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 
-public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractWidget implements IContainer<T>, RelocatableContainerMixin<T>, ResizableWidgetMixin, ContainerWidgetMixin<T> {
+public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
 
     @CanIgnoreReturnValue
     public static List<DynamicWidthWidget<?>> reflowDynamicWidth(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {
@@ -58,9 +59,8 @@ public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractWidg
 
     private WidthOccupierType widthOccupier;
 
-    public DynamicWidthWidget(FactoryManagerGUI.TopLevelWidget parent, IWindow window, WidthOccupierType widthOccupier) {
+    public DynamicWidthWidget(WidthOccupierType widthOccupier) {
         super(0, 0);
-        onWindowChanged(window, parent);
         setX(0);
         setY(0);
         setHeight(getWindow().getContentDimensions().height);
