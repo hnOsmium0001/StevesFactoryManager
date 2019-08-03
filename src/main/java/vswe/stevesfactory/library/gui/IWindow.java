@@ -46,11 +46,11 @@ public interface IWindow {
     }
 
     default int getContentX() {
-        return getX() + (getWidth() - getContentWidth()) / 2;
+        return getX() + getBorderSize();
     }
 
     default int getContentY() {
-        return getY() + (getHeight() - getContentHeight()) / 2;
+        return getY() + getBorderSize();
     }
 
     void render(int mouseX, int mouseY, float particleTicks);

@@ -42,14 +42,12 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
     private List<T> contents = new ArrayList<>();
     private List<IWidget> children;
 
-    public WrappingListView(IWidget parent, boolean hasSearchBox) {
-        this(parent, hasSearchBox ? "" : null);
+    public WrappingListView(boolean hasSearchBox) {
+        this(hasSearchBox ? "" : null);
     }
 
-    public WrappingListView(IWidget parent, String defaultText) {
+    public WrappingListView(String defaultText) {
         super(0, 0,80, 80);
-        this.setParentWidget(parent);
-
         this.contentArea.setSize(getDimensions());
 
         // Too lazy to add text change events, just make pressing enter update search

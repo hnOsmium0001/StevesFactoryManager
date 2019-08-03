@@ -63,6 +63,11 @@ public class DefaultEntry extends AbstractWidget implements IEntry, LeafWidgetMi
         return translationKey;
     }
 
+    @Override
+    public void attach(ActionMenu actionMenu) {
+        setWindow(actionMenu);
+    }
+
     private int computeWidth() {
         return MARGIN_SIDES + RENDERED_ICON_WIDTH + 2 + fontRenderer().getStringWidth(getText()) + MARGIN_SIDES;
     }

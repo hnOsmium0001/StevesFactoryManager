@@ -330,7 +330,6 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         this.name = new TextField(8, 8, 35, 10)
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setEditable(false);
-        this.name.setParentWidget(this);
         this.inputNodes = ControlFlowNodes.inputNodes(amountInputsNodes);
         this.outputNodes = ControlFlowNodes.outputNodes(amountOutputNodes);
         this.menuComponents = new ArrayList<>();
@@ -499,7 +498,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         return false;
     }
 
-    public void onParentChanged(EditorPanel parent) {
+    public void setParentWidget(EditorPanel parent) {
         this.setParentWidget((IWidget) parent);
         id = parent.nextID();
     }

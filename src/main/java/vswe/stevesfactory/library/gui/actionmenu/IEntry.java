@@ -6,6 +6,7 @@ import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import javax.annotation.Nullable;
+import javax.swing.*;
 import java.awt.*;
 
 public interface IEntry extends IWidget, RelocatableWidgetMixin {
@@ -24,4 +25,6 @@ public interface IEntry extends IWidget, RelocatableWidgetMixin {
 
     @Override
     Dimension getDimensions();
+
+    void attach(ActionMenu actionMenu);
 }

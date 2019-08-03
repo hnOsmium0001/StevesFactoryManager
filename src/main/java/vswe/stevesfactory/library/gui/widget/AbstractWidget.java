@@ -8,13 +8,12 @@ import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.WidgetPositionMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public abstract class AbstractWidget implements IWidget, Inspections.IInspectionInfoProvider, ILayoutDataProvider, WidgetPositionMixin, RelocatableWidgetMixin {
+public abstract class AbstractWidget implements IWidget, Inspections.IInspectionInfoProvider, ILayoutDataProvider, WidgetPositionMixin, RelocatableWidgetMixin, ResizableWidgetMixin {
 
     public static Minecraft minecraft() {
         return Minecraft.getInstance();
@@ -57,6 +56,11 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
     public void setParentWidget(IWidget newParent) {
         this.parent = newParent;
         this.window = newParent.getWindow();
+        onParentPositionChanged();
+    }
+
+    protected void setWindow(IWindow window) {
+        this.window = window;
         onParentPositionChanged();
     }
 
@@ -113,6 +117,11 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
             return parent.getWidth();
         }
         return 0;
+    }
+
+    public void fillParentContainer() {
+        setLocation(0, 0);
+        setDimensions(parent.getDimensions());
     }
 
     @Override

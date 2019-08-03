@@ -9,26 +9,6 @@ import java.util.Comparator;
 
 public abstract class AbstractContainer<T extends IWidget> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T> {
 
-    public static <T extends IWidget, W extends IContainer<T> & RelocatableContainerMixin<T> & ResizableWidgetMixin> void shrinkMinContent(W widget) {
-        if (widget.getChildren().isEmpty()) {
-            return;
-        }
-        T furthestRight = widget.getChildren().stream()
-                .max(Comparator.comparingInt(T::getX))
-                .orElseThrow(RuntimeException::new);
-        int width = furthestRight.getX() + furthestRight.getWidth();
-        T furthestDown = widget.getChildren().stream()
-                .max(Comparator.comparingInt(T::getY))
-                .orElseThrow(RuntimeException::new);
-        int height = furthestDown.getY() + furthestDown.getHeight();
-        widget.setDimensions(width, height);
-    }
-
-    public static <W extends IWidget & RelocatableWidgetMixin & ResizableWidgetMixin> void fillParentContainer(W widget) {
-        widget.setLocation(0, 0);
-        widget.setDimensions(widget.getParentWidget().getDimensions());
-    }
-
     public AbstractContainer(IWindow window) {
         super(window);
     }
@@ -55,5 +35,25 @@ public abstract class AbstractContainer<T extends IWidget> extends AbstractWidge
     @Override
     public IContainer<T> addChildren(Collection<T> widgets) {
         throw new UnsupportedOperationException();
+    }
+
+    public void shrinkMinContent() {
+        if (getChildren().isEmpty()) {
+            return;
+        }
+        T furthestRight = getChildren().stream()
+                .max(Comparator.comparingInt(T::getX))
+                .orElseThrow(RuntimeException::new);
+        int width = furthestRight.getX() + furthestRight.getWidth();
+        T furthestDown = getChildren().stream()
+                .max(Comparator.comparingInt(T::getY))
+                .orElseThrow(RuntimeException::new);
+        int height = furthestDown.getY() + furthestDown.getHeight();
+        setDimensions(width, height);
+    }
+
+    public void fillWindow() {
+        setLocation(0, 0);
+        setDimensions(getWindow().getContentDimensions());
     }
 }

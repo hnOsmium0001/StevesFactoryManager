@@ -141,8 +141,8 @@ public class FactoryManagerGUI extends WidgetScreen {
 
             this.dimensions.width = width;
             this.dimensions.height = height;
-            this.contentDimensions.width = width - 4 * 2;
-            this.contentDimensions.height = height - 4 * 2;
+            this.contentDimensions.width = width - getBorderSize() * 2;
+            this.contentDimensions.height = height - getBorderSize() * 2;
 
             updateBackgroundDL();
         }
@@ -169,22 +169,17 @@ public class FactoryManagerGUI extends WidgetScreen {
             this.selectionPanel = new SelectionPanel();
             this.editorPanel = new EditorPanel();
             this.children = ImmutableList.of(selectionPanel, editorPanel);
-            System.out.println("init window");
-            // FIXME propagating parent reference
-            this.setParentWidget(this);
             this.reflow();
         }
 
-        @Nonnull
         @Override
         public IWidget getParentWidget() {
-            return this;
+            return null;
         }
 
         @Override
         public void setParentWidget(IWidget newParent) {
-            Preconditions.checkArgument(newParent == this);
-            super.setParentWidget(newParent);
+            Preconditions.checkArgument(newParent == null);
         }
 
         @Override
@@ -206,8 +201,11 @@ public class FactoryManagerGUI extends WidgetScreen {
 
         @Override
         public void reflow() {
+            fillWindow();
             DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);
+            selectionPanel.setParentWidget(this);
             selectionPanel.reflow();
+            editorPanel.setParentWidget(this);
             editorPanel.reflow();
         }
     }

@@ -2,7 +2,6 @@ package vswe.stevesfactory.library.gui.actionmenu;
 
 import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.gui.IWidget;
-import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.DiscardCondition;
 import vswe.stevesfactory.library.gui.window.IPopupWindow;
@@ -17,8 +16,7 @@ import java.util.List;
 public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
 
     public static ActionMenu atCursor(double mouseX, double mouseY, List<? extends IEntry> entries) {
-        return new ActionMenu((int) mouseX, (int) mouseY, entries) {
-        };
+        return new ActionMenu((int) mouseX, (int) mouseY, entries);
     }
 
     private final Point position;
@@ -49,7 +47,7 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
 
         int y = 0;
         for (IEntry e : entries) {
-            e.onWindowChanged(this, null);
+            e.attach(this);
             e.setLocation(0, y);
             y += e.getHeight();
         }
