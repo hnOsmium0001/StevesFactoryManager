@@ -1,6 +1,7 @@
 package vswe.stevesfactory.ui.manager.selection;
 
 import com.google.common.collect.ImmutableList;
+import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.SFMAPI;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
@@ -81,7 +82,7 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        if (isInside(mouseX, mouseY)) {
+        if (isInside(mouseX, mouseY) && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             getWindow().setFocusedWidget(this);
             return true;
         }

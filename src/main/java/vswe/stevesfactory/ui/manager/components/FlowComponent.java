@@ -4,10 +4,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.actionmenu.*;
+import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
+import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.BoxSizing;
@@ -16,6 +16,7 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
+import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -111,8 +112,11 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            getParentWidget().toggleState();
-            return true;
+            if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                getParentWidget().toggleState();
+                return true;
+            }
+            return false;
         }
 
         @Nonnull
@@ -143,7 +147,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isEnabled()) {
+            if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                 setEnabled(false);
                 FlowComponent parent = getParentWidget();
                 parent.submitButton.setEnabled(true);
@@ -194,7 +198,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isEnabled()) {
+            if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                 setEnabled(false);
                 FlowComponent parent = getParentWidget();
                 parent.cancelButton.setEnabled(false);
@@ -248,7 +252,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isEnabled()) {
+            if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                 setEnabled(false);
                 FlowComponent parent = getParentWidget();
                 parent.submitButton.setEnabled(false);
@@ -297,7 +301,10 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         }
     }
 
-    // TODO decided whether I want other widget to hold all the menus or not
+    private static final ResourceLocation DELETE_ICON = RenderingHelper.linkTexture("gui/actions/delete.png");
+    private static final ResourceLocation COPY_ICON = RenderingHelper.linkTexture("gui/actions/copy.png");
+    private static final ResourceLocation CUT_ICON = RenderingHelper.linkTexture("gui/actions/cut.png");
+    private static final ResourceLocation PASTE_ICON = RenderingHelper.linkTexture("gui/actions/paste.png");
 
     private int id;
 
@@ -504,16 +511,19 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
     }
 
     private void openActionMenu(double mouseX, double mouseY) {
-        openedActionMenu = ActionMenu.atCursor((int) mouseX, (int) mouseY, ImmutableList.of(
-                new CallbackEntry(new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/component_icon/delete.png"), "gui.sfm.ActionMenu.Delete", button -> {
+        openedActionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
+                new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.General.Delete", button -> {
                     removeSelf();
                     // Delay this to avoid ConcurrentModificationException
                     WidgetScreen.getCurrentScreen().deferRemovePopupWindow(openedActionMenu);
                 }),
                 // TODO implement these
-                new DefaultEntry(null, "gui.sfm.ActionMenu.Cut"),
-                new DefaultEntry(null, "gui.sfm.ActionMenu.Copy"),
-                new DefaultEntry(null, "gui.sfm.ActionMenu.Paste")
+                new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.General.Cut", button -> {
+                }),
+                new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.General.Copy", button -> {
+                }),
+                new CallbackEntry(PASTE_ICON, "gui.sfm.ActionMenu.General.Paste", button -> {
+                })
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(openedActionMenu);
     }

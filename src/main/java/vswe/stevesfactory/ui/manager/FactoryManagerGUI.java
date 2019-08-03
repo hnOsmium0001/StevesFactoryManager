@@ -5,10 +5,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
+import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.IWindow;
+import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
+import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
@@ -19,6 +24,7 @@ import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 import vswe.stevesfactory.ui.manager.components.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.components.EditorPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
+import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -160,6 +166,7 @@ public class FactoryManagerGUI extends WidgetScreen {
 
     public static class TopLevelWidget extends AbstractContainer<DynamicWidthWidget<?>> {
 
+        public static final ResourceLocation USER_PREFERENCES_ICON = RenderingHelper.linkTexture("gui/actions/preferences.png");
         public final SelectionPanel selectionPanel;
         public final EditorPanel editorPanel;
         private final ImmutableList<DynamicWidthWidget<?>> children;
@@ -207,6 +214,22 @@ public class FactoryManagerGUI extends WidgetScreen {
             selectionPanel.reflow();
             editorPanel.setParentWidget(this);
             editorPanel.reflow();
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if(super.mouseClicked(mouseX, mouseY, button)) {
+                return true;
+            }
+            // Fallback action menu
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
+                        new CallbackEntry(USER_PREFERENCES_ICON, "gui.sfm.ActionMenu.Global.Preferences", button1 -> {
+                        })
+                ));
+                WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+            }
+            return false;
         }
     }
 }

@@ -33,8 +33,7 @@ public enum Procedures {
     GROUP("group", DummyProcedure::new),
     GROUP_IO("group_io", DummyProcedure::new),
     CAMOUFLAGE("camouflage", DummyProcedure::new),
-    SIGN_UPDATER("sign_updater", DummyProcedure::new),
-    CONFIGURATIONS("configurations", DummyProcedure::new);
+    SIGN_UPDATER("sign_updater", DummyProcedure::new);
 
     public final String id;
     public final IProcedureType<IProcedure> factory;
