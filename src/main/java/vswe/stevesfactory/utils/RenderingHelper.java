@@ -13,7 +13,6 @@ import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
 
 import java.awt.*;
-import java.util.Arrays;
 
 public final class RenderingHelper {
 

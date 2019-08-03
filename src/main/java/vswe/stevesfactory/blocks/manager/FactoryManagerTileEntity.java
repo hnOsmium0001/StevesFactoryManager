@@ -68,12 +68,12 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     public void activate(PlayerEntity player) {
-        StevesFactoryManager.logger.debug("Player {} activated a factory manager at {}", player, pos);
+        StevesFactoryManager.logger.trace("Player {} activated a factory manager at {}", player, pos);
         search();
     }
 
     private void search() {
-        StevesFactoryManager.logger.debug("Triggered searching process on a factory manager at {}", pos);
+        StevesFactoryManager.logger.trace("Triggered searching process on a factory manager at {}", pos);
 
         removeAllCableFromNetwork();
 
@@ -123,16 +123,16 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
         logger.debug("Connected cables:");
         for (BlockPos pos : connectedCables) {
-            logger.debug("    {}: {}", pos, world.getTileEntity(pos));
-        }
-
-        logger.debug("Linked inventories:");
-        for (BlockPos pos : linkedInventories) {
             if (this.pos.equals(pos)) {
                 logger.debug("    This controller: {}", this);
             } else {
                 logger.debug("    {}: {}", pos, world.getTileEntity(pos));
             }
+        }
+
+        logger.debug("Linked inventories:");
+        for (BlockPos pos : linkedInventories) {
+            logger.debug("    {}: {}", pos, world.getTileEntity(pos));
         }
 
         logger.debug("======== Finished dumping Factory Manager ========");

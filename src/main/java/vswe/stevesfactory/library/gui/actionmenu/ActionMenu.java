@@ -73,7 +73,9 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
     @Override
     public void setFocusedWidget(@Nullable IWidget widget) {
         if (widget instanceof IEntry || widget == null) {
-            focusedEntry.onFocusChanged(false);
+            if (focusedEntry != null) {
+                focusedEntry.onFocusChanged(false);
+            }
             focusedEntry = (IEntry) widget;
             if (widget != null) {
                 widget.onFocusChanged(true);

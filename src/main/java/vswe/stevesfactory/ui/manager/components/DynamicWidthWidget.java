@@ -2,10 +2,8 @@ package vswe.stevesfactory.ui.manager.components;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import vswe.stevesfactory.library.gui.IWidget;
-import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
-import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
 import java.awt.*;
 import java.util.Comparator;

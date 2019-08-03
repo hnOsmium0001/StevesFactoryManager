@@ -7,7 +7,6 @@ import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.*;
 import net.minecraftforge.fml.common.Mod;
@@ -26,7 +25,6 @@ public class StevesFactoryManager {
 
     public static final String MODID = "sfm";
     public static final String NAME = "Steve's Factory Manager";
-    public static final String VERSION = "3.0.0";
 
     public static final Logger logger = LogManager.getLogger(MODID);
 

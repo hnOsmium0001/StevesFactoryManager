@@ -37,7 +37,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
             GlStateManager.disableTexture();
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
             GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-            GL11.glLineWidth(6);
+            GL11.glLineWidth(4);
             GL11.glColor3f(94F / 255F, 94F / 255F, 94F / 255F);
             GL11.glBegin(GL11.GL_LINES);
             {
@@ -263,6 +263,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
 
     private final ImmutableList<Node> nodes;
 
+    @SuppressWarnings("UnstableApiUsage")
     public ControlFlowNodes(int amountNodes, Function<ControlFlowNodes, ? extends Node> factory) {
         super(0, 0, 0, Node.HEIGHT);
         this.nodes = Stream.generate(() -> factory.apply(this)).limit(amountNodes).collect(ImmutableList.toImmutableList());
