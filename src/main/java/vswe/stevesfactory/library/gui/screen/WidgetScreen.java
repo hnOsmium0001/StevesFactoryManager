@@ -158,7 +158,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         // Dragging popup windows
         for (Set<IPopupWindow> windows : popupWindows.values()) {
             for (IPopupWindow popup : windows) {
-                if (popup.isDraggable() && popup.shouldDrag(mouseX, mouseY)) {
+                if (popup.shouldDrag(mouseX, mouseY)) {
                     popup.setPosition((int) mouseX, (int) mouseY);
                 }
             }

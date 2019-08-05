@@ -1,6 +1,7 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.layout.BoxAlignment;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -11,34 +12,11 @@ import static vswe.stevesfactory.utils.RenderingHelper.*;
 
 public class TextList extends AbstractWidget implements LeafWidgetMixin, RelocatableWidgetMixin, ResizableWidgetMixin {
 
-    public enum TextAlignment {
-        LEFT {
-            @Override
-            public void drawText(String text, int left, int right, int y) {
-                fontRenderer().drawString(text, left, y, 0xffffff);
-            }
-        },
-        CENTER {
-            @Override
-            public void drawText(String text, int left, int right, int y) {
-                drawTextCenteredHorizontally(text, left, right, y, 0xffffff);
-            }
-        },
-        RIGHT {
-            @Override
-            public void drawText(String text, int left, int right, int y) {
-                fontRenderer().drawString(text, RenderingHelper.getXForAlignedRight(right, textWidth(text)), y, 0xffffff);
-            }
-        };
-
-        public abstract void drawText(String text, int left, int right, int y);
-    }
-
     private List<String> texts;
     private List<String> textView;
     private boolean fitContents = false;
 
-    public TextAlignment textAlignment = TextAlignment.LEFT;
+    public BoxAlignment textAlignment = BoxAlignment.LEFT;
 
     public TextList(int width, int height, List<String> texts) {
         super(0, 0, width, height);
@@ -51,8 +29,19 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin, Relocat
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         int x = getAbsoluteX() + 1;
         int y = getAbsoluteY() + 1;
+        int x2 = getAbsoluteXBR() - 1;
         for (String text : texts) {
-            textAlignment.drawText(text, x, getAbsoluteXBR(), y);
+            switch (textAlignment) {
+                case LEFT:
+                    fontRenderer().drawString(text, x, y, 0xffffff);
+                    break;
+                case CENTER:
+                    drawTextCenteredHorizontally(text, x, x2, y, 0xffffff);
+                    break;
+                case RIGHT:
+                    fontRenderer().drawString(text, RenderingHelper.getXForAlignedRight(x2, textWidth(text)), y, 0xffffff);
+                    break;
+            }
             y += fontHeight();
         }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
@@ -88,6 +77,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin, Relocat
         if (fitContents) {
             int w = minecraft().fontRenderer.getStringWidth(line);
             setWidth(Math.max(getWidth(), 1 + w + 1));
+            setHeight(1 + (fontHeight() + 2) * texts.size() + 1);
         }
     }
 }

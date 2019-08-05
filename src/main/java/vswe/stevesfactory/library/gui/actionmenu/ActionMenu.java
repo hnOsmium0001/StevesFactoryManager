@@ -114,11 +114,6 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     @Override
-    public boolean isDraggable() {
-        return false;
-    }
-
-    @Override
     public boolean shouldDrag(double mouseX, double mouseY) {
         return false;
     }
