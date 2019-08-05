@@ -56,7 +56,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         }
     };
 
-    public enum BackgroundStyle {
+    public enum BackgroundStyle implements IBackgroundRenderer {
         NONE {
             @Override
             public void render(int x1, int y1, int x2, int y2, boolean hovered, boolean focused) {
@@ -82,14 +82,12 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
                     RenderingHelper.drawRect(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0xff1c1c1c);
                 }
             }
-        };
-
-        public abstract void render(int x1, int y1, int x2, int y2, boolean hovered, boolean focused);
+        }
     }
 
     public static final int SECONDARY_BUTTON = 1;
 
-    private BackgroundStyle backgroundStyle = BackgroundStyle.THICK_BEVELED;
+    private IBackgroundRenderer backgroundStyle = BackgroundStyle.THICK_BEVELED;
 
     private String text = "";
     private int cursor = 0;
@@ -398,12 +396,12 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
-    public BackgroundStyle getBackgroundStyle() {
+    public IBackgroundRenderer getBackgroundStyle() {
         return backgroundStyle;
     }
 
     @CanIgnoreReturnValue
-    public TextField setBackgroundStyle(BackgroundStyle backgroundStyle) {
+    public TextField setBackgroundStyle(IBackgroundRenderer backgroundStyle) {
         this.backgroundStyle = backgroundStyle;
         return this;
     }

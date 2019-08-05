@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.widget;
+package vswe.stevesfactory.library.gui.widget.button;
 
 import com.google.common.base.Preconditions;
 import vswe.stevesfactory.library.gui.TextureWrapper;

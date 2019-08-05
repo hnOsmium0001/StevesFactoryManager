@@ -6,14 +6,15 @@ import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.Inspections;
-import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
-import vswe.stevesfactory.library.gui.widget.mixin.*;
+import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
+import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public abstract class AbstractWidget implements IWidget, Inspections.IInspectionInfoProvider, ILayoutDataProvider, WidgetPositionMixin, RelocatableWidgetMixin, ResizableWidgetMixin {
+public abstract class AbstractWidget implements IWidget, Inspections.IInspectionInfoProvider, ILayoutDataProvider, RelocatableWidgetMixin, ResizableWidgetMixin {
 
     public static Minecraft minecraft() {
         return Minecraft.getInstance();
@@ -124,6 +125,14 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
         setDimensions(parent.getDimensions());
     }
 
+    public void expandHorizontally() {
+        setWidth(Math.max(getWidth(), getParentHeight()));
+    }
+
+    public void expandVertically() {
+        setHeight(Math.max(getHeight(), getParentHeight()));
+    }
+
     @Override
     public boolean isFocused() {
         return getWindow().getFocusedWidget() == this;
@@ -189,6 +198,26 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
     @Override
     public BoxSizing getBoxSizing() {
         return BoxSizing.BORDER_BOX;
+    }
+
+    @Override
+    public int getX() {
+        return getPosition().x;
+    }
+
+    @Override
+    public int getY() {
+        return getPosition().y;
+    }
+
+    @Override
+    public int getWidth() {
+        return getDimensions().width;
+    }
+
+    @Override
+    public int getHeight() {
+        return getDimensions().height;
     }
 
     @Override

@@ -1,14 +1,14 @@
-package vswe.stevesfactory.library.gui.widget;
+package vswe.stevesfactory.library.gui.widget.button;
 
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;
 
-public abstract class AbstractIconButton extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin {
+public abstract class AbstractIconButton extends AbstractWidget implements LeafWidgetMixin {
 
     public AbstractIconButton(int x, int y, int width, int height) {
         super(x, y, width, height);

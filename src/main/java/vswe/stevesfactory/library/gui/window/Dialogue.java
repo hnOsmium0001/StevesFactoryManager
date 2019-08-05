@@ -56,6 +56,8 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         messageBox.setLocation(0, 0);
         messageBox.setWidth(Math.max(getWidth(), messageBox.getWidth()));
 
+        int x = messageBox.getX() + messageBox.getHeight() + 2;
+
         updateDimensions();
         updateBackgroundDL();
     }

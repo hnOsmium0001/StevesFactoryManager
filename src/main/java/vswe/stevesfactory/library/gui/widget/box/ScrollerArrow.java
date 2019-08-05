@@ -1,24 +1,24 @@
-package vswe.stevesfactory.library.gui.widget.scroll;
+package vswe.stevesfactory.library.gui.widget.box;
 
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixin, RelocatableWidgetMixin {
+public abstract class ScrollerArrow extends AbstractIconButton implements LeafWidgetMixin, RelocatableWidgetMixin {
 
     private static final TextureWrapper UP_NORMAL = TextureWrapper.ofFlowComponent(0, 152, 10, 6);
     private static final TextureWrapper UP_HOVERED = UP_NORMAL.right(10);
     private static final TextureWrapper UP_CLICKED = UP_NORMAL.right(10 * 2);
     private static final TextureWrapper UP_DISABLED = UP_NORMAL.right(10 * 3);
 
-    public static Arrow up(int x, int y) {
-        return new Arrow(x, y) {
+    public static ScrollerArrow up(int x, int y) {
+        return new ScrollerArrow(x, y) {
             @Override
             public TextureWrapper getTextureNormal() {
                 return UP_NORMAL;
@@ -51,8 +51,8 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
     private static final TextureWrapper DOWN_CLICKED = UP_CLICKED.down(6);
     private static final TextureWrapper DOWN_DISABLED = UP_DISABLED.down(6);
 
-    public static Arrow down(int x, int y) {
-        return new Arrow(x, y) {
+    public static ScrollerArrow down(int x, int y) {
+        return new ScrollerArrow(x, y) {
             @Override
             public TextureWrapper getTextureNormal() {
                 return DOWN_NORMAL;
@@ -82,7 +82,7 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
 
     private boolean clicked = false;
 
-    public Arrow(int x, int y) {
+    public ScrollerArrow(int x, int y) {
         super(x, y, 10, 6);
     }
 
@@ -118,7 +118,7 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
     @Override
     public void update(float particleTicks) {
         if (clicked) {
-            WrappingListView parent = getParentWidget();
+            WrappingList parent = getParentWidget();
             parent.scroll(parent.getScrollSpeed() * getScrollDirectionMask());
         }
     }
@@ -139,8 +139,8 @@ public abstract class Arrow extends AbstractIconButton implements LeafWidgetMixi
 
     @Nonnull
     @Override
-    public WrappingListView getParentWidget() {
-        return Objects.requireNonNull((WrappingListView) super.getParentWidget());
+    public WrappingList getParentWidget() {
+        return Objects.requireNonNull((WrappingList) super.getParentWidget());
     }
 
     @Override

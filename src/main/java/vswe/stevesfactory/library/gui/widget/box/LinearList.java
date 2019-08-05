@@ -1,7 +1,7 @@
 /* Code adapted from net.minecraftforge.client.gui.ScrollPanel
  */
 
-package vswe.stevesfactory.library.gui.widget;
+package vswe.stevesfactory.library.gui.widget.box;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.AbstractGui;
@@ -13,6 +13,7 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -21,7 +22,7 @@ import vswe.stevesfactory.utils.Utils;
 import java.util.*;
 
 // TODO test this class
-public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends AbstractContainer<T> implements ResizableWidgetMixin {
+public class LinearList<T extends IWidget & RelocatableWidgetMixin> extends AbstractContainer<T> implements ResizableWidgetMixin {
 
     private boolean scrolling;
     protected float scrollDistance;
@@ -30,7 +31,7 @@ public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends Abst
 
     private final int barLeftX;
 
-    public ScrollList(int width, int height) {
+    public LinearList(int width, int height) {
         super(0, 0, width, height);
         this.barLeftX = getX() + width - getBarWidth();
     }
@@ -184,13 +185,13 @@ public class ScrollList<T extends IWidget & RelocatableWidgetMixin> extends Abst
     }
 
     @Override
-    public ScrollList<T> addChildren(T widget) {
+    public LinearList<T> addChildren(T widget) {
         children.add(widget);
         return this;
     }
 
     @Override
-    public ScrollList<T> addChildren(Collection<T> widgets) {
+    public LinearList<T> addChildren(Collection<T> widgets) {
         children.addAll(widgets);
         return this;
     }

@@ -6,7 +6,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import javax.annotation.Nonnull;

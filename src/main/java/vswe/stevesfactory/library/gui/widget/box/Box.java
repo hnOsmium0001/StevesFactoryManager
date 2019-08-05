@@ -1,8 +1,9 @@
-package vswe.stevesfactory.library.gui.widget;
+package vswe.stevesfactory.library.gui.widget.box;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
@@ -11,6 +12,9 @@ import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * A ready-to-use box widget for grouping widgets.
+ */
 public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractContainer<T> implements ResizableWidgetMixin {
 
     private List<T> children = new ArrayList<>();

@@ -2,7 +2,7 @@
  * https://github.com/gigabit101/StevesFactoryManager/blob/2.0.X/src/main/java/vswe/stevesfactory/components/ScrollController.java
  */
 
-package vswe.stevesfactory.library.gui.widget.scroll;
+package vswe.stevesfactory.library.gui.widget.box;
 
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.*;
 
 
-public class WrappingListView<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
+public class WrappingList<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
 
     // Scrolling states
     private int offset;
@@ -37,16 +37,16 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
 
     // Child widgets
     private TextField searchBox;
-    private Arrow scrollUpArrow;
-    private Arrow scrollDownArrow;
+    private ScrollerArrow scrollUpArrow;
+    private ScrollerArrow scrollDownArrow;
     private List<T> contents = new ArrayList<>();
     private List<IWidget> children;
 
-    public WrappingListView(boolean hasSearchBox) {
+    public WrappingList(boolean hasSearchBox) {
         this(hasSearchBox ? "" : null);
     }
 
-    public WrappingListView(String defaultText) {
+    public WrappingList(String defaultText) {
         super(0, 0,80, 80);
         this.contentArea.setSize(getDimensions());
 
@@ -54,9 +54,9 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         this.hasSearchBox = defaultText != null;
         this.searchBox = hasSearchBox ? createSearchBox(defaultText) : TextField.DUMMY;
 
-        this.scrollUpArrow = Arrow.up(0, 0);
+        this.scrollUpArrow = ScrollerArrow.up(0, 0);
         this.scrollUpArrow.setParentWidget(this);
-        this.scrollDownArrow = Arrow.down(0, 0);
+        this.scrollDownArrow = ScrollerArrow.down(0, 0);
         this.scrollDownArrow.setParentWidget(this);
         this.alignArrows();
 
@@ -211,17 +211,17 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
     }
 
     @Override
-    public WrappingListView<T> addChildren(IWidget widget) {
+    public WrappingList<T> addChildren(IWidget widget) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public WrappingListView<T> addChildren(Collection<IWidget> widgets) {
+    public WrappingList<T> addChildren(Collection<IWidget> widgets) {
         throw new UnsupportedOperationException();
     }
 
     @CanIgnoreReturnValue
-    public WrappingListView<T> addElement(T widget) {
+    public WrappingList<T> addElement(T widget) {
         Preconditions.checkArgument(widget.getWidth() == getItemSize() && widget.getHeight() == getItemSize());
         contents.add(widget);
         reflow();
@@ -352,11 +352,11 @@ public class WrappingListView<T extends IWidget & INamedElement & RelocatableWid
         return 9;
     }
 
-    public Arrow getScrollUpArrow() {
+    public ScrollerArrow getScrollUpArrow() {
         return scrollUpArrow;
     }
 
-    public Arrow getScrollDownArrow() {
+    public ScrollerArrow getScrollDownArrow() {
         return scrollDownArrow;
     }
 

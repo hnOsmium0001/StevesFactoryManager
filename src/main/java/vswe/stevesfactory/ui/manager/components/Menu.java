@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
