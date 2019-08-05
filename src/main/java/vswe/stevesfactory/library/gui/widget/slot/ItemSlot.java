@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.widget;
+package vswe.stevesfactory.library.gui.widget.slot;
 
 import net.minecraft.item.ItemStack;
 
