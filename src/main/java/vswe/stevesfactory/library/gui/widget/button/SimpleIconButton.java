@@ -8,6 +8,9 @@ import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import java.awt.*;
 import java.util.function.IntConsumer;
 
+/**
+ * A ready-to-use icon button implementation that stores each mouse state texture.
+ */
 public class SimpleIconButton extends AbstractIconButton implements ResizableWidgetMixin {
 
     private TextureWrapper textureNormal;

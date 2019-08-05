@@ -43,7 +43,9 @@ public abstract class AbstractSlot extends AbstractWidget implements IWidget, Re
     }
 
     public void renderHoveredOverlay() {
-        RenderingHelper.drawTransparentRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXBR(), getAbsoluteYBR(), 0xaac4c4c4);
+        RenderingHelper.useBlendingGLStates();
+        RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXBR(), getAbsoluteYBR(), 0xaac4c4c4);
+        RenderingHelper.useTextureGLStates();
     }
 
     public abstract ItemStack getRenderedStack();

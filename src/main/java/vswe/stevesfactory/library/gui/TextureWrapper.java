@@ -12,7 +12,14 @@ import java.awt.*;
  */
 public class TextureWrapper {
 
-    public static final ResourceLocation FLOW_COMPONENTS = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/flow_components.png");
+    public static final ResourceLocation INVALID_TEXTURE = RenderingHelper.linkTexture("textures/invalid");
+    public static final TextureWrapper NONE = new TextureWrapper(INVALID_TEXTURE, 0, 0, 0, 0, 0, 0) {
+        @Override
+        public void draw(int x, int y) {
+        }
+    };
+
+    public static final ResourceLocation FLOW_COMPONENTS = RenderingHelper.linkTexture("gui/flow_components.png");
 
     public static TextureWrapper ofFlowComponent(int tx, int ty, int portionWidth, int portionHeight) {
         return new TextureWrapper(FLOW_COMPONENTS, 256, 256, tx, ty, portionWidth, portionHeight);

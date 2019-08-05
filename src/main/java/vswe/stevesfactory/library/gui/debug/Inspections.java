@@ -132,12 +132,14 @@ public abstract class Inspections implements IRenderEventListener {
     public void renderBox(IWidget widget) {
         int ax = widget.getAbsoluteX();
         int ay = widget.getAbsoluteY();
-        drawTransparentRect(ax, ay, ax + widget.getWidth(), ay + widget.getHeight(), CONTENTS);
+        useBlendingGLStates();
+        drawRect(ax, ay, ax + widget.getWidth(), ay + widget.getHeight(), CONTENTS);
+        useTextureGLStates();
     }
 
     public void renderBox(IWindow window) {
         // Can't just do two rectangles because they are transparent
-        RenderingHelper.preDrawTransparentRect();
+        useBlendingGLStates();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -159,7 +161,7 @@ public abstract class Inspections implements IRenderEventListener {
             RenderingHelper.rectVertices(cx, cy, cx + window.getContentWidth(), cy + window.getContentHeight(), CONTENTS);
         }
         tessellator.draw();
-        RenderingHelper.postDrawTransparentRect();
+        useTextureGLStates();
     }
 
     public void renderOverlayInfo(IWidget widget) {

@@ -80,8 +80,6 @@ public abstract class ScrollerArrow extends AbstractIconButton implements LeafWi
         };
     }
 
-    private boolean clicked = false;
-
     public ScrollerArrow(int x, int y) {
         super(x, y, 10, 6);
     }
@@ -104,37 +102,11 @@ public abstract class ScrollerArrow extends AbstractIconButton implements LeafWi
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        clicked = true;
-        return true;
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        clicked = false;
-        return true;
-    }
-
-    @Override
     public void update(float particleTicks) {
-        if (clicked) {
+        if (isClicked()) {
             WrappingList parent = getParentWidget();
             parent.scroll(parent.getScrollSpeed() * getScrollDirectionMask());
         }
-    }
-
-    @Override
-    public abstract TextureWrapper getTextureNormal();
-
-    @Override
-    public abstract TextureWrapper getTextureHovered();
-
-    public abstract TextureWrapper getTextureClicked();
-
-    public abstract TextureWrapper getTextureDisabled();
-
-    public boolean isClicked() {
-        return clicked;
     }
 
     @Nonnull
@@ -146,7 +118,7 @@ public abstract class ScrollerArrow extends AbstractIconButton implements LeafWi
     @Override
     public void provideInformation(ITextReceiver receiver) {
         super.provideInformation(receiver);
-        receiver.line("Clicked=" + clicked);
+        receiver.line("Clicked=" + isClicked());
     }
 
     protected abstract int getScrollDirectionMask();

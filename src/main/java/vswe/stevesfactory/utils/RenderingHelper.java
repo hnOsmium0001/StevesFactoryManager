@@ -47,6 +47,13 @@ public final class RenderingHelper {
         GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
     }
 
+    public static void useBlendingGLStates() {
+        GlStateManager.disableTexture();
+        GlStateManager.disableAlphaTest();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
+    }
+
     public static void usePlainColorGLStates() {
         GlStateManager.disableTexture();
         GlStateManager.disableBlend();
@@ -230,27 +237,8 @@ public final class RenderingHelper {
         drawCompleteTexture(x1, y1, x2, y2, 0F, texture);
     }
 
-    public static void drawTexture256(int x1, int y1, int x2, int y2, ResourceLocation texture, int tx, int ty, int portionWidth, int portionHeight) {
+    public static void drawTexture256x256(int x1, int y1, int x2, int y2, ResourceLocation texture, int tx, int ty, int portionWidth, int portionHeight) {
         drawTexturePortion(x1, y1, x2, y2, texture, 256, 256, tx, ty, portionWidth, portionHeight);
-    }
-
-    public static void drawTransparentRect(int x1, int y1, int x2, int y2, int color) {
-        preDrawTransparentRect();
-        drawRect(x1, y1, x2, y2, color);
-        postDrawTransparentRect();
-    }
-
-    public static void preDrawTransparentRect() {
-        GlStateManager.disableTexture();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
-    }
-
-    public static void postDrawTransparentRect() {
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.enableTexture();
     }
 
     public static int getXForAlignedRight(int right, int width) {

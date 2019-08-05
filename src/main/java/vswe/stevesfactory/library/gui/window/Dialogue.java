@@ -1,11 +1,12 @@
 package vswe.stevesfactory.library.gui.window;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.system.CallbackI;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.layout.FlowLayout;
+import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.TextList;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 
@@ -24,7 +25,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     private final Dimension border;
 
     private TextList messageBox;
-    private List<IWidget> children = new ArrayList<>();
+    private List<AbstractWidget> children;
     private IWidget focusedWidget;
 
     private int backgroundDL;
@@ -35,7 +36,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         this.border = new Dimension();
         this.messageBox = new TextList(10, 10, new ArrayList<>());
         this.messageBox.setFitContents(true);
-        this.children.add(messageBox);
+        this.children = ImmutableList.of(messageBox);
 
         updateBorderUsingContent();
         updatePosition();
@@ -52,11 +53,12 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
-    private void reflow() {
+    public void reflow() {
         messageBox.setLocation(0, 0);
         messageBox.setWidth(Math.max(getWidth(), messageBox.getWidth()));
 
-        int x = messageBox.getX() + messageBox.getHeight() + 2;
+
+        FlowLayout.INSTANCE.reflow(getContentDimensions(), children);
 
         updateDimensions();
         updateBackgroundDL();
@@ -71,7 +73,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
             if (right > rightmost) {
                 rightmost = right;
             }
-            if(bottom > bottommost) {
+            if (bottom > bottommost) {
                 bottommost = bottom;
             }
         }
