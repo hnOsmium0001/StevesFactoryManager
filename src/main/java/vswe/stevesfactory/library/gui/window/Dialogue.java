@@ -1,6 +1,8 @@
 package vswe.stevesfactory.library.gui.window;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
+import org.lwjgl.system.CallbackI;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -32,9 +34,12 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         this.contents = new Dimension();
         this.border = new Dimension();
         this.messageBox = new TextList(10, 10, new ArrayList<>());
+        this.messageBox.setFitContents(true);
         this.children.add(messageBox);
 
-        this.updatePosition();
+        updateBorderUsingContent();
+        updatePosition();
+        updateBackgroundDL();
     }
 
     @Override
@@ -47,10 +52,42 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
-    private void updatePosition() {
-        this.position.x = scaledWidth() / 2 - getWidth() / 2;
-        this.position.y = scaledHeight() / 2 - getHeight() / 2;
+    private void reflow() {
+        messageBox.setLocation(0, 0);
+        messageBox.setWidth(Math.max(getWidth(), messageBox.getWidth()));
+
+        updateDimensions();
         updateBackgroundDL();
+    }
+
+    private void updateDimensions() {
+        int rightmost = 0;
+        int bottommost = 0;
+        for (IWidget child : children) {
+            int right = child.getX() + child.getWidth();
+            int bottom = child.getY() + child.getHeight();
+            if (right > rightmost) {
+                rightmost = right;
+            }
+            if(bottom > bottommost) {
+                bottommost = bottom;
+            }
+        }
+        contents.width = rightmost;
+        contents.height = bottommost;
+
+        updateBorderUsingContent();
+        updatePosition();
+    }
+
+    private void updateBorderUsingContent() {
+        border.width = contents.width + getBorderSize() * 2;
+        border.height = contents.height + getBorderSize() * 2;
+    }
+
+    private void updatePosition() {
+        position.x = scaledWidth() / 2 - getWidth() / 2;
+        position.y = scaledHeight() / 2 - getHeight() / 2;
     }
 
     private void updateBackgroundDL() {

@@ -1,7 +1,7 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.layout.BoxAlignment;
+import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -10,13 +10,13 @@ import java.util.List;
 
 import static vswe.stevesfactory.utils.RenderingHelper.*;
 
-public class TextList extends AbstractWidget implements LeafWidgetMixin, RelocatableWidgetMixin, ResizableWidgetMixin {
+public class TextList extends AbstractWidget implements LeafWidgetMixin {
 
     private List<String> texts;
     private List<String> textView;
     private boolean fitContents = false;
 
-    public BoxAlignment textAlignment = BoxAlignment.LEFT;
+    public HorizontalAlignment textAlignment = HorizontalAlignment.LEFT;
 
     public TextList(int width, int height, List<String> texts) {
         super(0, 0, width, height);

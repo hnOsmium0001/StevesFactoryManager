@@ -1,6 +1,7 @@
-package vswe.stevesfactory.library.gui.layout;
+package vswe.stevesfactory.library.gui.layout.properties;
 
 import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
 
 public enum BoxSizing {
 
