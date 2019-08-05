@@ -2,8 +2,6 @@ package vswe.stevesfactory.library.gui.background;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
@@ -11,7 +9,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.utils.RenderingHelper;
+
+import static vswe.stevesfactory.utils.RenderingHelper.*;
 
 @OnlyIn(Dist.CLIENT)
 public final class BackgroundRenderer {
@@ -19,13 +18,55 @@ public final class BackgroundRenderer {
     private BackgroundRenderer() {
     }
 
-    private static final Tessellator TESSELLATOR = Tessellator.getInstance();
-    private static final BufferBuilder BUFFER = TESSELLATOR.getBuffer();
+    ///////////////////////////////////////////////////////////////////////////
+    // Flat style
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static final int LIGHT_BORDER_COLOR = 0xffffff;
+    public static final int DARK_BORDER_COLOR = 0x606060;
+    public static final int BACKGROUND_COLOR = 0xc6c6c6;
+
+    /**
+     * Draw a flat style GUI background on the given position with the given width and height.
+     * <p>
+     * The background has a border of 2 pixels, therefore the background cannot have a dimension less than 4x4 pixels. It shares the same
+     * bottom color as the vanilla background but has a simpler border (plain color).
+     * <p>
+     * Note that {@link GL11#GL_ALPHA_TEST} needs to be disabled in order for this method to function, if the background is drawn in a
+     * standard Minecraft GUI setting (has a dark gradient overlay on the world renderer).
+     * <p>
+     * See {@link #drawVanillaStyle(int, int, int, int, float)} for parameter information.
+     *
+     * @see #LIGHT_BORDER_COLOR
+     * @see #DARK_BORDER_COLOR
+     * @see #BACKGROUND_COLOR
+     */
+    public static void drawFlatStyle(int x, int y, int width, int height, float z) {
+        Preconditions.checkArgument(width >= 4 && height >= 4);
+
+        int x2 = x + width;
+        int y2 = y + height;
+
+        drawRect(x, y, x2, y2, BACKGROUND_COLOR);
+        usePlainColorGLStates();
+        getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+
+        rectVertices(x, y, x2, y2, DARK_BORDER_COLOR);
+        rectVertices(x, y, x2 - 2, y2 - 2, LIGHT_BORDER_COLOR);
+        rectVertices(x + 2, y + 2, x2 - 2, y2 - 2, BACKGROUND_COLOR);
+
+        Tessellator.getInstance().draw();
+        GlStateManager.enableTexture();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Vanilla style
+    ///////////////////////////////////////////////////////////////////////////
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(StevesFactoryManager.MODID, "textures/gui/generic_components.png");
     private static final int UNIT_LENGTH = 4;
     private static final float UV_MULTIPLIER = 1f / 256f;
-    
+
     private static float zLevel = 0F;
 
     /**
@@ -37,20 +78,20 @@ public final class BackgroundRenderer {
      * The background will be drawn in 9 parts max: 4 corners, 4 borders, and a body piece. Only the 4 corners are mandatory, the rest is
      * optional depending on the size of the background to be drawn.
      *
-     * @param x      left x of the result, including border
-     * @param y      top y of the result, including border
-     * @param width  width of the result, including both borders and must be larger than 8
-     * @param height height of the result, including both borders and must be larger than 8
-     * @param z      z level that will be used for drawing and put into the depth buffer
+     * @param x      Left x of the result, including border
+     * @param y      Top y of the result, including border
+     * @param width  Width of the result, including both borders and must be larger than 8
+     * @param height Height of the result, including both borders and must be larger than 8
+     * @param z      Z level that will be used for drawing and put into the depth buffer
      */
     public static void drawVanillaStyle(int x, int y, int width, int height, float z) {
         Preconditions.checkArgument(width >= 8 && height >= 8);
 
-        RenderingHelper.useTextureGLStates();
+        useTextureGLStates();
         zLevel = z;
 
-        BUFFER.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        Minecraft.getInstance().getTextureManager().bindTexture(TEXTURE);
+        getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        bindTexture(TEXTURE);
 
         int cornerXRight = x + width - UNIT_LENGTH;
         int cornerYBottom = y + height - UNIT_LENGTH;
@@ -73,13 +114,15 @@ public final class BackgroundRenderer {
             EdgePiece.drawRight(bodyX + bodyWidth, bodyY, bodyHeight);
         }
 
-        TESSELLATOR.draw();
+        Tessellator.getInstance().draw();
 
         if (bodyWidth > 0 && bodyHeight > 0) {
             GlStateManager.disableTexture();
-            BUFFER.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+            getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+
             BodyPiece.draw(bodyX, bodyY, bodyWidth, bodyHeight);
-            TESSELLATOR.draw();
+
+            Tessellator.getInstance().draw();
             GlStateManager.enableTexture();
         }
     }
@@ -147,6 +190,10 @@ public final class BackgroundRenderer {
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Util methods
+    ///////////////////////////////////////////////////////////////////////////
+
     private static void plotVertexesTex(int x1, int y1, int width, int height, int tx, int ty) {
         int x2 = x1 + width;
         int y2 = y1 + height;
@@ -159,10 +206,10 @@ public final class BackgroundRenderer {
         float v2 = ty2 * UV_MULTIPLIER;
 
         // Bottom Left -> Top Left -> Top Right -> Bottom Right
-        BUFFER.pos(x2, y1, zLevel).tex(u2, v1).endVertex();
-        BUFFER.pos(x1, y1, zLevel).tex(u1, v1).endVertex();
-        BUFFER.pos(x1, y2, zLevel).tex(u1, v2).endVertex();
-        BUFFER.pos(x2, y2, zLevel).tex(u2, v2).endVertex();
+        getRenderer().pos(x2, y1, zLevel).tex(u2, v1).endVertex();
+        getRenderer().pos(x1, y1, zLevel).tex(u1, v1).endVertex();
+        getRenderer().pos(x1, y2, zLevel).tex(u1, v2).endVertex();
+        getRenderer().pos(x2, y2, zLevel).tex(u2, v2).endVertex();
     }
 
     private static void plotVertexesColor(int x1, int y1, int width, int height, int red, int green, int yellow, int alpha) {
@@ -170,9 +217,9 @@ public final class BackgroundRenderer {
         int y2 = y1 + height;
 
         // Bottom Left -> Top Left -> Top Right -> Bottom Right
-        BUFFER.pos(x2, y1, zLevel).color(red, green, yellow, alpha).endVertex();
-        BUFFER.pos(x1, y1, zLevel).color(red, green, yellow, alpha).endVertex();
-        BUFFER.pos(x1, y2, zLevel).color(red, green, yellow, alpha).endVertex();
-        BUFFER.pos(x2, y2, zLevel).color(red, green, yellow, alpha).endVertex();
+        getRenderer().pos(x2, y1, zLevel).color(red, green, yellow, alpha).endVertex();
+        getRenderer().pos(x1, y1, zLevel).color(red, green, yellow, alpha).endVertex();
+        getRenderer().pos(x1, y2, zLevel).color(red, green, yellow, alpha).endVertex();
+        getRenderer().pos(x2, y2, zLevel).color(red, green, yellow, alpha).endVertex();
     }
 }

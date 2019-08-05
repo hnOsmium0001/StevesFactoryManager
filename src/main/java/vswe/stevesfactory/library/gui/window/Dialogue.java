@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.background.BackgroundRenderer;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
@@ -56,8 +57,6 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     private List<AbstractWidget> children;
     private IWidget focusedWidget;
 
-    private int backgroundDL;
-
     public Dialogue() {
         this.position = new Point();
         this.contents = new Dimension();
@@ -76,13 +75,14 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
         updateBorderUsingContent();
         updatePosition();
-        updateBackgroundDL();
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        GlStateManager.callList(backgroundDL);
+        GlStateManager.disableAlphaTest();
+        BackgroundRenderer.drawFlatStyle(position.x, position.y, border.width, border.height, 0F);
+        GlStateManager.enableAlphaTest();
         for (IWidget child : children) {
             child.render(mouseX, mouseY, particleTicks);
         }
@@ -99,7 +99,6 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         FlowLayout.INSTANCE.reflow(getContentDimensions(), children);
 
         updateDimensions();
-        updateBackgroundDL();
     }
 
     private void updateDimensions() {
@@ -132,22 +131,12 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         position.y = scaledHeight() / 2 - getHeight() / 2;
     }
 
-    private void updateBackgroundDL() {
-        backgroundDL = DisplayListCaches.createVanillaStyleBackground(getX(), getY(), getWidth(), getHeight());
-    }
-
     public TextList getMessageBox() {
         return messageBox;
     }
 
     public Box<TextButton> getButtons() {
         return buttons;
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        IPopupWindow.super.setPosition(x, y);
-        updateBackgroundDL();
     }
 
     @Override
@@ -172,7 +161,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     @Override
     public int getBorderSize() {
-        return 4;
+        return 2;
     }
 
     @Override

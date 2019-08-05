@@ -209,11 +209,11 @@ public class FactoryManagerGUI extends WidgetScreen {
         @Override
         public void reflow() {
             fillWindow();
-            DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);
             selectionPanel.setParentWidget(this);
             selectionPanel.reflow();
             editorPanel.setParentWidget(this);
             editorPanel.reflow();
+            DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);
         }
 
         @Override
