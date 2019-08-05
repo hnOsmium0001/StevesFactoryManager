@@ -1,8 +1,9 @@
 package vswe.stevesfactory.library.gui.widget;
 
+import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
-import vswe.stevesfactory.library.gui.widget.mixin.*;
+import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.util.Collections;
@@ -60,6 +61,14 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         tryExpand(newText);
     }
 
+    public void translateLine(int line, String translationKey) {
+        editLine(line, I18n.format(translationKey));
+    }
+
+    public void translateLine(int line, String translationKey, Object... args) {
+        editLine(line, I18n.format(translationKey, args));
+    }
+
     public String getLine(int line) {
         return texts.get(line);
     }
@@ -67,6 +76,14 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
     public void addLine(String newLine) {
         texts.add(newLine);
         tryExpand(newLine);
+    }
+
+    public void addTranslatedLine(String translationKey) {
+        addLine(I18n.format(translationKey));
+    }
+
+    public void addTranslatedLine(String translationKey, Object... args) {
+        addLine(I18n.format(translationKey, args));
     }
 
     public List<String> getTexts() {

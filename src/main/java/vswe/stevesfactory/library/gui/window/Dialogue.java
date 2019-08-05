@@ -2,29 +2,57 @@ package vswe.stevesfactory.library.gui.window;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.TextList;
+import vswe.stevesfactory.library.gui.widget.box.Box;
+import vswe.stevesfactory.library.gui.widget.button.TextButton;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntConsumer;
 
 import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledHeight;
 import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
 
 public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
+    public static Dialogue createYesNoDialogue(String message, IntConsumer onConfirm, IntConsumer onCancel) {
+        Dialogue dialogue = new Dialogue();
+        dialogue.messageBox.addTranslatedLine(message);
+        dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.OK", onConfirm));
+        dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.Cancel", onCancel));
+        return dialogue;
+    }
+
+    public static Dialogue createDialogue(String message, IntConsumer onConfirm) {
+        Dialogue dialogue = new Dialogue();
+        dialogue.messageBox.addTranslatedLine(message);
+        dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.OK", onConfirm));
+        return dialogue;
+    }
+
+    public static Dialogue createDialogue(String message) {
+        Dialogue dialogue = new Dialogue();
+        dialogue.messageBox.addTranslatedLine(message);
+        dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.OK"));
+        return dialogue;
+    }
+
     private final Point position;
     private final Dimension contents;
     private final Dimension border;
 
     private TextList messageBox;
+    private Box<TextButton> buttons;
     private List<AbstractWidget> children;
     private IWidget focusedWidget;
 
@@ -36,7 +64,15 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         this.border = new Dimension();
         this.messageBox = new TextList(10, 10, new ArrayList<>());
         this.messageBox.setFitContents(true);
-        this.children = ImmutableList.of(messageBox);
+        this.buttons = new Box<>(0, 0, 10, 10);
+        this.buttons.setLayout(b -> {
+            int x = 0;
+            for (TextButton button : b) {
+                button.setLocation(x, 0);
+                x += button.getWidth() + 2;
+            }
+        });
+        this.children = ImmutableList.of(messageBox, buttons);
 
         updateBorderUsingContent();
         updatePosition();
@@ -55,8 +91,10 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     public void reflow() {
         messageBox.setLocation(0, 0);
-        messageBox.setWidth(Math.max(getWidth(), messageBox.getWidth()));
+        messageBox.expandHorizontally();
 
+        buttons.reflow();
+        buttons.expandHorizontally();
 
         FlowLayout.INSTANCE.reflow(getContentDimensions(), children);
 
@@ -100,6 +138,10 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     public TextList getMessageBox() {
         return messageBox;
+    }
+
+    public Box<TextButton> getButtons() {
+        return buttons;
     }
 
     @Override
@@ -157,5 +199,13 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     @Override
     public void setFocusedWidget(@Nullable IWidget widget) {
         focusedWidget = widget;
+    }
+
+    public boolean tryAddSelfToActiveGUI() {
+        if (Minecraft.getInstance().currentScreen instanceof WidgetScreen) {
+            WidgetScreen.getCurrentScreen().addPopupWindow(this);
+            return true;
+        }
+        return false;
     }
 }

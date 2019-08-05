@@ -11,6 +11,9 @@
   "gui.sfm.ActionMenu.General.Paste": "Paste",
   "gui.sfm.ActionMenu.Global.Preferences": "User Preferences",
 
+  "gui.sfm.Dialogue.OK": "OK",
+  "gui.sfm.Dialogue.Cancel": "Cancel",
+
   // Procedure types
   "logic.sfm.trigger": "Trigger",
   "logic.sfm.item_import": "Input",

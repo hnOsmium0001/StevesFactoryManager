@@ -15,11 +15,43 @@ import static vswe.stevesfactory.utils.RenderingHelper.*;
 // TODO implement IButton
 public class TextButton extends AbstractWidget implements LeafWidgetMixin {
 
+    private static final IntConsumer DUMMY = i -> {
+    };
+
+    public static TextButton of(String key) {
+        return ofText(I18n.format(key));
+    }
+
+    public static TextButton of(String key, IntConsumer action) {
+        return ofText(I18n.format(key), action);
+    }
+
+    public static TextButton of(String key, Object... args) {
+        return ofText(I18n.format(key, args));
+    }
+
+    public static TextButton of(String key, IntConsumer action, Object... args) {
+        return ofText(I18n.format(key, args), action);
+    }
+
+    public static TextButton ofText(String text) {
+        TextButton button = new TextButton();
+        button.setText(text);
+        return button;
+    }
+
+    public static TextButton ofText(String text, IntConsumer action) {
+        TextButton button = new TextButton();
+        button.setText(text);
+        button.onClick = action;
+        return button;
+    }
+
     private static final int BACKGROUND_COLOR = 0x8c8c8c;
     private static final int NORMAL_BORDER_COLOR = 0x737373;
     private static final int HOVERED_BORDER_COLOR = 0xc9c9c9;
 
-    public IntConsumer onClick;
+    public IntConsumer onClick = DUMMY;
 
     private String text;
 
