@@ -12,6 +12,7 @@ import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.utils.IOHelper;
 
 import javax.annotation.Nullable;
@@ -32,8 +33,11 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     @Nullable
     @Override
     public IProcedure execute(IExecutionContext context) {
+
+        // TODO update logic to fix issues
         IProcedure next = nexts()[0];
 
+        // TODO port with SlotlessItemHandler
         List<ItemStack> extractableItems = new ArrayList<>();
         TileEntity source = context.getControllerWorld().getTileEntity(this.sourcePos);
         if (source == null) {
@@ -83,7 +87,7 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
             LazyOptional<IItemHandler> cap = source.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
             if (cap.isPresent()) {
                 IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                for (ItemStack stack : extractableItems) {
+                for (ItemStack stack : transferredItems) {
                     if (stack.isEmpty()) {
                         continue;
                     }
@@ -109,5 +113,17 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
         tag.putIntArray("TargetDirections", IOHelper.direction2Index(targetDirections));
 
         return tag;
+    }
+
+    public static SingletonItemTransferProcedure deserialize(CompoundNBT tag) {
+        SingletonItemTransferProcedure p = new SingletonItemTransferProcedure(null);
+
+        BlockPos controllerPos = getControllerPos(tag);
+        p.sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
+        p.sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
+        p.targetPos = NBTUtil.readBlockPos(tag.getCompound("TargetPos"));
+        p.targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
+
+        return p;
     }
 }

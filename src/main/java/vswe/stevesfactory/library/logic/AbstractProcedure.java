@@ -1,13 +1,16 @@
-package vswe.stevesfactory.logic.procedure;
+package vswe.stevesfactory.library.logic;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public abstract class AbstractProcedure extends ForgeRegistryEntry<IProcedureType<?>> implements IProcedure {
@@ -44,8 +47,19 @@ public abstract class AbstractProcedure extends ForgeRegistryEntry<IProcedureTyp
     @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = new CompoundNBT();
-        tag.putString("ID", Objects.requireNonNull(getRegistryName()).toString());
+        tag.putString("ID", getRegistryNameNonnull().toString());
         tag.put("ControllerPos", NBTUtil.writeBlockPos(controller.getPos()));
         return tag;
+    }
+
+    public static BlockPos getControllerPos(CompoundNBT tag) {
+        return NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
+    }
+
+    @Nonnull
+    public ResourceLocation getRegistryNameNonnull() {
+        ResourceLocation id = super.getRegistryName();
+        Preconditions.checkState(id != null, "Procedure type " + this + " does not have a registry name!");
+        return id;
     }
 }

@@ -1,5 +1,6 @@
 package vswe.stevesfactory.logic.procedure;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -11,6 +12,8 @@ import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.library.item.SlotlessItemHandlerWrapper;
+import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.utils.IOHelper;
 
 import javax.annotation.Nullable;
@@ -31,27 +34,44 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
     @Nullable
     @Override
     public IProcedure execute(IExecutionContext context) {
-        // TODO complete
-        // TODO wrap with slotless item handler
-        List<ItemStack> extractableItems = new ArrayList<>();
+        List<TileEntity> sourceTiles = new ArrayList<>(sourceInventories.size());
         for (BlockPos pos : sourceInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
-            if (tile == null) {
-                continue;
+            if (tile != null) {
+                sourceTiles.add(tile);
             }
+        }
+
+        List<ItemStack> extractableItems = new ArrayList<>();
+        for (TileEntity tile : sourceTiles) {
             for (Direction direction : sourceDirections) {
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
-                    IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    for (int i = 0; i < handler.getSlots(); i++) {
-                        // TODO filter
-                        extractableItems.add(handler.extractItem(i, 64, true));
+                    SlotlessItemHandlerWrapper handler = new SlotlessItemHandlerWrapper(cap.orElseThrow(RuntimeException::new));
+                    // TODO filter
+                    while (true) {
+                        ItemStack src = handler.extractItem(Integer.MAX_VALUE, true);
+                        if (src.isEmpty()) {
+                            break;
+                        }
+                        extractableItems.add(src);
                     }
                 }
             }
         }
 
-        List<ItemStack> transferedItems = new ArrayList<>();
+        // Alias for the code to be understandable
+        @SuppressWarnings("UnnecessaryLocalVariable") List<ItemStack> availableSourceItems = extractableItems;
+        List<ItemStack> takenSourceItems = new ArrayList<>(availableSourceItems.size());
+        for (ItemStack stack : availableSourceItems) {
+            ItemStack c = stack.copy();
+            // Start with no items taken. Note that this operation will only set the stack to empty, but keeping the item type
+            c.setCount(0);
+            takenSourceItems.add(c);
+        }
+
+        Preconditions.checkState(extractableItems.size() == takenSourceItems.size());
+
         for (BlockPos pos : targetInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
             if (tile == null) {
@@ -60,8 +80,37 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
             for (Direction direction : targetDirections) {
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
-                    IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    // TODO fill
+                    SlotlessItemHandlerWrapper handler = new SlotlessItemHandlerWrapper(cap.orElseThrow(RuntimeException::new));
+                    // TODO filter
+                    for (int i = 0; i < takenSourceItems.size(); i++) {
+                        ItemStack source = takenSourceItems.get(i);
+                        if (source.isEmpty()) {
+                            continue;
+                        }
+                        int sourceStackSize = source.getCount();
+                        ItemStack untaken = handler.insertItem(source, false);
+                        takenSourceItems.set(i, untaken);
+                        int taken = sourceStackSize - untaken.getCount();
+                        availableSourceItems.get(i).grow(taken);
+                    }
+                }
+            }
+        }
+
+        int flag = SlotlessItemHandlerWrapper.ITEM | SlotlessItemHandlerWrapper.DAMAGE | SlotlessItemHandlerWrapper.STACKSIZE;
+        for (TileEntity tile : sourceTiles) {
+            for (Direction direction : sourceDirections) {
+                LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
+                if (cap.isPresent()) {
+                    SlotlessItemHandlerWrapper handler = new SlotlessItemHandlerWrapper(cap.orElseThrow(RuntimeException::new));
+                    for (ItemStack stack : takenSourceItems) {
+                        if (stack.isEmpty()) {
+                            continue;
+                        }
+
+                        ItemStack extracted = handler.extractItem(stack, flag, false);
+                        stack.shrink(extracted.getCount());
+                    }
                 }
             }
         }
@@ -79,5 +128,9 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
         tag.putIntArray("TargetDirections", IOHelper.direction2Index(targetDirections));
 
         return tag;
+    }
+
+    public static BatchedItemTransferProcedure deserialize(CompoundNBT tag) {
+        return null;
     }
 }

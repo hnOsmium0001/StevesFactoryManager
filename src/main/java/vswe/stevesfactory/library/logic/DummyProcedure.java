@@ -1,4 +1,4 @@
-package vswe.stevesfactory.logic.procedure;
+package vswe.stevesfactory.library.logic;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -36,5 +36,9 @@ public final class DummyProcedure implements IProcedure {
     @Override
     public CompoundNBT serialize() {
         return new CompoundNBT();
+    }
+
+    public static DummyProcedure deserialize(CompoundNBT tag) {
+        return new DummyProcedure(null);
     }
 }
