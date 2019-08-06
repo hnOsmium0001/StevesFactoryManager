@@ -1,4 +1,4 @@
-package vswe.stevesfactory.logic.procedure;
+package vswe.stevesfactory.library.logic;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -10,7 +10,6 @@ import vswe.stevesfactory.api.network.INetworkController;
 import javax.annotation.Nullable;
 
 public final class DummyProcedure implements IProcedure {
-
 
     private static final ResourceLocation NAME = new ResourceLocation(StevesFactoryManager.MODID, "dummy");
     private static final IProcedure[] NEXTS_ARR = new IProcedure[0];
@@ -37,5 +36,9 @@ public final class DummyProcedure implements IProcedure {
     @Override
     public CompoundNBT serialize() {
         return new CompoundNBT();
+    }
+
+    public static DummyProcedure deserialize(CompoundNBT tag) {
+        return new DummyProcedure(null);
     }
 }

@@ -1,5 +1,6 @@
 package vswe.stevesfactory.utils;
 
+import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -10,9 +11,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
+import vswe.stevesfactory.api.SFMAPI;
+import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
-import vswe.stevesfactory.api.logic.IProcedure;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -70,7 +73,9 @@ public final class NetworkHelper {
 
     public static IProcedure retreiveProcedure(CompoundNBT tag) {
         ResourceLocation id = new ResourceLocation(tag.getString("ID"));
-        // TODO
-        throw new IllegalArgumentException("Unable to find a procedure registered as " + id + "!");
+        IProcedureType<?> p = SFMAPI.getProceduresRegistry().getValue(id);
+        // Not using checkNotNull here because technically the above method returns null is a registry problem
+        Preconditions.checkArgument(p != null, "Unable to find a procedure registered as " + id + "!");
+        return p.retrieveInstance(tag);
     }
 }

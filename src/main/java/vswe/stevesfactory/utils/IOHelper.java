@@ -3,6 +3,7 @@ package vswe.stevesfactory.utils;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
@@ -53,5 +54,23 @@ public final class IOHelper {
             target.add(buf.readBlockPos());
         }
         return target;
+    }
+
+    public static int[] direction2Index(Collection<Direction> directions) {
+        int[] res = new int[directions.size()];
+        int i = 0;
+        for (Direction direction : directions) {
+            res[i] = direction.getIndex();
+            i++;
+        }
+        return res;
+    }
+
+    public static List<Direction> index2Direction(int[] indices) {
+        List<Direction> res = new ArrayList<>(indices.length);
+        for (int index : indices) {
+            res.add(Direction.byIndex(index));
+        }
+        return res;
     }
 }
