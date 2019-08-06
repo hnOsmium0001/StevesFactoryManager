@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 import java.util.function.IntConsumer;
 
-public class CallbackEntry extends DefaultEntry {
+public class CallbackEntry extends AbstractEntry {
 
     private final IntConsumer callback;
 

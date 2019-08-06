@@ -10,17 +10,18 @@ import vswe.stevesfactory.utils.RenderingHelper;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public class DefaultEntry extends AbstractWidget implements IEntry, LeafWidgetMixin {
+abstract class AbstractEntry extends AbstractWidget implements IEntry, LeafWidgetMixin {
 
     public static final int MARGIN_SIDES = 2;
+    public static final int HALF_MARGIN_SIDES = MARGIN_SIDES / 2;
     public static final int RENDERED_ICON_WIDTH = 8;
     public static final int RENDERED_ICON_HEIGHT = 8;
 
     private final ResourceLocation icon;
     private final String translationKey;
 
-    public DefaultEntry(@Nullable ResourceLocation icon, String translationKey) {
-        super(0, 0, -1, -1);
+    public AbstractEntry(@Nullable ResourceLocation icon, String translationKey) {
+        super();
         this.icon = icon;
         this.translationKey = translationKey;
         Dimension bounds = getDimensions();
@@ -66,6 +67,11 @@ public class DefaultEntry extends AbstractWidget implements IEntry, LeafWidgetMi
     @Override
     public void attach(ActionMenu actionMenu) {
         setWindow(actionMenu);
+    }
+
+    @Override
+    public ActionMenu getWindow() {
+        return (ActionMenu) super.getWindow();
     }
 
     private int computeWidth() {

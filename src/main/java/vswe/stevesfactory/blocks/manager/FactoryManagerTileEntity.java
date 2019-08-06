@@ -199,6 +199,8 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public void updateLinks() {
         assert world != null;
         NetworkHelper.updateLinkType(world, linkingStatus);
+
+        // TODO add links
     }
 
     @Override

@@ -13,6 +13,9 @@ public abstract class AbstractContainer<T extends IWidget> extends AbstractWidge
         super(window);
     }
 
+    public AbstractContainer() {
+    }
+
     public AbstractContainer(int x, int y, int width, int height) {
         super(x, y, width, height);
     }

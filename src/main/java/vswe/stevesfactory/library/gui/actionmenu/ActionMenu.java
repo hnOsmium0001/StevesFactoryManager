@@ -1,6 +1,9 @@
 package vswe.stevesfactory.library.gui.actionmenu;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import jdk.nashorn.internal.ir.annotations.Immutable;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.DiscardCondition;
@@ -10,7 +13,7 @@ import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
 public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
@@ -21,6 +24,7 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
 
     private final Point position;
     private final List<? extends IEntry> entries;
+    private final List<? extends Section> sections;
     private IEntry focusedEntry;
 
     private final Dimension contents;
@@ -44,6 +48,12 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
                 .mapToInt(IEntry::getHeight)
                 .sum();
         this.border = RenderingHelper.toBorder(contents, getBorderSize());
+
+        Section section = new Section();
+        // Safe downwards erasure cast
+        @SuppressWarnings("unchecked") List<IEntry> c = (List<IEntry>) entries;
+        section.addChildren(c);
+        this.sections = ImmutableList.of(section);
 
         int y = 0;
         for (IEntry e : entries) {
@@ -81,6 +91,10 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
                 widget.onFocusChanged(true);
             }
         }
+    }
+
+    public boolean isLastSection(Section section) {
+        return Iterables.getLast(sections) == section;
     }
 
     @Override

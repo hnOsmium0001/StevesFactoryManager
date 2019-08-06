@@ -21,24 +21,23 @@ public class CableBlock extends BaseBlock {
 
     @Override
     public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor) {
-        if (!world.isRemote()) {
-            TileEntity tile = world.getTileEntity(pos);
-            if (tile instanceof CableTileEntity) {
-                ((CableTileEntity) tile).updateLinks();
-            }
-        }
+        updateLinks(world, pos);
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public BlockState updatePostPlacement(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos facingPos) {
+        updateLinks(world, pos);
+        return super.updatePostPlacement(state, direction, newState, world, pos, facingPos);
+    }
+
+    private void updateLinks(IWorldReader world, BlockPos pos) {
         if (!world.isRemote()) {
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof CableTileEntity) {
                 ((CableTileEntity) tile).updateLinks();
             }
         }
-        return super.updatePostPlacement(state, direction, newState, world, pos, facingPos);
     }
 
     @Override
