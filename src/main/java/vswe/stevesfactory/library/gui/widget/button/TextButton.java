@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.widget.button;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -37,12 +38,14 @@ public class TextButton extends AbstractWidget implements LeafWidgetMixin {
     public static TextButton ofText(String text) {
         TextButton button = new TextButton();
         button.setText(text);
+        button.expandToTextWidth();
         return button;
     }
 
     public static TextButton ofText(String text, IntConsumer action) {
         TextButton button = new TextButton();
         button.setText(text);
+        button.expandToTextWidth();
         button.onClick = action;
         return button;
     }
@@ -55,14 +58,11 @@ public class TextButton extends AbstractWidget implements LeafWidgetMixin {
 
     private String text;
 
-    public TextButton() {
-        super(0, 0, 10, 2 + fontHeight() + 2);
-    }
-
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
 
+        GlStateManager.disableAlphaTest();
         usePlainColorGLStates();
         Tessellator.getInstance().getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         int x1 = getAbsoluteX();
@@ -72,6 +72,7 @@ public class TextButton extends AbstractWidget implements LeafWidgetMixin {
         rectVertices(x1, y1, x2, y2, isInside(mouseX, mouseY) ? HOVERED_BORDER_COLOR : NORMAL_BORDER_COLOR);
         rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, BACKGROUND_COLOR);
         Tessellator.getInstance().draw();
+        GlStateManager.enableAlphaTest();
 
         drawTextCentered(text, y1, y2, x1, x2, 0xffffff);
 
@@ -94,7 +95,7 @@ public class TextButton extends AbstractWidget implements LeafWidgetMixin {
 
     public void setText(String text) {
         this.text = text;
-        setDimensions(fontRenderer().getStringWidth(text), fontHeight());
+        setDimensions(fontRenderer().getStringWidth(text), 3 + fontHeight() + 2);
     }
 
     public void translate(String translationKey) {
@@ -103,5 +104,9 @@ public class TextButton extends AbstractWidget implements LeafWidgetMixin {
 
     public void translate(String translationKey, Object... args) {
         setText(I18n.format(translationKey, args));
+    }
+
+    public boolean hasClickAction() {
+        return onClick != DUMMY;
     }
 }

@@ -34,13 +34,13 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         for (String text : texts) {
             switch (textAlignment) {
                 case LEFT:
-                    fontRenderer().drawString(text, x, y, 0xffffff);
+                    fontRenderer().drawString(text, x, y, 0x000000);
                     break;
                 case CENTER:
-                    drawTextCenteredHorizontally(text, x, x2, y, 0xffffff);
+                    drawTextCenteredHorizontally(text, x, x2, y, 0x000000);
                     break;
                 case RIGHT:
-                    fontRenderer().drawString(text, RenderingHelper.getXForAlignedRight(x2, textWidth(text)), y, 0xffffff);
+                    fontRenderer().drawString(text, RenderingHelper.getXForAlignedRight(x2, textWidth(text)), y, 0x000000);
                     break;
             }
             y += fontHeight();

@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.background.BackgroundRenderer;
-import vswe.stevesfactory.library.gui.background.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
@@ -30,7 +29,10 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         Dialogue dialogue = new Dialogue();
         dialogue.messageBox.addTranslatedLine(message);
         dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.OK", onConfirm));
+        dialogue.bindRemoveSelf(0);
         dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.Cancel", onCancel));
+        dialogue.bindRemoveSelf(1);
+        dialogue.reflow();
         return dialogue;
     }
 
@@ -38,6 +40,8 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         Dialogue dialogue = new Dialogue();
         dialogue.messageBox.addTranslatedLine(message);
         dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.OK", onConfirm));
+        dialogue.bindRemoveSelf(0);
+        dialogue.reflow();
         return dialogue;
     }
 
@@ -45,6 +49,8 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         Dialogue dialogue = new Dialogue();
         dialogue.messageBox.addTranslatedLine(message);
         dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.OK"));
+        dialogue.bindRemoveSelf(0);
+        dialogue.reflow();
         return dialogue;
     }
 
@@ -63,14 +69,14 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         this.border = new Dimension();
         this.messageBox = new TextList(10, 10, new ArrayList<>());
         this.messageBox.setFitContents(true);
-        this.buttons = new Box<>(0, 0, 10, 10);
-        this.buttons.setLayout(b -> {
-            int x = 0;
-            for (TextButton button : b) {
-                button.setLocation(x, 0);
-                x += button.getWidth() + 2;
-            }
-        });
+        this.buttons = new Box<TextButton>(0, 0, 10, 10)
+                .setLayout(b -> {
+                    int x = 0;
+                    for (TextButton button : b) {
+                        button.setLocation(x, 0);
+                        x += button.getWidth() + 2;
+                    }
+                });
         this.children = ImmutableList.of(messageBox, buttons);
 
         updateBorderUsingContent();
@@ -90,11 +96,9 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     public void reflow() {
-        messageBox.setLocation(0, 0);
         messageBox.expandHorizontally();
-
         buttons.reflow();
-        buttons.expandHorizontally();
+        buttons.adjustMinContent();
 
         FlowLayout.INSTANCE.reflow(getContentDimensions(), children);
 
@@ -129,6 +133,13 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     private void updatePosition() {
         position.x = scaledWidth() / 2 - getWidth() / 2;
         position.y = scaledHeight() / 2 - getHeight() / 2;
+        notifyChildren();
+    }
+
+    public void notifyChildren() {
+        for (AbstractWidget child : children) {
+            child.setWindow(this);
+        }
     }
 
     public TextList getMessageBox() {
@@ -151,7 +162,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     @Override
     public DiscardCondition getDiscardCondition() {
-        return null;
+        return DiscardCondition.NONE;
     }
 
     @Override
@@ -161,7 +172,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     @Override
     public int getBorderSize() {
-        return 2;
+        return 2 + 1;
     }
 
     @Override
@@ -188,6 +199,19 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     @Override
     public void setFocusedWidget(@Nullable IWidget widget) {
         focusedWidget = widget;
+    }
+
+    public void bindRemoveSelf(int buttonID) {
+        TextButton button = buttons.getChildren().get(buttonID);
+        if (button.hasClickAction()) {
+            IntConsumer oldAction = button.onClick;
+            button.onClick = b -> {
+                WidgetScreen.getCurrentScreen().deferRemovePopupWindow(this);
+                oldAction.accept(b);
+            };
+        } else {
+            button.onClick = b -> WidgetScreen.getCurrentScreen().deferRemovePopupWindow(this);
+        }
     }
 
     public boolean tryAddSelfToActiveGUI() {

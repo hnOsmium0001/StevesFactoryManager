@@ -60,7 +60,7 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
         onParentPositionChanged();
     }
 
-    protected void setWindow(IWindow window) {
+    public void setWindow(IWindow window) {
         this.window = window;
         onParentPositionChanged();
     }
@@ -126,7 +126,7 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
     }
 
     public void expandHorizontally() {
-        setWidth(Math.max(getWidth(), getParentHeight()));
+        setWidth(Math.max(getWidth(), getParentWidth()));
     }
 
     public void expandVertically() {

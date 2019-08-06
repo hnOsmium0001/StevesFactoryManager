@@ -259,7 +259,7 @@ public final class RenderingHelper {
 
     public static int getXForHorizontallyCenteredText(String text, int left, int right) {
         int textWidth = fontRenderer().getStringWidth(text);
-        return getXForAlignedCenter(textWidth, left, right);
+        return getXForAlignedCenter(left, right, textWidth);
     }
 
     public static int getYForVerticallyCenteredText(int top, int bottom) {

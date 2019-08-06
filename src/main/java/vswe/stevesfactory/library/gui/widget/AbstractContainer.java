@@ -1,11 +1,11 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import vswe.stevesfactory.library.gui.*;
-import vswe.stevesfactory.library.gui.widget.mixin.*;
+import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 
 import java.awt.*;
 import java.util.Collection;
-import java.util.Comparator;
 
 public abstract class AbstractContainer<T extends IWidget> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T> {
 
@@ -37,19 +37,24 @@ public abstract class AbstractContainer<T extends IWidget> extends AbstractWidge
         throw new UnsupportedOperationException();
     }
 
-    public void shrinkMinContent() {
+    public void adjustMinContent() {
         if (getChildren().isEmpty()) {
             return;
         }
-        T furthestRight = getChildren().stream()
-                .max(Comparator.comparingInt(T::getX))
-                .orElseThrow(RuntimeException::new);
-        int width = furthestRight.getX() + furthestRight.getWidth();
-        T furthestDown = getChildren().stream()
-                .max(Comparator.comparingInt(T::getY))
-                .orElseThrow(RuntimeException::new);
-        int height = furthestDown.getY() + furthestDown.getHeight();
-        setDimensions(width, height);
+
+        int rightmost = 0;
+        int bottommost = 0;
+        for (IWidget child : getChildren()) {
+            int right = child.getX() + child.getWidth();
+            int bottom = child.getY() + child.getHeight();
+            if (right > rightmost) {
+                rightmost = right;
+            }
+            if (bottom > bottommost) {
+                bottommost = bottom;
+            }
+        }
+        setDimensions(rightmost, bottommost);
     }
 
     public void fillWindow() {
