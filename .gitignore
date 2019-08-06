@@ -1,16 +1,22 @@
-# Exclude everything except...
+# Exclude everything and include important files/directories
 /*
 
 # Gradle stuff
 !gradle/
-!build.gradle
-!gradle.properties
-!gradlew.bat
 !gradlew
+!gradlew.bat
+!build.gradle
+!build.properties
+!project.properties
+!settings.gradle
 
-# Source code
-!src/
+# Include git important files
+!.gitmodules
+!.gitignore
 
 # Other files
 !LICENSE
 !README.md
+
+# Project files
+!src/
