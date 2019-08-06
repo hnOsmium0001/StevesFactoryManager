@@ -8,8 +8,7 @@ import vswe.stevesfactory.library.gui.background.BackgroundRenderer;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
-import vswe.stevesfactory.library.gui.widget.AbstractWidget;
-import vswe.stevesfactory.library.gui.widget.TextList;
+import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.Box;
 import vswe.stevesfactory.library.gui.widget.button.TextButton;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
@@ -26,20 +25,28 @@ import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
 public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     public static Dialogue createYesNoDialogue(String message, IntConsumer onConfirm, IntConsumer onCancel) {
+        return createYesNoDialogue(message, "gui.sfm.Dialogue.OK", "gui.sfm.Dialogue.Cancel", onConfirm, onCancel);
+    }
+
+    public static Dialogue createYesNoDialogue(String message, String yesKey, String noKey, IntConsumer onConfirm, IntConsumer onCancel) {
         Dialogue dialogue = new Dialogue();
         dialogue.messageBox.addTranslatedLine(message);
-        dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.OK", onConfirm));
+        dialogue.buttons.addChildren(TextButton.of(yesKey, onConfirm));
         dialogue.bindRemoveSelf(0);
-        dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.Cancel", onCancel));
+        dialogue.buttons.addChildren(TextButton.of(noKey, onCancel));
         dialogue.bindRemoveSelf(1);
         dialogue.reflow();
         return dialogue;
     }
 
     public static Dialogue createDialogue(String message, IntConsumer onConfirm) {
+        return createDialogue(message, "gui.sfm.Dialogue.OK", onConfirm);
+    }
+
+    public static Dialogue createDialogue(String message, String okKey, IntConsumer onConfirm) {
         Dialogue dialogue = new Dialogue();
         dialogue.messageBox.addTranslatedLine(message);
-        dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.OK", onConfirm));
+        dialogue.buttons.addChildren(TextButton.of(okKey, onConfirm));
         dialogue.bindRemoveSelf(0);
         dialogue.reflow();
         return dialogue;
@@ -58,6 +65,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     private final Dimension contents;
     private final Dimension border;
 
+    private Spacer topMargin;
     private TextList messageBox;
     private Box<TextButton> buttons;
     private List<AbstractWidget> children;
@@ -67,6 +75,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         this.position = new Point();
         this.contents = new Dimension();
         this.border = new Dimension();
+        this.topMargin = new Spacer(0, 5);
         this.messageBox = new TextList(10, 10, new ArrayList<>());
         this.messageBox.setFitContents(true);
         this.buttons = new Box<TextButton>(0, 0, 10, 10)
@@ -77,7 +86,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
                         x += button.getWidth() + 2;
                     }
                 });
-        this.children = ImmutableList.of(messageBox, buttons);
+        this.children = ImmutableList.of(topMargin, messageBox, buttons);
 
         updateBorderUsingContent();
         updatePosition();
@@ -157,6 +166,48 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     @Override
     public boolean shouldDrag(double mouseX, double mouseY) {
+        return false;
+    }
+
+    private int initialDragLocalX, initialDragLocalY;
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (NestedEventHandlerMixin.super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        if (isInside(mouseX, mouseY)) {
+            initialDragLocalX = (int) mouseX - position.x;
+            initialDragLocalY = (int) mouseY - position.y;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (NestedEventHandlerMixin.super.mouseReleased(mouseX, mouseY, button)) {
+            return true;
+        }
+        if (isInside(mouseX, mouseY)) {
+            initialDragLocalX = -1;
+            initialDragLocalY = -1;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (NestedEventHandlerMixin.super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+            return true;
+        }
+        if (isInside(mouseX, mouseY) && initialDragLocalX != -1 && initialDragLocalY != -1) {
+            position.x = (int) mouseX - initialDragLocalX;
+            position.y = (int) mouseY - initialDragLocalY;
+            notifyChildren();
+            return true;
+        }
         return false;
     }
 
