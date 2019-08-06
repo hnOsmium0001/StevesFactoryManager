@@ -13,8 +13,7 @@ import java.util.function.IntConsumer;
 
 import static vswe.stevesfactory.utils.RenderingHelper.*;
 
-// TODO implement IButton
-public class TextButton extends AbstractWidget implements LeafWidgetMixin {
+public class TextButton extends AbstractWidget implements IButton, LeafWidgetMixin {
 
     private static final IntConsumer DUMMY = i -> {
     };
@@ -58,6 +57,9 @@ public class TextButton extends AbstractWidget implements LeafWidgetMixin {
 
     private String text;
 
+    private boolean hovered = false;
+    private boolean clicked = false;
+
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
@@ -81,8 +83,20 @@ public class TextButton extends AbstractWidget implements LeafWidgetMixin {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        clicked = true;
         onClick.accept(button);
         return true;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        clicked = false;
+        return true;
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        hovered = isInside(mouseX, mouseY);
     }
 
     public void expandToTextWidth() {
@@ -108,5 +122,15 @@ public class TextButton extends AbstractWidget implements LeafWidgetMixin {
 
     public boolean hasClickAction() {
         return onClick != DUMMY;
+    }
+
+    @Override
+    public boolean isHovered() {
+        return hovered;
+    }
+
+    @Override
+    public boolean isClicked() {
+        return clicked;
     }
 }
