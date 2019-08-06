@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.library.collections.CompositeCollection;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -50,7 +51,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         windows = createWindowReferences();
     }
 
-    private WindowCollection createWindowReferences() {
+    private CompositeCollection<IWindow> createWindowReferences() {
         // Internal usages only
         @SuppressWarnings("unchecked") Collection<IWindow>[] arr = new Collection[popupWindows.size() + 1];
         arr[0] = regularWindows;
@@ -61,7 +62,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
             arr[i] = c;
             i++;
         }
-        return new WindowCollection(arr);
+        return new CompositeCollection<>(arr);
     }
 
     @Override
