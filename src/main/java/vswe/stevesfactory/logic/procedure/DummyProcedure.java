@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 
 public final class DummyProcedure implements IProcedure {
 
-
     private static final ResourceLocation NAME = new ResourceLocation(StevesFactoryManager.MODID, "dummy");
     private static final IProcedure[] NEXTS_ARR = new IProcedure[0];
 
