@@ -125,7 +125,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
 
     @CanIgnoreReturnValue
     public TextField setText(String text) {
-        this.text = text;
+        updateText(text);
         cursor = text.length();
         if (startOffset >= cursor) {
             startOffset = Math.max(cursor - 1, 0);
@@ -204,7 +204,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
                     if (isRegionSelected()) {
                         replaceSelectedRegion("");
                     } else if (!text.isEmpty() && cursor > 0) {
-                        text = text.substring(0, cursor - 1) + text.substring(cursor);
+                        updateText(text.substring(0, cursor - 1) + text.substring(cursor));
                         cursor--;
                     }
                     break;
@@ -213,7 +213,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
                     if (isRegionSelected()) {
                         replaceSelectedRegion("");
                     } else if (cursor < text.length()) {
-                        text = text.substring(0, cursor) + text.substring(cursor + 1);
+                        updateText(text.substring(0, cursor) + text.substring(cursor + 1));
                     }
                     break;
                 }
@@ -227,15 +227,32 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         // e.g. F1~12, insert
         // Char code of 0 will appear to be nothing
         if ((int) typedChar != 0) {
+            String replacement = String.valueOf(typedChar);
             if (isRegionSelected()) {
-                replaceSelectedRegion(String.valueOf(typedChar));
+                replaceSelectedRegion(replacement);
             } else {
-                text = text.substring(0, cursor) + typedChar + text.substring(cursor);
+                insertTextAtCursor(replacement);
             }
             cursor++;
             return true;
         }
         return false;
+    }
+
+    public void insertTextAtCursor(String in) {
+        insertTextAt(cursor, in);
+    }
+
+    public void insertTextAt(int index, String in) {
+        updateText(text.substring(0, index) + in + text.substring(index));
+    }
+
+    /**
+     * Update the text reference for internal usages.
+     * This method is meant to be overridden for validation purposes.
+     */
+    protected void updateText(String text) {
+        this.text = text;
     }
 
     private void copyText() {
@@ -249,7 +266,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         if (isRegionSelected()) {
             replaceSelectedRegion(text);
         } else {
-            this.text = this.text.substring(0, cursor) + text + this.text.substring(cursor);
+            insertTextAtCursor(text);
         }
         cursor += text.length();
     }
@@ -311,7 +328,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     @CanIgnoreReturnValue
     public TextField replaceSelectedRegion(String replacement) {
         int selectionStart = getSelectionStart();
-        text = text.substring(0, selectionStart) + replacement + text.substring(getSelectionEnd());
+        updateText(text.substring(0, selectionStart) + replacement + text.substring(getSelectionEnd()));
         cursor = selectionStart;
         clearSelection();
         return this;
