@@ -1,7 +1,7 @@
 package vswe.stevesfactory.blocks.manager;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.*;
+import com.google.common.reflect.TypeToInstanceMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +14,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.manager.IHook;
+import vswe.stevesfactory.api.manager.ITriggerHook;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.network.NetworkHandler;
@@ -38,6 +41,8 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     private LinkingStatus linkingStatus;
     private Set<BlockPos> neighborInventories = new ObjectArraySet<>(6);
+
+    private Map<Class<?>, Object> triggerHooks = new HashMap<>();
 
     public FactoryManagerTileEntity() {
         super(ModBlocks.factoryManagerTileEntity);
@@ -139,6 +144,27 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     @Override
+    public Set<IHook> getHooks() {
+        // TODO
+        return ImmutableSet.of();
+    }
+
+    @SuppressWarnings("unchecked") // Checked on value put
+    @Override
+    public <T> Set<ITriggerHook<T>> getTypedHooks(Class<T> typeClass) {
+        return (Set<ITriggerHook<T>>) triggerHooks.get(typeClass);
+    }
+
+    public <T> void addTypedHook(Class<T> typeClass, ITriggerHook<T> hook) {
+        if (triggerHooks.containsKey(typeClass)) {
+            getTypedHooks(typeClass).add(hook);
+        }
+        Set<ITriggerHook<T>> set = new HashSet<>();
+        set.add(hook);
+        triggerHooks.put(typeClass, set);
+    }
+
+    @Override
     public Set<BlockPos> getConnectedCables() {
         return connectedCables;
     }
@@ -173,6 +199,11 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     @Override
     public void removeAllLinks() {
         linkedInventories.clear();
+    }
+
+    @Override
+    public void beginExecution(IProcedure hat) {
+        // TODO
     }
 
     /**

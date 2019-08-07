@@ -2,6 +2,9 @@ package vswe.stevesfactory.api.network;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.util.math.BlockPos;
+import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.manager.IHook;
+import vswe.stevesfactory.api.manager.ITriggerHook;
 
 import java.util.Collection;
 import java.util.Set;
@@ -9,6 +12,10 @@ import java.util.Set;
 public interface INetworkController {
 
     BlockPos getPos();
+
+    Set<IHook> getHooks();
+
+    <T> Set<ITriggerHook<T>> getTypedHooks(Class<T> typeClass);
 
     Set<BlockPos> getConnectedCables();
 
@@ -55,4 +62,6 @@ public interface INetworkController {
     void removeAllLinks();
 
     boolean isRemoved();
+
+    void beginExecution(IProcedure hat);
 }

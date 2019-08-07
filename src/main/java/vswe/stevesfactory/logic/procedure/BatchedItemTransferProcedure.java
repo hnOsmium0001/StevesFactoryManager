@@ -6,15 +6,16 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.library.item.SlotlessItemHandlerWrapper;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.SlotlessItemHandlerWrapper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -131,6 +132,15 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
     }
 
     public static BatchedItemTransferProcedure deserialize(CompoundNBT tag) {
-        return null;
+        BlockPos controllerPos = getControllerPos(tag);
+        INetworkController controller = null;
+        BatchedItemTransferProcedure p = new BatchedItemTransferProcedure(controller);
+
+        p.sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        p.sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
+        p.targetInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        p.targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
+
+        return p;
     }
 }

@@ -3,6 +3,7 @@ package vswe.stevesfactory.ui.manager.components;
 import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
@@ -70,6 +71,11 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
         public Menu getParentWidget() {
             return Objects.requireNonNull((Menu) super.getParentWidget());
         }
+
+        @Override
+        public BoxSizing getBoxSizing() {
+            return BoxSizing.PHANTOM;
+        }
     }
 
     public static final TextureWrapper HEADING_BOX = TextureWrapper.ofFlowComponent(67, 154, 120, 13);
@@ -104,11 +110,6 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
     @Override
     public IContainer<IWidget> addChildren(Collection<IWidget> widgets) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Dimension getDimensions() {
-        return super.getDimensions();
     }
 
     public void toggleState() {

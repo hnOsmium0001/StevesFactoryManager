@@ -116,9 +116,10 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     }
 
     public static SingletonItemTransferProcedure deserialize(CompoundNBT tag) {
-        SingletonItemTransferProcedure p = new SingletonItemTransferProcedure(null);
-
         BlockPos controllerPos = getControllerPos(tag);
+        INetworkController controller = null;
+        SingletonItemTransferProcedure p = new SingletonItemTransferProcedure(controller);
+
         p.sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
         p.sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
         p.targetPos = NBTUtil.readBlockPos(tag.getCompound("TargetPos"));

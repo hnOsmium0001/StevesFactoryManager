@@ -1,7 +1,7 @@
 /* Class is adatped from org.cyclops.commoncapabilities.api.capability.itemhandler.DefaultSlotlessItemHandlerWrapper
  * https://github.com/CyclopsMC/CommonCapabilitiesAPI/blob/master-1.12/capability/itemhandler/DefaultSlotlessItemHandlerWrapper.java
  */
-package vswe.stevesfactory.library.item;
+package vswe.stevesfactory.utils;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
