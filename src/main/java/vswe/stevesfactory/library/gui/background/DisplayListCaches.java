@@ -39,7 +39,7 @@ public final class DisplayListCaches {
                 int id = GLAllocation.generateDisplayLists(1);
                 GlStateManager.newList(id, GL11.GL_COMPILE);
                 {
-                    BackgroundRenderer.drawVanillaStyle(rectangle.x, rectangle.y, rectangle.width, rectangle.height, z);
+                    BackgroundRenderers.drawVanillaStyle(rectangle.x, rectangle.y, rectangle.width, rectangle.height, z);
                 }
                 GlStateManager.endList();
                 return id;

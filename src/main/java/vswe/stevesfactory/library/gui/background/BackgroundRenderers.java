@@ -13,9 +13,9 @@ import vswe.stevesfactory.StevesFactoryManager;
 import static vswe.stevesfactory.utils.RenderingHelper.*;
 
 @OnlyIn(Dist.CLIENT)
-public final class BackgroundRenderer {
+public final class BackgroundRenderers {
 
-    private BackgroundRenderer() {
+    private BackgroundRenderers() {
     }
 
     ///////////////////////////////////////////////////////////////////////////

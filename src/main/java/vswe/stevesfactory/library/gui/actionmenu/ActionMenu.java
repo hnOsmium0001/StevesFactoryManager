@@ -3,7 +3,6 @@ package vswe.stevesfactory.library.gui.actionmenu;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import jdk.nashorn.internal.ir.annotations.Immutable;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.DiscardCondition;
@@ -13,7 +12,7 @@ import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.*;
+import java.util.Comparator;
 import java.util.List;
 
 public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
@@ -125,11 +124,6 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
     @Override
     public int getLifespan() {
         return -1;
-    }
-
-    @Override
-    public boolean shouldDrag(double mouseX, double mouseY) {
-        return false;
     }
 
     @Override

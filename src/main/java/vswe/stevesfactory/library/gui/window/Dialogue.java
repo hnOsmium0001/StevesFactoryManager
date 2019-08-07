@@ -4,7 +4,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import vswe.stevesfactory.library.gui.IWidget;
-import vswe.stevesfactory.library.gui.background.BackgroundRenderer;
+import vswe.stevesfactory.library.gui.background.BackgroundRenderers;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
@@ -18,13 +18,13 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.IntConsumer;
+import java.util.function.*;
 
 import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledHeight;
 import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
 
 public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
+
 
     public static Dialogue createPrompt(String message, BiConsumer<Integer, String> onConfirm) {
         return createPrompt(message, onConfirm, (b, t) -> {});
@@ -43,16 +43,14 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     public static Dialogue createPrompt(String message, String defaultText, String confirm, String cancel, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
-        Dialogue dialogue = new Dialogue();
-        dialogue.messageBox.addTranslatedLine(message);
+        Dialogue dialogue = dialogue(message);
 
         TextField inputBox = new TextField(0, 0, 0, 16).setText(defaultText);
-        // TODO add margin support
 //        inputBox.setMarginBotttom(4);
         dialogue.insertBeforeButtons(inputBox);
         dialogue.onPostReflow = inputBox::expandHorizontally;
 
-        // TODO and replace this with bottom margin
+        // TODO add margin support
         dialogue.insertBeforeButtons(new Spacer(0, 4));
 
         dialogue.buttons.addChildren(TextButton.of(confirm, b -> onConfirm.accept(b, inputBox.getText())));
@@ -61,6 +59,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         dialogue.bindRemoveSelf2LastButton();
 
         dialogue.reflow();
+        dialogue.centralize();
         dialogue.setFocusedWidget(inputBox);
         return dialogue;
     }
@@ -74,13 +73,15 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     public static Dialogue createBiSelectionDialogue(String message, String confirm, String cancel, IntConsumer onConfirm, IntConsumer onCancel) {
-        Dialogue dialogue = new Dialogue();
-        dialogue.messageBox.addTranslatedLine(message);
+        Dialogue dialogue = dialogue(message);
+
         dialogue.buttons.addChildren(TextButton.of(confirm, onConfirm));
         dialogue.bindRemoveSelf2LastButton();
         dialogue.buttons.addChildren(TextButton.of(cancel, onCancel));
         dialogue.bindRemoveSelf2LastButton();
+
         dialogue.reflow();
+        dialogue.centralize();
         return dialogue;
     }
 
@@ -93,19 +94,41 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     public static Dialogue createDialogue(String message, String ok, IntConsumer onConfirm) {
-        Dialogue dialogue = new Dialogue();
-        dialogue.messageBox.addTranslatedLine(message);
+        Dialogue dialogue = dialogue(message);
+
         dialogue.buttons.addChildren(TextButton.of(ok, onConfirm));
         dialogue.bindRemoveSelf2LastButton();
+
         dialogue.reflow();
+        dialogue.centralize();
         return dialogue;
     }
+
+    private static Dialogue dialogue(String message) {
+        Dialogue dialogue = new Dialogue();
+        // TODO and replace this with bottom margin
+        dialogue.insertBeforeMessage(new Spacer(0, 5));
+        dialogue.messageBox.addTranslatedLine(message);
+        return dialogue;
+    }
+
+    public static final Consumer<Dialogue> VANILLA_STYLE_RENDERER = d -> BackgroundRenderers.drawVanillaStyle(d.position.x, d.position.y, d.border.width, d.border.height, 0F);
+    public static final int VANILLA_STYLE_BORDER_SIZE = 4;
+
+    public static final Consumer<Dialogue> FLAT_STYLE_RENDERER = d -> {
+        GlStateManager.disableAlphaTest();
+        BackgroundRenderers.drawFlatStyle(d.position.x, d.position.y, d.border.width, d.border.height, 0F);
+        GlStateManager.enableAlphaTest();
+    };
+    public static final int FLAT_STYLE_BORDER_SIZE = 2 + 1;
 
     private final Point position;
     private final Dimension contents;
     private final Dimension border;
 
-    private Spacer topMargin;
+    private Consumer<Dialogue> backgroundRenderer;
+    private int borderSize;
+
     private TextList messageBox;
     private Box<TextButton> buttons;
     private List<AbstractWidget> children;
@@ -114,11 +137,12 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     public Runnable onPreReflow = () -> {};
     public Runnable onPostReflow = () -> {};
 
+    private int initialDragLocalX, initialDragLocalY;
+
     public Dialogue() {
         this.position = new Point();
         this.contents = new Dimension();
         this.border = new Dimension();
-        this.topMargin = new Spacer(0, 5);
         this.messageBox = new TextList(10, 10, new ArrayList<>());
         this.messageBox.setFitContents(true);
         this.buttons = new Box<TextButton>(0, 0, 10, 10)
@@ -131,24 +155,28 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
                 });
         this.children = new ArrayList<>();
         {
-            children.add(topMargin);
             children.add(messageBox);
             children.add(buttons);
         }
+        this.useVanillaBorders();
 
-        updateBorderUsingContent();
-        updatePosition();
+        centralize();
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        BackgroundRenderer.drawVanillaStyle(position.x, position.y, border.width, border.height, 0F);
-        GlStateManager.enableAlphaTest();
+        backgroundRenderer.accept(this);
         for (IWidget child : children) {
             child.render(mouseX, mouseY, particleTicks);
         }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
+    }
+
+    public void centralize() {
+        position.x = scaledWidth() / 2 - getWidth() / 2;
+        position.y = scaledHeight() / 2 - getHeight() / 2;
+        notifyChildren();
     }
 
     public void reflow() {
@@ -160,10 +188,16 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         FlowLayout.INSTANCE.reflow(getContentDimensions(), children);
 
         updateDimensions();
+        notifyChildren();
         onPostReflow.run();
     }
 
     private void updateDimensions() {
+        updateContentDimensions();
+        updateBorderDimensions();
+    }
+
+    private void updateContentDimensions() {
         int rightmost = 0;
         int bottommost = 0;
         for (IWidget child : children) {
@@ -178,30 +212,19 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         }
         contents.width = rightmost;
         contents.height = bottommost;
-
-        updateBorderUsingContent();
-        updatePosition();
     }
 
-    private void updateBorderUsingContent() {
+    private void updateBorderDimensions() {
         border.width = contents.width + getBorderSize() * 2;
         border.height = contents.height + getBorderSize() * 2;
     }
 
-    private void updatePosition() {
-        position.x = scaledWidth() / 2 - getWidth() / 2;
-        position.y = scaledHeight() / 2 - getHeight() / 2;
-        notifyChildren();
-    }
-
     public void notifyChildren() {
         for (AbstractWidget child : children) {
+            // This will update the absolute position as well (because we know all the children are at least AbstractWidget)
+            // so no need to call child.onParentPositionChanged() here
             child.setWindow(this);
         }
-    }
-
-    public Spacer getTopMargin() {
-        return topMargin;
     }
 
     public TextList getMessageBox() {
@@ -210,6 +233,10 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     public Box<TextButton> getButtons() {
         return buttons;
+    }
+
+    public void insertBeforeMessage(AbstractWidget widget) {
+        children.add(0, widget);
     }
 
     public void insertBeforeButtons(AbstractWidget widget) {
@@ -224,13 +251,6 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     public int getLifespan() {
         return -1;
     }
-
-    @Override
-    public boolean shouldDrag(double mouseX, double mouseY) {
-        return false;
-    }
-
-    private int initialDragLocalX, initialDragLocalY;
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -264,13 +284,17 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         if (NestedEventHandlerMixin.super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
         }
-        if (isInside(mouseX, mouseY) && initialDragLocalX != -1 && initialDragLocalY != -1) {
+        if (isInside(mouseX, mouseY) && isDragging()) {
             position.x = (int) mouseX - initialDragLocalX;
             position.y = (int) mouseY - initialDragLocalY;
             notifyChildren();
             return true;
         }
         return false;
+    }
+
+    private boolean isDragging() {
+        return initialDragLocalX != -1 && initialDragLocalY != -1;
     }
 
     @Override
@@ -285,9 +309,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     @Override
     public int getBorderSize() {
-        // TODO add support for flat border
-//        return 2 + 1;
-        return 4;
+        return borderSize;
     }
 
     @Override
@@ -314,6 +336,20 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     @Override
     public void setFocusedWidget(@Nullable IWidget widget) {
         focusedWidget = widget;
+    }
+
+    public void setStyle(Consumer<Dialogue> renderer, int borderSize) {
+        this.backgroundRenderer = renderer;
+        this.borderSize = borderSize;
+        reflow();
+    }
+
+    public void useFlatBorders() {
+        setStyle(FLAT_STYLE_RENDERER, FLAT_STYLE_BORDER_SIZE);
+    }
+
+    public void useVanillaBorders() {
+        setStyle(VANILLA_STYLE_RENDERER, VANILLA_STYLE_BORDER_SIZE);
     }
 
     public void bindRemoveSelf(int buttonID) {

@@ -55,7 +55,6 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
         FlowComponent flowComponent = component.createWidget(component.createInstance(null));
         flowComponent.setName(I18n.format("logic.sfm." + component.getRegistryName().getPath()));
         editorPanel.addChildren(flowComponent);
-        getWindow().setFocusedWidget(this);
         return true;
     }
 

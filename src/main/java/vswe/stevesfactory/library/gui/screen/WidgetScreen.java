@@ -156,15 +156,6 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragAmountX, double dragAmountY) {
-        // Dragging popup windows
-        for (Set<IPopupWindow> windows : popupWindows.values()) {
-            for (IPopupWindow popup : windows) {
-                if (popup.shouldDrag(mouseX, mouseY)) {
-                    popup.setPosition((int) mouseX, (int) mouseY);
-                }
-            }
-        }
-
         if (windows.stream().anyMatch(window -> window.mouseDragged(mouseX, mouseY, button, dragAmountX, dragAmountY))) {
             return true;
         } else {

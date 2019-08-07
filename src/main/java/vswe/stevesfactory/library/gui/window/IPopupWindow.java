@@ -9,8 +9,6 @@ public interface IPopupWindow extends IWindow {
      */
     int getLifespan();
 
-    boolean shouldDrag(double mouseX, double mouseY);
-
     DiscardCondition getDiscardCondition();
 
     default void move(int xOffset, int yOffset) {
