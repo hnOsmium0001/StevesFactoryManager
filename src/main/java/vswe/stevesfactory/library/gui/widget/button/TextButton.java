@@ -15,7 +15,7 @@ import static vswe.stevesfactory.utils.RenderingHelper.*;
 
 public class TextButton extends AbstractWidget implements IButton, LeafWidgetMixin {
 
-    private static final IntConsumer DUMMY = i -> {
+    public static final IntConsumer DUMMY = i -> {
     };
 
     public static TextButton of(String key) {

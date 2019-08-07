@@ -1,6 +1,6 @@
 package vswe.stevesfactory.library.gui.window;
 
-import com.google.common.collect.ImmutableList;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import vswe.stevesfactory.library.gui.IWidget;
@@ -8,6 +8,7 @@ import vswe.stevesfactory.library.gui.background.BackgroundRenderer;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
+import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.Box;
 import vswe.stevesfactory.library.gui.widget.button.TextButton;
@@ -17,6 +18,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
 
 import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledHeight;
@@ -24,39 +26,77 @@ import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
 
 public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
-    public static Dialogue createYesNoDialogue(String message, IntConsumer onConfirm, IntConsumer onCancel) {
-        return createYesNoDialogue(message, "gui.sfm.Dialogue.OK", "gui.sfm.Dialogue.Cancel", onConfirm, onCancel);
+    public static Dialogue createPrompt(String message, BiConsumer<Integer, String> onConfirm) {
+        return createPrompt(message, onConfirm, (b, t) -> {});
     }
 
-    public static Dialogue createYesNoDialogue(String message, String yesKey, String noKey, IntConsumer onConfirm, IntConsumer onCancel) {
+    public static Dialogue createPrompt(String message, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
+        return createPrompt(message, "", onConfirm, onCancel);
+    }
+
+    public static Dialogue createPrompt(String message, String defaultText, BiConsumer<Integer, String> onConfirm) {
+        return createPrompt(message, defaultText, onConfirm, (b, t) -> {});
+    }
+
+    public static Dialogue createPrompt(String message, String defaultText, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
+        return createPrompt(message, defaultText, "gui.sfm.Dialogue.OK", "gui.sfm.Dialogue.Cancel", onConfirm, onCancel);
+    }
+
+    public static Dialogue createPrompt(String message, String defaultText, String confirm, String cancel, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
         Dialogue dialogue = new Dialogue();
         dialogue.messageBox.addTranslatedLine(message);
-        dialogue.buttons.addChildren(TextButton.of(yesKey, onConfirm));
-        dialogue.bindRemoveSelf(0);
-        dialogue.buttons.addChildren(TextButton.of(noKey, onCancel));
-        dialogue.bindRemoveSelf(1);
+
+        TextField inputBox = new TextField(0, 0, 0, 16).setText(defaultText);
+        // TODO add margin support
+//        inputBox.setMarginBotttom(4);
+        dialogue.insertBeforeButtons(inputBox);
+        dialogue.onPostReflow = inputBox::expandHorizontally;
+
+        // TODO and replace this with bottom margin
+        dialogue.insertBeforeButtons(new Spacer(0, 4));
+
+        dialogue.buttons.addChildren(TextButton.of(confirm, b -> onConfirm.accept(b, inputBox.getText())));
+        dialogue.bindRemoveSelf2LastButton();
+        dialogue.buttons.addChildren(TextButton.of(cancel, b -> onCancel.accept(b, inputBox.getText())));
+        dialogue.bindRemoveSelf2LastButton();
+
+        dialogue.reflow();
+        dialogue.setFocusedWidget(inputBox);
+        return dialogue;
+    }
+
+    public static Dialogue createBiSelectionDialogue(String message, IntConsumer onConfirm) {
+        return createBiSelectionDialogue(message, onConfirm, TextButton.DUMMY);
+    }
+
+    public static Dialogue createBiSelectionDialogue(String message, IntConsumer onConfirm, IntConsumer onCancel) {
+        return createBiSelectionDialogue(message, "gui.sfm.Dialogue.OK", "gui.sfm.Dialogue.Cancel", onConfirm, onCancel);
+    }
+
+    public static Dialogue createBiSelectionDialogue(String message, String confirm, String cancel, IntConsumer onConfirm, IntConsumer onCancel) {
+        Dialogue dialogue = new Dialogue();
+        dialogue.messageBox.addTranslatedLine(message);
+        dialogue.buttons.addChildren(TextButton.of(confirm, onConfirm));
+        dialogue.bindRemoveSelf2LastButton();
+        dialogue.buttons.addChildren(TextButton.of(cancel, onCancel));
+        dialogue.bindRemoveSelf2LastButton();
         dialogue.reflow();
         return dialogue;
+    }
+
+    public static Dialogue createDialogue(String message) {
+        return createDialogue(message, TextButton.DUMMY);
     }
 
     public static Dialogue createDialogue(String message, IntConsumer onConfirm) {
         return createDialogue(message, "gui.sfm.Dialogue.OK", onConfirm);
     }
 
-    public static Dialogue createDialogue(String message, String okKey, IntConsumer onConfirm) {
+    public static Dialogue createDialogue(String message, String ok, IntConsumer onConfirm) {
         Dialogue dialogue = new Dialogue();
         dialogue.messageBox.addTranslatedLine(message);
-        dialogue.buttons.addChildren(TextButton.of(okKey, onConfirm));
-        dialogue.bindRemoveSelf(0);
-        dialogue.reflow();
-        return dialogue;
-    }
-
-    public static Dialogue createDialogue(String message) {
-        Dialogue dialogue = new Dialogue();
-        dialogue.messageBox.addTranslatedLine(message);
-        dialogue.buttons.addChildren(TextButton.of("gui.sfm.Dialogue.OK"));
-        dialogue.bindRemoveSelf(0);
+        dialogue.buttons.addChildren(TextButton.of(ok, onConfirm));
+        dialogue.bindRemoveSelf2LastButton();
         dialogue.reflow();
         return dialogue;
     }
@@ -70,6 +110,9 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     private Box<TextButton> buttons;
     private List<AbstractWidget> children;
     private IWidget focusedWidget;
+
+    public Runnable onPreReflow = () -> {};
+    public Runnable onPostReflow = () -> {};
 
     public Dialogue() {
         this.position = new Point();
@@ -86,7 +129,12 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
                         x += button.getWidth() + 2;
                     }
                 });
-        this.children = ImmutableList.of(topMargin, messageBox, buttons);
+        this.children = new ArrayList<>();
+        {
+            children.add(topMargin);
+            children.add(messageBox);
+            children.add(buttons);
+        }
 
         updateBorderUsingContent();
         updatePosition();
@@ -95,8 +143,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        GlStateManager.disableAlphaTest();
-        BackgroundRenderer.drawFlatStyle(position.x, position.y, border.width, border.height, 0F);
+        BackgroundRenderer.drawVanillaStyle(position.x, position.y, border.width, border.height, 0F);
         GlStateManager.enableAlphaTest();
         for (IWidget child : children) {
             child.render(mouseX, mouseY, particleTicks);
@@ -105,6 +152,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     public void reflow() {
+        onPreReflow.run();
         messageBox.expandHorizontally();
         buttons.reflow();
         buttons.adjustMinContent();
@@ -112,6 +160,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         FlowLayout.INSTANCE.reflow(getContentDimensions(), children);
 
         updateDimensions();
+        onPostReflow.run();
     }
 
     private void updateDimensions() {
@@ -151,12 +200,24 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         }
     }
 
+    public Spacer getTopMargin() {
+        return topMargin;
+    }
+
     public TextList getMessageBox() {
         return messageBox;
     }
 
     public Box<TextButton> getButtons() {
         return buttons;
+    }
+
+    public void insertBeforeButtons(AbstractWidget widget) {
+        children.add(children.size() - 1, widget);
+    }
+
+    public void appendChild(AbstractWidget widget) {
+        children.add(widget);
     }
 
     @Override
@@ -177,6 +238,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
             return true;
         }
         if (isInside(mouseX, mouseY)) {
+            setFocusedWidget(null);
             initialDragLocalX = (int) mouseX - position.x;
             initialDragLocalY = (int) mouseY - position.y;
             return true;
@@ -223,7 +285,9 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     @Override
     public int getBorderSize() {
-        return 2 + 1;
+        // TODO add support for flat border
+//        return 2 + 1;
+        return 4;
     }
 
     @Override
@@ -265,6 +329,11 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         }
     }
 
+    public void bindRemoveSelf2LastButton() {
+        bindRemoveSelf(buttons.getChildren().size() - 1);
+    }
+
+    @CanIgnoreReturnValue
     public boolean tryAddSelfToActiveGUI() {
         if (Minecraft.getInstance().currentScreen instanceof WidgetScreen) {
             WidgetScreen.getCurrentScreen().addPopupWindow(this);

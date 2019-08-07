@@ -16,6 +16,8 @@ import java.awt.*;
 
 public final class RenderingHelper {
 
+    public static final Dimension UNBOUNDED = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
     private RenderingHelper() {
     }
 

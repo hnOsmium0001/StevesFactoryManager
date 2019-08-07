@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.widget;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
@@ -31,6 +32,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         int x = getAbsoluteX() + 1;
         int y = getAbsoluteY() + 1;
         int x2 = getAbsoluteXBR() - 1;
+        GlStateManager.enableTexture();
         for (String text : texts) {
             switch (textAlignment) {
                 case LEFT:

@@ -107,6 +107,9 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
         if (parent != null) {
             return parent.getHeight();
         }
+        if (window != null) {
+            return window.getContentHeight();
+        }
         return 0;
     }
 
@@ -116,6 +119,9 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
     public int getParentWidth() {
         if (parent != null) {
             return parent.getWidth();
+        }
+        if (window != null) {
+            return window.getContentWidth();
         }
         return 0;
     }
