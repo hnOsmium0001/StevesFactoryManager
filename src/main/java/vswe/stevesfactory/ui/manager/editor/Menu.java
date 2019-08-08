@@ -5,6 +5,7 @@ import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
+import vswe.stevesfactory.library.gui.widget.box.Box;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -15,15 +16,15 @@ import java.util.*;
 public abstract class Menu extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
 
     public enum State {
-        COLLAPSED(TextureWrapper.ofFlowComponent(1, 41, 9, 9),
-                TextureWrapper.ofFlowComponent(10, 41, 9, 9)) {
+        COLLAPSED(TextureWrapper.ofFlowComponent(0, 40, 9, 9),
+                TextureWrapper.ofFlowComponent(9, 40, 9, 9)) {
             @Override
             public void toggleStateFor(Menu menu) {
                 menu.expand();
             }
         },
-        EXPANDED(TextureWrapper.ofFlowComponent(1, 50, 9, 9),
-                TextureWrapper.ofFlowComponent(10, 50, 9, 9)) {
+        EXPANDED(TextureWrapper.ofFlowComponent(0, 49, 9, 9),
+                TextureWrapper.ofFlowComponent(9, 49, 9, 9)) {
             @Override
             public void toggleStateFor(Menu menu) {
                 menu.collapse();
@@ -44,7 +45,7 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
     public static class ToggleStateButton extends AbstractIconButton {
 
         public ToggleStateButton(Menu parent) {
-            super(110, 3, 9, 9);
+            super(109, 2, 9, 9);
             setParentWidget(parent);
         }
 
@@ -76,7 +77,7 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
         }
     }
 
-    public static final TextureWrapper HEADING_BOX = TextureWrapper.ofFlowComponent(67, 154, 120, 13);
+    public static final TextureWrapper HEADING_BOX = TextureWrapper.ofFlowComponent(66, 152, 120, 13);
     public static final int DEFAULT_CONTENT_HEIGHT = 65;
 
     private State state = State.COLLAPSED;
@@ -120,11 +121,13 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
     }
 
     public void expand() {
+        state = State.EXPANDED;
         growHeight(getContentHeight());
         updateChildrenEnableState(true);
     }
 
     public void collapse() {
+        state = State.COLLAPSED;
         shrinkHeight(getContentHeight());
         updateChildrenEnableState(false);
     }
@@ -146,7 +149,7 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
 
     @Override
     public void setHeight(int height) {
-        ResizableWidgetMixin.super.setHeight(height);
+        super.setHeight(height);
         getParentWidget().reflow();
     }
 
@@ -177,7 +180,9 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
     }
 
     public void renderHeadingText() {
-        RenderingHelper.drawTextCenteredVertically(getHeadingText(), getHeadingLeftX(), getAbsoluteY(), getAbsoluteYBR(), getHeadingColor());
+        int y1 = getAbsoluteY();
+        int y2 = y1 + HEADING_BOX.getPortionHeight();
+        RenderingHelper.drawTextCenteredVertically(getHeadingText(), getHeadingLeftX(), y1, y2 + 1, getHeadingColor());
     }
 
     public int getHeadingLeftX() {
@@ -192,9 +197,16 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
 
     public abstract void renderContents(int mouseX, int mouseY, float particleTicks);
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        super.mouseClicked(mouseX, mouseY, button);
+        return isInside(mouseX, mouseY);
+    }
+
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public FlowComponent getParentWidget() {
-        return Objects.requireNonNull((FlowComponent) super.getParentWidget());
+    public Box<Menu> getParentWidget() {
+        return Objects.requireNonNull((Box<Menu>) super.getParentWidget());
     }
 }

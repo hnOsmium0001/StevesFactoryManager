@@ -2,13 +2,17 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.widget.NumberField;
+import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 
-public class InternalMenu extends Menu {
+public class IntervalMenu extends Menu {
 
-    private NumberField<Integer> interval = NumberField.integerField(21, 16);
+    private NumberField<Integer> interval = NumberField.integerField(38, 16)
+            .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
+            .setValue(1);
 
-    public InternalMenu() {
+    public IntervalMenu() {
+        interval.setLocation(20, 30);
         addChildren(interval);
     }
 

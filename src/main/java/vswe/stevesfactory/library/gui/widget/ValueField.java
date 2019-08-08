@@ -22,12 +22,14 @@ public abstract class ValueField<V> extends TextField {
         }
 
         @Override
-        protected void updateText(String text) {
+        protected boolean updateText(String text) {
             try {
                 number = getParser().apply(text);
                 setInternalText(text);
+                return true;
             } catch (RuntimeException ignored) {
             }
+            return false;
         }
 
         @Override
@@ -60,11 +62,13 @@ public abstract class ValueField<V> extends TextField {
         }
 
         @Override
-        protected void updateText(String text) {
+        protected boolean updateText(String text) {
             if (formatValidator.test(text)) {
                 setInternalText(text);
                 this.number = getParser().apply(getText());
+                return true;
             }
+            return false;
         }
 
         @Deprecated
@@ -104,7 +108,7 @@ public abstract class ValueField<V> extends TextField {
     }
 
     @Override
-    protected abstract void updateText(String text);
+    protected abstract boolean updateText(String text);
 
     protected final void setInternalText(String text) {
         super.updateText(text);

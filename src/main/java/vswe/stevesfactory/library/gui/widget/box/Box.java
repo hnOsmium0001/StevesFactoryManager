@@ -95,11 +95,13 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractCon
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        for (T child : children) {
-            child.render(mouseX, mouseY, particleTicks);
+        if (isEnabled()) {
+            RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+            for (T child : children) {
+                child.render(mouseX, mouseY, particleTicks);
+            }
+            RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
-        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     /**
@@ -132,5 +134,75 @@ public class Box<T extends IWidget & RelocatableWidgetMixin> extends AbstractCon
     @Override
     public void reflow() {
         layout.accept(children);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (isEnabled()) {
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (isEnabled()) {
+            return super.mouseReleased(mouseX, mouseY, button);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (isEnabled()) {
+            return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+        if (isEnabled()) {
+            return super.mouseScrolled(mouseX, mouseY, scroll);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (isEnabled()) {
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (isEnabled()) {
+            return super.keyReleased(keyCode, scanCode, modifiers);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean charTyped(char charTyped, int keyCode) {
+        if (isEnabled()) {
+            return super.charTyped(charTyped, keyCode);
+        }
+        return false;
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        if (isEnabled()) {
+            super.mouseMoved(mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public void update(float particleTicks) {
+        if (isEnabled()) {
+            super.update(particleTicks);
+        }
     }
 }

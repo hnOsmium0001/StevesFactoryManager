@@ -72,8 +72,12 @@ public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntr
         this.flowComponentFactory = this::createWidgetDefault;
     }
 
-    private FlowComponent createWidgetDefault(P procedure) {
-        FlowComponent component = new FlowComponent(1, 1) {};
+    public final FlowComponent createWidgetDefault(P procedure) {
+        return createWidgetDefault(procedure, 1, 1);
+    }
+
+    public final FlowComponent createWidgetDefault(P procedure, int inputNodes, int outputNodes) {
+        FlowComponent component = new FlowComponent(inputNodes, outputNodes) {};
         component.setName(I18n.format("logic.sfm." + getRegistryNameNonnull().getPath()));
         return component;
     }

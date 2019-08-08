@@ -13,6 +13,7 @@ import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.utils.Utils;
 
 import java.awt.*;
 
@@ -57,12 +58,12 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     };
 
     public enum BackgroundStyle implements IBackgroundRenderer {
-        NONE {
+        NONE(0xff000000, 0xff333333) {
             @Override
             public void render(int x1, int y1, int x2, int y2, boolean hovered, boolean focused) {
             }
         },
-        THICK_BEVELED {
+        THICK_BEVELED(0xff000000, 0xff333333) {
             @Override
             public void render(int x1, int y1, int x2, int y2, boolean hovered, boolean focused) {
                 int color = focused ? 0xffeeeeee
@@ -71,7 +72,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
                 RenderingHelper.drawThickBeveledBox(x1, y1, x2 - 1, y2 - 1, 1, 0xff2b2b2b, 0xffffffff, color);
             }
         },
-        RED_OUTLINE {
+        RED_OUTLINE(0xffffffff, 0xffcccccc) {
             @Override
             public void render(int x1, int y1, int x2, int y2, boolean hovered, boolean focused) {
                 if (focused) {
@@ -82,10 +83,16 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
                     RenderingHelper.drawRect(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0xff1c1c1c);
                 }
             }
+        };
+
+        public final int textColor;
+        public final int textColorUneditable;
+
+        BackgroundStyle(int textColor, int textColorUneditable) {
+            this.textColor = textColor;
+            this.textColorUneditable = textColorUneditable;
         }
     }
-
-    public static final int SECONDARY_BUTTON = 1;
 
     private IBackgroundRenderer backgroundStyle = BackgroundStyle.THICK_BEVELED;
 
@@ -100,6 +107,9 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
      */
     private int selection = -1;
     private boolean editable = true;
+
+    private int textColor = 0xff000000;
+    private int textColorUneditable = 0xff333333;
 
     public TextField(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -128,7 +138,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         updateText(text);
         cursor = text.length();
         if (startOffset >= cursor) {
-            startOffset = Math.max(cursor - 1, 0);
+            startOffset = Utils.lowerBound(cursor - 1, 0);
         }
         return this;
     }
@@ -137,7 +147,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isEnabled() && editable) {
             getWindow().setFocusedWidget(this);
-            if (button == SECONDARY_BUTTON) {
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                 setText("");
             }
             return true;
@@ -204,8 +214,9 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
                     if (isRegionSelected()) {
                         replaceSelectedRegion("");
                     } else if (!text.isEmpty() && cursor > 0) {
-                        updateText(text.substring(0, cursor - 1) + text.substring(cursor));
-                        cursor--;
+                        if (removeTextAt(cursor - 1, cursor)) {
+                            cursor--;
+                        }
                     }
                     break;
                 }
@@ -213,7 +224,7 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
                     if (isRegionSelected()) {
                         replaceSelectedRegion("");
                     } else if (cursor < text.length()) {
-                        updateText(text.substring(0, cursor) + text.substring(cursor + 1));
+                        removeTextAt(cursor, cursor + 1);
                     }
                     break;
                 }
@@ -233,26 +244,54 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
             } else {
                 insertTextAtCursor(replacement);
             }
-            cursor++;
             return true;
         }
         return false;
     }
 
-    public void insertTextAtCursor(String in) {
-        insertTextAt(cursor, in);
+    @CanIgnoreReturnValue
+    public boolean insertTextAtCursor(String in) {
+        if (insertTextAt(cursor, in)) {
+            cursor += in.length();
+            return true;
+        }
+        return false;
     }
 
-    public void insertTextAt(int index, String in) {
-        updateText(text.substring(0, index) + in + text.substring(index));
+    @CanIgnoreReturnValue
+    public boolean insertTextAt(int index, String in) {
+        return updateText(text.substring(0, index) + in + text.substring(index));
+    }
+
+    @CanIgnoreReturnValue
+    public boolean removeTextAtCursor(int length) {
+        int a = cursor + length;
+        int b = cursor;
+        if (removeTextAt(Math.min(a, b), Math.max(a, b))) {
+            cursor -= length;
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Update the text reference for internal usages.
-     * This method is meant to be overridden for validation purposes.
+     * Remove text in range of {@code [start, end)}.
+     *
+     * @param start Inclusive index
+     * @param end   Exclusive index
      */
-    protected void updateText(String text) {
+    @CanIgnoreReturnValue
+    public boolean removeTextAt(int start, int end) {
+        return updateText(text.substring(0, start) + text.substring(end));
+    }
+
+    /**
+     * Update the text reference for internal usages. This method is meant to be overridden for validation purposes.
+     */
+    @CanIgnoreReturnValue
+    protected boolean updateText(String text) {
         this.text = text;
+        return true;
     }
 
     private void copyText() {
@@ -268,7 +307,6 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         } else {
             insertTextAtCursor(text);
         }
-        cursor += text.length();
     }
 
     private void cutText() {
@@ -276,6 +314,14 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
             minecraft().keyboardListener.setClipboardString(getSelectedText());
             replaceSelectedRegion("");
         }
+    }
+
+    public int getCursor() {
+        return cursor;
+    }
+
+    protected void setCursor(int cursor) {
+        this.cursor = MathHelper.clamp(cursor, 0, text.length());
     }
 
     @CanIgnoreReturnValue
@@ -328,8 +374,9 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     @CanIgnoreReturnValue
     public TextField replaceSelectedRegion(String replacement) {
         int selectionStart = getSelectionStart();
-        updateText(text.substring(0, selectionStart) + replacement + text.substring(getSelectionEnd()));
-        cursor = selectionStart;
+        if (updateText(text.substring(0, selectionStart) + replacement + text.substring(getSelectionEnd()))) {
+            cursor = selectionStart + replacement.length();
+        }
         clearSelection();
         return this;
     }
@@ -377,11 +424,12 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
         String renderedText = fontRenderer().trimStringToWidth(this.text.substring(startOffset), getDimensions().width - 10);
         int textX = x + 5;
         int textY = y + calculateVerticalOffset();
+        GlStateManager.enableTexture();
         if (isEnabled()) {
             if (isEditable()) {
-                fontRenderer().drawString(renderedText, textX, textY, 0xff000000);
+                fontRenderer().drawString(renderedText, textX, textY, textColor);
             } else {
-                fontRenderer().drawString(renderedText, textX, textY, 0xff333333);
+                fontRenderer().drawString(renderedText, textX, textY, textColorUneditable);
             }
 
             if (isRegionSelected()) {
@@ -420,6 +468,28 @@ public class TextField extends AbstractWidget implements RelocatableWidgetMixin,
     @CanIgnoreReturnValue
     public TextField setBackgroundStyle(IBackgroundRenderer backgroundStyle) {
         this.backgroundStyle = backgroundStyle;
+        return this;
+    }
+
+    @CanIgnoreReturnValue
+    public TextField setBackgroundStyle(BackgroundStyle backgroundStyle) {
+        this.backgroundStyle = backgroundStyle;
+        this.setTextColor(backgroundStyle.textColor, backgroundStyle.textColorUneditable);
+        return this;
+    }
+
+    public int getTextColor() {
+        return textColor;
+    }
+
+    public int getTextColorUneditable() {
+        return textColorUneditable;
+    }
+
+    @CanIgnoreReturnValue
+    public TextField setTextColor(int textColor, int textColorUneditable) {
+        this.textColor = textColor;
+        this.textColorUneditable = textColorUneditable;
         return this;
     }
 

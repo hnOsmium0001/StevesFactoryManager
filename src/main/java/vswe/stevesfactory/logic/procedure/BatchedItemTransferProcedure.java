@@ -134,7 +134,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
     }
 
     public static BatchedItemTransferProcedure deserialize(CompoundNBT tag) {
-        BatchedItemTransferProcedure p = new BatchedItemTransferProcedure(getController(tag));
+        BatchedItemTransferProcedure p = new BatchedItemTransferProcedure(readController(tag));
 
         p.sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         p.sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
@@ -145,7 +145,6 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
     }
 
     public static FlowComponent createFlowComponent(BatchedItemTransferProcedure procedure) {
-
-        return new FlowComponent(1, 1) {};
+        return Procedures.BATCHED_ITEM_TRANSFER.factory.createWidgetDefault(procedure);
     }
 }

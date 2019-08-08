@@ -1,6 +1,5 @@
 package vswe.stevesfactory.ui.manager.editor;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
@@ -10,11 +9,12 @@ import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
+import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
+import vswe.stevesfactory.library.gui.widget.box.Box;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.ui.manager.editor.ControlFlowNodes.Node;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -153,8 +153,8 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
                 FlowComponent parent = getParentWidget();
                 parent.submitButton.setEnabled(true);
                 parent.cancelButton.setEnabled(true);
-                parent.name.setEditable(true);
-                getWindow().setFocusedWidget(parent.name);
+                parent.nameBox.setEditable(true);
+                getWindow().setFocusedWidget(parent.nameBox);
                 return true;
             }
             return false;
@@ -204,9 +204,9 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
                 FlowComponent parent = getParentWidget();
                 parent.cancelButton.setEnabled(false);
                 parent.renameButton.setEnabled(true);
-                parent.name.scrollToFront();
-                parent.name.setEditable(false);
-                getWindow().changeFocus(parent.name, false);
+                parent.nameBox.scrollToFront();
+                parent.nameBox.setEditable(false);
+                getWindow().changeFocus(parent.nameBox, false);
                 return true;
             }
             return false;
@@ -259,9 +259,9 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
                 parent.submitButton.setEnabled(false);
                 parent.renameButton.setEnabled(true);
                 parent.setName(previousName);
-                parent.name.scrollToFront();
-                parent.name.setEditable(false);
-                getWindow().changeFocus(parent.name, false);
+                parent.nameBox.scrollToFront();
+                parent.nameBox.setEditable(false);
+                getWindow().changeFocus(parent.nameBox, false);
                 previousName = "";
                 return true;
             }
@@ -313,10 +313,10 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
     private final RenameButton renameButton;
     private final SubmitButton submitButton;
     private final CancelButton cancelButton;
-    private final TextField name;
+    private final TextField nameBox;
     private final ControlFlowNodes inputNodes;
     private final ControlFlowNodes outputNodes;
-    private final List<Menu> menuComponents;
+    private final Box<Menu> menus;
     // A list that refers to all the widgets above
     private final List<IWidget> children;
 
@@ -335,35 +335,20 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         this.submitButton = new SubmitButton(this);
         this.cancelButton = new CancelButton(this);
         // The cursor looks a bit to short (and cute) with these numbers, might want change them?
-        this.name = new TextField(8, 8, 35, 10)
+        this.nameBox = new TextField(8, 8, 35, 10)
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setEditable(false);
         this.inputNodes = ControlFlowNodes.inputNodes(amountInputsNodes);
         this.outputNodes = ControlFlowNodes.outputNodes(amountOutputNodes);
-        this.menuComponents = new ArrayList<>();
-        this.children = new AbstractList<IWidget>() {
-            @Override
-            public IWidget get(int i) {
-                switch (i) {
-                    case 0: return toggleStateButton;
-                    case 1: return renameButton;
-                    case 2: return submitButton;
-                    case 3: return cancelButton;
-                    case 4: return name;
-                    case 5: return inputNodes;
-                    case 6: return outputNodes;
-                    default: return menuComponents.get(i - 7);
-                }
-            }
+        this.menus = new Box<>(2, 20, 120, 130);
+        this.menus.setLayout(m -> {
+            if (menus.isEnabled())
+                FlowLayout.INSTANCE.reflow(menus.getDimensions(), m);
+        });
+        this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, inputNodes, outputNodes, menus);
 
-            @Override
-            public int size() {
-                return 7 + menuComponents.size();
-            }
-        };
-
-        this.state = State.COLLAPSED;
-        this.updateChildStates();
+        this.collapse();
+        this.reflow();
     }
 
     @Override
@@ -379,44 +364,32 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         return state;
     }
 
-    public void expand() {
-        Preconditions.checkState(state == State.COLLAPSED);
-        state = State.EXPANDED;
-
-        name.setWidth(95);
-        updateChildStates();
-    }
-
-    public void collapse() {
-        Preconditions.checkState(state == State.EXPANDED);
-        state = State.COLLAPSED;
-
-        name.setWidth(35);
-        updateChildStates();
-    }
-
-    private void updateChildStates() {
-        toggleStateButton.updateTo(state);
-        renameButton.updateTo(state);
-        submitButton.updateTo(state);
-        cancelButton.updateTo(state);
-        inputNodes.updateTo(state);
-        inputNodes.setY(-Node.HEIGHT);
-        outputNodes.updateTo(state);
-        outputNodes.setY(getHeight());
-        name.scrollToFront();
-    }
-
     public void toggleState() {
         state.changeState(this);
     }
 
+    public void expand() {
+        state = State.EXPANDED;
+
+        nameBox.setWidth(95);
+        menus.setEnabled(true);
+        reflow();
+    }
+
+    public void collapse() {
+        state = State.COLLAPSED;
+
+        nameBox.setWidth(35);
+        menus.setEnabled(false);
+        reflow();
+    }
+
     public String getName() {
-        return name.getText();
+        return nameBox.getText();
     }
 
     public void setName(String name) {
-        this.name.setText(name);
+        this.nameBox.setText(name);
         this.cancelButton.previousName = getName();
     }
 
@@ -425,21 +398,35 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         return children;
     }
 
-    public FlowComponent addChildren(Menu menu) {
-        menuComponents.add(menu);
-        return this;
+    public Box<Menu> getMenusBox() {
+        return menus;
     }
 
     @Override
     public void reflow() {
-        // We ignore the buttons here on purpose, since their position are directly defined as coordinates
-        FlowLayout.INSTANCE.reflow(getDimensions(), menuComponents);
+        toggleStateButton.updateTo(state);
+        renameButton.updateTo(state);
+        submitButton.updateTo(state);
+        cancelButton.updateTo(state);
+        inputNodes.setWidth(state.dimensions.width);
+        inputNodes.setY(-Node.HEIGHT);
+        inputNodes.reflow();
+        outputNodes.setWidth(state.dimensions.width);
+        outputNodes.setY(getHeight());
+        outputNodes.reflow();
+        nameBox.scrollToFront();
+        menus.reflow();
+    }
+
+    public FlowComponent addChildren(Menu menu) {
+        menu.addChildren(menu);
+        return this;
     }
 
     @Override
     public FlowComponent addChildren(IWidget widget) {
         if (widget instanceof Menu) {
-            return addChildren(widget);
+            return addChildren((Menu) widget);
         } else {
             throw new IllegalArgumentException("Flow components do not accept new child widgets with type other than Menu");
         }
@@ -464,15 +451,10 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         renameButton.render(mouseX, mouseY, particleTicks);
         submitButton.render(mouseX, mouseY, particleTicks);
         cancelButton.render(mouseX, mouseY, particleTicks);
-        name.render(mouseX, mouseY, particleTicks);
+        nameBox.render(mouseX, mouseY, particleTicks);
         inputNodes.render(mouseX, mouseY, particleTicks);
         outputNodes.render(mouseX, mouseY, particleTicks);
-
-        if (state == State.EXPANDED) {
-            for (Menu menu : menuComponents) {
-                menu.render(mouseX, mouseY, particleTicks);
-            }
-        }
+        menus.render(mouseX, mouseY, particleTicks);
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
@@ -480,9 +462,11 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (super.mouseClicked(mouseX, mouseY, button)) {
+            clearDrag();
             return true;
         }
         if (!isInside(mouseX, mouseY)) {
+            clearDrag();
             return false;
         }
 
@@ -498,12 +482,24 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (isFocused()) {
+        if (submitButton.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+            return true;
+        }
+        if (isFocused() && isDragging()) {
             EditorPanel parent = getParentWidget();
             setLocation((int) mouseX - parent.getAbsoluteX() - initialDragLocalX, (int) mouseY - parent.getAbsoluteY() - initialDragLocalY);
             return true;
         }
         return false;
+    }
+
+    private void clearDrag() {
+        initialDragLocalX = -1;
+        initialDragLocalY = -1;
+    }
+
+    private boolean isDragging() {
+        return initialDragLocalX != -1 && initialDragLocalY != -1;
     }
 
     public void setParentWidget(EditorPanel parent) {

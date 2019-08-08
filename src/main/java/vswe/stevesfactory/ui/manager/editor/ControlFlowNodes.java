@@ -282,11 +282,6 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         }
     }
 
-    public void updateTo(FlowComponent.State newState) {
-        setWidth(newState.dimensions.width);
-        reflow();
-    }
-
     @Override
     public ImmutableList<Node> getChildren() {
         return nodes;

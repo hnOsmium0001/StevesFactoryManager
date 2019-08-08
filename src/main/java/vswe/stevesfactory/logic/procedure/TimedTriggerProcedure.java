@@ -8,6 +8,7 @@ import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.hooks.ITimedTask;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
+import vswe.stevesfactory.ui.manager.menu.IntervalMenu;
 
 import javax.annotation.Nullable;
 
@@ -52,12 +53,14 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
     }
 
     public static TimedTriggerProcedure deserialize(CompoundNBT tag) {
-        TimedTriggerProcedure p = new TimedTriggerProcedure(getController(tag));
+        TimedTriggerProcedure p = new TimedTriggerProcedure(readController(tag));
         p.interval = tag.getInt("Interval");
         return p;
     }
 
     public static FlowComponent createFlowComponent(TimedTriggerProcedure procedure) {
-        return new FlowComponent(1, 1) {};
+        FlowComponent f = Procedures.TRIGGER.factory.createWidgetDefault(procedure, 0, 1);
+        f.getMenusBox().addChildren(new IntervalMenu());
+        return f;
     }
 }

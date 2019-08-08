@@ -118,7 +118,7 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     }
 
     public static SingletonItemTransferProcedure deserialize(CompoundNBT tag) {
-        SingletonItemTransferProcedure p = new SingletonItemTransferProcedure(getController(tag));
+        SingletonItemTransferProcedure p = new SingletonItemTransferProcedure(readController(tag));
 
         p.sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
         p.sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
@@ -129,7 +129,6 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     }
 
     public static FlowComponent createFlowComponent(SingletonItemTransferProcedure procedure) {
-
-        return new FlowComponent(1, 1) {};
+        return Procedures.SINGLETON_ITEM_TRANSFER.factory.createWidgetDefault(procedure);
     }
 }

@@ -26,7 +26,7 @@ public abstract class AbstractProcedure implements IProcedure {
         this.nexts = new IProcedure[possibleChildren];
     }
 
-    public INetworkController getController() {
+    public INetworkController readController() {
         Preconditions.checkArgument(!controller.isRemoved(), "The controller object is invalid!");
         return controller;
     }
@@ -39,6 +39,14 @@ public abstract class AbstractProcedure implements IProcedure {
     @Override
     public IProcedure[] nexts() {
         return nexts;
+    }
+
+    public IProcedureType<?> getType() {
+        return type;
+    }
+
+    public INetworkController getController() {
+        return controller;
     }
 
     /**
@@ -56,33 +64,33 @@ public abstract class AbstractProcedure implements IProcedure {
         return tag;
     }
 
-    public static IProcedureType<?> getType(CompoundNBT tag) {
+    @Override
+    public ResourceLocation getRegistryName() {
+        return type.getRegistryName();
+    }
+
+    public static IProcedureType<?> readType(CompoundNBT tag) {
         ResourceLocation id = new ResourceLocation(tag.getString("ID"));
         return SFMAPI.getProceduresRegistry().getValue(id);
     }
 
-    public static BlockPos getControllerPos(CompoundNBT tag) {
+    public static BlockPos readControllerPos(CompoundNBT tag) {
         return NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
     }
 
-    public static DimensionType getDimensionType(CompoundNBT tag) {
+    public static DimensionType raedDimensionType(CompoundNBT tag) {
         return DimensionType.byName(new ResourceLocation(tag.getString("Dimension")));
     }
 
-    public static INetworkController getController(CompoundNBT tag) {
-        return getController(getDimensionType(tag), getControllerPos(tag));
+    public static INetworkController readController(CompoundNBT tag) {
+        return readController(raedDimensionType(tag), readControllerPos(tag));
     }
 
-    public static INetworkController getController(DimensionType dimensionType, BlockPos pos) {
+    public static INetworkController readController(DimensionType dimensionType, BlockPos pos) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null) {
             return (INetworkController) server.getWorld(dimensionType).getTileEntity(pos);
         }
         return (INetworkController) Minecraft.getInstance().world.getTileEntity(pos);
-    }
-
-    @Override
-    public ResourceLocation getRegistryName() {
-        return type.getRegistryName();
     }
 }

@@ -86,7 +86,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     public void activate(PlayerEntity player) {
         StevesFactoryManager.logger.trace("Player {} activated a factory manager at {}", player, pos);
-        Procedures.TRIGGER.getFactory().createInstance(this);
         search();
     }
 

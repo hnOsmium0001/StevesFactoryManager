@@ -139,28 +139,24 @@ public final class RenderingHelper {
     }
 
     public static void drawVerticalGradientRect(int x1, int y1, int x2, int y2, int color1, int color2) {
-        float f = color1 >> 24 & 255;
-        float f1 = color1 >> 16 & 255;
-        float f2 = color1 >> 8 & 255;
-        float f3 = color1 & 255;
-        float f4 = color2 >> 24 & 255;
-        float f5 = color2 >> 16 & 255;
-        float f6 = color2 >> 8 & 255;
-        float f7 = color2 & 255;
+        int a1 = (color1 >> 24) & 255;
+        int r1 = (color1 >> 16) & 255;
+        int g1 = (color1 >> 8) & 255;
+        int b1 = color1 & 255;
+        int a2 = (color2 >> 24) & 255;
+        int r2 = (color2 >> 16) & 255;
+        int g2 = (color2 >> 8) & 255;
+        int b2 = color2 & 255;
 
-        GlStateManager.disableTexture();
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
-        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        useGradientGLStates();
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(x2, y1, 0F).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x1, y1, 0F).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x1, y2, 0F).color(f5, f6, f7, f4).endVertex();
-        buffer.pos(x2, y2, 0F).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x2, y1, 0F).color(r1, g1, b1, a1).endVertex();
+        buffer.pos(x1, y1, 0F).color(r1, g1, b1, a1).endVertex();
+        buffer.pos(x1, y2, 0F).color(r2, g2, b2, a2).endVertex();
+        buffer.pos(x2, y2, 0F).color(r2, g2, b2, a2).endVertex();
         tessellator.draw();
 
         GlStateManager.shadeModel(GL11.GL_FLAT);
@@ -170,28 +166,24 @@ public final class RenderingHelper {
     }
 
     public static void drawHorizontalGradientRect(int x1, int y1, int x2, int y2, int color1, int color2) {
-        float f = color1 >> 24 & 255;
-        float f1 = color1 >> 16 & 255;
-        float f2 = color1 >> 8 & 255;
-        float f3 = color1 & 255;
-        float f4 = color2 >> 24 & 255;
-        float f5 = color2 >> 16 & 255;
-        float f6 = color2 >> 8 & 255;
-        float f7 = color2 & 255;
+        int a1 = (color1 >> 24) & 255;
+        int r1 = (color1 >> 16) & 255;
+        int g1 = (color1 >> 8) & 255;
+        int b1 = color1 & 255;
+        int a2 = (color2 >> 24) & 255;
+        int r2 = (color2 >> 16) & 255;
+        int g2 = (color2 >> 8) & 255;
+        int b2 = color2 & 255;
 
-        GlStateManager.disableTexture();
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
-        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        useGradientGLStates();
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(x1, y1, 0F).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x1, y2, 0F).color(f1, f2, f3, f).endVertex();
-        buffer.pos(x2, y2, 0F).color(f5, f6, f7, f4).endVertex();
-        buffer.pos(x2, y1, 0F).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(x1, y1, 0F).color(r1, g1, b1, a1).endVertex();
+        buffer.pos(x1, y2, 0F).color(r1, g1, b1, a1).endVertex();
+        buffer.pos(x2, y2, 0F).color(r2, g2, b2, a2).endVertex();
+        buffer.pos(x2, y1, 0F).color(r2, g2, b2, a2).endVertex();
         tessellator.draw();
 
         GlStateManager.shadeModel(GL11.GL_FLAT);

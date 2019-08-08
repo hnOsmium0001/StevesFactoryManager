@@ -105,4 +105,16 @@ public class NumberField<V extends Number> extends ExceptionBasedValueField<V> {
         super.setBackgroundStyle(backgroundStyle);
         return this;
     }
+
+    @Override
+    public NumberField<V> setBackgroundStyle(BackgroundStyle backgroundStyle) {
+        super.setBackgroundStyle(backgroundStyle);
+        return this;
+    }
+
+    @Override
+    public NumberField<V> setTextColor(int textColor, int textColorUneditable) {
+        super.setTextColor(textColor, textColorUneditable);
+        return this;
+    }
 }

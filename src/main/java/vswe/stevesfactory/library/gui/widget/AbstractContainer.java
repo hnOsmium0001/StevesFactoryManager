@@ -40,6 +40,18 @@ public abstract class AbstractContainer<T extends IWidget> extends AbstractWidge
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void onParentPositionChanged() {
+        super.onParentPositionChanged();
+        notifyChildrenForPositionChange();
+    }
+
+    @Override
+    public void onRelativePositionChanged() {
+        super.onRelativePositionChanged();
+        notifyChildrenForPositionChange();
+    }
+
     public void adjustMinContent() {
         if (getChildren().isEmpty()) {
             return;
