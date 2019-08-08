@@ -12,8 +12,7 @@ import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.DummyProcedure;
 import vswe.stevesfactory.library.logic.SimpleProcedureType;
-import vswe.stevesfactory.logic.procedure.BatchedItemTransferProcedure;
-import vswe.stevesfactory.logic.procedure.SingletonItemTransferProcedure;
+import vswe.stevesfactory.logic.procedure.*;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.util.Arrays;
@@ -21,7 +20,7 @@ import java.util.function.Function;
 
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
 public enum Procedures {
-    TRIGGER("trigger", DummyProcedure::new, DummyProcedure::deserialize),
+    TRIGGER("trigger", TimedTriggerProcedure::new, TimedTriggerProcedure::deserialize),
     SINGLETON_ITEM_TRANSFER("singleton_item_transfer", SingletonItemTransferProcedure::new, SingletonItemTransferProcedure::deserialize),
     BATCHED_ITEM_TRANSFER("batched_item_transfer", BatchedItemTransferProcedure::new, BatchedItemTransferProcedure::deserialize),
 //    ITEM_IMPORT("item_import", DummyProcedure::new),

@@ -14,6 +14,7 @@ import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
+import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.SlotlessItemHandlerWrapper;
 
@@ -29,7 +30,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
     private List<Direction> targetDirections;
 
     public BatchedItemTransferProcedure(INetworkController controller) {
-        super(controller, 1);
+        super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), controller, 1);
     }
 
     @Nullable
@@ -132,9 +133,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
     }
 
     public static BatchedItemTransferProcedure deserialize(CompoundNBT tag) {
-        BlockPos controllerPos = getControllerPos(tag);
-        INetworkController controller = null;
-        BatchedItemTransferProcedure p = new BatchedItemTransferProcedure(controller);
+        BatchedItemTransferProcedure p = new BatchedItemTransferProcedure(getController(tag));
 
         p.sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         p.sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));

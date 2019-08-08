@@ -11,6 +11,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
@@ -141,6 +142,12 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         }
 
         logger.debug("======== Finished dumping Factory Manager ========");
+    }
+
+    @Override
+    public DimensionType getDimension() {
+        assert world != null;
+        return world.getDimension().getType();
     }
 
     @Override

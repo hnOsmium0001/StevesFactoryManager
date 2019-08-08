@@ -42,7 +42,7 @@ public class FactoryManagerGUI extends WidgetScreen {
     public static final float WIDTH_PROPORTION = 2F / 3F;
     public static final float HEIGHT_PROPORTION = 3F / 4F;
 
-    private BlockPos controllerPos;
+    public BlockPos controllerPos;
 
     public FactoryManagerGUI(BlockPos controllerPos) {
         super(new TranslationTextComponent("gui.sfm.factoryManager.title"));

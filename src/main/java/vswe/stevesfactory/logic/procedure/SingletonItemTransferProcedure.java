@@ -13,6 +13,7 @@ import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
+import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.utils.IOHelper;
 
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     private List<Direction> targetDirections = new ArrayList<>();
 
     public SingletonItemTransferProcedure(INetworkController controller) {
-        super(controller, 1);
+        super(Procedures.SINGLETON_ITEM_TRANSFER.getFactory(), controller, 1);
     }
 
     @Nullable
@@ -116,9 +117,7 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     }
 
     public static SingletonItemTransferProcedure deserialize(CompoundNBT tag) {
-        BlockPos controllerPos = getControllerPos(tag);
-        INetworkController controller = null;
-        SingletonItemTransferProcedure p = new SingletonItemTransferProcedure(controller);
+        SingletonItemTransferProcedure p = new SingletonItemTransferProcedure(getController(tag));
 
         p.sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
         p.sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));

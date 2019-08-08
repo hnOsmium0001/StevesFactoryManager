@@ -1,14 +1,20 @@
 package vswe.stevesfactory.ui.manager.selection;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
+import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.components.EditorPanel;
 import vswe.stevesfactory.ui.manager.components.FlowComponent;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -52,8 +58,9 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         EditorPanel editorPanel = getParentWidget().getParentWidget().editorPanel;
         // TODO actual instance transferring between sides
-        FlowComponent flowComponent = component.createWidget(component.createInstance(null));
-        flowComponent.setName(I18n.format("logic.sfm." + component.getRegistryName().getPath()));
+        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).controllerPos;
+        INetworkController controller = (INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos);
+        FlowComponent flowComponent = component.createWidget(component.createInstance(controller));
         editorPanel.addChildren(flowComponent);
         return true;
     }

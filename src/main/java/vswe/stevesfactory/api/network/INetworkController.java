@@ -2,6 +2,7 @@ package vswe.stevesfactory.api.network;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.manager.IHook;
 import vswe.stevesfactory.api.manager.ITriggerHook;
@@ -10,6 +11,8 @@ import java.util.Collection;
 import java.util.Set;
 
 public interface INetworkController {
+
+    DimensionType getDimension();
 
     BlockPos getPos();
 

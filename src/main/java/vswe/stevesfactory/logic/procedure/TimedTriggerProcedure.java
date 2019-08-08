@@ -1,11 +1,11 @@
 package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
+import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.hooks.ITimedTask;
 
 import javax.annotation.Nullable;
@@ -15,7 +15,7 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
     private int interval;
 
     public TimedTriggerProcedure(INetworkController controller) {
-        super(controller, 1);
+        super(Procedures.TRIGGER.getFactory(), controller, 1);
     }
 
     @Nullable
@@ -51,10 +51,7 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
     }
 
     public static TimedTriggerProcedure deserialize(CompoundNBT tag) {
-        BlockPos controllerPos = getControllerPos(tag);
-        INetworkController controller = null;
-
-        TimedTriggerProcedure p = new TimedTriggerProcedure(controller);
+        TimedTriggerProcedure p = new TimedTriggerProcedure(getController(tag));
         p.interval = tag.getInt("Interval");
         return p;
     }

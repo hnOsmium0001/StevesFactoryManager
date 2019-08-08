@@ -16,6 +16,8 @@
 
   // Procedure types
   "logic.sfm.trigger": "Trigger",
+  "logic.sfm.singleton_item_transfer": "Item Transfer (S)",
+  "logic.sfm.batched_item_transfer": "Item Transfer (B)",
   "logic.sfm.item_import": "Input",
   "logic.sfm.item_export": "Output",
   "logic.sfm.item_condition": "Condition",

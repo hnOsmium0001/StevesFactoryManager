@@ -1,6 +1,7 @@
 package vswe.stevesfactory.library.logic;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -10,6 +11,7 @@ import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.ui.manager.components.FlowComponent;
 
 import javax.annotation.Nonnull;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntry<IProcedureType<?>> implements IProcedureType<P> {
@@ -18,6 +20,12 @@ public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntr
     private final ResourceLocation icon;
 
     private final Function<CompoundNBT, P> retriever;
+
+    public SimpleProcedureType(BiFunction<IProcedureType<P>, INetworkController, P> constructor, Function<CompoundNBT, P> retriever, ResourceLocation icon) {
+        this.constructor = c -> constructor.apply(this, c);
+        this.icon = icon;
+        this.retriever = retriever;
+    }
 
     public SimpleProcedureType(Function<INetworkController, P> constructor, Function<CompoundNBT, P> retriever, ResourceLocation icon) {
         this.constructor = constructor;
@@ -43,8 +51,9 @@ public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntr
 
     @Override
     public FlowComponent createWidget(P procedure) {
-        return new FlowComponent(1, 1) {
-        };
+        FlowComponent component = new FlowComponent(1, 1) {};
+        component.setName(I18n.format("logic.sfm." + getRegistryNameNonnull().getPath()));
+        return component;
     }
 
     @Nonnull
