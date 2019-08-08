@@ -342,8 +342,9 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         this.outputNodes = ControlFlowNodes.outputNodes(amountOutputNodes);
         this.menus = new Box<>(2, 20, 120, 130);
         this.menus.setLayout(m -> {
-            if (menus.isEnabled())
-                FlowLayout.INSTANCE.reflow(menus.getDimensions(), m);
+            if (menus.isEnabled()) {
+                FlowLayout.reflow(m);
+            }
         });
         this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, inputNodes, outputNodes, menus);
 

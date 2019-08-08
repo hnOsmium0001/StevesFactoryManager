@@ -2,33 +2,57 @@ package vswe.stevesfactory.library.gui.layout;
 
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
+import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
+import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.utils.Utils;
 
 import java.awt.*;
 import java.util.List;
 
 public class FlowLayout {
 
-    public static final FlowLayout INSTANCE = new FlowLayout();
-
-    protected FlowLayout() {
+    private FlowLayout() {
     }
 
-    public <T extends IWidget & RelocatableWidgetMixin> List<T> reflow(Dimension bounds, List<T> widgets) {
+    public static <T extends IWidget & RelocatableWidgetMixin> List<T> reflow(List<T> widgets) {
+        return reflow(widgets, 0);
+    }
+
+    public static <T extends IWidget & RelocatableWidgetMixin> List<T> reflow(List<T> widgets, int x) {
         int y = 0;
         for (T widget : widgets) {
             if (BoxSizing.shouldIncludeWidget(widget)) {
-                adjustPosition(widget, y);
+                widget.setLocation(x, y);
                 y += widget.getHeight();
             }
         }
         return widgets;
     }
 
-    /**
-     * This method is to be overridden to provide more functionality when reflow.
-     */
-    public <T extends IWidget & RelocatableWidgetMixin> void adjustPosition(T widget, int y) {
-        widget.setY(y);
+    public static <T extends IWidget & RelocatableWidgetMixin> List<T> reflow(Dimension bounds, HorizontalAlignment alignment, List<T> widgets) {
+        int y = 0;
+        for (T widget : widgets) {
+            if (BoxSizing.shouldIncludeWidget(widget)) {
+                switch (alignment) {
+                    case LEFT: {
+                        widget.setLocation(0, y);
+                        break;
+                    }
+                    case CENTER: {
+                        int x = RenderingHelper.getXForAlignedCenter(0, bounds.width, widget.getWidth());
+                        widget.setLocation(x, y);
+                        break;
+                    }
+                    case RIGHT: {
+                        int x = RenderingHelper.getXForAlignedRight(bounds.width, widget.getWidth());
+                        widget.setLocation(Utils.lowerBound(x, 0), y);
+                        break;
+                    }
+                }
+                y += widget.getHeight();
+            }
+        }
+        return widgets;
     }
 }

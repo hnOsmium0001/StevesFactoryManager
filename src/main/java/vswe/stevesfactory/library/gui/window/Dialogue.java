@@ -185,7 +185,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         buttons.reflow();
         buttons.adjustMinContent();
 
-        FlowLayout.INSTANCE.reflow(getContentDimensions(), children);
+        FlowLayout.reflow(children);
 
         updateDimensions();
         notifyChildren();

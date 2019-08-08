@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.widget;
 
+import javafx.geometry.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import vswe.stevesfactory.library.gui.IWidget;
@@ -8,8 +9,10 @@ import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
+import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
+import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -165,6 +168,88 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
 
     public int getAbsoluteYBR() {
         return getAbsoluteY() + getHeight();
+    }
+
+    public void alignTo(IWidget other, Side side, HorizontalAlignment alignment) {
+        if (this.getParentWidget() != other.getParentWidget()) {
+            return;
+        }
+
+        int otherLeft = other.getX();
+        int otherTop = other.getY();
+        int otherRight = otherLeft + other.getWidth();
+        int otherBottom = otherTop + other.getHeight();
+
+        switch (side) {
+            case TOP:
+                alignBottom(otherTop);
+                alignHorizontally(alignment, otherLeft, otherRight);
+                break;
+            case BOTTOM:
+                alignTop(otherBottom);
+                alignHorizontally(alignment, otherLeft, otherRight);
+                break;
+            case LEFT:
+                alignRight(otherLeft);
+                alignVertically(alignment, otherTop, otherBottom);
+                break;
+            case RIGHT:
+                alignLeft(otherRight);
+                alignVertically(alignment, otherTop, otherBottom);
+                break;
+        }
+    }
+
+    private void alignHorizontally(HorizontalAlignment alignment, int left, int right) {
+        switch (alignment) {
+            case LEFT:
+                alignLeft(left);
+                break;
+            case CENTER:
+                alignCenterX(left, right);
+                break;
+            case RIGHT:
+                alignRight(right);
+                break;
+        }
+    }
+
+    private void alignVertically(HorizontalAlignment alignment, int top, int bottom) {
+        switch (alignment) {
+            case LEFT:
+                alignTop(top);
+                break;
+            case CENTER:
+                alignCenterY(top, bottom);
+                break;
+            case RIGHT:
+                alignBottom(bottom);
+                break;
+        }
+    }
+
+    public void alignLeft(int left) {
+        setX(left);
+    }
+
+    public void alignCenterX(int left, int right) {
+        setX(RenderingHelper.getXForAlignedCenter(left, right, getWidth()));
+    }
+
+    public void alignRight(int right) {
+        setX(RenderingHelper.getXForAlignedRight(right, getWidth()));
+    }
+
+    public void alignTop(int top) {
+        setY(top);
+    }
+
+    public void alignCenterY(int top, int bottom) {
+        setY(RenderingHelper.getYForAlignedCenter(top, bottom, getHeight()));
+    }
+
+    public void alignBottom(int bottom) {
+        setY(RenderingHelper.getYForAlignedBottom(bottom, getHeight()));
     }
 
     @Override
