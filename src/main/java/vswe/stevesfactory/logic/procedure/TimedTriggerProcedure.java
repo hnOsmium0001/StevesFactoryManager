@@ -7,6 +7,7 @@ import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.hooks.ITimedTask;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import javax.annotation.Nullable;
 
@@ -54,5 +55,9 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
         TimedTriggerProcedure p = new TimedTriggerProcedure(getController(tag));
         p.interval = tag.getInt("Interval");
         return p;
+    }
+
+    public static FlowComponent createFlowComponent(TimedTriggerProcedure procedure) {
+        return new FlowComponent(1, 1) {};
     }
 }

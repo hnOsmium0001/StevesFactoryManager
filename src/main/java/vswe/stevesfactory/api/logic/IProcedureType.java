@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.ui.manager.components.FlowComponent;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 public interface IProcedureType<P extends IProcedure> extends IForgeRegistryEntry<IProcedureType<?>> {
 

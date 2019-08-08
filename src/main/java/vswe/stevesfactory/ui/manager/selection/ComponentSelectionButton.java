@@ -1,8 +1,6 @@
 package vswe.stevesfactory.ui.manager.selection;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import vswe.stevesfactory.StevesFactoryManager;
@@ -15,8 +13,8 @@ import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.components.EditorPanel;
-import vswe.stevesfactory.ui.manager.components.FlowComponent;
+import vswe.stevesfactory.ui.manager.editor.EditorPanel;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;

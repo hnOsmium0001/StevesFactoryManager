@@ -1,4 +1,4 @@
-package vswe.stevesfactory.ui.manager.components;
+package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
+import static vswe.stevesfactory.ui.manager.editor.ControlFlowNodes.Node;
 
 public class ControlFlowNodes extends AbstractContainer<Node> implements ResizableWidgetMixin {
 

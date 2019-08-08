@@ -9,7 +9,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
@@ -21,8 +20,8 @@ import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
-import vswe.stevesfactory.ui.manager.components.DynamicWidthWidget;
-import vswe.stevesfactory.ui.manager.components.EditorPanel;
+import vswe.stevesfactory.ui.manager.editor.DynamicWidthWidget;
+import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
 import vswe.stevesfactory.utils.RenderingHelper;
 

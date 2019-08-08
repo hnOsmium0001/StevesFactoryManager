@@ -1,4 +1,4 @@
-package vswe.stevesfactory.ui.manager.components;
+package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import vswe.stevesfactory.library.gui.IWidget;

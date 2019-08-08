@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import vswe.stevesfactory.api.manager.ITriggerHook;
 import vswe.stevesfactory.api.network.INetworkController;
 
-public class TimedTriggerHook implements ITriggerHook<ITimedTask> {
+public class IntervalTriggerHook implements ITriggerHook<ITimedTask> {
 
     private Object2LongMap<ITimedTask> tasks = new Object2LongOpenHashMap<>();
 

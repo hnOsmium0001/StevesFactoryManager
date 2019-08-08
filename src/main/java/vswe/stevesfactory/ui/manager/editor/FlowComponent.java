@@ -1,4 +1,4 @@
-package vswe.stevesfactory.ui.manager.components;
+package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -16,7 +16,7 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
-import vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
+import vswe.stevesfactory.ui.manager.editor.ControlFlowNodes.Node;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;

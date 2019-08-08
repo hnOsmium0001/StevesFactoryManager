@@ -8,18 +8,20 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.ui.manager.components.FlowComponent;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntry<IProcedureType<?>> implements IProcedureType<P> {
 
     private final Function<INetworkController, P> constructor;
+    private final Function<CompoundNBT, P> retriever;
     private final ResourceLocation icon;
 
-    private final Function<CompoundNBT, P> retriever;
+    private Function<P, FlowComponent> flowComponentFactory = this::createWidgetDefault;
 
     public SimpleProcedureType(BiFunction<IProcedureType<P>, INetworkController, P> constructor, Function<CompoundNBT, P> retriever, ResourceLocation icon) {
         this.constructor = c -> constructor.apply(this, c);
@@ -51,6 +53,26 @@ public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntr
 
     @Override
     public FlowComponent createWidget(P procedure) {
+        return flowComponentFactory.apply(procedure);
+    }
+
+    public Function<P, FlowComponent> getFlowComponentFactory() {
+        return flowComponentFactory;
+    }
+
+    public void setFlowComponentFactory(@Nullable Function<P, FlowComponent> flowComponentFactory) {
+        if (flowComponentFactory == null) {
+            resetFlowComponentFactory();
+        } else {
+            this.flowComponentFactory = flowComponentFactory;
+        }
+    }
+
+    public void resetFlowComponentFactory() {
+        this.flowComponentFactory = this::createWidgetDefault;
+    }
+
+    private FlowComponent createWidgetDefault(P procedure) {
         FlowComponent component = new FlowComponent(1, 1) {};
         component.setName(I18n.format("logic.sfm." + getRegistryNameNonnull().getPath()));
         return component;

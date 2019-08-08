@@ -1,11 +1,11 @@
-package vswe.stevesfactory.ui.manager.components;
+package vswe.stevesfactory.ui.manager.editor;
 
 import mcp.MethodsReturnNonnullByDefault;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
-import vswe.stevesfactory.ui.manager.components.ControlFlowNodes.Node;
+import vswe.stevesfactory.ui.manager.editor.ControlFlowNodes.Node;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;

@@ -14,6 +14,7 @@ import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.utils.IOHelper;
 
 import javax.annotation.Nullable;
@@ -125,5 +126,10 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
         p.targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
 
         return p;
+    }
+
+    public static FlowComponent createFlowComponent(SingletonItemTransferProcedure procedure) {
+
+        return new FlowComponent(1, 1) {};
     }
 }

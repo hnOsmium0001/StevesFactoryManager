@@ -1,11 +1,9 @@
 package vswe.stevesfactory.blocks.manager;
 
 import com.google.common.collect.*;
-import com.google.common.reflect.TypeToInstanceMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -16,17 +14,17 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.manager.IHook;
 import vswe.stevesfactory.api.manager.ITriggerHook;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
-import vswe.stevesfactory.network.NetworkHandler;
-import vswe.stevesfactory.network.PacketTransferLinkedInventories;
+import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.execution.ProcedureExecutor;
+import vswe.stevesfactory.logic.hooks.ITimedTask;
+import vswe.stevesfactory.logic.hooks.IntervalTriggerHook;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.*;
 import java.util.*;
 
 @MethodsReturnNonnullByDefault
@@ -53,6 +51,13 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public void onLoad() {
         super.onLoad();
         linkingStatus = new LinkingStatus(pos);
+
+        assert world != null;
+        if (!world.isRemote) {
+            if (!connectedCables.contains(pos)) {
+                addCableToNetwork(this, pos);
+            }
+        }
     }
 
     @Override
@@ -69,12 +74,19 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public void tick() {
         assert world != null;
         if (!world.isRemote) {
-            // TODO logic
+            for (Object value : triggerHooks.values()) {
+                // Type is checked on value put
+                @SuppressWarnings("unchecked") Set<ITriggerHook<?>> set = (Set<ITriggerHook<?>>) value;
+                for (ITriggerHook<?> hook : set) {
+                    hook.tick(this);
+                }
+            }
         }
     }
 
     public void activate(PlayerEntity player) {
         StevesFactoryManager.logger.trace("Player {} activated a factory manager at {}", player, pos);
+        Procedures.TRIGGER.getFactory().createInstance(this);
         search();
     }
 
@@ -150,25 +162,32 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         return world.getDimension().getType();
     }
 
+    @Nonnull
     @Override
-    public Set<IHook> getHooks() {
-        // TODO
-        return ImmutableSet.of();
-    }
-
     @SuppressWarnings("unchecked") // Checked on value put
-    @Override
     public <T> Set<ITriggerHook<T>> getTypedHooks(Class<T> typeClass) {
-        return (Set<ITriggerHook<T>>) triggerHooks.get(typeClass);
+        assert world != null;
+        if (world.isRemote) {
+            return ImmutableSet.of();
+        }
+
+        Set<ITriggerHook<T>> hooks = (Set<ITriggerHook<T>>) triggerHooks.get(typeClass);
+        if (hooks == null) {
+            Set<ITriggerHook<T>> set = new HashSet<>();
+            triggerHooks.put(typeClass, set);
+            return set;
+        }
+        return hooks;
     }
 
+    @Override
     public <T> void addTypedHook(Class<T> typeClass, ITriggerHook<T> hook) {
-        if (triggerHooks.containsKey(typeClass)) {
-            getTypedHooks(typeClass).add(hook);
+        assert world != null;
+        if (world.isRemote) {
+            return;
         }
-        Set<ITriggerHook<T>> set = new HashSet<>();
-        set.add(hook);
-        triggerHooks.put(typeClass, set);
+
+        getTypedHooks(typeClass).add(hook);
     }
 
     @Override
@@ -210,7 +229,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public void beginExecution(IProcedure hat) {
-        // TODO
+        new ProcedureExecutor(this, world).start(hat);
     }
 
     /**
@@ -246,6 +265,8 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         if (network != this) {
             updateLinks();
             neighborInventories.forEach(network::addLink);
+        } else {
+            addTypedHook(ITimedTask.class, new IntervalTriggerHook());
         }
     }
 
@@ -291,10 +312,5 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         compound.put(KEY_LINKED_INVENTORIES, serializedInventories);
 
         return super.write(compound);
-    }
-
-    public void sendLinkingDataToClient(ServerPlayerEntity client) {
-        PacketTransferLinkedInventories pkt = new PacketTransferLinkedInventories(pos, linkedInventories);
-        NetworkHandler.sendTo(client, pkt);
     }
 }

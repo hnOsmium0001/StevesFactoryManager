@@ -10,19 +10,36 @@ import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.library.logic.DummyProcedure;
 import vswe.stevesfactory.library.logic.SimpleProcedureType;
 import vswe.stevesfactory.logic.procedure.*;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.utils.RenderingHelper;
 
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.function.Function;
 
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
-public enum Procedures {
-    TRIGGER("trigger", TimedTriggerProcedure::new, TimedTriggerProcedure::deserialize),
-    SINGLETON_ITEM_TRANSFER("singleton_item_transfer", SingletonItemTransferProcedure::new, SingletonItemTransferProcedure::deserialize),
-    BATCHED_ITEM_TRANSFER("batched_item_transfer", BatchedItemTransferProcedure::new, BatchedItemTransferProcedure::deserialize),
+public final class Procedures<P extends IProcedure> {
+
+    public static final Procedures<TimedTriggerProcedure> TRIGGER = new Procedures<>(
+            "trigger",
+            TimedTriggerProcedure::new,
+            TimedTriggerProcedure::deserialize,
+            TimedTriggerProcedure::createFlowComponent);
+
+    public static final Procedures<SingletonItemTransferProcedure> SINGLETON_ITEM_TRANSFER = new Procedures<>(
+            "singleton_item_transfer",
+            SingletonItemTransferProcedure::new,
+            SingletonItemTransferProcedure::deserialize,
+            SingletonItemTransferProcedure::createFlowComponent);
+
+    public static final Procedures<BatchedItemTransferProcedure> BATCHED_ITEM_TRANSFER = new Procedures<>(
+            "batched_item_transfer",
+            BatchedItemTransferProcedure::new,
+            BatchedItemTransferProcedure::deserialize,
+            BatchedItemTransferProcedure::createFlowComponent);
+
 //    ITEM_IMPORT("item_import", DummyProcedure::new),
 //    ITEM_EXPORT("item_export", DummyProcedure::new),
 //    ITEM_CONDITION("item_condition", DummyProcedure::new),
@@ -39,15 +56,19 @@ public enum Procedures {
 //    CAMOUFLAGE("camouflage", DummyProcedure::new),
 //    SIGN_UPDATER("sign_updater", DummyProcedure::new),
 //    CONFIGURATIONS("configurations", DummyProcedure::new),
-    ;
 
     public final String id;
-    public final IProcedureType<IProcedure> factory;
+    public final SimpleProcedureType<P> factory;
 
-    Procedures(String id, Function<INetworkController, IProcedure> constructor, Function<CompoundNBT, IProcedure> retriever) {
+    private Procedures(String id, Function<INetworkController, P> constructor, Function<CompoundNBT, P> retriever) {
+        this(id, constructor, retriever, null);
+    }
+
+    private Procedures(String id, Function<INetworkController, P> constructor, Function<CompoundNBT, P> retriever, Function<P, FlowComponent> flowComponentFactory) {
         this.id = id;
-        this.factory = new SimpleProcedureType<>(constructor, retriever, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
+        this.factory = new SimpleProcedureType<P>(constructor, retriever, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
         this.factory.setRegistryName(new ResourceLocation(StevesFactoryManager.MODID, id));
+        this.factory.setFlowComponentFactory(flowComponentFactory);
     }
 
     public String getPathComponent() {
@@ -62,7 +83,16 @@ public enum Procedures {
         return factory;
     }
 
-    private static final IProcedureType<?>[] FACTORIES = Arrays.stream(values())
+    private static final IProcedureType<?>[] FACTORIES = Arrays.stream(Procedures.class.getDeclaredFields())
+            .filter(f -> Modifier.isStatic(f.getModifiers()))
+            .filter(f -> f.getType() == Procedures.class)
+            .map(f -> {
+                try {
+                    return (Procedures<?>) f.get(null);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            })
             .map(Procedures::getFactory)
             .toArray(IProcedureType[]::new);
 

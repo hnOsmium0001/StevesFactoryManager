@@ -1,7 +1,7 @@
-package vswe.stevesfactory.ui.manager.components;
+package vswe.stevesfactory.ui.manager.editor;
 
-import com.google.common.collect.ImmutableList;
-import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
@@ -10,8 +10,6 @@ import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
-import java.util.List;
 import java.util.*;
 
 public abstract class Menu extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
@@ -90,7 +88,10 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
         // Start at a collapsed state
         super(0, 0, HEADING_BOX.getPortionWidth(), HEADING_BOX.getPortionHeight());
         this.toggleStateButton = new ToggleStateButton(this);
-        this.children = ImmutableList.of(toggleStateButton);
+        this.children = new ArrayList<>();
+        {
+            children.add(toggleStateButton);
+        }
     }
 
     @Override
@@ -103,13 +104,15 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
     }
 
     @Override
-    public IContainer<IWidget> addChildren(IWidget widget) {
-        throw new UnsupportedOperationException();
+    public Menu addChildren(IWidget widget) {
+        children.add(widget);
+        return this;
     }
 
     @Override
-    public IContainer<IWidget> addChildren(Collection<IWidget> widgets) {
-        throw new UnsupportedOperationException();
+    public Menu addChildren(Collection<IWidget> widgets) {
+        children.addAll(widgets);
+        return this;
     }
 
     public void toggleState() {
@@ -118,10 +121,19 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
 
     public void expand() {
         growHeight(getContentHeight());
+        updateChildrenEnableState(true);
     }
 
     public void collapse() {
         shrinkHeight(getContentHeight());
+        updateChildrenEnableState(false);
+    }
+
+    private void updateChildrenEnableState(boolean state) {
+        for (int i = 1; i < children.size(); i++) {
+            IWidget child = children.get(i);
+            child.setEnabled(state);
+        }
     }
 
     public void growHeight(int growth) {
@@ -152,9 +164,14 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         HEADING_BOX.draw(getAbsoluteX(), getAbsoluteY());
         renderHeadingText();
-        toggleStateButton.render(mouseX, mouseY, particleTicks);
+
         if (state == State.EXPANDED) {
             renderContents(mouseX, mouseY, particleTicks);
+            for (IWidget child : children) {
+                child.render(mouseX, mouseY, particleTicks);
+            }
+        } else {
+            toggleStateButton.render(mouseX, mouseY, particleTicks);
         }
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
     }

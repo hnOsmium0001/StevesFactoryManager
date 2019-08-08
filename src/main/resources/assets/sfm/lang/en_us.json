@@ -14,6 +14,9 @@
   "gui.sfm.Dialogue.OK": "OK",
   "gui.sfm.Dialogue.Cancel": "Cancel",
 
+  "gui.sfm.General.Seconds": "second(s)",
+  "gui.sfm.General.Ticks": "ticks",
+
   // Procedure types
   "logic.sfm.trigger": "Trigger",
   "logic.sfm.singleton_item_transfer": "Item Transfer (S)",
@@ -32,5 +35,9 @@
   "logic.sfm.group": "Group",
   "logic.sfm.group_io": "Node",
   "logic.sfm.camouflage": "Camouflage",
-  "logic.sfm.sign_updater": "Sign"
+  "logic.sfm.sign_updater": "Sign",
+
+  // Menu texts
+  "gui.sfm.Menu.Interval": "Interval",
+  "gui.sfm.Menu.Interval.Info": "Time between this command is triggered"
 }
