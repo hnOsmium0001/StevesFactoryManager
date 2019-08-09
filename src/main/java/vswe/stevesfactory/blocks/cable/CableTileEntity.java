@@ -51,7 +51,7 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
     @Override
     public void updateLinks() {
         assert world != null;
-        StevesFactoryManager.logger.debug("Updating links of CableTileEntity at {}", pos);
+        StevesFactoryManager.logger.trace("Updating links of CableTileEntity at {}", pos);
         NetworkHelper.updateLinkType(world, linkingStatus);
 
         List<INetworkController> networks = getJoinedNetworkControllers();
@@ -65,7 +65,7 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
         }
         networks.forEach(network -> neighborInventories.forEach(network::addLink));
 
-        StevesFactoryManager.logger.debug("Updated links of the CableTileEntity. Result: {}", neighborInventories);
+        StevesFactoryManager.logger.trace("Updated links of the CableTileEntity. Result: {}", neighborInventories);
     }
 
     @Override
