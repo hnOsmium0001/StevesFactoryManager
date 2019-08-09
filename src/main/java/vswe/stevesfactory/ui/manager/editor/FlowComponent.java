@@ -3,6 +3,7 @@ package vswe.stevesfactory.ui.manager.editor;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
@@ -24,7 +25,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public abstract class FlowComponent extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
+public abstract class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
@@ -307,6 +308,8 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
     private static final ResourceLocation CUT_ICON = RenderingHelper.linkTexture("gui/actions/cut.png");
     private static final ResourceLocation PASTE_ICON = RenderingHelper.linkTexture("gui/actions/paste.png");
 
+    private P procedure;
+
     private int id;
 
     private final ToggleStateButton toggleStateButton;
@@ -316,7 +319,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
     private final TextField nameBox;
     private final ControlFlowNodes inputNodes;
     private final ControlFlowNodes outputNodes;
-    private final Box<Menu> menus;
+    private final Box<Menu<P>> menus;
     // A list that refers to all the widgets above
     private final List<IWidget> children;
 
@@ -328,8 +331,9 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
     private int initialDragLocalX;
     private int initialDragLocalY;
 
-    public FlowComponent(int amountInputsNodes, int amountOutputNodes) {
+    public FlowComponent(P procedure, int amountInputsNodes, int amountOutputNodes) {
         super(0, 0, 0, 0);
+        this.procedure = procedure;
         this.toggleStateButton = new ToggleStateButton(this);
         this.renameButton = new RenameButton(this);
         this.submitButton = new SubmitButton(this);
@@ -399,7 +403,7 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         return children;
     }
 
-    public Box<Menu> getMenusBox() {
+    public Box<Menu<P>> getMenusBox() {
         return menus;
     }
 
@@ -419,22 +423,24 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
         menus.reflow();
     }
 
-    public FlowComponent addChildren(Menu menu) {
-        menu.addChildren(menu);
+    public FlowComponent<P> addMenu(Menu<P> menu) {
+        menus.addChildren(menu);
+        menu.onLinkFlowComponent(this);
         return this;
     }
 
     @Override
-    public FlowComponent addChildren(IWidget widget) {
+    public FlowComponent<P> addChildren(IWidget widget) {
         if (widget instanceof Menu) {
-            return addChildren((Menu) widget);
+            @SuppressWarnings("unchecked") Menu<P> menu = (Menu<P>) widget;
+            return addMenu(menu);
         } else {
             throw new IllegalArgumentException("Flow components do not accept new child widgets with type other than Menu");
         }
     }
 
     @Override
-    public FlowComponent addChildren(Collection<IWidget> widgets) {
+    public FlowComponent<P> addChildren(Collection<IWidget> widgets) {
         for (IWidget widget : widgets) {
             addChildren(widget);
         }
@@ -564,6 +570,15 @@ public abstract class FlowComponent extends AbstractContainer<IWidget> implement
     @Override
     public int compareTo(IZIndexProvider that) {
         return this.getZIndex() - that.getZIndex();
+    }
+
+    public P getLinkedProcedure() {
+        return procedure;
+    }
+
+    public FlowComponent<P> setLinkedProcedure(P procedure) {
+        this.procedure = procedure;
+        return this;
     }
 
     @Override

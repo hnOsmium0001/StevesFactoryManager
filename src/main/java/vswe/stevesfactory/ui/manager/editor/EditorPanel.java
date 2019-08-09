@@ -13,13 +13,13 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public final class EditorPanel extends DynamicWidthWidget<FlowComponent> implements RelocatableContainerMixin<FlowComponent> {
+public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> implements RelocatableContainerMixin<FlowComponent<?>> {
 
     /**
      * This is a tree set (ordered set) because handling z-index of the flow components need things to be sorted.
      */
-    private TreeSet<FlowComponent> children = new TreeSet<>();
-    private Collection<FlowComponent> childrenView = new DescendingTreeSetBackedUnmodifiableCollection<>(children);
+    private TreeSet<FlowComponent<?>> children = new TreeSet<>();
+    private Collection<FlowComponent<?>> childrenView = new DescendingTreeSetBackedUnmodifiableCollection<>(children);
     private int nextZIndex = 0;
     private int nextID = 0;
 
@@ -31,12 +31,12 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
     }
 
     @Override
-    public Collection<FlowComponent> getChildren() {
+    public Collection<FlowComponent<?>> getChildren() {
         return childrenView;
     }
 
     @Override
-    public IContainer<FlowComponent> addChildren(FlowComponent widget) {
+    public IContainer<FlowComponent<?>> addChildren(FlowComponent<?> widget) {
         widget.setParentWidget(this);
         widget.setZIndex(nextZIndex());
         children.add(widget);
@@ -44,8 +44,8 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
     }
 
     @Override
-    public IContainer<FlowComponent> addChildren(Collection<FlowComponent> widgets) {
-        for (FlowComponent widget : widgets) {
+    public IContainer<FlowComponent<?>> addChildren(Collection<FlowComponent<?>> widgets) {
+        for (FlowComponent<?> widget : widgets) {
             widget.setParentWidget(this);
             widget.setZIndex(nextZIndex());
         }
@@ -61,7 +61,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
         }
 
         // Iterate in ascending order for rendering as a special case
-        for (FlowComponent child : children) {
+        for (FlowComponent<?> child : children) {
             child.render(mouseX, mouseY, particleTicks);
         }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
@@ -76,8 +76,8 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
         }
 
         // All other events will be iterated in descending order
-        for (FlowComponent child : getChildren()) {
-            // We know all child widgets are FlowComponent's, which are containers, therefore we can safely ignore whether the mouse is in box or not
+        for (FlowComponent<?> child : getChildren()) {
+            // We know all child widgets are FlowComponent<?>'s, which are containers, therefore we can safely ignore whether the mouse is in box or not
             if (child.mouseClicked(mouseX, mouseY, button)) {
                 raiseComponentToTop(child);
                 return true;
@@ -94,11 +94,11 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
     public void reflow() {
     }
 
-    public void removeFlowComponent(FlowComponent flowComponent) {
+    public void removeFlowComponent(FlowComponent<?> flowComponent) {
         children.remove(flowComponent);
     }
 
-    private void raiseComponentToTop(FlowComponent target) {
+    private void raiseComponentToTop(FlowComponent<?> target) {
         // Move the flow component to top by setting its z-index to the maximum z-index ever given out
         target.setZIndex(nextZIndex());
 
@@ -113,7 +113,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent> impleme
         return nextZIndex - 1;
     }
 
-    private void updateChild(FlowComponent child) {
+    private void updateChild(FlowComponent<?> child) {
         children.remove(child);
         children.add(child);
     }

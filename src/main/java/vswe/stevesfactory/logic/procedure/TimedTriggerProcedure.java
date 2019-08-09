@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 
 public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTask {
 
-    private int interval;
+    public int interval;
 
     public TimedTriggerProcedure(INetworkController controller) {
         super(Procedures.TRIGGER.getFactory(), controller, 1);
@@ -42,7 +42,7 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
 
     @Override
     public void run(INetworkController controller) {
-        controller.beginExecution(this);
+//        controller.beginExecution(this);
     }
 
     @Override
@@ -58,9 +58,9 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
         return p;
     }
 
-    public static FlowComponent createFlowComponent(TimedTriggerProcedure procedure) {
-        FlowComponent f = Procedures.TRIGGER.factory.createWidgetDefault(procedure, 0, 1);
-        f.getMenusBox().addChildren(new IntervalMenu());
+    public static FlowComponent<TimedTriggerProcedure> createFlowComponent(TimedTriggerProcedure procedure) {
+        FlowComponent<TimedTriggerProcedure> f = Procedures.TRIGGER.factory.createWidgetDefault(procedure, 0, 1);
+        f.addMenu(new IntervalMenu());
         return f;
     }
 }

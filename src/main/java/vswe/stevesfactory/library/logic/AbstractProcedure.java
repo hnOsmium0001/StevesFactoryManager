@@ -13,12 +13,15 @@ import vswe.stevesfactory.api.SFMAPI;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.logic.tree.CommandTree;
 
 public abstract class AbstractProcedure implements IProcedure {
 
     private IProcedureType<?> type;
     private INetworkController controller;
     private IProcedure[] nexts;
+
+    private transient CommandTree tree;
 
     public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleChildren) {
         this.type = type;

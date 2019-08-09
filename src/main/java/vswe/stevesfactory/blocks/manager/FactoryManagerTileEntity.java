@@ -21,6 +21,7 @@ import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.logic.hooks.ITimedTask;
 import vswe.stevesfactory.logic.hooks.IntervalTriggerHook;
+import vswe.stevesfactory.logic.tree.CommandTree;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
@@ -41,6 +42,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private LinkingStatus linkingStatus;
     private Set<BlockPos> neighborInventories = new ObjectArraySet<>(6);
 
+    private List<CommandTree> trees = new ArrayList<>();
     private Map<Class<?>, Object> triggerHooks = new HashMap<>();
 
     public FactoryManagerTileEntity() {
@@ -229,6 +231,15 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     @Override
     public void beginExecution(IProcedure hat) {
         new ProcedureExecutor(this, world).start(hat);
+    }
+
+    @Override
+    public void beginExecution(CommandTree tree) {
+        if (trees.contains(tree)) {
+            tree.execute();
+        } else {
+            throw new IllegalArgumentException("Trying to execute a command tree that does no belong to this controller");
+        }
     }
 
     /**

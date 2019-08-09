@@ -58,7 +58,7 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
         // TODO actual instance transferring between sides
         BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).controllerPos;
         INetworkController controller = (INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos);
-        FlowComponent flowComponent = component.createWidget(component.createInstance(controller));
+        FlowComponent<?> flowComponent = component.createWidget(component.createInstance(controller));
         editorPanel.addChildren(flowComponent);
         return true;
     }

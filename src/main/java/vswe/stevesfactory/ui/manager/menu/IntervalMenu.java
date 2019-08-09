@@ -3,10 +3,11 @@ package vswe.stevesfactory.ui.manager.menu;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.widget.NumberField;
 import vswe.stevesfactory.library.gui.widget.TextField;
+import vswe.stevesfactory.logic.procedure.TimedTriggerProcedure;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 import vswe.stevesfactory.utils.RenderingHelper;
 
-public class IntervalMenu extends Menu {
+public class IntervalMenu extends Menu<TimedTriggerProcedure> {
 
     public static final int MARGIN_MIDDLE_UNIT_TEXT = 10;
 
@@ -44,5 +45,10 @@ public class IntervalMenu extends Menu {
 
     public int getIntervalTicks() {
         return getIntervalSeconds() * 20;
+    }
+
+    @Override
+    protected void updateData() {
+        getLinkedProcedure().interval = getIntervalTicks();
     }
 }

@@ -2,9 +2,11 @@ package vswe.stevesfactory.api.network;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.manager.ITriggerHook;
+import vswe.stevesfactory.logic.tree.CommandTree;
 
 import java.util.Collection;
 import java.util.Set;
@@ -14,6 +16,8 @@ public interface INetworkController {
     DimensionType getDimension();
 
     BlockPos getPos();
+
+    IWorld getWorld();
 
     // TODO Not sure if I want this here
 //    Set<IHook> getHooks();
@@ -80,4 +84,6 @@ public interface INetworkController {
     boolean isRemoved();
 
     void beginExecution(IProcedure hat);
+
+    void beginExecution(CommandTree tree);
 }

@@ -1,5 +1,6 @@
 package vswe.stevesfactory.ui.manager.editor;
 
+import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -13,7 +14,7 @@ import vswe.stevesfactory.utils.RenderingHelper;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public abstract class Menu extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
+public abstract class Menu<P extends IProcedure> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 40, 9, 9),
@@ -80,6 +81,8 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
     public static final TextureWrapper HEADING_BOX = TextureWrapper.ofFlowComponent(66, 152, 120, 13);
     public static final int DEFAULT_CONTENT_HEIGHT = 65;
 
+    private FlowComponent<P> flowComponent;
+    
     private State state = State.COLLAPSED;
 
     private ToggleStateButton toggleStateButton;
@@ -105,13 +108,13 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
     }
 
     @Override
-    public Menu addChildren(IWidget widget) {
+    public Menu<P> addChildren(IWidget widget) {
         children.add(widget);
         return this;
     }
 
     @Override
-    public Menu addChildren(Collection<IWidget> widgets) {
+    public Menu<P> addChildren(Collection<IWidget> widgets) {
         children.addAll(widgets);
         return this;
     }
@@ -203,10 +206,36 @@ public abstract class Menu extends AbstractContainer<IWidget> implements Resizab
         return isInside(mouseX, mouseY);
     }
 
+    @Override
+    public void onFocusChanged(boolean focus) {
+        updateData();
+    }
+
+    @Override
+    public void onRemoved() {
+        updateData();
+    }
+    
+    protected void updateData() {
+    }
+
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public Box<Menu> getParentWidget() {
-        return Objects.requireNonNull((Box<Menu>) super.getParentWidget());
+    public Box<Menu<P>> getParentWidget() {
+        return Objects.requireNonNull((Box<Menu<P>>) super.getParentWidget());
+    }
+
+    public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
+        this.flowComponent = flowComponent;
+        this.setParentWidget(flowComponent.getMenusBox());
+    }
+
+    public FlowComponent<P> getFlowComponent() {
+        return flowComponent;
+    }
+
+    public P getLinkedProcedure() {
+        return flowComponent.getLinkedProcedure();
     }
 }
