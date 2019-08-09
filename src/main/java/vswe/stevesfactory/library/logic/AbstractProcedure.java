@@ -13,43 +13,89 @@ import vswe.stevesfactory.api.SFMAPI;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.tree.CommandTree;
+import vswe.stevesfactory.logic.graph.CommandGraph;
 
 public abstract class AbstractProcedure implements IProcedure {
 
     private IProcedureType<?> type;
+
     private INetworkController controller;
-    private IProcedure[] nexts;
+    private IProcedure[] previousNodes;
+    private IProcedure[] nextNodes;
 
-    private transient CommandTree tree;
+    private transient CommandGraph tree;
 
-    public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleChildren) {
+    public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleParents, int possibleChildren) {
         this.type = type;
         this.setController(controller);
-        this.nexts = new IProcedure[possibleChildren];
+        this.previousNodes = new IProcedure[possibleParents];
+        this.nextNodes = new IProcedure[possibleChildren];
     }
 
-    public INetworkController readController() {
+    public INetworkController getController() {
         Preconditions.checkArgument(!controller.isRemoved(), "The controller object is invalid!");
         return controller;
     }
 
     public void setController(INetworkController controller) {
-        Preconditions.checkArgument(!controller.isRemoved());
+        Preconditions.checkArgument(!controller.isRemoved(), "The controller object is invalid!");
         this.controller = controller;
     }
 
     @Override
-    public IProcedure[] nexts() {
-        return nexts;
+    public IProcedure[] next() {
+        return nextNodes;
+    }
+
+    @Override
+    public IProcedure[] previous() {
+        return previousNodes;
+    }
+
+    @Override
+    public void linkTo(int outputIndex, IProcedure next, int nextInputIndex) {
+        unlink(outputIndex);
+
+//        tree.childCount++;
+
+        nextNodes[outputIndex] = next;
+        next.onLinkTo(this, nextInputIndex);
+    }
+
+    @Override
+    public void unlink(int outputIndex) {
+        IProcedure oldChild = nextNodes[outputIndex];
+        if (oldChild != null) {
+            oldChild.onUnlink(this);
+//            tree.childCount--;
+        }
+        nextNodes[outputIndex] = null;
+    }
+
+    @Override
+    public void onLinkTo(IProcedure previous, int inputIndex) {
+        previousNodes[inputIndex] = previous;
+    }
+
+    @Override
+    public void onUnlink(IProcedure previous) {
+        for (int i = 0; i < previousNodes.length; i++) {
+            IProcedure previousNode = previousNodes[i];
+            if (previousNode == previous) {
+                previousNodes[i] = null;
+            }
+        }
+    }
+
+    public void remove() {
+        for (int i = 0; i < nextNodes.length; i++) {
+            unlink(i);
+        }
+
     }
 
     public IProcedureType<?> getType() {
         return type;
-    }
-
-    public INetworkController getController() {
-        return controller;
     }
 
     /**

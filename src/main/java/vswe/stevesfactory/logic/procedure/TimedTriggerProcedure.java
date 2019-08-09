@@ -17,13 +17,13 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
     public int interval;
 
     public TimedTriggerProcedure(INetworkController controller) {
-        super(Procedures.TRIGGER.getFactory(), controller, 1);
+        super(Procedures.TRIGGER.getFactory(), controller, 0, 1);
     }
 
     @Nullable
     @Override
     public IProcedure execute(IExecutionContext context) {
-        return nexts()[0];
+        return next()[0];
     }
 
     @Override

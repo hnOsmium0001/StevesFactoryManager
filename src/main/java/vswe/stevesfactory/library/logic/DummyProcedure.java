@@ -23,7 +23,7 @@ public final class DummyProcedure implements IProcedure {
     }
 
     @Override
-    public IProcedure[] nexts() {
+    public IProcedure[] next() {
         return NEXTS_ARR;
     }
 
@@ -31,6 +31,27 @@ public final class DummyProcedure implements IProcedure {
     @Override
     public IProcedure execute(IExecutionContext context) {
         return null;
+    }
+
+    @Override
+    public IProcedure[] previous() {
+        return NEXTS_ARR;
+    }
+
+    @Override
+    public void linkTo(int outputIndex, IProcedure next, int nextInputIndex) {
+    }
+
+    @Override
+    public void unlink(int outputIndex) {
+    }
+
+    @Override
+    public void onLinkTo(IProcedure previous, int inputIndex) {
+    }
+
+    @Override
+    public void onUnlink(IProcedure previous) {
     }
 
     @Override

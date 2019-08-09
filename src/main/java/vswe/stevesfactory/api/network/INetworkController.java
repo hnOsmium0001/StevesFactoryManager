@@ -6,7 +6,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.manager.ITriggerHook;
-import vswe.stevesfactory.logic.tree.CommandTree;
+import vswe.stevesfactory.logic.graph.CommandGraph;
 
 import java.util.Collection;
 import java.util.Set;
@@ -85,5 +85,5 @@ public interface INetworkController {
 
     void beginExecution(IProcedure hat);
 
-    void beginExecution(CommandTree tree);
+    void beginExecution(CommandGraph tree);
 }

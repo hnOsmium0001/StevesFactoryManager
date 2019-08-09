@@ -17,11 +17,10 @@ import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.manager.ITriggerHook;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
-import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.logic.hooks.ITimedTask;
 import vswe.stevesfactory.logic.hooks.IntervalTriggerHook;
-import vswe.stevesfactory.logic.tree.CommandTree;
+import vswe.stevesfactory.logic.graph.CommandGraph;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
@@ -42,7 +41,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private LinkingStatus linkingStatus;
     private Set<BlockPos> neighborInventories = new ObjectArraySet<>(6);
 
-    private List<CommandTree> trees = new ArrayList<>();
+    private List<CommandGraph> trees = new ArrayList<>();
     private Map<Class<?>, Object> triggerHooks = new HashMap<>();
 
     public FactoryManagerTileEntity() {
@@ -234,7 +233,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     @Override
-    public void beginExecution(CommandTree tree) {
+    public void beginExecution(CommandGraph tree) {
         if (trees.contains(tree)) {
             tree.execute();
         } else {

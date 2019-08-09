@@ -9,12 +9,14 @@ public interface IProcedure {
 
     ResourceLocation getRegistryName();
 
-    IProcedure[] nexts();
+    IProcedure[] previous();
+
+    IProcedure[] next();
 
     /**
      * Execute this procedure, and return the next procedure the control flow should go to.
      *
-     * @return The next procedure that should be executed such that {@link #nexts()} contains {@code p}. {@code null} if the program should
+     * @return The next procedure that should be executed such that {@link #next()} contains {@code p}. {@code null} if the program should
      * terminate here.
      */
     @Nullable
@@ -27,4 +29,12 @@ public interface IProcedure {
      * @implSpec The resulting NBT must contain an entry with the key "{@code ID}", associated with the registry name of the procedure.
      */
     CompoundNBT serialize();
+
+    void linkTo(int outputIndex, IProcedure next, int nextInputIndex);
+
+    void unlink(int outputIndex);
+
+    void onLinkTo(IProcedure previous, int inputIndex);
+
+    void onUnlink(IProcedure previous);
 }

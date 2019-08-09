@@ -29,7 +29,7 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     private List<Direction> targetDirections = new ArrayList<>();
 
     public SingletonItemTransferProcedure(INetworkController controller) {
-        super(Procedures.SINGLETON_ITEM_TRANSFER.getFactory(), controller, 1);
+        super(Procedures.SINGLETON_ITEM_TRANSFER.getFactory(), controller, 1, 1);
     }
 
     @Nullable
@@ -37,7 +37,7 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     public IProcedure execute(IExecutionContext context) {
 
         // TODO update logic to fix issues
-        IProcedure next = nexts()[0];
+        IProcedure next = next()[0];
 
         // TODO port with SlotlessItemHandler
         List<ItemStack> extractableItems = new ArrayList<>();

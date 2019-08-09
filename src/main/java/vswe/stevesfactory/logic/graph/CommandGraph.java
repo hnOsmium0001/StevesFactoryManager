@@ -1,4 +1,4 @@
-package vswe.stevesfactory.logic.tree;
+package vswe.stevesfactory.logic.graph;
 
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.nbt.CompoundNBT;
@@ -12,10 +12,12 @@ import vswe.stevesfactory.utils.NetworkHelper;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class CommandTree implements Iterable<IProcedure> {
+public class CommandGraph implements Iterable<IProcedure> {
 
     private INetworkController controller;
     private IProcedure root;
+
+    public int childCount;
 
     public void execute() {
         new ProcedureExecutor(controller, controller.getWorld()).start(root);
@@ -35,7 +37,7 @@ public class CommandTree implements Iterable<IProcedure> {
     }
 
     private void dfs(Set<IProcedure> result, IProcedure node) {
-        for (IProcedure next : node.nexts()) {
+        for (IProcedure next : node.next()) {
             if (result.contains(next)) {
                 continue;
             }
@@ -79,7 +81,7 @@ public class CommandTree implements Iterable<IProcedure> {
     private CompoundNBT serializeNode(IProcedure node, Object2IntMap<IProcedure> idMap) {
         CompoundNBT tag = new CompoundNBT();
 
-        IProcedure[] nexts = node.nexts();
+        IProcedure[] nexts = node.next();
         int[] children = new int[nexts.length];
         for (int i = 0, nextsLength = nexts.length; i < nextsLength; i++) {
             int id = idMap.getOrDefault(nexts[i], -1);
@@ -122,12 +124,12 @@ public class CommandTree implements Iterable<IProcedure> {
     private void retrieveConnections(List<IProcedure> nodes, IProcedure node, CompoundNBT nodeNBT) {
         int[] children = nodeNBT.getIntArray("Children");
         for (int i = 0; i < children.length; i++) {
-            node.nexts()[i] = nodes.get(children[i]);
+            node.next()[i] = nodes.get(children[i]);
         }
     }
 
-    public static CommandTree deserializeFrom(CompoundNBT tag) {
-        CommandTree tree = new CommandTree();
+    public static CommandGraph deserializeFrom(CompoundNBT tag) {
+        CommandGraph tree = new CommandGraph();
         tree.deserialize(tag);
         return tree;
     }

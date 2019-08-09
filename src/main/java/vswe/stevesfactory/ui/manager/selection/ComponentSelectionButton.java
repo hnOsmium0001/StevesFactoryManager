@@ -55,7 +55,6 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         EditorPanel editorPanel = getParentWidget().getParentWidget().editorPanel;
-        // TODO actual instance transferring between sides
         BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).controllerPos;
         INetworkController controller = (INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos);
         FlowComponent<?> flowComponent = component.createWidget(component.createInstance(controller));

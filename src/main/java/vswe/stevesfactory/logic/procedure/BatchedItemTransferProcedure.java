@@ -31,7 +31,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
     private List<Direction> targetDirections;
 
     public BatchedItemTransferProcedure(INetworkController controller) {
-        super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), controller, 1);
+        super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), controller, 1, 1);
     }
 
     @Nullable
@@ -118,7 +118,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
             }
         }
 
-        return nexts()[0];
+        return next()[0];
     }
 
     @Override

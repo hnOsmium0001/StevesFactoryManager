@@ -4,15 +4,17 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -53,10 +55,12 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         public static final int HEIGHT = 6;
 
         private Node pairedNode;
+        private int index;
 
-        public Node(ControlFlowNodes parent) {
+        public Node(ControlFlowNodes parent, int index) {
             super(0, 0, WIDTH, HEIGHT);
             setParentWidget(parent);
+            this.index = index;
         }
 
         /**
@@ -85,7 +89,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         }
 
         public boolean shouldConnect(Node other) {
-            return other.getParentFlowComponent() != this.getParentFlowComponent();
+            return other.getFlowComponent() != this.getFlowComponent();
         }
 
         /**
@@ -112,7 +116,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             switch (button) {
                 case GLFW.GLFW_MOUSE_BUTTON_LEFT:
-                    EditorPanel editor = getParentFlowComponent().getParentWidget();
+                    EditorPanel editor = getFlowComponent().getParentWidget();
                     // If failed to finish connection (a connection has not been started yet)
                     if (!editor.tryFinishConnection(this)) {
                         editor.startConnection(this);
@@ -138,14 +142,22 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
             return getAbsoluteY() + getTextureNormal().getPortionHeight() / 2;
         }
 
+        public int getIndex() {
+            return index;
+        }
+
         @Nonnull
         @Override
         public ControlFlowNodes getParentWidget() {
             return (ControlFlowNodes) Objects.requireNonNull(super.getParentWidget());
         }
 
-        public FlowComponent getParentFlowComponent() {
-            return getParentWidget().getParentWidget();
+        public FlowComponent<?> getFlowComponent() {
+            return (FlowComponent<?>) getParentWidget().getParentWidget();
+        }
+
+        public IProcedure getLinkedProcedure() {
+            return getFlowComponent().getLinkedProcedure();
         }
     }
 
@@ -154,9 +166,8 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         private static final TextureWrapper INPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 64, WIDTH, HEIGHT);
         private static final TextureWrapper INPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 64, WIDTH, HEIGHT);
 
-
-        public InputNode(ControlFlowNodes parent) {
-            super(parent);
+        public InputNode(ControlFlowNodes parent, int index) {
+            super(parent, index);
         }
 
         @Override
@@ -202,8 +213,8 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         private static final TextureWrapper OUTPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 58, WIDTH, HEIGHT);
         private static final TextureWrapper OUTPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 58, WIDTH, HEIGHT);
 
-        public OutputNode(ControlFlowNodes parent) {
-            super(parent);
+        public OutputNode(ControlFlowNodes parent, int index) {
+            super(parent, index);
         }
 
         @Override
@@ -212,6 +223,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
                 throw new IllegalArgumentException();
             }
             super.connect(other);
+            linkToOther(other);
         }
 
         @Override
@@ -220,6 +232,18 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
                 throw new IllegalArgumentException();
             }
             super.onConnect(source);
+            linkToOther(source);
+        }
+
+        private void linkToOther(Node other) {
+            IProcedure target = other.getLinkedProcedure();
+            getLinkedProcedure().linkTo(getIndex(), target, other.getIndex());
+        }
+
+        @Override
+        protected void onDisconnect() {
+            super.onDisconnect();
+
         }
 
         @Override
@@ -264,9 +288,13 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
     private final ImmutableList<Node> nodes;
 
     @SuppressWarnings("UnstableApiUsage")
-    public ControlFlowNodes(int amountNodes, Function<ControlFlowNodes, ? extends Node> factory) {
+    public ControlFlowNodes(int amountNodes, BiFunction<ControlFlowNodes, Integer, ? extends Node> factory) {
         super(0, 0, 0, Node.HEIGHT);
-        this.nodes = Stream.generate(() -> factory.apply(this)).limit(amountNodes).collect(ImmutableList.toImmutableList());
+        ImmutableList.Builder<Node> builder = ImmutableList.builderWithExpectedSize(amountNodes);
+        for (int i = 0; i < amountNodes; i++) {
+            builder.add(factory.apply(this, i));
+        }
+        this.nodes = builder.build();
     }
 
     @Override
@@ -285,16 +313,6 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
     @Override
     public ImmutableList<Node> getChildren() {
         return nodes;
-    }
-
-    @Override
-    public IContainer<Node> addChildren(Node widget) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public IContainer<Node> addChildren(Collection<Node> widgets) {
-        throw new UnsupportedOperationException();
     }
 
     public void removeConnection(int i) {
@@ -332,11 +350,5 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         super.onParentPositionChanged();
         // AbstractWidget overrides the method, therefore we need to trigger this manually here9
         notifyChildrenForPositionChange();
-    }
-
-    @Nonnull
-    @Override
-    public FlowComponent getParentWidget() {
-        return (FlowComponent) Objects.requireNonNull(super.getParentWidget());
     }
 }
