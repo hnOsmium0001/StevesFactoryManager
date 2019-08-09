@@ -10,8 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import vswe.stevesfactory.api.SFMAPI;
-import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureType;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.graph.CommandGraph;
 
@@ -20,16 +19,16 @@ public abstract class AbstractProcedure implements IProcedure {
     private IProcedureType<?> type;
 
     private INetworkController controller;
-    private IProcedure[] previousNodes;
-    private IProcedure[] nextNodes;
+    private IProcedure[] successors;
+    private IProcedure[] predecessors;
 
-    private transient CommandGraph tree;
+    private transient ICommandGraph graph;
 
     public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleParents, int possibleChildren) {
         this.type = type;
         this.setController(controller);
-        this.previousNodes = new IProcedure[possibleParents];
-        this.nextNodes = new IProcedure[possibleChildren];
+        this.successors = new IProcedure[possibleChildren];
+        this.predecessors = new IProcedure[possibleParents];
     }
 
     public INetworkController getController() {
@@ -39,63 +38,109 @@ public abstract class AbstractProcedure implements IProcedure {
 
     public void setController(INetworkController controller) {
         Preconditions.checkArgument(!controller.isRemoved(), "The controller object is invalid!");
+
+        INetworkController oldController = this.controller;
+        if (oldController != null) {
+            oldController.removeCommandGraph(graph);
+        }
+
         this.controller = controller;
+        this.graph = new CommandGraph(controller, this);
+        controller.addCommandGraph(graph);
     }
 
     @Override
-    public IProcedure[] next() {
-        return nextNodes;
+    public IProcedure[] successors() {
+        return successors;
     }
 
     @Override
-    public IProcedure[] previous() {
-        return previousNodes;
+    public IProcedure[] predecessors() {
+        return predecessors;
     }
 
+    // TODO better graph code
+
     @Override
-    public void linkTo(int outputIndex, IProcedure next, int nextInputIndex) {
+    public void linkTo(int outputIndex, IProcedure successor, int nextInputIndex) {
         unlink(outputIndex);
 
-//        tree.childCount++;
-
-        nextNodes[outputIndex] = next;
-        next.onLinkTo(this, nextInputIndex);
+        successors[outputIndex] = successor;
+        successor.onLink(this, nextInputIndex);
     }
 
     @Override
     public void unlink(int outputIndex) {
-        IProcedure oldChild = nextNodes[outputIndex];
+        IProcedure oldChild = successors[outputIndex];
         if (oldChild != null) {
             oldChild.onUnlink(this);
-//            tree.childCount--;
+            successors[outputIndex] = null;
         }
-        nextNodes[outputIndex] = null;
     }
 
     @Override
-    public void onLinkTo(IProcedure previous, int inputIndex) {
-        previousNodes[inputIndex] = previous;
-    }
-
-    @Override
-    public void onUnlink(IProcedure previous) {
-        for (int i = 0; i < previousNodes.length; i++) {
-            IProcedure previousNode = previousNodes[i];
-            if (previousNode == previous) {
-                previousNodes[i] = null;
+    public void unlink(IProcedure successor) {
+        for (int i = 0; i < successors.length; i++) {
+            if (successors[i] == successor) {
+                unlink(i);
             }
         }
     }
 
-    public void remove() {
-        for (int i = 0; i < nextNodes.length; i++) {
-            unlink(i);
+    @Override
+    public void onLink(IProcedure predecessor, int inputIndex) {
+        // In case this node is the root, remove the old graph because we are joining another graph
+        if (isRoot()) {
+            controller.removeCommandGraph(graph);
+        } else {
+            // If this is not a root node, means this node has a predecessor, or oldParent != null
+            IProcedure oldParent = predecessors[inputIndex];
+            Preconditions.checkState(oldParent != null, "Encountered a non-root graph node has no predecessor!");
+
+            oldParent.unlink(this);
+
+            // During unlink, we created a new graph with this node as the root (see onUnlink)
+            // However since we are linking to another predecessor node, that graph is invalid since having a predecessor means this node will not be the root
+            Preconditions.checkState(isRoot(), "Unlinking this from a predecessor did not call onUnlink on this!");
+            controller.removeCommandGraph(graph);
         }
 
+        predecessors[inputIndex] = predecessor;
+        graph = predecessor.getGraph();
+    }
+
+    @Override
+    public void onUnlink(IProcedure predecessor) {
+        for (int i = 0; i < predecessors.length; i++) {
+            if (predecessors[i] == predecessor) {
+                predecessors[i] = null;
+            }
+        }
+        graph = graph.inducedSubgraph(this);
+        controller.addCommandGraph(graph);
+    }
+
+    public boolean isRoot() {
+        return graph.getRoot() == this;
+    }
+
+    @Override
+    public void remove() {
+        for (IProcedure predecessor : predecessors) {
+            predecessor.unlink(this);
+        }
+        for (int i = 0; i < successors.length; i++) {
+            unlink(i);
+        }
     }
 
     public IProcedureType<?> getType() {
         return type;
+    }
+
+    @Override
+    public ICommandGraph getGraph() {
+        return graph;
     }
 
     /**

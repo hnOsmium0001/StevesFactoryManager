@@ -537,6 +537,8 @@ public abstract class FlowComponent<P extends IProcedure> extends AbstractContai
         outputNodes.removeAllConnections();
 
         getParentWidget().removeFlowComponent(this);
+
+        procedure.remove();
     }
 
     public ControlFlowNodes getInputNodes() {

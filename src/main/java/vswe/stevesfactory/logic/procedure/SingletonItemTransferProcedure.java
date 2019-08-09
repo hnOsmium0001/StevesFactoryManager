@@ -37,7 +37,7 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     public IProcedure execute(IExecutionContext context) {
 
         // TODO update logic to fix issues
-        IProcedure next = next()[0];
+        IProcedure next = successors()[0];
 
         // TODO port with SlotlessItemHandler
         List<ItemStack> extractableItems = new ArrayList<>();

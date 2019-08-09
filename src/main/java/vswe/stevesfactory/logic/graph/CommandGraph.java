@@ -1,9 +1,11 @@
 package vswe.stevesfactory.logic.graph;
 
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
+import vswe.stevesfactory.api.logic.ICommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
@@ -12,15 +14,45 @@ import vswe.stevesfactory.utils.NetworkHelper;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class CommandGraph implements Iterable<IProcedure> {
+/**
+ * A directed pseudo-graph, with a root. The root node is the execution starting point.
+ */
+public class CommandGraph implements ICommandGraph {
 
     private INetworkController controller;
     private IProcedure root;
 
-    public int childCount;
+//    public int childCount;
 
+    public CommandGraph(INetworkController controller, IProcedure root) {
+        this.controller = controller;
+        this.root = root;
+    }
+
+    public CommandGraph(INetworkController controller) {
+        this.controller = controller;
+    }
+
+    public CommandGraph(IProcedure root) {
+        this.root = root;
+    }
+
+    public CommandGraph() {
+    }
+
+    @Override
+    public IProcedure getRoot() {
+        return root;
+    }
+
+    @Override
     public void execute() {
         new ProcedureExecutor(controller, controller.getWorld()).start(root);
+    }
+
+    @Override
+    public Set<IProcedure> collect() {
+        return dfsCollect();
     }
 
     public Set<IProcedure> dfsCollect() {
@@ -37,13 +69,18 @@ public class CommandGraph implements Iterable<IProcedure> {
     }
 
     private void dfs(Set<IProcedure> result, IProcedure node) {
-        for (IProcedure next : node.next()) {
-            if (result.contains(next)) {
+        for (IProcedure next : node.successors()) {
+            if (result.contains(next) || next == null) {
                 continue;
             }
             result.add(next);
             dfs(result, next);
         }
+    }
+
+    @Override
+    public CommandGraph inducedSubgraph(IProcedure node) {
+        return new CommandGraph(controller, node);
     }
 
     @Nonnull
@@ -52,6 +89,7 @@ public class CommandGraph implements Iterable<IProcedure> {
         return dfsCollect().iterator();
     }
 
+    @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = new CompoundNBT();
 
@@ -81,7 +119,7 @@ public class CommandGraph implements Iterable<IProcedure> {
     private CompoundNBT serializeNode(IProcedure node, Object2IntMap<IProcedure> idMap) {
         CompoundNBT tag = new CompoundNBT();
 
-        IProcedure[] nexts = node.next();
+        IProcedure[] nexts = node.successors();
         int[] children = new int[nexts.length];
         for (int i = 0, nextsLength = nexts.length; i < nextsLength; i++) {
             int id = idMap.getOrDefault(nexts[i], -1);
@@ -96,6 +134,7 @@ public class CommandGraph implements Iterable<IProcedure> {
         return tag;
     }
 
+    @Override
     public void deserialize(CompoundNBT tag) {
         // First deserialize all the nodes themselves which makes it easier to set the connections
         ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
@@ -124,7 +163,7 @@ public class CommandGraph implements Iterable<IProcedure> {
     private void retrieveConnections(List<IProcedure> nodes, IProcedure node, CompoundNBT nodeNBT) {
         int[] children = nodeNBT.getIntArray("Children");
         for (int i = 0; i < children.length; i++) {
-            node.next()[i] = nodes.get(children[i]);
+            node.successors()[i] = nodes.get(children[i]);
         }
     }
 

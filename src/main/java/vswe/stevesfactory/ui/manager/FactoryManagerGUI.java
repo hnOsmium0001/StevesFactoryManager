@@ -60,7 +60,7 @@ public class FactoryManagerGUI extends WidgetScreen {
     public void tick() {
         super.tick();
         if (Minecraft.getInstance().world.getGameTime() % DATA_SYNC_INTERVAL == 0) {
-
+            // TODO data sync
         }
     }
 
@@ -227,7 +227,7 @@ public class FactoryManagerGUI extends WidgetScreen {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if(super.mouseClicked(mouseX, mouseY, button)) {
+            if (super.mouseClicked(mouseX, mouseY, button)) {
                 return true;
             }
             // Fallback action menu

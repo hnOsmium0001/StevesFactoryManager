@@ -13,14 +13,15 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.api.logic.ICommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.manager.ITriggerHook;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
+import vswe.stevesfactory.logic.graph.CommandGraph;
 import vswe.stevesfactory.logic.hooks.ITimedTask;
 import vswe.stevesfactory.logic.hooks.IntervalTriggerHook;
-import vswe.stevesfactory.logic.graph.CommandGraph;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
@@ -34,6 +35,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private static final String KEY_CONNECTED_CABLES = "ConnectedCables";
     private static final String KEY_LINKED_INVENTORIES = "LinkedInventories";
     private static final String KEY_LINKING_STATUS = "LinkingStatus";
+    private static final String KEY_COMMAND_GRAPHS = "CommandGraphs";
 
     private Set<BlockPos> connectedCables = new HashSet<>();
     private Multiset<BlockPos> linkedInventories = HashMultiset.create();
@@ -41,7 +43,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private LinkingStatus linkingStatus;
     private Set<BlockPos> neighborInventories = new ObjectArraySet<>(6);
 
-    private List<CommandGraph> trees = new ArrayList<>();
+    private Set<ICommandGraph> graphs = new HashSet<>();
     private Map<Class<?>, Object> triggerHooks = new HashMap<>();
 
     public FactoryManagerTileEntity() {
@@ -87,6 +89,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     public void activate(PlayerEntity player) {
         StevesFactoryManager.logger.trace("Player {} activated a factory manager at {}", player, pos);
+        // TODO sync command data
         search();
     }
 
@@ -234,11 +237,25 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public void beginExecution(CommandGraph tree) {
-        if (trees.contains(tree)) {
+        if (graphs.contains(tree)) {
             tree.execute();
         } else {
             throw new IllegalArgumentException("Trying to execute a command tree that does no belong to this controller");
         }
+    }
+
+    public Set<ICommandGraph> getCommandGraphs() {
+        return graphs;
+    }
+
+    @Override
+    public boolean addCommandGraph(ICommandGraph graph) {
+        return graphs.add(graph);
+    }
+
+    @Override
+    public boolean removeCommandGraph(ICommandGraph graph) {
+        return graphs.remove(graph);
     }
 
     /**
@@ -305,6 +322,13 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         for (int i = 0; i < serializedInventories.size(); i++) {
             linkedInventories.add(NBTUtil.readBlockPos(serializedInventories.getCompound(i)));
         }
+
+        ListNBT commandGraphs = compound.getList(KEY_COMMAND_GRAPHS, Constants.NBT.TAG_COMPOUND);
+        graphs.clear();
+        for (int i = 0; i < commandGraphs.size(); i++) {
+            // TODO cross implementation compat
+            graphs.add(CommandGraph.deserializeFrom(commandGraphs.getCompound(i)));
+        }
     }
 
     @Override
@@ -319,6 +343,12 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
             serializedInventories.add(NBTUtil.writeBlockPos(pos));
         }
         compound.put(KEY_LINKED_INVENTORIES, serializedInventories);
+
+        ListNBT commandGraphs = new ListNBT();
+        for (ICommandGraph graph : graphs) {
+            commandGraphs.add(graph.serialize());
+        }
+        compound.put("CommandGraphs", commandGraphs);
 
         return super.write(compound);
     }

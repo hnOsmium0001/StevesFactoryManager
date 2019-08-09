@@ -118,7 +118,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
             }
         }
 
-        return next()[0];
+        return successors()[0];
     }
 
     @Override

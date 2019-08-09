@@ -4,6 +4,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
+import vswe.stevesfactory.api.logic.ICommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.manager.ITriggerHook;
 import vswe.stevesfactory.logic.graph.CommandGraph;
@@ -86,4 +87,10 @@ public interface INetworkController {
     void beginExecution(IProcedure hat);
 
     void beginExecution(CommandGraph tree);
+
+    @CanIgnoreReturnValue
+    boolean addCommandGraph(ICommandGraph graph);
+
+    @CanIgnoreReturnValue
+    boolean removeCommandGraph(ICommandGraph graph);
 }

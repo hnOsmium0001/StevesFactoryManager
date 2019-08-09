@@ -23,7 +23,7 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
     @Nullable
     @Override
     public IProcedure execute(IExecutionContext context) {
-        return next()[0];
+        return successors()[0];
     }
 
     @Override
@@ -42,7 +42,17 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
 
     @Override
     public void run(INetworkController controller) {
-//        controller.beginExecution(this);
+        // TODO should trigger the command graph instead of a plain hat procedure here?
+        controller.beginExecution(this);
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
+        getController().getTypedHooks(ITimedTask.class)
+                .stream()
+                .findFirst()
+                .ifPresent(hook -> hook.unsubscribe(this));
     }
 
     @Override

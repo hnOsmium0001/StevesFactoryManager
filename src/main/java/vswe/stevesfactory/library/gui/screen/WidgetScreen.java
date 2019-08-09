@@ -195,6 +195,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_E) {
+            this.onClose();
             Minecraft.getInstance().player.closeScreen();
             return true;
         }

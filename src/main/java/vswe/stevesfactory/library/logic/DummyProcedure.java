@@ -6,6 +6,7 @@ import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.logic.graph.CommandGraph;
 
 import javax.annotation.Nullable;
 
@@ -13,6 +14,7 @@ public final class DummyProcedure implements IProcedure {
 
     private static final ResourceLocation NAME = new ResourceLocation(StevesFactoryManager.MODID, "dummy");
     private static final IProcedure[] NEXTS_ARR = new IProcedure[0];
+    private static final CommandGraph GRAPH = new CommandGraph();
 
     public DummyProcedure(INetworkController controller) {
     }
@@ -23,7 +25,7 @@ public final class DummyProcedure implements IProcedure {
     }
 
     @Override
-    public IProcedure[] next() {
+    public IProcedure[] successors() {
         return NEXTS_ARR;
     }
 
@@ -34,12 +36,12 @@ public final class DummyProcedure implements IProcedure {
     }
 
     @Override
-    public IProcedure[] previous() {
+    public IProcedure[] predecessors() {
         return NEXTS_ARR;
     }
 
     @Override
-    public void linkTo(int outputIndex, IProcedure next, int nextInputIndex) {
+    public void linkTo(int outputIndex, IProcedure successor, int nextInputIndex) {
     }
 
     @Override
@@ -47,16 +49,29 @@ public final class DummyProcedure implements IProcedure {
     }
 
     @Override
-    public void onLinkTo(IProcedure previous, int inputIndex) {
+    public void unlink(IProcedure successor) {
     }
 
     @Override
-    public void onUnlink(IProcedure previous) {
+    public void onLink(IProcedure predecessor, int inputIndex) {
+    }
+
+    @Override
+    public void onUnlink(IProcedure predecessor) {
     }
 
     @Override
     public CompoundNBT serialize() {
         return new CompoundNBT();
+    }
+
+    @Override
+    public CommandGraph getGraph() {
+        return GRAPH;
+    }
+
+    @Override
+    public void remove() {
     }
 
     public static DummyProcedure deserialize(CompoundNBT tag) {
