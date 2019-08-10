@@ -23,7 +23,7 @@ public final class PacketRequestData {
 
     public static void requestLinkedInventories(DimensionType dimension, BlockPos controllerPos) {
         PacketBuffer extra = buffer();
-        extra.writeResourceLocation(Objects.requireNonNull(DimensionType.getKey(dimension)));
+        extra.writeResourceLocation(Objects.requireNonNull(dimension.getRegistryName()));
         extra.writeBlockPos(controllerPos);
         NetworkHandler.sendToServer(new PacketRequestData(LINKED_INVENTORIES, extra));
     }

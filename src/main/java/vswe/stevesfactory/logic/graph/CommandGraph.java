@@ -2,12 +2,18 @@ package vswe.stevesfactory.logic.graph;
 
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.*;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import vswe.stevesfactory.api.logic.ICommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.utils.NetworkHelper;
 
@@ -103,6 +109,9 @@ public class CommandGraph implements ICommandGraph {
         tag.putInt("RootIndex", 0);
         tag.put("Nodes", list);
 
+        tag.putString("DimensionType", controller.getDimension().getRegistryName().toString());
+        tag.put("ControllerPos", NBTUtil.writeBlockPos(controller.getPos()));
+
         return tag;
     }
 
@@ -119,10 +128,16 @@ public class CommandGraph implements ICommandGraph {
     private CompoundNBT serializeNode(IProcedure node, Object2IntMap<IProcedure> idMap) {
         CompoundNBT tag = new CompoundNBT();
 
-        IProcedure[] nexts = node.successors();
-        int[] children = new int[nexts.length];
-        for (int i = 0, nextsLength = nexts.length; i < nextsLength; i++) {
-            int id = idMap.getOrDefault(nexts[i], -1);
+        IProcedure[] successors = node.successors();
+        int[] children = new int[successors.length];
+        for (int i = 0; i < successors.length; i++) {
+            IProcedure successor = successors[i];
+            if (successor == null) {
+                children[i] = -1;
+                continue;
+            }
+
+            int id = idMap.getOrDefault(successor, -1);
             if (id == -1) {
                 throw new IllegalArgumentException();
             }
@@ -136,6 +151,8 @@ public class CommandGraph implements ICommandGraph {
 
     @Override
     public void deserialize(CompoundNBT tag) {
+        controller = readController(tag);
+
         // First deserialize all the nodes themselves which makes it easier to set the connections
         ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
         List<IProcedure> nodes = new ArrayList<>();
@@ -163,7 +180,12 @@ public class CommandGraph implements ICommandGraph {
     private void retrieveConnections(List<IProcedure> nodes, IProcedure node, CompoundNBT nodeNBT) {
         int[] children = nodeNBT.getIntArray("Children");
         for (int i = 0; i < children.length; i++) {
-            node.successors()[i] = nodes.get(children[i]);
+            int index = children[i];
+            if (index == -1) {
+                node.successors()[i] = null;
+            } else {
+                node.successors()[i] = nodes.get(index);
+            }
         }
     }
 
@@ -171,5 +193,25 @@ public class CommandGraph implements ICommandGraph {
         CommandGraph tree = new CommandGraph();
         tree.deserialize(tag);
         return tree;
+    }
+
+    public static BlockPos readControllerPos(CompoundNBT tag) {
+        return NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
+    }
+
+    public static DimensionType readDimensionType(CompoundNBT tag) {
+        return DimensionType.byName(new ResourceLocation(tag.getString("DimensionType")));
+    }
+
+    public static INetworkController readController(CompoundNBT tag) {
+        return readController(readDimensionType(tag), readControllerPos(tag));
+    }
+
+    public static INetworkController readController(DimensionType dimensionType, BlockPos pos) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null) {
+            return (INetworkController) server.getWorld(dimensionType).getTileEntity(pos);
+        }
+        return (INetworkController) Minecraft.getInstance().world.getTileEntity(pos);
     }
 }

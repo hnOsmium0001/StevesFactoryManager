@@ -25,10 +25,10 @@ import java.util.List;
 
 public class BatchedItemTransferProcedure extends AbstractProcedure {
 
-    private List<BlockPos> sourceInventories;
-    private List<Direction> sourceDirections;
-    private List<BlockPos> targetInventories;
-    private List<Direction> targetDirections;
+    private List<BlockPos> sourceInventories = new ArrayList<>();
+    private List<Direction> sourceDirections = new ArrayList<>();
+    private List<BlockPos> targetInventories = new ArrayList<>();
+    private List<Direction> targetDirections = new ArrayList<>();
 
     public BatchedItemTransferProcedure(INetworkController controller) {
         super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), controller, 1, 1);

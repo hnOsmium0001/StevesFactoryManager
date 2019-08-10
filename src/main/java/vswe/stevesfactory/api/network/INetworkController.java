@@ -92,5 +92,15 @@ public interface INetworkController {
     boolean addCommandGraph(ICommandGraph graph);
 
     @CanIgnoreReturnValue
+    boolean addCommandGraphs(Collection<ICommandGraph> graphs);
+
+    @CanIgnoreReturnValue
     boolean removeCommandGraph(ICommandGraph graph);
+
+    void removeAllCommandGraphs();
+
+    /**
+     * Sync command graph data.
+     */
+    void sync();
 }

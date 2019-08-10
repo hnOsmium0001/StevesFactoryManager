@@ -14,6 +14,9 @@ import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.graph.CommandGraph;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public abstract class AbstractProcedure implements IProcedure {
 
     private IProcedureType<?> type;
@@ -153,7 +156,7 @@ public abstract class AbstractProcedure implements IProcedure {
     public CompoundNBT serialize() {
         CompoundNBT tag = new CompoundNBT();
         tag.putString("ID", getRegistryName().toString());
-        tag.putString("DimensionType", controller.getDimension().toString());
+        tag.putString("DimensionType", controller.getDimension().getRegistryName().toString());
         tag.put("ControllerPos", NBTUtil.writeBlockPos(controller.getPos()));
         return tag;
     }
@@ -161,6 +164,24 @@ public abstract class AbstractProcedure implements IProcedure {
     @Override
     public ResourceLocation getRegistryName() {
         return type.getRegistryName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractProcedure that = (AbstractProcedure) o;
+        return type.equals(that.type) &&
+                Arrays.equals(successors, that.successors) &&
+                Arrays.equals(predecessors, that.predecessors);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(type);
+        result = 31 * result + Arrays.hashCode(successors);
+        result = 31 * result + Arrays.hashCode(predecessors);
+        return result;
     }
 
     public static IProcedureType<?> readType(CompoundNBT tag) {
@@ -172,12 +193,12 @@ public abstract class AbstractProcedure implements IProcedure {
         return NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
     }
 
-    public static DimensionType raedDimensionType(CompoundNBT tag) {
-        return DimensionType.byName(new ResourceLocation(tag.getString("Dimension")));
+    public static DimensionType readDimensionType(CompoundNBT tag) {
+        return DimensionType.byName(new ResourceLocation(tag.getString("DimensionType")));
     }
 
     public static INetworkController readController(CompoundNBT tag) {
-        return readController(raedDimensionType(tag), readControllerPos(tag));
+        return readController(readDimensionType(tag), readControllerPos(tag));
     }
 
     public static INetworkController readController(DimensionType dimensionType, BlockPos pos) {

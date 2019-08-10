@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
@@ -29,6 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 
 public class FactoryManagerGUI extends WidgetScreen {
 
@@ -38,7 +40,7 @@ public class FactoryManagerGUI extends WidgetScreen {
     // GUI code
     ///////////////////////////////////////////////////////////////////////////
 
-    public static final int DATA_SYNC_INTERVAL = 100;
+    public static final int DATA_SYNC_INTERVAL = 6000;
 
     public static final float WIDTH_PROPORTION = 2F / 3F;
     public static final float HEIGHT_PROPORTION = 3F / 4F;
@@ -60,8 +62,19 @@ public class FactoryManagerGUI extends WidgetScreen {
     public void tick() {
         super.tick();
         if (Minecraft.getInstance().world.getGameTime() % DATA_SYNC_INTERVAL == 0) {
-            // TODO data sync
+            sync();
         }
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        sync();
+    }
+
+    private void sync() {
+        INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
+        controller.sync();
     }
 
     @Override

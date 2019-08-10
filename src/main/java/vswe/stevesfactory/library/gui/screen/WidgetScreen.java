@@ -224,6 +224,11 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         tasks.add(task);
     }
 
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Popup window support
     ///////////////////////////////////////////////////////////////////////////

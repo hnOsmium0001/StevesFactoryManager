@@ -36,6 +36,7 @@ public final class NetworkHandler {
 
     private static void registerBoth() {
         registerMessage(PacketRequestData.class, PacketRequestData::encode, PacketRequestData::decode, PacketRequestData::handle);
+        registerMessage(PacketSyncCommandGraphs.class, PacketSyncCommandGraphs::encode, PacketSyncCommandGraphs::decode, PacketSyncCommandGraphs::handle);
     }
 
     public static void sendTo(ServerPlayerEntity player, Object msg) {

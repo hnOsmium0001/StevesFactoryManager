@@ -12,6 +12,7 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 

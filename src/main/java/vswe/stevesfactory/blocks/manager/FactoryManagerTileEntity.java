@@ -22,6 +22,8 @@ import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.logic.graph.CommandGraph;
 import vswe.stevesfactory.logic.hooks.ITimedTask;
 import vswe.stevesfactory.logic.hooks.IntervalTriggerHook;
+import vswe.stevesfactory.network.NetworkHandler;
+import vswe.stevesfactory.network.PacketSyncCommandGraphs;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
@@ -254,8 +256,18 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     @Override
+    public boolean addCommandGraphs(Collection<ICommandGraph> graphs) {
+        return this.graphs.addAll(graphs);
+    }
+
+    @Override
     public boolean removeCommandGraph(ICommandGraph graph) {
         return graphs.remove(graph);
+    }
+
+    @Override
+    public void removeAllCommandGraphs() {
+        graphs.clear();
     }
 
     /**
@@ -306,6 +318,14 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     @Override
     public boolean isCable() {
         return true;
+    }
+
+    @Override
+    public void sync() {
+        assert world != null;
+        if (world.isRemote) {
+            NetworkHandler.sendToServer(new PacketSyncCommandGraphs(graphs, getDimension(), getPos()));
+        }
     }
 
     @Override
