@@ -3,8 +3,7 @@ package vswe.stevesfactory.library.logic;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.graph.CommandGraph;
 
@@ -66,15 +65,15 @@ public final class DummyProcedure implements IProcedure {
     }
 
     @Override
+    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+    }
+
+    @Override
     public CommandGraph getGraph() {
         return GRAPH;
     }
 
     @Override
     public void remove() {
-    }
-
-    public static DummyProcedure deserialize(CompoundNBT tag) {
-        return new DummyProcedure(null);
     }
 }

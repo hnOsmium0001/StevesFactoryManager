@@ -13,22 +13,16 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import vswe.stevesfactory.api.logic.ICommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
-/**
- * A directed pseudo-graph, with a root. The root node is the execution starting point.
- */
 public class CommandGraph implements ICommandGraph {
 
     private INetworkController controller;
     private IProcedure root;
-
-//    public int childCount;
 
     public CommandGraph(INetworkController controller, IProcedure root) {
         this.controller = controller;
@@ -52,20 +46,27 @@ public class CommandGraph implements ICommandGraph {
     }
 
     @Override
+    public INetworkController getController() {
+        return controller;
+    }
+
+    @Override
     public void execute() {
         new ProcedureExecutor(controller, controller.getWorld()).start(root);
     }
 
     @Override
     public Set<IProcedure> collect() {
-        return dfsCollect();
-    }
-
-    public Set<IProcedure> dfsCollect() {
         Set<IProcedure> result = new HashSet<>();
         result.add(root);
         dfs(result, root);
         return result;
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<IProcedure> iterator() {
+        return collect().iterator();
     }
 
     private Set<IProcedure> dfsCollectNoRoot() {
@@ -89,15 +90,12 @@ public class CommandGraph implements ICommandGraph {
         return new CommandGraph(controller, node);
     }
 
-    @Nonnull
-    @Override
-    public Iterator<IProcedure> iterator() {
-        return dfsCollect().iterator();
-    }
-
     @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = new CompoundNBT();
+
+        tag.putString("Dimension", controller.getDimension().getRegistryName().toString());
+        tag.put("ControllerPos", NBTUtil.writeBlockPos(controller.getPos()));
 
         Object2IntMap<IProcedure> idMap = createIDMap();
         ListNBT list = new ListNBT();
@@ -108,9 +106,6 @@ public class CommandGraph implements ICommandGraph {
         // If we ever need to make root not the first element, this might become useful
         tag.putInt("RootIndex", 0);
         tag.put("Nodes", list);
-
-        tag.putString("DimensionType", controller.getDimension().getRegistryName().toString());
-        tag.put("ControllerPos", NBTUtil.writeBlockPos(controller.getPos()));
 
         return tag;
     }
@@ -151,7 +146,9 @@ public class CommandGraph implements ICommandGraph {
 
     @Override
     public void deserialize(CompoundNBT tag) {
-        controller = readController(tag);
+        DimensionType dimension = DimensionType.byName(new ResourceLocation(tag.getString("Dimension")));
+        BlockPos pos = NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
+        controller = readController(dimension, pos);
 
         // First deserialize all the nodes themselves which makes it easier to set the connections
         ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
@@ -174,7 +171,7 @@ public class CommandGraph implements ICommandGraph {
     }
 
     private IProcedure deserializeNode(CompoundNBT nodeNBT) {
-        return NetworkHelper.retreiveProcedure(nodeNBT.getCompound("NodeData"));
+        return NetworkHelper.retrieveProcedure(this, nodeNBT.getCompound("NodeData"));
     }
 
     private void retrieveConnections(List<IProcedure> nodes, IProcedure node, CompoundNBT nodeNBT) {
@@ -193,18 +190,6 @@ public class CommandGraph implements ICommandGraph {
         CommandGraph tree = new CommandGraph();
         tree.deserialize(tag);
         return tree;
-    }
-
-    public static BlockPos readControllerPos(CompoundNBT tag) {
-        return NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
-    }
-
-    public static DimensionType readDimensionType(CompoundNBT tag) {
-        return DimensionType.byName(new ResourceLocation(tag.getString("DimensionType")));
-    }
-
-    public static INetworkController readController(CompoundNBT tag) {
-        return readController(readDimensionType(tag), readControllerPos(tag));
     }
 
     public static INetworkController readController(DimensionType dimensionType, BlockPos pos) {

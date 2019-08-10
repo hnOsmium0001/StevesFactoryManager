@@ -1,40 +1,41 @@
 package vswe.stevesfactory.library.logic;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import vswe.stevesfactory.api.SFMAPI;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.graph.CommandGraph;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public abstract class AbstractProcedure implements IProcedure {
 
     private IProcedureType<?> type;
 
-    private INetworkController controller;
     private IProcedure[] successors;
     private IProcedure[] predecessors;
 
     private transient ICommandGraph graph;
 
-    public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleParents, int possibleChildren) {
+    public AbstractProcedure(IProcedureType<?> type, ICommandGraph graph, int possibleParents, int possibleChildren) {
+        Preconditions.checkArgument(!graph.getController().isRemoved(), "The controller object is invalid!");
         this.type = type;
+        this.graph = graph;
+        this.successors = new IProcedure[possibleChildren];
+        this.predecessors = new IProcedure[possibleParents];
+    }
+
+    public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleParents, int possibleChildren) {
         this.setController(controller);
+        this.type = type;
         this.successors = new IProcedure[possibleChildren];
         this.predecessors = new IProcedure[possibleParents];
     }
 
     public INetworkController getController() {
+        INetworkController controller = graph.getController();
         Preconditions.checkArgument(!controller.isRemoved(), "The controller object is invalid!");
         return controller;
     }
@@ -42,12 +43,13 @@ public abstract class AbstractProcedure implements IProcedure {
     public void setController(INetworkController controller) {
         Preconditions.checkArgument(!controller.isRemoved(), "The controller object is invalid!");
 
-        INetworkController oldController = this.controller;
-        if (oldController != null) {
-            oldController.removeCommandGraph(graph);
+        if (graph != null) {
+            INetworkController oldController = graph.getController();
+            if (oldController != null) {
+                oldController.removeCommandGraph(graph);
+            }
         }
 
-        this.controller = controller;
         this.graph = new CommandGraph(controller, this);
         controller.addCommandGraph(graph);
     }
@@ -92,6 +94,8 @@ public abstract class AbstractProcedure implements IProcedure {
 
     @Override
     public void onLink(IProcedure predecessor, int inputIndex) {
+        INetworkController controller = getController();
+
         // In case this node is the root, remove the old graph because we are joining another graph
         if (isRoot()) {
             controller.removeCommandGraph(graph);
@@ -120,7 +124,7 @@ public abstract class AbstractProcedure implements IProcedure {
             }
         }
         graph = graph.inducedSubgraph(this);
-        controller.addCommandGraph(graph);
+        getController().addCommandGraph(graph);
     }
 
     public boolean isRoot() {
@@ -156,9 +160,12 @@ public abstract class AbstractProcedure implements IProcedure {
     public CompoundNBT serialize() {
         CompoundNBT tag = new CompoundNBT();
         tag.putString("ID", getRegistryName().toString());
-        tag.putString("DimensionType", controller.getDimension().getRegistryName().toString());
-        tag.put("ControllerPos", NBTUtil.writeBlockPos(controller.getPos()));
         return tag;
+    }
+
+    @Override
+    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+        this.graph = graph;
     }
 
     @Override
@@ -171,41 +178,16 @@ public abstract class AbstractProcedure implements IProcedure {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractProcedure that = (AbstractProcedure) o;
-        return type.equals(that.type) &&
-                Arrays.equals(successors, that.successors) &&
-                Arrays.equals(predecessors, that.predecessors);
+        return type.equals(that.type);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(type);
-        result = 31 * result + Arrays.hashCode(successors);
-        result = 31 * result + Arrays.hashCode(predecessors);
-        return result;
+        return Objects.hash(type);
     }
 
     public static IProcedureType<?> readType(CompoundNBT tag) {
         ResourceLocation id = new ResourceLocation(tag.getString("ID"));
         return SFMAPI.getProceduresRegistry().getValue(id);
-    }
-
-    public static BlockPos readControllerPos(CompoundNBT tag) {
-        return NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
-    }
-
-    public static DimensionType readDimensionType(CompoundNBT tag) {
-        return DimensionType.byName(new ResourceLocation(tag.getString("DimensionType")));
-    }
-
-    public static INetworkController readController(CompoundNBT tag) {
-        return readController(readDimensionType(tag), readControllerPos(tag));
-    }
-
-    public static INetworkController readController(DimensionType dimensionType, BlockPos pos) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (server != null) {
-            return (INetworkController) server.getWorld(dimensionType).getTileEntity(pos);
-        }
-        return (INetworkController) Minecraft.getInstance().world.getTileEntity(pos);
     }
 }

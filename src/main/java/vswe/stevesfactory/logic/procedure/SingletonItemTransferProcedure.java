@@ -9,8 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
@@ -117,15 +116,12 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
         return tag;
     }
 
-    public static SingletonItemTransferProcedure deserialize(CompoundNBT tag) {
-        SingletonItemTransferProcedure p = new SingletonItemTransferProcedure(readController(tag));
-
-        p.sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
-        p.sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
-        p.targetPos = NBTUtil.readBlockPos(tag.getCompound("TargetPos"));
-        p.targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
-
-        return p;
+    @Override
+    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+        sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
+        sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
+        targetPos = NBTUtil.readBlockPos(tag.getCompound("TargetPos"));
+        targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
     }
 
     public static FlowComponent createFlowComponent(SingletonItemTransferProcedure procedure) {

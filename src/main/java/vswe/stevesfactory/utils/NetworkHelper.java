@@ -12,8 +12,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import vswe.stevesfactory.api.SFMAPI;
-import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureType;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
 
@@ -71,11 +70,11 @@ public final class NetworkHelper {
         return result;
     }
 
-    public static IProcedure retreiveProcedure(CompoundNBT tag) {
+    public static IProcedure retrieveProcedure(ICommandGraph graph, CompoundNBT tag) {
         ResourceLocation id = new ResourceLocation(tag.getString("ID"));
         IProcedureType<?> p = SFMAPI.getProceduresRegistry().getValue(id);
         // Not using checkNotNull here because technically the above method returns null is a registry problem
         Preconditions.checkArgument(p != null, "Unable to find a procedure registered as " + id + "!");
-        return p.retrieveInstance(tag);
+        return p.retrieveInstance(graph, tag);
     }
 }

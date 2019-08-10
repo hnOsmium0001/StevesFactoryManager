@@ -37,6 +37,8 @@ public interface IProcedure {
      */
     CompoundNBT serialize();
 
+    void deserialize(ICommandGraph graph, CompoundNBT tag);
+
     ICommandGraph getGraph();
 
     /**

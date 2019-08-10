@@ -10,8 +10,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
@@ -133,15 +132,13 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
         return tag;
     }
 
-    public static BatchedItemTransferProcedure deserialize(CompoundNBT tag) {
-        BatchedItemTransferProcedure p = new BatchedItemTransferProcedure(readController(tag));
-
-        p.sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
-        p.sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
-        p.targetInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
-        p.targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
-
-        return p;
+    @Override
+    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+        super.deserialize(graph, tag);
+        sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
+        targetInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
     }
 
     public static FlowComponent createFlowComponent(BatchedItemTransferProcedure procedure) {

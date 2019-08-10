@@ -1,6 +1,5 @@
 package vswe.stevesfactory.logic;
 
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,19 +24,16 @@ public final class Procedures<P extends IProcedure> {
     public static final Procedures<TimedTriggerProcedure> TRIGGER = new Procedures<>(
             "trigger",
             TimedTriggerProcedure::new,
-            TimedTriggerProcedure::deserialize,
             TimedTriggerProcedure::createFlowComponent);
 
     public static final Procedures<SingletonItemTransferProcedure> SINGLETON_ITEM_TRANSFER = new Procedures<>(
             "singleton_item_transfer",
             SingletonItemTransferProcedure::new,
-            SingletonItemTransferProcedure::deserialize,
             SingletonItemTransferProcedure::createFlowComponent);
 
     public static final Procedures<BatchedItemTransferProcedure> BATCHED_ITEM_TRANSFER = new Procedures<>(
             "batched_item_transfer",
             BatchedItemTransferProcedure::new,
-            BatchedItemTransferProcedure::deserialize,
             BatchedItemTransferProcedure::createFlowComponent);
 
 //    ITEM_IMPORT("item_import", DummyProcedure::new),
@@ -60,13 +56,13 @@ public final class Procedures<P extends IProcedure> {
     public final String id;
     public final SimpleProcedureType<P> factory;
 
-    private Procedures(String id, Function<INetworkController, P> constructor, Function<CompoundNBT, P> retriever) {
-        this(id, constructor, retriever, null);
+    private Procedures(String id, Function<INetworkController, P> constructor) {
+        this(id, constructor, null);
     }
 
-    private Procedures(String id, Function<INetworkController, P> constructor, Function<CompoundNBT, P> retriever, Function<P, FlowComponent> flowComponentFactory) {
+    private Procedures(String id, Function<INetworkController, P> constructor, Function<P, FlowComponent> flowComponentFactory) {
         this.id = id;
-        this.factory = new SimpleProcedureType<P>(constructor, retriever, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
+        this.factory = new SimpleProcedureType<P>(constructor, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
         this.factory.setRegistryName(new ResourceLocation(StevesFactoryManager.MODID, id));
         this.factory.setFlowComponentFactory(flowComponentFactory);
     }

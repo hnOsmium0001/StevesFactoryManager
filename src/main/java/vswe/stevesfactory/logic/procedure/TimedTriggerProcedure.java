@@ -1,8 +1,7 @@
 package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.nbt.CompoundNBT;
-import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
@@ -62,10 +61,10 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITimedTa
         return tag;
     }
 
-    public static TimedTriggerProcedure deserialize(CompoundNBT tag) {
-        TimedTriggerProcedure p = new TimedTriggerProcedure(readController(tag));
-        p.interval = tag.getInt("Interval");
-        return p;
+    @Override
+    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+        super.deserialize(graph, tag);
+        interval = tag.getInt("Interval");
     }
 
     public static FlowComponent<TimedTriggerProcedure> createFlowComponent(TimedTriggerProcedure procedure) {

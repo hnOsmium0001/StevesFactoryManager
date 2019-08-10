@@ -5,35 +5,30 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
-import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureType;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntry<IProcedureType<?>> implements IProcedureType<P> {
 
     private final Function<INetworkController, P> constructor;
-    private final Function<CompoundNBT, P> retriever;
     private final ResourceLocation icon;
 
     private Function<P, FlowComponent> flowComponentFactory = this::createWidgetDefault;
 
-    public SimpleProcedureType(BiFunction<IProcedureType<P>, INetworkController, P> constructor, Function<CompoundNBT, P> retriever, ResourceLocation icon) {
+    public SimpleProcedureType(BiFunction<IProcedureType<P>, INetworkController, P> constructor, ResourceLocation icon) {
         this.constructor = c -> constructor.apply(this, c);
         this.icon = icon;
-        this.retriever = retriever;
     }
 
-    public SimpleProcedureType(Function<INetworkController, P> constructor, Function<CompoundNBT, P> retriever, ResourceLocation icon) {
+    public SimpleProcedureType(Function<INetworkController, P> constructor, ResourceLocation icon) {
         this.constructor = constructor;
         this.icon = icon;
-        this.retriever = retriever;
     }
 
     @Override
@@ -42,9 +37,11 @@ public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntr
     }
 
     @Override
-    public P retrieveInstance(CompoundNBT tag) {
+    public P retrieveInstance(ICommandGraph graph, CompoundNBT tag) {
         Preconditions.checkArgument(getRegistryNameNonnull().toString().equals(tag.getString("ID")));
-        return retriever.apply(tag);
+        P procedure = createInstance(graph.getController());
+        procedure.deserialize(graph, tag);
+        return procedure;
     }
 
     @Override
