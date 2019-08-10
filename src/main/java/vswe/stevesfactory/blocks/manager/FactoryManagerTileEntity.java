@@ -1,9 +1,11 @@
 package vswe.stevesfactory.blocks.manager;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -15,19 +17,17 @@ import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.ICommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.manager.ITriggerHook;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
-import vswe.stevesfactory.logic.execution.ProcedureExecutor;
+import vswe.stevesfactory.logic.execution.ITickable;
 import vswe.stevesfactory.logic.graph.CommandGraph;
-import vswe.stevesfactory.logic.hooks.ITimedTask;
-import vswe.stevesfactory.logic.hooks.IntervalTriggerHook;
 import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.network.PacketSyncCommandGraphs;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
-import javax.annotation.*;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
 @MethodsReturnNonnullByDefault
@@ -46,7 +46,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private Set<BlockPos> neighborInventories = new ObjectArraySet<>(6);
 
     private Set<ICommandGraph> graphs = new HashSet<>();
-    private Map<Class<?>, Object> triggerHooks = new HashMap<>();
 
     public FactoryManagerTileEntity() {
         super(ModBlocks.factoryManagerTileEntity);
@@ -79,11 +78,10 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public void tick() {
         assert world != null;
         if (!world.isRemote) {
-            for (Object value : triggerHooks.values()) {
-                // Type is checked on value put
-                @SuppressWarnings("unchecked") Set<ITriggerHook<?>> set = (Set<ITriggerHook<?>>) value;
-                for (ITriggerHook<?> hook : set) {
-                    hook.tick(this);
+            for (ICommandGraph graph : graphs) {
+                IProcedure hat = graph.getRoot();
+                if (hat instanceof ITickable) {
+                    ((ITickable) hat).tick();
                 }
             }
         }
@@ -91,7 +89,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     public void activate(PlayerEntity player) {
         StevesFactoryManager.logger.trace("Player {} activated a factory manager at {}", player, pos);
-        // TODO sync command data
+        NetworkHandler.sendTo((ServerPlayerEntity) player, new PacketSyncCommandGraphs(graphs, getDimension(), getPos()));
         search();
     }
 
@@ -167,34 +165,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         return world.getDimension().getType();
     }
 
-    @Nonnull
-    @Override
-    @SuppressWarnings("unchecked") // Checked on value put
-    public <T> Set<ITriggerHook<T>> getTypedHooks(Class<T> typeClass) {
-        assert world != null;
-        if (world.isRemote) {
-            return ImmutableSet.of();
-        }
-
-        Set<ITriggerHook<T>> hooks = (Set<ITriggerHook<T>>) triggerHooks.get(typeClass);
-        if (hooks == null) {
-            Set<ITriggerHook<T>> set = new HashSet<>();
-            triggerHooks.put(typeClass, set);
-            return set;
-        }
-        return hooks;
-    }
-
-    @Override
-    public <T> void addTypedHook(Class<T> typeClass, ITriggerHook<T> hook) {
-        assert world != null;
-        if (world.isRemote) {
-            return;
-        }
-
-        getTypedHooks(typeClass).add(hook);
-    }
-
     @Override
     public Set<BlockPos> getConnectedCables() {
         return connectedCables;
@@ -230,20 +200,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     @Override
     public void removeAllLinks() {
         linkedInventories.clear();
-    }
-
-    @Override
-    public void beginExecution(IProcedure hat) {
-        new ProcedureExecutor(this, world).start(hat);
-    }
-
-    @Override
-    public void beginExecution(CommandGraph tree) {
-        if (graphs.contains(tree)) {
-            tree.execute();
-        } else {
-            throw new IllegalArgumentException("Trying to execute a command tree that does no belong to this controller");
-        }
     }
 
     public Set<ICommandGraph> getCommandGraphs() {
@@ -303,8 +259,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         if (network != this) {
             updateLinks();
             neighborInventories.forEach(network::addLink);
-        } else {
-            addTypedHook(ITimedTask.class, new IntervalTriggerHook());
         }
     }
 

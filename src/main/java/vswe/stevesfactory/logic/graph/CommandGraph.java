@@ -9,6 +9,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import vswe.stevesfactory.api.logic.ICommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
@@ -58,8 +60,10 @@ public class CommandGraph implements ICommandGraph {
     @Override
     public Set<IProcedure> collect() {
         Set<IProcedure> result = new HashSet<>();
-        result.add(root);
-        dfs(result, root);
+        if (root != null) {
+            result.add(root);
+            dfs(result, root);
+        }
         return result;
     }
 
@@ -71,7 +75,9 @@ public class CommandGraph implements ICommandGraph {
 
     private Set<IProcedure> dfsCollectNoRoot() {
         Set<IProcedure> result = new HashSet<>();
-        dfs(result, root);
+        if (root != null) {
+            dfs(result, root);
+        }
         return result;
     }
 
@@ -193,10 +199,11 @@ public class CommandGraph implements ICommandGraph {
     }
 
     public static INetworkController readController(DimensionType dimensionType, BlockPos pos) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (server != null) {
+        if (EffectiveSide.get() == LogicalSide.SERVER) {
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             return (INetworkController) server.getWorld(dimensionType).getTileEntity(pos);
+        } else {
+            return (INetworkController) Minecraft.getInstance().world.getTileEntity(pos);
         }
-        return (INetworkController) Minecraft.getInstance().world.getTileEntity(pos);
     }
 }

@@ -21,13 +21,9 @@ public interface IProcedure {
     IProcedure[] predecessors();
 
     /**
-     * Execute this procedure, and return the next procedure the control flow should go to.
-     *
-     * @return The next procedure that should be executed such that {@link #successors()} contains {@code p}. {@code null} if the program
-     * should terminate here.
+     * Execute this procedure, and push the next procedure the control flow should go to.
      */
-    @Nullable
-    IProcedure execute(IExecutionContext context);
+    void execute(IExecutionContext context);
 
     /**
      * Serialize the procedure into a retrievable NBT format. This NBT compound should be able to be put into any factory with the same

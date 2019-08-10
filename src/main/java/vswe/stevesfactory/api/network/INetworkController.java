@@ -5,9 +5,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import vswe.stevesfactory.api.logic.ICommandGraph;
-import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.manager.ITriggerHook;
-import vswe.stevesfactory.logic.graph.CommandGraph;
 
 import java.util.Collection;
 import java.util.Set;
@@ -19,24 +16,6 @@ public interface INetworkController {
     BlockPos getPos();
 
     IWorld getWorld();
-
-    // TODO Not sure if I want this here
-//    Set<IHook> getHooks();
-
-    /**
-     * Get a set of all trigger hooks that can accept the given task type. The returned value should not be modified. Adding hooks should be
-     * done with the method {@link #addTypedHook(Class, ITriggerHook)}.
-     *
-     * @implSpec On server this will return a set containing all the described hooks; but on client this should return an empty set.
-     */
-    <T> Set<ITriggerHook<T>> getTypedHooks(Class<T> typeClass);
-
-    /**
-     * Add a hook that can accept the given task type. The provided value should show up immediately in {@link #getTypedHooks(Class)}.
-     *
-     * @implSpec Calling this method on client should do nothing, only on server should it modify the hooks content.
-     */
-    <T> void addTypedHook(Class<T> typeClass, ITriggerHook<T> hook);
 
     Set<BlockPos> getConnectedCables();
 
@@ -83,10 +62,6 @@ public interface INetworkController {
     void removeAllLinks();
 
     boolean isRemoved();
-
-    void beginExecution(IProcedure hat);
-
-    void beginExecution(CommandGraph tree);
 
     @CanIgnoreReturnValue
     boolean addCommandGraph(ICommandGraph graph);

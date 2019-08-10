@@ -28,10 +28,8 @@ public final class DummyProcedure implements IProcedure {
         return NEXTS_ARR;
     }
 
-    @Nullable
     @Override
-    public IProcedure execute(IExecutionContext context) {
-        return null;
+    public void execute(IExecutionContext context) {
     }
 
     @Override

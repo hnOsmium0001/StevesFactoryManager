@@ -10,7 +10,8 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import vswe.stevesfactory.api.logic.*;
+import vswe.stevesfactory.api.logic.ICommandGraph;
+import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
@@ -18,7 +19,6 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.SlotlessItemHandlerWrapper;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +33,8 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
         super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), controller, 1, 1);
     }
 
-    @Nullable
     @Override
-    public IProcedure execute(IExecutionContext context) {
+    public void execute(IExecutionContext context) {
         List<TileEntity> sourceTiles = new ArrayList<>(sourceInventories.size());
         for (BlockPos pos : sourceInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
@@ -117,7 +116,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
             }
         }
 
-        return successors()[0];
+        context.push(successors()[0]);
     }
 
     @Override

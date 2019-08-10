@@ -165,6 +165,7 @@ public abstract class AbstractProcedure implements IProcedure {
 
     @Override
     public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+        Preconditions.checkArgument(readType(tag) == type);
         this.graph = graph;
     }
 

@@ -31,22 +31,21 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
         super(Procedures.SINGLETON_ITEM_TRANSFER.getFactory(), controller, 1, 1);
     }
 
-    @Nullable
     @Override
-    public IProcedure execute(IExecutionContext context) {
+    public void execute(IExecutionContext context) {
 
         // TODO update logic to fix issues
-        IProcedure next = successors()[0];
+        context.push(successors()[0]);
 
         // TODO port with SlotlessItemHandler
         List<ItemStack> extractableItems = new ArrayList<>();
         TileEntity source = context.getControllerWorld().getTileEntity(this.sourcePos);
         if (source == null) {
-            return next;
+            return;
         }
         TileEntity target = context.getControllerWorld().getTileEntity(this.targetPos);
         if (target == null) {
-            return next;
+            return;
         }
 
         for (Direction direction : sourceDirections) {
@@ -100,8 +99,6 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
                 }
             }
         }
-
-        return next;
     }
 
     @Override
