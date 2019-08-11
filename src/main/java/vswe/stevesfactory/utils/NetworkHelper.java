@@ -70,7 +70,7 @@ public final class NetworkHelper {
         return result;
     }
 
-    public static IProcedure retrieveProcedure(ICommandGraph graph, CompoundNBT tag) {
+    public static IProcedure retrieveProcedure(CommandGraph graph, CompoundNBT tag) {
         ResourceLocation id = new ResourceLocation(tag.getString("ID"));
         IProcedureType<?> p = SFMAPI.getProceduresRegistry().getValue(id);
         // Not using checkNotNull here because technically the above method returns null is a registry problem

@@ -4,7 +4,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
-import vswe.stevesfactory.api.logic.ICommandGraph;
+import vswe.stevesfactory.api.logic.CommandGraph;
 
 import java.util.Collection;
 import java.util.Set;
@@ -64,13 +64,13 @@ public interface INetworkController {
     boolean isRemoved();
 
     @CanIgnoreReturnValue
-    boolean addCommandGraph(ICommandGraph graph);
+    boolean addCommandGraph(CommandGraph graph);
 
     @CanIgnoreReturnValue
-    boolean addCommandGraphs(Collection<ICommandGraph> graphs);
+    boolean addCommandGraphs(Collection<CommandGraph> graphs);
 
     @CanIgnoreReturnValue
-    boolean removeCommandGraph(ICommandGraph graph);
+    boolean removeCommandGraph(CommandGraph graph);
 
     void removeAllCommandGraphs();
 

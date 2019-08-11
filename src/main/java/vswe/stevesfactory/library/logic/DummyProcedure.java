@@ -5,9 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.graph.CommandGraph;
-
-import javax.annotation.Nullable;
+import vswe.stevesfactory.api.logic.CommandGraph;
 
 public final class DummyProcedure implements IProcedure {
 
@@ -63,7 +61,7 @@ public final class DummyProcedure implements IProcedure {
     }
 
     @Override
-    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+    public void deserialize(CommandGraph graph, CompoundNBT tag) {
     }
 
     @Override

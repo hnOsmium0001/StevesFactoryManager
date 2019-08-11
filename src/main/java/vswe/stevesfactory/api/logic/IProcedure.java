@@ -3,8 +3,6 @@ package vswe.stevesfactory.api.logic;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
-
 public interface IProcedure {
 
     ResourceLocation getRegistryName();
@@ -33,9 +31,9 @@ public interface IProcedure {
      */
     CompoundNBT serialize();
 
-    void deserialize(ICommandGraph graph, CompoundNBT tag);
+    void deserialize(CommandGraph graph, CompoundNBT tag);
 
-    ICommandGraph getGraph();
+    CommandGraph getGraph();
 
     /**
      * Remove this procedure and unlink all the related nodes.

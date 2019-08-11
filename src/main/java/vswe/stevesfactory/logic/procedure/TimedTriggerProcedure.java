@@ -1,7 +1,7 @@
 package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.nbt.CompoundNBT;
-import vswe.stevesfactory.api.logic.ICommandGraph;
+import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
@@ -46,7 +46,7 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITickabl
     }
 
     @Override
-    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+    public void deserialize(CommandGraph graph, CompoundNBT tag) {
         super.deserialize(graph, tag);
         interval = tag.getInt("Interval");
     }

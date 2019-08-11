@@ -1,23 +1,16 @@
 package vswe.stevesfactory.network;
 
 import com.google.common.base.MoreObjects;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
-import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.ICommandGraph;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.graph.CommandGraph;
+import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
@@ -27,7 +20,7 @@ public class PacketSyncCommandGraphs {
 
     public static void encode(PacketSyncCommandGraphs msg, PacketBuffer buf) {
         buf.writeInt(msg.commandGraphs.size());
-        for (ICommandGraph graph : msg.commandGraphs) {
+        for (CommandGraph graph : msg.commandGraphs) {
             buf.writeCompoundTag(graph.serialize());
         }
         buf.writeResourceLocation(Objects.requireNonNull(msg.dimension.getRegistryName()));
@@ -54,7 +47,7 @@ public class PacketSyncCommandGraphs {
             TileEntity tile = world.getTileEntity(msg.pos);
             if (tile instanceof INetworkController) {
                 INetworkController controller = (INetworkController) tile;
-                Collection<ICommandGraph> graphs = msg.getCommandGraphs();
+                Collection<CommandGraph> graphs = msg.getCommandGraphs();
                 controller.removeAllCommandGraphs();
                 controller.addCommandGraphs(graphs);
             } else {
@@ -64,12 +57,12 @@ public class PacketSyncCommandGraphs {
     }
 
     private List<CompoundNBT> data;
-    private Collection<ICommandGraph> commandGraphs;
+    private Collection<CommandGraph> commandGraphs;
 
     private DimensionType dimension;
     private BlockPos pos;
 
-    public PacketSyncCommandGraphs(Collection<ICommandGraph> commandGraphs, DimensionType dimension, BlockPos pos) {
+    public PacketSyncCommandGraphs(Collection<CommandGraph> commandGraphs, DimensionType dimension, BlockPos pos) {
         this.commandGraphs = commandGraphs;
         this.dimension = dimension;
         this.pos = pos;
@@ -81,7 +74,7 @@ public class PacketSyncCommandGraphs {
         this.pos = pos;
     }
 
-    public Collection<ICommandGraph> getCommandGraphs() {
+    public Collection<CommandGraph> getCommandGraphs() {
         if (commandGraphs == null) {
             commandGraphs = new ArrayList<>();
             for (CompoundNBT tag : data) {

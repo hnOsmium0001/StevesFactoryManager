@@ -1,4 +1,4 @@
-package vswe.stevesfactory.logic.graph;
+package vswe.stevesfactory.api.logic;
 
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -12,8 +12,6 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import vswe.stevesfactory.api.logic.ICommandGraph;
-import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.utils.NetworkHelper;
@@ -21,7 +19,7 @@ import vswe.stevesfactory.utils.NetworkHelper;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class CommandGraph implements ICommandGraph {
+public class CommandGraph implements Iterable<IProcedure> {
 
     private INetworkController controller;
     private IProcedure root;
@@ -42,22 +40,22 @@ public class CommandGraph implements ICommandGraph {
     public CommandGraph() {
     }
 
-    @Override
     public IProcedure getRoot() {
         return root;
     }
 
-    @Override
+    public void setRoot(IProcedure root) {
+        this.root = root;
+    }
+
     public INetworkController getController() {
         return controller;
     }
 
-    @Override
     public void execute() {
         new ProcedureExecutor(controller, controller.getWorld()).start(root);
     }
 
-    @Override
     public Set<IProcedure> collect() {
         Set<IProcedure> result = new HashSet<>();
         if (root != null) {
@@ -91,16 +89,14 @@ public class CommandGraph implements ICommandGraph {
         }
     }
 
-    @Override
     public CommandGraph inducedSubgraph(IProcedure node) {
         return new CommandGraph(controller, node);
     }
 
-    @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = new CompoundNBT();
 
-        tag.putString("Dimension", controller.getDimension().getRegistryName().toString());
+        tag.putString("Dimension", Objects.requireNonNull(controller.getDimension().getRegistryName()).toString());
         tag.put("ControllerPos", NBTUtil.writeBlockPos(controller.getPos()));
 
         Object2IntMap<IProcedure> idMap = createIDMap();
@@ -150,7 +146,6 @@ public class CommandGraph implements ICommandGraph {
         return tag;
     }
 
-    @Override
     public void deserialize(CompoundNBT tag) {
         DimensionType dimension = DimensionType.byName(new ResourceLocation(tag.getString("Dimension")));
         BlockPos pos = NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));

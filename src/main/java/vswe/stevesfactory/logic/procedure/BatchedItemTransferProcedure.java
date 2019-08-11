@@ -10,7 +10,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import vswe.stevesfactory.api.logic.ICommandGraph;
+import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
@@ -132,7 +132,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
     }
 
     @Override
-    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+    public void deserialize(CommandGraph graph, CompoundNBT tag) {
         super.deserialize(graph, tag);
         sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));

@@ -15,12 +15,11 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.ICommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.logic.execution.ITickable;
-import vswe.stevesfactory.logic.graph.CommandGraph;
+import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.network.PacketSyncCommandGraphs;
 import vswe.stevesfactory.setup.ModBlocks;
@@ -45,7 +44,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private LinkingStatus linkingStatus;
     private Set<BlockPos> neighborInventories = new ObjectArraySet<>(6);
 
-    private Set<ICommandGraph> graphs = new HashSet<>();
+    private Set<CommandGraph> graphs = new HashSet<>();
 
     public FactoryManagerTileEntity() {
         super(ModBlocks.factoryManagerTileEntity);
@@ -78,7 +77,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public void tick() {
         assert world != null;
         if (!world.isRemote) {
-            for (ICommandGraph graph : graphs) {
+            for (CommandGraph graph : graphs) {
                 IProcedure hat = graph.getRoot();
                 if (hat instanceof ITickable) {
                     ((ITickable) hat).tick();
@@ -202,22 +201,22 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         linkedInventories.clear();
     }
 
-    public Set<ICommandGraph> getCommandGraphs() {
+    public Set<CommandGraph> getCommandGraphs() {
         return graphs;
     }
 
     @Override
-    public boolean addCommandGraph(ICommandGraph graph) {
+    public boolean addCommandGraph(CommandGraph graph) {
         return graphs.add(graph);
     }
 
     @Override
-    public boolean addCommandGraphs(Collection<ICommandGraph> graphs) {
+    public boolean addCommandGraphs(Collection<CommandGraph> graphs) {
         return this.graphs.addAll(graphs);
     }
 
     @Override
-    public boolean removeCommandGraph(ICommandGraph graph) {
+    public boolean removeCommandGraph(CommandGraph graph) {
         return graphs.remove(graph);
     }
 
@@ -319,7 +318,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         compound.put(KEY_LINKED_INVENTORIES, serializedInventories);
 
         ListNBT commandGraphs = new ListNBT();
-        for (ICommandGraph graph : graphs) {
+        for (CommandGraph graph : graphs) {
             commandGraphs.add(graph.serialize());
         }
         compound.put("CommandGraphs", commandGraphs);

@@ -37,7 +37,7 @@ public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntr
     }
 
     @Override
-    public P retrieveInstance(ICommandGraph graph, CompoundNBT tag) {
+    public P retrieveInstance(CommandGraph graph, CompoundNBT tag) {
         Preconditions.checkArgument(getRegistryNameNonnull().toString().equals(tag.getString("ID")));
         P procedure = createInstance(graph.getController());
         procedure.deserialize(graph, tag);

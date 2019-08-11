@@ -16,7 +16,6 @@ import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.utils.IOHelper;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +113,7 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     }
 
     @Override
-    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+    public void deserialize(CommandGraph graph, CompoundNBT tag) {
         sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
         sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
         targetPos = NBTUtil.readBlockPos(tag.getCompound("TargetPos"));

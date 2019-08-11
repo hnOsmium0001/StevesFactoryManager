@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.SFMAPI;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.graph.CommandGraph;
+import vswe.stevesfactory.api.logic.CommandGraph;
 
 import java.util.Objects;
 
@@ -17,9 +17,9 @@ public abstract class AbstractProcedure implements IProcedure {
     private IProcedure[] successors;
     private IProcedure[] predecessors;
 
-    private transient ICommandGraph graph;
+    private transient CommandGraph graph;
 
-    public AbstractProcedure(IProcedureType<?> type, ICommandGraph graph, int possibleParents, int possibleChildren) {
+    public AbstractProcedure(IProcedureType<?> type, CommandGraph graph, int possibleParents, int possibleChildren) {
         Preconditions.checkArgument(!graph.getController().isRemoved(), "The controller object is invalid!");
         this.type = type;
         this.graph = graph;
@@ -146,7 +146,7 @@ public abstract class AbstractProcedure implements IProcedure {
     }
 
     @Override
-    public ICommandGraph getGraph() {
+    public CommandGraph getGraph() {
         return graph;
     }
 
@@ -164,7 +164,7 @@ public abstract class AbstractProcedure implements IProcedure {
     }
 
     @Override
-    public void deserialize(ICommandGraph graph, CompoundNBT tag) {
+    public void deserialize(CommandGraph graph, CompoundNBT tag) {
         Preconditions.checkArgument(readType(tag) == type);
         this.graph = graph;
     }

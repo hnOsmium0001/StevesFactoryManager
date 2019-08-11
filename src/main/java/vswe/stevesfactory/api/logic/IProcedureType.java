@@ -15,7 +15,7 @@ public interface IProcedureType<P extends IProcedure> extends IForgeRegistryEntr
      */
     P createInstance(INetworkController controller);
 
-    P retrieveInstance(ICommandGraph graph, CompoundNBT tag);
+    P retrieveInstance(CommandGraph graph, CompoundNBT tag);
 
     /**
      * Get the icon used for component selection panel
