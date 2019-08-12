@@ -120,7 +120,8 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
         targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
     }
 
-    public static FlowComponent createFlowComponent(SingletonItemTransferProcedure procedure) {
-        return Procedures.SINGLETON_ITEM_TRANSFER.factory.createWidgetDefault(procedure);
+    @Override
+    public FlowComponent<SingletonItemTransferProcedure> createFlowComponent() {
+        return FlowComponent.of(this);
     }
 }

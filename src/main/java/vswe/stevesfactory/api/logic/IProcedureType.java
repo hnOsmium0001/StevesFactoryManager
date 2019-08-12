@@ -23,12 +23,4 @@ public interface IProcedureType<P extends IProcedure> extends IForgeRegistryEntr
      * This should only be called on the client side for GUI purposes only.
      */
     ResourceLocation getIcon();
-
-    /**
-     * Create a flow component object that represents the procedure instance such that we can retrieve a identical instance (i.e. {@link
-     * #equals(Object)} returns {@code true}) based the flow component created.
-     * <p>
-     * This should only be called on the client side for GUI purposes only.
-     */
-    FlowComponent createWidget(P procedure);
 }

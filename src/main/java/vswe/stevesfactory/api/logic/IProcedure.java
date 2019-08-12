@@ -2,8 +2,11 @@ package vswe.stevesfactory.api.logic;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 public interface IProcedure {
+
+    IProcedureType<?> getType();
 
     ResourceLocation getRegistryName();
 
@@ -25,13 +28,16 @@ public interface IProcedure {
 
     /**
      * Serialize the procedure into a retrievable NBT format. This NBT compound should be able to be put into any factory with the same
-     * registry name as this, and results in an equivalent procedure object using {@link IProcedureType#retrieveInstance(CompoundNBT)}.
+     * registry name as this, and results in an equivalent procedure object using {@link IProcedureType#retrieveInstance(CommandGraph,
+     * CompoundNBT)}.
      *
      * @implSpec The resulting NBT must contain an entry with the key "{@code ID}", associated with the registry name of the procedure.
      */
     CompoundNBT serialize();
 
     void deserialize(CommandGraph graph, CompoundNBT tag);
+
+    FlowComponent<?> createFlowComponent();
 
     CommandGraph getGraph();
 

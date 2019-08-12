@@ -43,6 +43,15 @@ public abstract class ValueField<V> extends TextField {
             super.setValue(number);
             return this;
         }
+
+        @Override
+        public void onFocusChanged(boolean focus) {
+            // On loss focus, we override the text with number
+            // This is for special format limiting that does not throw an exception
+            if (!focus) {
+                setText(getStringifier().apply(number));
+            }
+        }
     }
 
     public static <V> ValidatorBasedValueField<V> validatorBasedValueField(int width, int height) {
@@ -97,7 +106,6 @@ public abstract class ValueField<V> extends TextField {
 
     protected ValueField(int x, int y, int width, int height) {
         super(x, y, width, height);
-        super.updateText("0");
     }
 
     @CanIgnoreReturnValue

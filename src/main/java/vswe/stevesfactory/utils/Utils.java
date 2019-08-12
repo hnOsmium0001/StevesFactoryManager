@@ -3,6 +3,7 @@ package vswe.stevesfactory.utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
@@ -33,15 +34,15 @@ public final class Utils {
     /**
      * Semantic purposing method that directs to {@link Math#max(int, int)}.
      */
-    public static int lowerBound(int i, int lowerBound) {
-        return Math.max(i, lowerBound);
+    public static int lowerBound(int n, int lowerBound) {
+        return Math.max(n, lowerBound);
     }
 
     /**
      * Semantic purposing method that directs to {@link Math#min(int, int)}.
      */
-    public static int upperBound(int i, int upperBound) {
-        return Math.min(i, upperBound);
+    public static int upperBound(int n, int upperBound) {
+        return Math.min(n, upperBound);
     }
 
     /**

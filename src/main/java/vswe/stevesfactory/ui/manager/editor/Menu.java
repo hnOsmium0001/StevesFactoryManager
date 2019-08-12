@@ -1,5 +1,6 @@
 package vswe.stevesfactory.ui.manager.editor;
 
+import com.google.common.base.Preconditions;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
@@ -82,7 +83,7 @@ public abstract class Menu<P extends IProcedure> extends AbstractContainer<IWidg
     public static final int DEFAULT_CONTENT_HEIGHT = 65;
 
     private FlowComponent<P> flowComponent;
-    
+
     private State state = State.COLLAPSED;
 
     private ToggleStateButton toggleStateButton;
@@ -202,8 +203,14 @@ public abstract class Menu<P extends IProcedure> extends AbstractContainer<IWidg
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        super.mouseClicked(mouseX, mouseY, button);
-        return isInside(mouseX, mouseY);
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        if (isInside(mouseX, mouseY)) {
+            getWindow().setFocusedWidget(this);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -215,7 +222,7 @@ public abstract class Menu<P extends IProcedure> extends AbstractContainer<IWidg
     public void onRemoved() {
         updateData();
     }
-    
+
     protected void updateData() {
     }
 
@@ -227,6 +234,7 @@ public abstract class Menu<P extends IProcedure> extends AbstractContainer<IWidg
     }
 
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
+        Preconditions.checkState(this.flowComponent == null);
         this.flowComponent = flowComponent;
         this.setParentWidget(flowComponent.getMenusBox());
     }

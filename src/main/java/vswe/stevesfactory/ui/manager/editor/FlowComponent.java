@@ -1,6 +1,7 @@
 package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
@@ -25,7 +26,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public abstract class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
+public class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
@@ -246,10 +247,11 @@ public abstract class FlowComponent<P extends IProcedure> extends AbstractContai
 
         private String previousName;
 
-        public CancelButton(FlowComponent parent) {
+        public CancelButton(FlowComponent parent, String previousName) {
             super(-1, -1, 7, 7);
             setParentWidget(parent);
             setEnabled(false);
+            this.previousName = previousName;
         }
 
         @Override
@@ -303,6 +305,15 @@ public abstract class FlowComponent<P extends IProcedure> extends AbstractContai
         }
     }
 
+    public static <P extends IProcedure> FlowComponent<P> of(P procedure, int inputNodes, int outputNodes) {
+        String name = I18n.format("logic.sfm." + procedure.getRegistryName().getPath());
+        return new FlowComponent<>(procedure, name, inputNodes, outputNodes);
+    }
+
+    public static <P extends IProcedure> FlowComponent<P> of(P procedure) {
+        return of(procedure, 1, 1);
+    }
+
     private static final ResourceLocation DELETE_ICON = RenderingHelper.linkTexture("gui/actions/delete.png");
     private static final ResourceLocation COPY_ICON = RenderingHelper.linkTexture("gui/actions/copy.png");
     private static final ResourceLocation CUT_ICON = RenderingHelper.linkTexture("gui/actions/cut.png");
@@ -331,26 +342,27 @@ public abstract class FlowComponent<P extends IProcedure> extends AbstractContai
     private int initialDragLocalX;
     private int initialDragLocalY;
 
-    public FlowComponent(P procedure, int amountInputsNodes, int amountOutputNodes) {
+    public FlowComponent(P procedure, String name, int inputNodes, int outputNodes) {
         super(0, 0, 0, 0);
         this.procedure = procedure;
         this.toggleStateButton = new ToggleStateButton(this);
         this.renameButton = new RenameButton(this);
         this.submitButton = new SubmitButton(this);
-        this.cancelButton = new CancelButton(this);
+        this.cancelButton = new CancelButton(this, name);
         // The cursor looks a bit to short (and cute) with these numbers, might want change them?
         this.nameBox = new TextField(8, 8, 35, 10)
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
+                .setText(name)
                 .setEditable(false);
-        this.inputNodes = ControlFlowNodes.inputNodes(amountInputsNodes);
-        this.outputNodes = ControlFlowNodes.outputNodes(amountOutputNodes);
+        this.inputNodes = ControlFlowNodes.inputNodes(inputNodes);
+        this.outputNodes = ControlFlowNodes.outputNodes(outputNodes);
         this.menus = new Box<>(2, 20, 120, 130);
         this.menus.setLayout(m -> {
             if (menus.isEnabled()) {
                 FlowLayout.reflow(m);
             }
         });
-        this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, inputNodes, outputNodes, menus);
+        this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, this.inputNodes, this.outputNodes, menus);
 
         this.collapse();
         this.reflow();

@@ -140,7 +140,8 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
         targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
     }
 
-    public static FlowComponent createFlowComponent(BatchedItemTransferProcedure procedure) {
-        return Procedures.BATCHED_ITEM_TRANSFER.factory.createWidgetDefault(procedure);
+    @Override
+    public FlowComponent<BatchedItemTransferProcedure> createFlowComponent() {
+        return FlowComponent.of(this);
     }
 }

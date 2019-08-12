@@ -5,15 +5,21 @@ import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.api.logic.CommandGraph;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 public final class DummyProcedure implements IProcedure {
 
     private static final ResourceLocation NAME = new ResourceLocation(StevesFactoryManager.MODID, "dummy");
+    private static final IProcedureType<DummyProcedure> TYPE = new SimpleProcedureType<>(DummyProcedure::new, NAME);
     private static final IProcedure[] NEXTS_ARR = new IProcedure[0];
     private static final CommandGraph GRAPH = new CommandGraph();
 
     public DummyProcedure(INetworkController controller) {
+    }
+
+    @Override
+    public IProcedureType<?> getType() {
+        return TYPE;
     }
 
     @Override
@@ -62,6 +68,11 @@ public final class DummyProcedure implements IProcedure {
 
     @Override
     public void deserialize(CommandGraph graph, CompoundNBT tag) {
+    }
+
+    @Override
+    public FlowComponent<?> createFlowComponent() {
+        return FlowComponent.of(this);
     }
 
     @Override

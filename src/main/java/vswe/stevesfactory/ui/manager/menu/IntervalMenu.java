@@ -4,6 +4,7 @@ import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.widget.NumberField;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.logic.procedure.TimedTriggerProcedure;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -11,14 +12,21 @@ public class IntervalMenu extends Menu<TimedTriggerProcedure> {
 
     public static final int MARGIN_MIDDLE_UNIT_TEXT = 10;
 
-    private NumberField<Integer> interval = NumberField.integerField(38, 14)
+    private final NumberField<Integer> interval = NumberField.integerFieldRanged(38, 14, 1, 1, 999)
             .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
             .setValue(1);
 
     public IntervalMenu() {
         int x = RenderingHelper.getXForAlignedCenter(0, getWidth(), interval.getWidth() + MARGIN_MIDDLE_UNIT_TEXT + fontRenderer().getStringWidth(getUnitText()));
         interval.setLocation(x, 50);
+
         addChildren(interval);
+    }
+
+    @Override
+    public void onLinkFlowComponent(FlowComponent<TimedTriggerProcedure> flowComponent) {
+        super.onLinkFlowComponent(flowComponent);
+        interval.setValue(getLinkedProcedure().interval / 20);
     }
 
     @Override

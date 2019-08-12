@@ -1,10 +1,18 @@
 package vswe.stevesfactory.ui.manager.editor;
 
 import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.api.logic.CommandGraph;
+import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.IContainer;
+import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.ControlFlowNodes.Node;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -28,6 +36,18 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
     public EditorPanel() {
         super(WidthOccupierType.MAX_WIDTH);
+        readProcedures();
+    }
+
+    public void readProcedures() {
+        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).controllerPos;
+        INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
+        for (CommandGraph graph : controller.getCommandGraphs()) {
+            for (IProcedure procedure : graph.collect()) {
+                FlowComponent<?> f = procedure.createFlowComponent();
+                addChildren(f);
+            }
+        }
     }
 
     @Override
@@ -36,7 +56,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     }
 
     @Override
-    public IContainer<FlowComponent<?>> addChildren(FlowComponent<?> widget) {
+    public EditorPanel addChildren(FlowComponent<?> widget) {
         widget.setParentWidget(this);
         widget.setZIndex(nextZIndex());
         children.add(widget);
@@ -44,7 +64,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     }
 
     @Override
-    public IContainer<FlowComponent<?>> addChildren(Collection<FlowComponent<?>> widgets) {
+    public EditorPanel addChildren(Collection<FlowComponent<?>> widgets) {
         for (FlowComponent<?> widget : widgets) {
             widget.setParentWidget(this);
             widget.setZIndex(nextZIndex());
@@ -122,10 +142,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         return nextID++;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Node selection logic
-    ///////////////////////////////////////////////////////////////////////////
-
     public void startConnection(Node source) {
         selectedNode = source;
     }
@@ -138,10 +154,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         }
         return false;
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Node selection logic end
-    ///////////////////////////////////////////////////////////////////////////
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault

@@ -57,7 +57,7 @@ public class ComponentSelectionButton extends AbstractWidget implements Relocata
         EditorPanel editorPanel = getParentWidget().getParentWidget().editorPanel;
         BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).controllerPos;
         INetworkController controller = (INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos);
-        FlowComponent<?> flowComponent = component.createWidget(component.createInstance(controller));
+        FlowComponent<?> flowComponent = component.createInstance(controller).createFlowComponent();
         editorPanel.addChildren(flowComponent);
         return true;
     }

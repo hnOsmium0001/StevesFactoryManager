@@ -6,7 +6,6 @@ import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.SFMAPI;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.api.logic.CommandGraph;
 
 import java.util.Objects;
 
@@ -139,8 +138,12 @@ public abstract class AbstractProcedure implements IProcedure {
         for (int i = 0; i < successors.length; i++) {
             unlink(i);
         }
+        if (isRoot()) {
+            getController().removeCommandGraph(graph);
+        }
     }
 
+    @Override
     public IProcedureType<?> getType() {
         return type;
     }

@@ -63,6 +63,8 @@ public interface INetworkController {
 
     boolean isRemoved();
 
+    Collection<CommandGraph> getCommandGraphs();
+
     @CanIgnoreReturnValue
     boolean addCommandGraph(CommandGraph graph);
 

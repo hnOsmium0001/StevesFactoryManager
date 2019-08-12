@@ -16,11 +16,12 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITickabl
     public int interval = 20;
 
     public TimedTriggerProcedure(INetworkController controller) {
-        super(Procedures.TRIGGER.getFactory(), controller, 0, 1);
+        super(Procedures.TIMED_TRIGGER.getFactory(), controller, 0, 1);
     }
 
     @Override
     public void execute(IExecutionContext context) {
+        System.out.println("e");
         context.push(successors()[0]);
     }
 
@@ -38,6 +39,10 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITickabl
         return interval;
     }
 
+    public void setInterval(int interval) {
+        this.interval = interval;
+    }
+
     @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = super.serialize();
@@ -51,8 +56,9 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITickabl
         interval = tag.getInt("Interval");
     }
 
-    public static FlowComponent<TimedTriggerProcedure> createFlowComponent(TimedTriggerProcedure procedure) {
-        FlowComponent<TimedTriggerProcedure> f = Procedures.TRIGGER.factory.createWidgetDefault(procedure, 0, 1);
+    @Override
+    public FlowComponent<TimedTriggerProcedure> createFlowComponent() {
+        FlowComponent<TimedTriggerProcedure> f = FlowComponent.of(this, 0, 1);
         f.addMenu(new IntervalMenu());
         return f;
     }

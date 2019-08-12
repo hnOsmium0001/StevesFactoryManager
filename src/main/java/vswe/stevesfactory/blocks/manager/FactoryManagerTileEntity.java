@@ -1,5 +1,6 @@
 package vswe.stevesfactory.blocks.manager;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
@@ -15,13 +16,12 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.blocks.BaseTileEntity;
 import vswe.stevesfactory.logic.execution.ITickable;
-import vswe.stevesfactory.api.logic.CommandGraph;
-import vswe.stevesfactory.network.NetworkHandler;
-import vswe.stevesfactory.network.PacketSyncCommandGraphs;
+import vswe.stevesfactory.network.*;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
@@ -87,8 +87,13 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     public void activate(PlayerEntity player) {
+        assert world != null;
+        Preconditions.checkState(!world.isRemote);
         StevesFactoryManager.logger.trace("Player {} activated a factory manager at {}", player, pos);
-        NetworkHandler.sendTo((ServerPlayerEntity) player, new PacketSyncCommandGraphs(graphs, getDimension(), getPos()));
+
+        ServerPlayerEntity client = (ServerPlayerEntity) player;
+        PacketRequest.openFactoryManager(client, getDimension(), getPos(), graphs);
+
         search();
     }
 
@@ -201,6 +206,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         linkedInventories.clear();
     }
 
+    @Override
     public Set<CommandGraph> getCommandGraphs() {
         return graphs;
     }

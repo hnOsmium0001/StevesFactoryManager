@@ -220,6 +220,15 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         }
     }
 
+    @Override
+    public void onClose() {
+        super.onClose();
+        for (IWindow window : windows) {
+            window.onRemoved();
+        }
+        primaryWindow.onRemoved();
+    }
+
     public void scheduleTask(Consumer<WidgetScreen> task) {
         tasks.add(task);
     }

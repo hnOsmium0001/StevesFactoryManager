@@ -9,8 +9,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkEvent;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.api.logic.CommandGraph;
+import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
@@ -42,18 +42,31 @@ public class PacketSyncCommandGraphs {
     public static void handle(PacketSyncCommandGraphs msg, Supplier<NetworkEvent.Context> ctxSupplier) {
         NetworkEvent.Context ctx = ctxSupplier.get();
         ctx.enqueueWork(() -> {
-            World world = Utils.getWorldForSide(msg.dimension);
-
-            TileEntity tile = world.getTileEntity(msg.pos);
-            if (tile instanceof INetworkController) {
-                INetworkController controller = (INetworkController) tile;
-                Collection<CommandGraph> graphs = msg.getCommandGraphs();
-                controller.removeAllCommandGraphs();
-                controller.addCommandGraphs(graphs);
-            } else {
-                StevesFactoryManager.logger.warn("Received packet with invalid controller position! {}", msg);
-            }
+            handle(msg);
+            ctx.setPacketHandled(true);
         });
+    }
+
+    /**
+     * Main packet handling logic. Must be run on main (Server/Client Thread) thread.
+     */
+    private static void handle(PacketSyncCommandGraphs msg) {
+        World world = Utils.getWorldForSide(msg.dimension);
+
+        TileEntity tile = world.getTileEntity(msg.pos);
+        if (tile instanceof INetworkController) {
+            INetworkController controller = (INetworkController) tile;
+            Collection<CommandGraph> graphs = msg.getCommandGraphs();
+            controller.removeAllCommandGraphs();
+            controller.addCommandGraphs(graphs);
+        } else {
+            StevesFactoryManager.logger.warn("Received packet with invalid controller position! {}", msg);
+        }
+    }
+
+    static void handleBuffer(PacketBuffer buf) {
+        PacketSyncCommandGraphs pkt = decode(buf);
+        handle(pkt);
     }
 
     private List<CompoundNBT> data;
@@ -78,7 +91,6 @@ public class PacketSyncCommandGraphs {
         if (commandGraphs == null) {
             commandGraphs = new ArrayList<>();
             for (CompoundNBT tag : data) {
-                // TODO custom implementation compat
                 commandGraphs.add(CommandGraph.deserializeFrom(tag));
             }
         }

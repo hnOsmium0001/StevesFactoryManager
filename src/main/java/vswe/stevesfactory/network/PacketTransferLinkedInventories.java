@@ -24,12 +24,14 @@ public final class PacketTransferLinkedInventories {
         return new PacketTransferLinkedInventories(controllerPos, linkedInventories);
     }
 
-    public static void handle(PacketTransferLinkedInventories msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketTransferLinkedInventories msg, Supplier<NetworkEvent.Context> ctxSupplier) {
+        NetworkEvent.Context ctx = ctxSupplier.get();
+        ctx.enqueueWork(() -> {
             World world = Minecraft.getInstance().world;
             INetworkController controller = Objects.requireNonNull((INetworkController) world.getTileEntity(msg.controllerPos));
             controller.removeAllLinks();
             controller.addLinks(msg.linkedInventories);
+            ctx.setPacketHandled(true);
         });
     }
 
