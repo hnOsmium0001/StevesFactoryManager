@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.base.Preconditions;
 import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.IProcedureDataStorage;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -15,7 +16,7 @@ import vswe.stevesfactory.utils.RenderingHelper;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public abstract class Menu<P extends IProcedure> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
+public abstract class Menu<P extends IProcedure & IProcedureDataStorage> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 40, 9, 9),

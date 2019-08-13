@@ -5,6 +5,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.IProcedureDataStorage;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
@@ -18,7 +19,7 @@ import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.Box;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
-import vswe.stevesfactory.ui.manager.editor.ControlFlowNodes.Node;
+import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;
@@ -26,7 +27,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
+public class FlowComponent<P extends IProcedure & IProcedureDataStorage> extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
@@ -305,12 +306,12 @@ public class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidg
         }
     }
 
-    public static <P extends IProcedure> FlowComponent<P> of(P procedure, int inputNodes, int outputNodes) {
+    public static <P extends IProcedure & IProcedureDataStorage> FlowComponent<P> of(P procedure, int inputNodes, int outputNodes) {
         String name = I18n.format("logic.sfm." + procedure.getRegistryName().getPath());
         return new FlowComponent<>(procedure, name, inputNodes, outputNodes);
     }
 
-    public static <P extends IProcedure> FlowComponent<P> of(P procedure) {
+    public static <P extends IProcedure & IProcedureDataStorage> FlowComponent<P> of(P procedure) {
         return of(procedure, 1, 1);
     }
 
@@ -328,8 +329,8 @@ public class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidg
     private final SubmitButton submitButton;
     private final CancelButton cancelButton;
     private final TextField nameBox;
-    private final ControlFlowNodes inputNodes;
-    private final ControlFlowNodes outputNodes;
+    private final ControlFlow inputNodes;
+    private final ControlFlow outputNodes;
     private final Box<Menu<P>> menus;
     // A list that refers to all the widgets above
     private final List<IWidget> children;
@@ -344,7 +345,7 @@ public class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidg
 
     public FlowComponent(P procedure, String name, int inputNodes, int outputNodes) {
         super(0, 0, 0, 0);
-        this.procedure = procedure;
+        this.setLinkedProcedure(procedure);
         this.toggleStateButton = new ToggleStateButton(this);
         this.renameButton = new RenameButton(this);
         this.submitButton = new SubmitButton(this);
@@ -354,8 +355,8 @@ public class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidg
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setText(name)
                 .setEditable(false);
-        this.inputNodes = ControlFlowNodes.inputNodes(inputNodes);
-        this.outputNodes = ControlFlowNodes.outputNodes(outputNodes);
+        this.inputNodes = ControlFlow.inputNodes(inputNodes);
+        this.outputNodes = ControlFlow.outputNodes(outputNodes);
         this.menus = new Box<>(2, 20, 120, 130);
         this.menus.setLayout(m -> {
             if (menus.isEnabled()) {
@@ -506,7 +507,11 @@ public class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidg
         }
         if (isFocused() && isDragging()) {
             EditorPanel parent = getParentWidget();
-            setLocation((int) mouseX - parent.getAbsoluteX() - initialDragLocalX, (int) mouseY - parent.getAbsoluteY() - initialDragLocalY);
+            int x = (int) mouseX - parent.getAbsoluteX() - initialDragLocalX;
+            int y = (int) mouseY - parent.getAbsoluteY() - initialDragLocalY;
+            setLocation(x, y);
+            procedure.setComponentX(x);
+            procedure.setComponentY(y);
             return true;
         }
         return false;
@@ -553,11 +558,11 @@ public class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidg
         procedure.remove();
     }
 
-    public ControlFlowNodes getInputNodes() {
+    public ControlFlow getInputNodes() {
         return inputNodes;
     }
 
-    public ControlFlowNodes getOutputNodes() {
+    public ControlFlow getOutputNodes() {
         return outputNodes;
     }
 
@@ -590,9 +595,14 @@ public class FlowComponent<P extends IProcedure> extends AbstractContainer<IWidg
         return procedure;
     }
 
-    public FlowComponent<P> setLinkedProcedure(P procedure) {
+    public void setLinkedProcedure(P procedure) {
         this.procedure = procedure;
-        return this;
+        setLocation(procedure.getComponentX(), procedure.getComponentY());
+    }
+
+    void readConnections(Map<IProcedure, FlowComponent<?>> m) {
+        this.inputNodes.readConnections(m, procedure);
+        this.outputNodes.readConnections(m, procedure);
     }
 
     @Override

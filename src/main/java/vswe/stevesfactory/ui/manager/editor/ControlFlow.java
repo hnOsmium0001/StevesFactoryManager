@@ -1,10 +1,12 @@
 package vswe.stevesfactory.ui.manager.editor;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.IProcedureDataStorage;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
@@ -13,14 +15,13 @@ import vswe.stevesfactory.library.gui.widget.mixin.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
-import static vswe.stevesfactory.ui.manager.editor.ControlFlowNodes.Node;
+import static vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 
-public class ControlFlowNodes extends AbstractContainer<Node> implements ResizableWidgetMixin {
+public abstract class ControlFlow extends AbstractContainer<Node> implements ResizableWidgetMixin {
 
     public static abstract class Node extends AbstractIconButton implements IWidget, LeafWidgetMixin, RelocatableWidgetMixin {
 
@@ -57,7 +58,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         private Node pairedNode;
         private int index;
 
-        public Node(ControlFlowNodes parent, int index) {
+        public Node(ControlFlow parent, int index) {
             super(0, 0, WIDTH, HEIGHT);
             setParentWidget(parent);
             this.index = index;
@@ -148,8 +149,8 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
 
         @Nonnull
         @Override
-        public ControlFlowNodes getParentWidget() {
-            return (ControlFlowNodes) Objects.requireNonNull(super.getParentWidget());
+        public ControlFlow getParentWidget() {
+            return (ControlFlow) Objects.requireNonNull(super.getParentWidget());
         }
 
         public FlowComponent<?> getFlowComponent() {
@@ -166,7 +167,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         private static final TextureWrapper INPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 64, WIDTH, HEIGHT);
         private static final TextureWrapper INPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 64, WIDTH, HEIGHT);
 
-        public InputNode(ControlFlowNodes parent, int index) {
+        public InputNode(ControlFlow parent, int index) {
             super(parent, index);
         }
 
@@ -213,7 +214,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         private static final TextureWrapper OUTPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 58, WIDTH, HEIGHT);
         private static final TextureWrapper OUTPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 58, WIDTH, HEIGHT);
 
-        public OutputNode(ControlFlowNodes parent, int index) {
+        public OutputNode(ControlFlow parent, int index) {
             super(parent, index);
         }
 
@@ -277,18 +278,70 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         }
     }
 
-    public static ControlFlowNodes inputNodes(int amount) {
-        return new ControlFlowNodes(amount, InputNode::new);
+    public static ControlFlow inputNodes(int amount) {
+        return new ControlFlow(amount, InputNode::new) {
+            @Override
+            void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure) {
+                // Only connect on output nodes
+//                ImmutableList<Node> nodes = getChildren();
+//                IProcedure[] predecessors = procedure.predecessors();
+//                Preconditions.checkState(predecessors.length == nodes.size());
+//
+//                for (int i = 0; i < predecessors.length; i++) {
+//                    IProcedure predecessor = predecessors[i];
+//                    if (predecessor == null) {
+//                        continue;
+//                    }
+//                    Node node = nodes.get(i);
+//
+//                    // Search for index of the node that connects to this procedure
+//                    IProcedure[] successors = predecessor.successors();
+//                    for (int j = 0; j < successors.length; j++) {
+//                        IProcedure successor = successors[j];
+//                        if (successor == procedure) {
+//                            FlowComponent<?> f = m.get(predecessor);
+//                            node.connect(f.getOutputNodes().nodes.get(j));
+//                            break;
+//                        }
+//                    }
+//                }
+            }
+        };
     }
 
-    public static ControlFlowNodes outputNodes(int amount) {
-        return new ControlFlowNodes(amount, OutputNode::new);
+    public static ControlFlow outputNodes(int amount) {
+        return new ControlFlow(amount, OutputNode::new) {
+            @Override
+            void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure) {
+                ImmutableList<Node> nodes = getChildren();
+                IProcedure[] successors = procedure.successors();
+                Preconditions.checkState(successors.length == nodes.size());
+
+                for (int i = 0; i < successors.length; i++) {
+                    IProcedure successor = successors[i];
+                    if (successor == null) {
+                        continue;
+                    }
+                    Node node = nodes.get(i);
+
+                    IProcedure[] predecessors = successor.predecessors();
+                    for (int j = 0; j < predecessors.length; j++) {
+                        IProcedure predecessor = predecessors[i];
+                        if (predecessor == procedure) {
+                            FlowComponent<?> f = m.get(successor);
+                            node.connect(f.getInputNodes().nodes.get(j));
+                            break;
+                        }
+                    }
+                }
+            }
+        };
     }
 
     private final ImmutableList<Node> nodes;
 
     @SuppressWarnings("UnstableApiUsage")
-    public ControlFlowNodes(int amountNodes, BiFunction<ControlFlowNodes, Integer, ? extends Node> factory) {
+    public ControlFlow(int amountNodes, BiFunction<ControlFlow, Integer, ? extends Node> factory) {
         super(0, 0, 0, Node.HEIGHT);
         ImmutableList.Builder<Node> builder = ImmutableList.builderWithExpectedSize(amountNodes);
         for (int i = 0; i < amountNodes; i++) {
@@ -315,6 +368,7 @@ public class ControlFlowNodes extends AbstractContainer<Node> implements Resizab
         return nodes;
     }
 
+   abstract void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure) ;
     public void removeConnection(int i) {
         nodes.get(i).disconnect();
     }

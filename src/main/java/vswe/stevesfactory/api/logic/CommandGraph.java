@@ -101,12 +101,14 @@ public class CommandGraph implements Iterable<IProcedure> {
 
         Object2IntMap<IProcedure> idMap = createIDMap();
         ListNBT list = new ListNBT();
-        for (IProcedure node : idMap.keySet()) {
+        for (Object2IntMap.Entry<IProcedure> entry : idMap.object2IntEntrySet()) {
+            IProcedure node = entry.getKey();
+            int id = entry.getIntValue();
             list.add(serializeNode(node, idMap));
         }
         // This is for compatibility reasons
         // If we ever need to make root not the first element, this might become useful
-        tag.putInt("RootIndex", 0);
+        tag.putInt("RootID", 0);
         tag.put("Nodes", list);
 
         return tag;
@@ -129,20 +131,19 @@ public class CommandGraph implements Iterable<IProcedure> {
         int[] children = new int[successors.length];
         for (int i = 0; i < successors.length; i++) {
             IProcedure successor = successors[i];
-            if (successor == null) {
-                children[i] = -1;
-                continue;
-            }
+            children[i] = idMap.getOrDefault(successor, -1);
+        }
 
-            int id = idMap.getOrDefault(successor, -1);
-            if (id == -1) {
-                throw new IllegalArgumentException();
-            }
-            children[i] = id;
+        IProcedure[] predecessors = node.predecessors();
+        int[] parents = new int[predecessors.length];
+        for (int i = 0; i < predecessors.length; i++) {
+            IProcedure predecessor = predecessors[i];
+            parents[i] = idMap.getOrDefault(predecessor, -1);
         }
 
         tag.put("NodeData", node.serialize());
         tag.putIntArray("Children", children);
+        tag.putIntArray("Parents", parents);
         return tag;
     }
 
@@ -167,7 +168,7 @@ public class CommandGraph implements Iterable<IProcedure> {
             retrieveConnections(nodes, node, nodeNBT);
         }
 
-        int rootID = tag.getInt("RootIndex");
+        int rootID = tag.getInt("RootID");
         this.root = nodes.get(rootID);
     }
 
@@ -179,11 +180,13 @@ public class CommandGraph implements Iterable<IProcedure> {
         int[] children = nodeNBT.getIntArray("Children");
         for (int i = 0; i < children.length; i++) {
             int index = children[i];
-            if (index == -1) {
-                node.successors()[i] = null;
-            } else {
-                node.successors()[i] = nodes.get(index);
-            }
+            node.successors()[i] = index == -1 ? null : nodes.get(index);
+        }
+
+        int[] parents = nodeNBT.getIntArray("Parents");
+        for (int i = 0; i < parents.length; i++) {
+            int index = parents[i];
+            node.predecessors()[i] = index == -1 ? null : nodes.get(index);
         }
     }
 

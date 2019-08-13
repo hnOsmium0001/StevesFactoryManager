@@ -7,7 +7,7 @@ import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
-public final class DummyProcedure implements IProcedure {
+public final class DummyProcedure implements IProcedure, IProcedureDataStorage {
 
     private static final ResourceLocation NAME = new ResourceLocation(StevesFactoryManager.MODID, "dummy");
     private static final IProcedureType<DummyProcedure> TYPE = new SimpleProcedureType<>(DummyProcedure::new, NAME);
@@ -82,5 +82,23 @@ public final class DummyProcedure implements IProcedure {
 
     @Override
     public void remove() {
+    }
+
+    @Override
+    public int getComponentX() {
+        return 0;
+    }
+
+    @Override
+    public void setComponentX(int x) {
+    }
+
+    @Override
+    public int getComponentY() {
+        return 0;
+    }
+
+    @Override
+    public void setComponentY(int y) {
     }
 }

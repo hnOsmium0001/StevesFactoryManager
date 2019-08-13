@@ -7,13 +7,11 @@ import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.library.gui.IContainer;
-import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.ControlFlowNodes.Node;
+import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -42,11 +40,18 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     public void readProcedures() {
         BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).controllerPos;
         INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
+
+        Map<IProcedure, FlowComponent<?>> m = new HashMap<>();
         for (CommandGraph graph : controller.getCommandGraphs()) {
             for (IProcedure procedure : graph.collect()) {
                 FlowComponent<?> f = procedure.createFlowComponent();
+                m.put(procedure, f);
                 addChildren(f);
             }
+        }
+
+        for (FlowComponent<?> child : children) {
+            child.readConnections(m);
         }
     }
 

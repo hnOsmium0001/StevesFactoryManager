@@ -34,8 +34,11 @@ public class FactoryManagerBlock extends BaseBlock {
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof FactoryManagerTileEntity) {
                 FactoryManagerTileEntity manager = (FactoryManagerTileEntity) tile;
-                manager.activate(player);
-                tryDump(manager);
+                if (player.isSneaking()) {
+                    tryDump(manager);
+                } else {
+                    manager.activate(player);
+                }
             }
         } else {
             PacketRequest.requestLinkedInventories(world.getDimension().getType(), pos);

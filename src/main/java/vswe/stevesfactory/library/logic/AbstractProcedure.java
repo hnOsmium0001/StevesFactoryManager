@@ -9,7 +9,7 @@ import vswe.stevesfactory.api.network.INetworkController;
 
 import java.util.Objects;
 
-public abstract class AbstractProcedure implements IProcedure {
+public abstract class AbstractProcedure implements IProcedure, IProcedureDataStorage {
 
     private IProcedureType<?> type;
 
@@ -17,6 +17,10 @@ public abstract class AbstractProcedure implements IProcedure {
     private IProcedure[] predecessors;
 
     private transient CommandGraph graph;
+
+    // Client data
+    private int componentX;
+    private int componentY;
 
     public AbstractProcedure(IProcedureType<?> type, CommandGraph graph, int possibleParents, int possibleChildren) {
         Preconditions.checkArgument(!graph.getController().isRemoved(), "The controller object is invalid!");
@@ -153,6 +157,26 @@ public abstract class AbstractProcedure implements IProcedure {
         return graph;
     }
 
+    @Override
+    public int getComponentX() {
+        return componentX;
+    }
+
+    @Override
+    public void setComponentX(int componentX) {
+        this.componentX = componentX;
+    }
+
+    @Override
+    public int getComponentY() {
+        return componentY;
+    }
+
+    @Override
+    public void setComponentY(int componentY) {
+        this.componentY = componentY;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -163,6 +187,8 @@ public abstract class AbstractProcedure implements IProcedure {
     public CompoundNBT serialize() {
         CompoundNBT tag = new CompoundNBT();
         tag.putString("ID", getRegistryName().toString());
+        tag.putInt("CompX", componentX);
+        tag.putInt("CompY", componentY);
         return tag;
     }
 
@@ -170,6 +196,8 @@ public abstract class AbstractProcedure implements IProcedure {
     public void deserialize(CommandGraph graph, CompoundNBT tag) {
         Preconditions.checkArgument(readType(tag) == type);
         this.graph = graph;
+        componentX = tag.getInt("CompX");
+        componentY = tag.getInt("CompY");
     }
 
     @Override
