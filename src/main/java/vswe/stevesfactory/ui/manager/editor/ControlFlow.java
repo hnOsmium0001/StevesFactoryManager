@@ -283,28 +283,6 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
             @Override
             void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure) {
                 // Only connect on output nodes
-//                ImmutableList<Node> nodes = getChildren();
-//                IProcedure[] predecessors = procedure.predecessors();
-//                Preconditions.checkState(predecessors.length == nodes.size());
-//
-//                for (int i = 0; i < predecessors.length; i++) {
-//                    IProcedure predecessor = predecessors[i];
-//                    if (predecessor == null) {
-//                        continue;
-//                    }
-//                    Node node = nodes.get(i);
-//
-//                    // Search for index of the node that connects to this procedure
-//                    IProcedure[] successors = predecessor.successors();
-//                    for (int j = 0; j < successors.length; j++) {
-//                        IProcedure successor = successors[j];
-//                        if (successor == procedure) {
-//                            FlowComponent<?> f = m.get(predecessor);
-//                            node.connect(f.getOutputNodes().nodes.get(j));
-//                            break;
-//                        }
-//                    }
-//                }
             }
         };
     }

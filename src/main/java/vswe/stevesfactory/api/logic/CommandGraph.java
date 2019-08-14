@@ -2,19 +2,16 @@ package vswe.stevesfactory.api.logic;
 
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.*;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.apache.commons.lang3.ArrayUtils;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.utils.NetworkHelper;
+import vswe.stevesfactory.utils.Utils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -131,26 +128,32 @@ public class CommandGraph implements Iterable<IProcedure> {
         int[] children = new int[successors.length];
         for (int i = 0; i < successors.length; i++) {
             IProcedure successor = successors[i];
-            children[i] = idMap.getOrDefault(successor, -1);
+            if (successor == null) {
+                continue;
+            }
+            int targetID = idMap.getOrDefault(successor, -1);
+            int nextInputIndex = ArrayUtils.indexOf(successor.predecessors(), node);
+            children[i] = nextInputIndex << 16 | targetID;
         }
 
-        IProcedure[] predecessors = node.predecessors();
-        int[] parents = new int[predecessors.length];
-        for (int i = 0; i < predecessors.length; i++) {
-            IProcedure predecessor = predecessors[i];
-            parents[i] = idMap.getOrDefault(predecessor, -1);
-        }
+//        IProcedure[] predecessors = node.predecessors();
+//        int[] parents = new int[predecessors.length];
+//        for (int i = 0; i < predecessors.length; i++) {
+//            IProcedure predecessor = predecessors[i];
+//            int k = idMap.getOrDefault(predecessor, -1);
+//            parents[i] = k;
+//        }
 
         tag.put("NodeData", node.serialize());
         tag.putIntArray("Children", children);
-        tag.putIntArray("Parents", parents);
+//        tag.putIntArray("Parents", parents);
         return tag;
     }
 
     public void deserialize(CompoundNBT tag) {
         DimensionType dimension = DimensionType.byName(new ResourceLocation(tag.getString("Dimension")));
         BlockPos pos = NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
-        controller = readController(dimension, pos);
+        controller = (INetworkController) Utils.getWorldForSide(dimension).getTileEntity(pos);
 
         // First deserialize all the nodes themselves which makes it easier to set the connections
         ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
@@ -179,29 +182,25 @@ public class CommandGraph implements Iterable<IProcedure> {
     private void retrieveConnections(List<IProcedure> nodes, IProcedure node, CompoundNBT nodeNBT) {
         int[] children = nodeNBT.getIntArray("Children");
         for (int i = 0; i < children.length; i++) {
-            int index = children[i];
-            node.successors()[i] = index == -1 ? null : nodes.get(index);
+            int idData = children[i];
+            IProcedure target = idData == -1 ? null : nodes.get(idData);
+            int nextInputIndex = idData >>> 16;
+            node.linkTo(i, target, nextInputIndex);
         }
 
-        int[] parents = nodeNBT.getIntArray("Parents");
-        for (int i = 0; i < parents.length; i++) {
-            int index = parents[i];
-            node.predecessors()[i] = index == -1 ? null : nodes.get(index);
-        }
+//        int[] parents = nodeNBT.getIntArray("Parents");
+//        for (int i = 0; i < parents.length; i++) {
+//            int index = parents[i];
+//            if (index != -1) {
+//                IProcedure target = nodes.get(index);
+//                target.linkTo(i >>> 16, node, i & 16);
+//            }
+//        }
     }
 
     public static CommandGraph deserializeFrom(CompoundNBT tag) {
         CommandGraph tree = new CommandGraph();
         tree.deserialize(tag);
         return tree;
-    }
-
-    public static INetworkController readController(DimensionType dimensionType, BlockPos pos) {
-        if (EffectiveSide.get() == LogicalSide.SERVER) {
-            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            return (INetworkController) server.getWorld(dimensionType).getTileEntity(pos);
-        } else {
-            return (INetworkController) Minecraft.getInstance().world.getTileEntity(pos);
-        }
     }
 }
