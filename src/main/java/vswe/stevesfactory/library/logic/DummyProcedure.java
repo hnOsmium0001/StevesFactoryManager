@@ -7,7 +7,7 @@ import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
-public final class DummyProcedure implements IProcedure, IProcedureDataStorage {
+public final class DummyProcedure implements IProcedure, IProcedureClientData {
 
     private static final ResourceLocation NAME = new ResourceLocation(StevesFactoryManager.MODID, "dummy");
     private static final IProcedureType<DummyProcedure> TYPE = new SimpleProcedureType<>(DummyProcedure::new, NAME);

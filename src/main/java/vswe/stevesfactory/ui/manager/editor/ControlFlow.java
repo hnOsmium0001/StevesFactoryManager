@@ -6,7 +6,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureDataStorage;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;

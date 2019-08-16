@@ -5,7 +5,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureDataStorage;
+import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
@@ -27,7 +27,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public class FlowComponent<P extends IProcedure & IProcedureDataStorage> extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
+public class FlowComponent<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
@@ -306,12 +306,12 @@ public class FlowComponent<P extends IProcedure & IProcedureDataStorage> extends
         }
     }
 
-    public static <P extends IProcedure & IProcedureDataStorage> FlowComponent<P> of(P procedure, int inputNodes, int outputNodes) {
+    public static <P extends IProcedure & IProcedureClientData> FlowComponent<P> of(P procedure, int inputNodes, int outputNodes) {
         String name = I18n.format("logic.sfm." + procedure.getRegistryName().getPath());
         return new FlowComponent<>(procedure, name, inputNodes, outputNodes);
     }
 
-    public static <P extends IProcedure & IProcedureDataStorage> FlowComponent<P> of(P procedure) {
+    public static <P extends IProcedure & IProcedureClientData> FlowComponent<P> of(P procedure) {
         return of(procedure, 1, 1);
     }
 

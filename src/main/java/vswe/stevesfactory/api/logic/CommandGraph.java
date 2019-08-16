@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.Validate;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.utils.NetworkHelper;
@@ -98,10 +99,13 @@ public class CommandGraph implements Iterable<IProcedure> {
 
         Object2IntMap<IProcedure> idMap = createIDMap();
         ListNBT list = new ListNBT();
+        int i = 0;
         for (Object2IntMap.Entry<IProcedure> entry : idMap.object2IntEntrySet()) {
             IProcedure node = entry.getKey();
             int id = entry.getIntValue();
+            Validate.isTrue(id == i);
             list.add(serializeNode(node, idMap));
+            i++;
         }
         // This is for compatibility reasons
         // If we ever need to make root not the first element, this might become useful
@@ -129,11 +133,15 @@ public class CommandGraph implements Iterable<IProcedure> {
         for (int i = 0; i < successors.length; i++) {
             IProcedure successor = successors[i];
             if (successor == null) {
-                continue;
+                children[i] = -1;
+            } else {
+                int targetID = idMap.getOrDefault(successor, -1);
+                Validate.isTrue(targetID != -1);
+                // Input index is stored as the actualIndex + 1 to avoid dealing with complement bits
+                // On deserialization, impl should -1 from the index before use
+                int nextInputIndex = ArrayUtils.indexOf(successor.predecessors(), node);
+                children[i] = (nextInputIndex + 1) << 16 | targetID;
             }
-            int targetID = idMap.getOrDefault(successor, -1);
-            int nextInputIndex = ArrayUtils.indexOf(successor.predecessors(), node);
-            children[i] = nextInputIndex << 16 | targetID;
         }
 
 //        IProcedure[] predecessors = node.predecessors();
@@ -151,7 +159,7 @@ public class CommandGraph implements Iterable<IProcedure> {
     }
 
     public void deserialize(CompoundNBT tag) {
-        DimensionType dimension = DimensionType.byName(new ResourceLocation(tag.getString("Dimension")));
+        DimensionType dimension = Objects.requireNonNull(DimensionType.byName(new ResourceLocation(tag.getString("Dimension"))));
         BlockPos pos = NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
         controller = (INetworkController) Utils.getWorldForSide(dimension).getTileEntity(pos);
 
@@ -183,9 +191,15 @@ public class CommandGraph implements Iterable<IProcedure> {
         int[] children = nodeNBT.getIntArray("Children");
         for (int i = 0; i < children.length; i++) {
             int idData = children[i];
-            IProcedure target = idData == -1 ? null : nodes.get(idData);
-            int nextInputIndex = idData >>> 16;
-            node.linkTo(i, target, nextInputIndex);
+            if (idData != -1) {
+                IProcedure target = Validate.notNull(nodes.get(idData & 0xffff));
+                // Index is stored in actualIndex + 1
+                // See serialization logic
+                int nextInputIndex = (idData >>> 16) - 1;
+                if (nextInputIndex != -1) {
+                    node.linkTo(i, target, nextInputIndex);
+                }
+            }
         }
 
 //        int[] parents = nodeNBT.getIntArray("Parents");

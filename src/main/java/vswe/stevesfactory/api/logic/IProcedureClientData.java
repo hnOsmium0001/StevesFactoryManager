@@ -1,6 +1,6 @@
 package vswe.stevesfactory.api.logic;
 
-public interface IProcedureDataStorage {
+public interface IProcedureClientData {
 
     int getComponentX();
 

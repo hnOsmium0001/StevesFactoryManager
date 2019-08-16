@@ -9,7 +9,7 @@ import vswe.stevesfactory.api.network.INetworkController;
 
 import java.util.Objects;
 
-public abstract class AbstractProcedure implements IProcedure, IProcedureDataStorage {
+public abstract class AbstractProcedure implements IProcedure, IProcedureClientData {
 
     private IProcedureType<?> type;
 
@@ -105,14 +105,16 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureDataSto
         } else {
             // If this is not a root node, means this node has a predecessor, or oldParent != null
             IProcedure oldParent = predecessors[inputIndex];
-            Preconditions.checkState(oldParent != null, "Encountered a non-root graph node has no predecessor!");
+            if(oldParent != null) {
+//                Preconditions.checkState(oldParent != null, "Encountered a non-root graph node has no predecessor!");
 
-            oldParent.unlink(this);
+                oldParent.unlink(this);
 
-            // During unlink, we created a new graph with this node as the root (see onUnlink)
-            // However since we are linking to another predecessor node, that graph is invalid since having a predecessor means this node will not be the root
-            Preconditions.checkState(isRoot(), "Unlinking this from a predecessor did not call onUnlink on this!");
-            controller.removeCommandGraph(graph);
+                // During unlink, we created a new graph with this node as the root (see onUnlink)
+                // However since we are linking to another predecessor node, that graph is invalid since having a predecessor means this node will not be the root
+                Preconditions.checkState(isRoot(), "Unlinking this from a predecessor did not call onUnlink on this!");
+                controller.removeCommandGraph(graph);
+            }
         }
 
         predecessors[inputIndex] = predecessor;
