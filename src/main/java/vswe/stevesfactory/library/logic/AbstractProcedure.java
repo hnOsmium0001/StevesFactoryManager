@@ -105,6 +105,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         } else {
             // If this is not a root node, means this node has a predecessor, or oldParent != null
             IProcedure oldParent = predecessors[inputIndex];
+            // FIXME on deserialization no links will be present
             if(oldParent != null) {
 //                Preconditions.checkState(oldParent != null, "Encountered a non-root graph node has no predecessor!");
 
@@ -139,7 +140,9 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     @Override
     public void remove() {
         for (IProcedure predecessor : predecessors) {
-            predecessor.unlink(this);
+            if (predecessor != null) {
+                predecessor.unlink(this);
+            }
         }
         for (int i = 0; i < successors.length; i++) {
             unlink(i);

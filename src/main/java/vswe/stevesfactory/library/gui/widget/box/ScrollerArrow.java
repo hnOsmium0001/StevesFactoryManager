@@ -13,9 +13,9 @@ import java.util.Objects;
 public abstract class ScrollerArrow extends AbstractIconButton implements LeafWidgetMixin, RelocatableWidgetMixin {
 
     private static final TextureWrapper UP_NORMAL = TextureWrapper.ofFlowComponent(0, 152, 10, 6);
-    private static final TextureWrapper UP_HOVERED = UP_NORMAL.right(10);
-    private static final TextureWrapper UP_CLICKED = UP_NORMAL.right(10 * 2);
-    private static final TextureWrapper UP_DISABLED = UP_NORMAL.right(10 * 3);
+    private static final TextureWrapper UP_HOVERED = UP_NORMAL.toRight(10);
+    private static final TextureWrapper UP_CLICKED = UP_NORMAL.toRight(10 * 2);
+    private static final TextureWrapper UP_DISABLED = UP_NORMAL.toRight(10 * 3);
 
     public static ScrollerArrow up(int x, int y) {
         return new ScrollerArrow(x, y) {

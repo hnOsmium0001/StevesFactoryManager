@@ -117,12 +117,7 @@ public final class BackgroundRenderers {
         Tessellator.getInstance().draw();
 
         if (bodyWidth > 0 && bodyHeight > 0) {
-            GlStateManager.disableTexture();
-            getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-
-            BodyPiece.draw(bodyX, bodyY, bodyWidth, bodyHeight);
-
-            Tessellator.getInstance().draw();
+            drawRect(bodyX, bodyY, bodyX + bodyWidth, bodyY + bodyHeight, 198, 198, 198, 255);
             GlStateManager.enableTexture();
         }
     }
@@ -183,13 +178,6 @@ public final class BackgroundRenderers {
         }
     }
 
-    private static final class BodyPiece {
-
-        private static void draw(int x, int y, int width, int height) {
-            plotVertexesColor(x, y, width, height, 198, 198, 198, 255);
-        }
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // Util methods
     ///////////////////////////////////////////////////////////////////////////
@@ -210,16 +198,5 @@ public final class BackgroundRenderers {
         getRenderer().pos(x1, y1, zLevel).tex(u1, v1).endVertex();
         getRenderer().pos(x1, y2, zLevel).tex(u1, v2).endVertex();
         getRenderer().pos(x2, y2, zLevel).tex(u2, v2).endVertex();
-    }
-
-    private static void plotVertexesColor(int x1, int y1, int width, int height, int red, int green, int yellow, int alpha) {
-        int x2 = x1 + width;
-        int y2 = y1 + height;
-
-        // Bottom Left -> Top Left -> Top Right -> Bottom Right
-        getRenderer().pos(x2, y1, zLevel).color(red, green, yellow, alpha).endVertex();
-        getRenderer().pos(x1, y1, zLevel).color(red, green, yellow, alpha).endVertex();
-        getRenderer().pos(x1, y2, zLevel).color(red, green, yellow, alpha).endVertex();
-        getRenderer().pos(x2, y2, zLevel).color(red, green, yellow, alpha).endVertex();
     }
 }

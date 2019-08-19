@@ -1,7 +1,10 @@
 package vswe.stevesfactory.library.gui;
 
 import com.google.common.base.MoreObjects;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -47,13 +50,28 @@ public class TextureWrapper {
     }
 
     public void draw(int x, int y) {
+        draw(x, y, portionWidth, portionHeight);
+    }
+
+    public void draw(int x, int y, int width, int height) {
+        RenderingHelper.bindTexture(texture);
+        RenderingHelper.getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        vertices(x, y, width, height);
+        Tessellator.getInstance().draw();
+    }
+
+    public void vertices(int x, int y) {
+        vertices(x, y, portionWidth, portionHeight);
+    }
+
+    public void vertices(int x, int y, int width, int height) {
         int x2 = x + portionWidth;
         int y2 = y + portionHeight;
         float uFactor = 1.0F / (float) textureWidth;
         float vFactor = 1.0F / (float) textureHeight;
-        int tx2 = tx + portionWidth;
-        int ty2 = ty + portionHeight;
-        RenderingHelper.drawTexture(x, y, x2, y2, getZLevel(), texture, tx * uFactor, ty * vFactor, tx2 * uFactor, ty2 * vFactor);
+        int tx2 = tx + width;
+        int ty2 = ty + height;
+        RenderingHelper.textureVertices(x, y, x2, y2, getZLevel(), tx * uFactor, ty * vFactor, tx2 * uFactor, ty2 * vFactor);
     }
 
     public Dimension getBounds() {
@@ -109,16 +127,32 @@ public class TextureWrapper {
         return new TextureWrapper(texture, textureWidth, textureHeight, tx + x, ty + y, portionWidth, portionHeight);
     }
 
+    public TextureWrapper toDown(int times) {
+        return down(portionHeight * times);
+    }
+
     public TextureWrapper down(int y) {
         return offset(0, y);
+    }
+
+    public TextureWrapper toUp(int times) {
+        return up(portionHeight * times);
     }
 
     public TextureWrapper up(int y) {
         return offset(0, -y);
     }
 
+    public TextureWrapper toRight(int times) {
+        return right(portionWidth * times);
+    }
+
     public TextureWrapper right(int x) {
         return offset(x, 0);
+    }
+
+    public TextureWrapper toLeft(int times) {
+        return left(portionWidth * times);
     }
 
     public TextureWrapper left(int x) {

@@ -23,99 +23,98 @@ import java.util.function.*;
 import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledHeight;
 import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
 
-public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
+public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
 
-
-    public static Dialogue createPrompt(String message, BiConsumer<Integer, String> onConfirm) {
+    public static Dialog createPrompt(String message, BiConsumer<Integer, String> onConfirm) {
         return createPrompt(message, onConfirm, (b, t) -> {});
     }
 
-    public static Dialogue createPrompt(String message, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
+    public static Dialog createPrompt(String message, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
         return createPrompt(message, "", onConfirm, onCancel);
     }
 
-    public static Dialogue createPrompt(String message, String defaultText, BiConsumer<Integer, String> onConfirm) {
+    public static Dialog createPrompt(String message, String defaultText, BiConsumer<Integer, String> onConfirm) {
         return createPrompt(message, defaultText, onConfirm, (b, t) -> {});
     }
 
-    public static Dialogue createPrompt(String message, String defaultText, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
+    public static Dialog createPrompt(String message, String defaultText, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
         return createPrompt(message, defaultText, "gui.sfm.Dialogue.OK", "gui.sfm.Dialogue.Cancel", onConfirm, onCancel);
     }
 
-    public static Dialogue createPrompt(String message, String defaultText, String confirm, String cancel, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
-        Dialogue dialogue = dialogue(message);
+    public static Dialog createPrompt(String message, String defaultText, String confirm, String cancel, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
+        Dialog dialog = dialogue(message);
 
         TextField inputBox = new TextField(0, 0, 0, 16).setText(defaultText);
 //        inputBox.setMarginBotttom(4);
-        dialogue.insertBeforeButtons(inputBox);
-        dialogue.onPostReflow = inputBox::expandHorizontally;
+        dialog.insertBeforeButtons(inputBox);
+        dialog.onPostReflow = inputBox::expandHorizontally;
 
         // TODO add margin support
-        dialogue.insertBeforeButtons(new Spacer(0, 4));
+        dialog.insertBeforeButtons(new Spacer(0, 4));
 
-        dialogue.buttons.addChildren(TextButton.of(confirm, b -> onConfirm.accept(b, inputBox.getText())));
-        dialogue.bindRemoveSelf2LastButton();
-        dialogue.buttons.addChildren(TextButton.of(cancel, b -> onCancel.accept(b, inputBox.getText())));
-        dialogue.bindRemoveSelf2LastButton();
+        dialog.buttons.addChildren(TextButton.of(confirm, b -> onConfirm.accept(b, inputBox.getText())));
+        dialog.bindRemoveSelf2LastButton();
+        dialog.buttons.addChildren(TextButton.of(cancel, b -> onCancel.accept(b, inputBox.getText())));
+        dialog.bindRemoveSelf2LastButton();
 
-        dialogue.reflow();
-        dialogue.centralize();
-        dialogue.setFocusedWidget(inputBox);
-        return dialogue;
+        dialog.reflow();
+        dialog.centralize();
+        dialog.setFocusedWidget(inputBox);
+        return dialog;
     }
 
-    public static Dialogue createBiSelectionDialogue(String message, IntConsumer onConfirm) {
-        return createBiSelectionDialogue(message, onConfirm, TextButton.DUMMY);
+    public static Dialog createBiSelectionDialog(String message, IntConsumer onConfirm) {
+        return createBiSelectionDialog(message, onConfirm, TextButton.DUMMY);
     }
 
-    public static Dialogue createBiSelectionDialogue(String message, IntConsumer onConfirm, IntConsumer onCancel) {
-        return createBiSelectionDialogue(message, "gui.sfm.Dialogue.OK", "gui.sfm.Dialogue.Cancel", onConfirm, onCancel);
+    public static Dialog createBiSelectionDialog(String message, IntConsumer onConfirm, IntConsumer onCancel) {
+        return createBiSelectionDialog(message, "gui.sfm.Dialogue.OK", "gui.sfm.Dialogue.Cancel", onConfirm, onCancel);
     }
 
-    public static Dialogue createBiSelectionDialogue(String message, String confirm, String cancel, IntConsumer onConfirm, IntConsumer onCancel) {
-        Dialogue dialogue = dialogue(message);
+    public static Dialog createBiSelectionDialog(String message, String confirm, String cancel, IntConsumer onConfirm, IntConsumer onCancel) {
+        Dialog dialog = dialogue(message);
 
-        dialogue.buttons.addChildren(TextButton.of(confirm, onConfirm));
-        dialogue.bindRemoveSelf2LastButton();
-        dialogue.buttons.addChildren(TextButton.of(cancel, onCancel));
-        dialogue.bindRemoveSelf2LastButton();
+        dialog.buttons.addChildren(TextButton.of(confirm, onConfirm));
+        dialog.bindRemoveSelf2LastButton();
+        dialog.buttons.addChildren(TextButton.of(cancel, onCancel));
+        dialog.bindRemoveSelf2LastButton();
 
-        dialogue.reflow();
-        dialogue.centralize();
-        return dialogue;
+        dialog.reflow();
+        dialog.centralize();
+        return dialog;
     }
 
-    public static Dialogue createDialogue(String message) {
-        return createDialogue(message, TextButton.DUMMY);
+    public static Dialog createDialog(String message) {
+        return createDialog(message, TextButton.DUMMY);
     }
 
-    public static Dialogue createDialogue(String message, IntConsumer onConfirm) {
-        return createDialogue(message, "gui.sfm.Dialogue.OK", onConfirm);
+    public static Dialog createDialog(String message, IntConsumer onConfirm) {
+        return createDialog(message, "gui.sfm.Dialogue.OK", onConfirm);
     }
 
-    public static Dialogue createDialogue(String message, String ok, IntConsumer onConfirm) {
-        Dialogue dialogue = dialogue(message);
+    public static Dialog createDialog(String message, String ok, IntConsumer onConfirm) {
+        Dialog dialog = dialogue(message);
 
-        dialogue.buttons.addChildren(TextButton.of(ok, onConfirm));
-        dialogue.bindRemoveSelf2LastButton();
+        dialog.buttons.addChildren(TextButton.of(ok, onConfirm));
+        dialog.bindRemoveSelf2LastButton();
 
-        dialogue.reflow();
-        dialogue.centralize();
-        return dialogue;
+        dialog.reflow();
+        dialog.centralize();
+        return dialog;
     }
 
-    private static Dialogue dialogue(String message) {
-        Dialogue dialogue = new Dialogue();
+    private static Dialog dialogue(String message) {
+        Dialog dialog = new Dialog();
         // TODO and replace this with bottom margin
-        dialogue.insertBeforeMessage(new Spacer(0, 5));
-        dialogue.messageBox.addTranslatedLine(message);
-        return dialogue;
+        dialog.insertBeforeMessage(new Spacer(0, 5));
+        dialog.messageBox.addTranslatedLine(message);
+        return dialog;
     }
 
-    public static final Consumer<Dialogue> VANILLA_STYLE_RENDERER = d -> BackgroundRenderers.drawVanillaStyle(d.position.x, d.position.y, d.border.width, d.border.height, 0F);
+    public static final Consumer<Dialog> VANILLA_STYLE_RENDERER = d -> BackgroundRenderers.drawVanillaStyle(d.position.x, d.position.y, d.border.width, d.border.height, 0F);
     public static final int VANILLA_STYLE_BORDER_SIZE = 4;
 
-    public static final Consumer<Dialogue> FLAT_STYLE_RENDERER = d -> {
+    public static final Consumer<Dialog> FLAT_STYLE_RENDERER = d -> {
         GlStateManager.disableAlphaTest();
         BackgroundRenderers.drawFlatStyle(d.position.x, d.position.y, d.border.width, d.border.height, 0F);
         GlStateManager.enableAlphaTest();
@@ -126,7 +125,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
     private final Dimension contents;
     private final Dimension border;
 
-    private Consumer<Dialogue> backgroundRenderer;
+    private Consumer<Dialog> backgroundRenderer;
     private int borderSize;
 
     private TextList messageBox;
@@ -139,7 +138,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
 
     private int initialDragLocalX, initialDragLocalY;
 
-    public Dialogue() {
+    public Dialog() {
         this.position = new Point();
         this.contents = new Dimension();
         this.border = new Dimension();
@@ -338,7 +337,7 @@ public class Dialogue implements IPopupWindow, NestedEventHandlerMixin {
         focusedWidget = widget;
     }
 
-    public void setStyle(Consumer<Dialogue> renderer, int borderSize) {
+    public void setStyle(Consumer<Dialog> renderer, int borderSize) {
         this.backgroundRenderer = renderer;
         this.borderSize = borderSize;
         reflow();

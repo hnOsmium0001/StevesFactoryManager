@@ -200,11 +200,16 @@ public final class RenderingHelper {
 
         BufferBuilder buffer = getRenderer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        textureVertices(x1, y1, x2, y2, z, u1, v1, u2, v2);
+        Tessellator.getInstance().draw();
+    }
+
+    public static void textureVertices(int x1, int y1, int x2, int y2, float z, float u1, float v1, float u2, float v2) {
+        BufferBuilder buffer = getRenderer();
         buffer.pos(x1, y1, z).tex(u1, v1).endVertex();
         buffer.pos(x1, y2, z).tex(u1, v2).endVertex();
         buffer.pos(x2, y2, z).tex(u2, v2).endVertex();
         buffer.pos(x2, y1, z).tex(u2, v1).endVertex();
-        Tessellator.getInstance().draw();
     }
 
     public static void drawTexture(int x1, int y1, int x2, int y2, ResourceLocation texture, float u1, float v1, float u2, float v2) {

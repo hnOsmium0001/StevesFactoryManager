@@ -1,7 +1,10 @@
 package vswe.stevesfactory.api.logic;
 
-import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import com.google.common.graph.Graph;
+import com.google.common.graph.GraphBuilder;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -99,13 +102,10 @@ public class CommandGraph implements Iterable<IProcedure> {
 
         Object2IntMap<IProcedure> idMap = createIDMap();
         ListNBT list = new ListNBT();
-        int i = 0;
         for (Object2IntMap.Entry<IProcedure> entry : idMap.object2IntEntrySet()) {
             IProcedure node = entry.getKey();
             int id = entry.getIntValue();
-            Validate.isTrue(id == i);
-            list.add(serializeNode(node, idMap));
-            i++;
+            list.add(serializeNode(node, id, idMap));
         }
         // This is for compatibility reasons
         // If we ever need to make root not the first element, this might become useful
@@ -117,7 +117,8 @@ public class CommandGraph implements Iterable<IProcedure> {
 
     private Object2IntMap<IProcedure> createIDMap() {
         Set<IProcedure> nodes = dfsCollectNoRoot();
-        Object2IntMap<IProcedure> idMap = new Object2IntLinkedOpenHashMap<>(nodes.size() + 1);
+        System.out.println(nodes);
+        Object2IntMap<IProcedure> idMap = new Object2IntOpenHashMap<>(nodes.size() + 1);
         idMap.put(root, 0);
         for (IProcedure node : nodes) {
             idMap.put(node, idMap.size());
@@ -125,7 +126,7 @@ public class CommandGraph implements Iterable<IProcedure> {
         return idMap;
     }
 
-    private CompoundNBT serializeNode(IProcedure node, Object2IntMap<IProcedure> idMap) {
+    private CompoundNBT serializeNode(IProcedure node, int id, Object2IntMap<IProcedure> idMap) {
         CompoundNBT tag = new CompoundNBT();
 
         IProcedure[] successors = node.successors();
@@ -153,29 +154,34 @@ public class CommandGraph implements Iterable<IProcedure> {
 //        }
 
         tag.put("NodeData", node.serialize());
+        tag.putInt("ID", id);
         tag.putIntArray("Children", children);
 //        tag.putIntArray("Parents", parents);
         return tag;
     }
 
     public void deserialize(CompoundNBT tag) {
+        System.out.println(tag);
         DimensionType dimension = Objects.requireNonNull(DimensionType.byName(new ResourceLocation(tag.getString("Dimension"))));
         BlockPos pos = NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
         controller = (INetworkController) Utils.getWorldForSide(dimension).getTileEntity(pos);
 
         // First deserialize all the nodes themselves which makes it easier to set the connections
-        ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
-        List<IProcedure> nodes = new ArrayList<>();
-        for (int i = 0; i < nodesNBT.size(); i++) {
-            CompoundNBT nodeNBT = nodesNBT.getCompound(i);
-            nodes.add(deserializeNode(nodeNBT));
+        ListNBT list = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
+        Int2ObjectMap<IProcedure> nodes = new Int2ObjectOpenHashMap<>();
+        Int2ObjectMap<CompoundNBT> nodesNBT = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            CompoundNBT nodeNBT = list.getCompound(i);
+            int id = nodeNBT.getInt("ID");
+            nodesNBT.put(id, nodeNBT);
+            nodes.put(id, deserializeNode(nodeNBT));
         }
 
         // Set child connection to all of the nodes
         assert nodesNBT.size() == nodes.size();
         for (int i = 0; i < nodes.size(); i++) {
             IProcedure node = nodes.get(i);
-            CompoundNBT nodeNBT = nodesNBT.getCompound(i);
+            CompoundNBT nodeNBT = nodesNBT.get(i);
             retrieveConnections(nodes, node, nodeNBT);
         }
 
@@ -187,12 +193,13 @@ public class CommandGraph implements Iterable<IProcedure> {
         return NetworkHelper.retrieveProcedure(this, nodeNBT.getCompound("NodeData"));
     }
 
-    private void retrieveConnections(List<IProcedure> nodes, IProcedure node, CompoundNBT nodeNBT) {
+    private void retrieveConnections(Int2ObjectMap<IProcedure> nodes, IProcedure node, CompoundNBT nodeNBT) {
         int[] children = nodeNBT.getIntArray("Children");
         for (int i = 0; i < children.length; i++) {
             int idData = children[i];
             if (idData != -1) {
-                IProcedure target = Validate.notNull(nodes.get(idData & 0xffff));
+                int key = idData & 0xffff;
+                IProcedure target = Validate.notNull(nodes.get(key));
                 // Index is stored in actualIndex + 1
                 // See serialization logic
                 int nextInputIndex = (idData >>> 16) - 1;
