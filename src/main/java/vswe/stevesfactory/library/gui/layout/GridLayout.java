@@ -8,7 +8,6 @@ import vswe.stevesfactory.library.gui.IContainer;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.widget.INamedElement;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
 import java.awt.*;
@@ -89,7 +88,7 @@ public class GridLayout {
      * A special version of the regular reflow mechanism, where areas can be named. The names should come from the widgets; if some names
      * are not defined, it will use the first widget in the list by default.
      */
-    public <T extends IWidget & INamedElement & RelocatableWidgetMixin & ResizableWidgetMixin> void reflow(List<T> widgets, String[] template) {
+    public <T extends IWidget & INamedElement & ResizableWidgetMixin> void reflow(List<T> widgets, String[] template) {
         int[][] areas = new int[rows][columns];
         Object2IntMap<String> m = new Object2IntOpenHashMap<>();
         for (int i = 0; i < widgets.size(); i++) {
@@ -107,13 +106,13 @@ public class GridLayout {
         reflow(widgets, areas);
     }
 
-    public <T extends IWidget & RelocatableWidgetMixin & ResizableWidgetMixin> void reflow(List<T> widgets) {
+    public <T extends IWidget & ResizableWidgetMixin> void reflow(List<T> widgets) {
         reflow(widgets, this.areas);
     }
 
     // px/py stands for "Pixel-position x/y"
     // gx/gy stands for "Grid x/y"
-    public <T extends IWidget & RelocatableWidgetMixin & ResizableWidgetMixin> void reflow(List<T> widgets, int[][] areas) {
+    public <T extends IWidget & ResizableWidgetMixin> void reflow(List<T> widgets, int[][] areas) {
         for (int gy = 0; gy < areas.length; gy++) {
             int[] row = areas[gy];
             for (int gx = 0; gx < row.length; gx++) {

@@ -5,11 +5,10 @@ import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;
 
-public class Icon extends AbstractWidget implements RelocatableWidgetMixin, LeafWidgetMixin, INamedElement {
+public class Icon extends AbstractWidget implements INamedElement, LeafWidgetMixin {
 
     private TextureWrapper texture;
 

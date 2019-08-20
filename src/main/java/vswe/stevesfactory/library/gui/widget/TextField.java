@@ -17,7 +17,7 @@ import vswe.stevesfactory.utils.Utils;
 
 import java.awt.*;
 
-public class TextField extends AbstractWidget implements RelocatableWidgetMixin, ResizableWidgetMixin, LeafWidgetMixin {
+public class TextField extends AbstractWidget implements LeafWidgetMixin {
 
     public static TextField DUMMY = new TextField(0, 0, 0, 0) {
         @Override

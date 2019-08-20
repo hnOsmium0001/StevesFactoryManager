@@ -13,7 +13,6 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 import vswe.stevesfactory.utils.VectorHelper;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.*;
 
 
-public class WrappingList<T extends IWidget & INamedElement & RelocatableWidgetMixin> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
+public class WrappingList<T extends IWidget & INamedElement> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
 
     // Scrolling states
     private int offset;

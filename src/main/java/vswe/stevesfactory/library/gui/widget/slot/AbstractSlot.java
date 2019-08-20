@@ -8,10 +8,9 @@ import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
-public abstract class AbstractSlot extends AbstractWidget implements IWidget, RelocatableWidgetMixin, LeafWidgetMixin {
+public abstract class AbstractSlot extends AbstractWidget implements LeafWidgetMixin {
 
     public AbstractSlot() {
         super(0, 0, 18, 18);

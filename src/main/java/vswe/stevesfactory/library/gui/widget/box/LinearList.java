@@ -14,7 +14,6 @@ import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 import vswe.stevesfactory.utils.Utils;
@@ -22,7 +21,7 @@ import vswe.stevesfactory.utils.Utils;
 import java.util.*;
 
 // TODO test this class
-public class LinearList<T extends IWidget & RelocatableWidgetMixin> extends AbstractContainer<T> implements ResizableWidgetMixin {
+public class LinearList<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
 
     private boolean scrolling;
     protected float scrollDistance;

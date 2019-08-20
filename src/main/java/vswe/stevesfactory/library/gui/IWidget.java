@@ -22,6 +22,39 @@ public interface IWidget extends IRenderable {
 
     int getAbsoluteY();
 
+    default void setLocation(Point point) {
+        setLocation(point.x, point.y);
+    }
+
+    default void setLocation(int x, int y) {
+        getPosition().x = x;
+        getPosition().y = y;
+        onRelativePositionChanged();
+    }
+
+    default void setX(int x) {
+        getPosition().x = x;
+        onRelativePositionChanged();
+    }
+
+    default void setY(int y) {
+        getPosition().y = y;
+        onRelativePositionChanged();
+    }
+
+    default void moveX(int dx) {
+        setX(getX() + dx);
+    }
+
+    default void moveY(int dy) {
+        setY(getY() + dy);
+    }
+
+    default void move(int dx, int dy) {
+        moveX(dx);
+        moveY(dy);
+    }
+
     Dimension getDimensions();
 
     int getWidth();

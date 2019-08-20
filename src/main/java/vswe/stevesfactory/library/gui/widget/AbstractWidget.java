@@ -10,14 +10,13 @@ import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public abstract class AbstractWidget implements IWidget, Inspections.IInspectionInfoProvider, ILayoutDataProvider, RelocatableWidgetMixin, ResizableWidgetMixin {
+public abstract class AbstractWidget implements IWidget, Inspections.IInspectionInfoProvider, ILayoutDataProvider, ResizableWidgetMixin {
 
     public static Minecraft minecraft() {
         return Minecraft.getInstance();

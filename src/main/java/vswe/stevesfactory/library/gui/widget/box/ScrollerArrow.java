@@ -5,12 +5,11 @@ import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public abstract class ScrollerArrow extends AbstractIconButton implements LeafWidgetMixin, RelocatableWidgetMixin {
+public abstract class ScrollerArrow extends AbstractIconButton implements LeafWidgetMixin {
 
     private static final TextureWrapper UP_NORMAL = TextureWrapper.ofFlowComponent(0, 152, 10, 6);
     private static final TextureWrapper UP_HOVERED = UP_NORMAL.toRight(10);

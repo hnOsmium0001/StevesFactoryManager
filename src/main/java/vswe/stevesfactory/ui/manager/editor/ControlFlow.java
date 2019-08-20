@@ -22,7 +22,7 @@ import static vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 
 public abstract class ControlFlow extends AbstractContainer<Node> implements ResizableWidgetMixin {
 
-    public static abstract class Node extends AbstractIconButton implements IWidget, LeafWidgetMixin, RelocatableWidgetMixin {
+    public static abstract class Node extends AbstractIconButton implements LeafWidgetMixin {
 
         public static void drawConnectionLine(Node first, Node second) {
             drawConnectionLine(first.getCenterX(), first.getCenterY(), second.getCenterX(), second.getCenterY());

@@ -3,7 +3,6 @@ package vswe.stevesfactory.library.gui.layout;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 import vswe.stevesfactory.utils.Utils;
 
@@ -15,11 +14,11 @@ public class FlowLayout {
     private FlowLayout() {
     }
 
-    public static <T extends IWidget & RelocatableWidgetMixin> List<T> reflow(List<T> widgets) {
+    public static <T extends IWidget> List<T> reflow(List<T> widgets) {
         return reflow(widgets, 0);
     }
 
-    public static <T extends IWidget & RelocatableWidgetMixin> List<T> reflow(List<T> widgets, int x) {
+    public static <T extends IWidget> List<T> reflow(List<T> widgets, int x) {
         int y = 0;
         for (T widget : widgets) {
             if (BoxSizing.shouldIncludeWidget(widget)) {
@@ -30,7 +29,7 @@ public class FlowLayout {
         return widgets;
     }
 
-    public static <T extends IWidget & RelocatableWidgetMixin> List<T> reflow(Dimension bounds, HorizontalAlignment alignment, List<T> widgets) {
+    public static <T extends IWidget> List<T> reflow(Dimension bounds, HorizontalAlignment alignment, List<T> widgets) {
         int y = 0;
         for (T widget : widgets) {
             if (BoxSizing.shouldIncludeWidget(widget)) {

@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableWidgetMixin;
 
 import java.awt.*;
 import java.util.List;
@@ -87,7 +86,7 @@ public final class StrictTableLayout {
     }
 
     @CanIgnoreReturnValue
-    public <T extends IWidget & RelocatableWidgetMixin> List<T> reflow(Dimension bounds, List<T> widgets) {
+    public <T extends IWidget> List<T> reflow(Dimension bounds, List<T> widgets) {
         Preconditions.checkArgument(isWidgetDimensionsIdentical(widgets));
 
         // TODO add borders to container widgets so that we don't have to simulate borders here
