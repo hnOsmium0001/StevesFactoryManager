@@ -9,15 +9,15 @@ import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public abstract class ScrollerArrow extends AbstractIconButton implements LeafWidgetMixin {
+public abstract class ScrollArrow extends AbstractIconButton implements LeafWidgetMixin {
 
     private static final TextureWrapper UP_NORMAL = TextureWrapper.ofFlowComponent(0, 152, 10, 6);
     private static final TextureWrapper UP_HOVERED = UP_NORMAL.toRight(10);
     private static final TextureWrapper UP_CLICKED = UP_NORMAL.toRight(10 * 2);
     private static final TextureWrapper UP_DISABLED = UP_NORMAL.toRight(10 * 3);
 
-    public static ScrollerArrow up(int x, int y) {
-        return new ScrollerArrow(x, y) {
+    public static ScrollArrow up(int x, int y) {
+        return new ScrollArrow(x, y) {
             @Override
             public TextureWrapper getTextureNormal() {
                 return UP_NORMAL;
@@ -50,8 +50,8 @@ public abstract class ScrollerArrow extends AbstractIconButton implements LeafWi
     private static final TextureWrapper DOWN_CLICKED = UP_CLICKED.down(6);
     private static final TextureWrapper DOWN_DISABLED = UP_DISABLED.down(6);
 
-    public static ScrollerArrow down(int x, int y) {
-        return new ScrollerArrow(x, y) {
+    public static ScrollArrow down(int x, int y) {
+        return new ScrollArrow(x, y) {
             @Override
             public TextureWrapper getTextureNormal() {
                 return DOWN_NORMAL;
@@ -79,7 +79,7 @@ public abstract class ScrollerArrow extends AbstractIconButton implements LeafWi
         };
     }
 
-    public ScrollerArrow(int x, int y) {
+    public ScrollArrow(int x, int y) {
         super(x, y, 10, 6);
     }
 

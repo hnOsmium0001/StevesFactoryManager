@@ -36,8 +36,8 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
 
     // Child widgets
     private TextField searchBox;
-    private ScrollerArrow scrollUpArrow;
-    private ScrollerArrow scrollDownArrow;
+    private ScrollArrow scrollUpArrow;
+    private ScrollArrow scrollDownArrow;
     private List<T> contents = new ArrayList<>();
     private List<IWidget> children;
 
@@ -53,9 +53,9 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         this.hasSearchBox = defaultText != null;
         this.searchBox = hasSearchBox ? createSearchBox(defaultText) : TextField.DUMMY;
 
-        this.scrollUpArrow = ScrollerArrow.up(0, 0);
+        this.scrollUpArrow = ScrollArrow.up(0, 0);
         this.scrollUpArrow.setParentWidget(this);
-        this.scrollDownArrow = ScrollerArrow.down(0, 0);
+        this.scrollDownArrow = ScrollArrow.down(0, 0);
         this.scrollDownArrow.setParentWidget(this);
         this.alignArrows();
 
@@ -351,11 +351,11 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         return 9;
     }
 
-    public ScrollerArrow getScrollUpArrow() {
+    public ScrollArrow getScrollUpArrow() {
         return scrollUpArrow;
     }
 
-    public ScrollerArrow getScrollDownArrow() {
+    public ScrollArrow getScrollDownArrow() {
         return scrollDownArrow;
     }
 

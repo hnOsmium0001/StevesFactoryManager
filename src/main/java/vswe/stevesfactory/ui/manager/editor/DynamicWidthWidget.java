@@ -13,26 +13,36 @@ public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractCont
 
     @CanIgnoreReturnValue
     public static List<DynamicWidthWidget<?>> reflowDynamicWidth(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {
-        int usable = bounds.width;
-        int nextX = 0;
-        for (DynamicWidthWidget widget : widgets) {
+        int amountMinWidth = 0;
+        int amountMaxWidth = 0;
+        for (DynamicWidthWidget<?> widget : widgets) {
             switch (widget.getWidthOccupier()) {
-                case MIN_WIDTH: {
-                    int w = calculateWidthMin(widget);
-                    widget.setX(nextX);
-                    widget.setWidth(w);
-                    usable -= w;
-                    nextX += w;
+                case MIN_WIDTH:
+                    amountMinWidth++;
                     break;
-                }
-                case MAX_WIDTH: {
-                    int w = calculateWidthMax(widget, usable);
-                    widget.setX(nextX);
-                    widget.setWidth(w);
-                    nextX += w;
+                case MAX_WIDTH:
+                    amountMaxWidth++;
                     break;
-                }
             }
+        }
+
+        int usable = bounds.width;
+        for (DynamicWidthWidget widget : widgets) {
+            if (widget.getWidthOccupier() == WidthOccupierType.MIN_WIDTH) {
+                int w = calculateWidthMin(widget);
+                widget.setWidth(w);
+                usable -= w;
+            }
+        }
+
+        int unit = usable / amountMaxWidth;
+        int nextX = 0;
+        for (DynamicWidthWidget<?> widget : widgets) {
+            if (widget.getWidthOccupier() == WidthOccupierType.MAX_WIDTH) {
+                widget.setWidth(unit);
+            }
+            widget.setX(nextX);
+            nextX += widget.getWidth();
         }
 
         return widgets;
@@ -45,10 +55,6 @@ public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractCont
         int x = furthest.getX();
         int w = furthest.getWidth();
         return x + w;
-    }
-
-    private static int calculateWidthMax(DynamicWidthWidget<?> widget, int usable) {
-        return usable;
     }
 
     public enum WidthOccupierType {
