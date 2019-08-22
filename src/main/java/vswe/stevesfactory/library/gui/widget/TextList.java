@@ -31,7 +31,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         int x = getAbsoluteX() + 1;
         int y = getAbsoluteY() + 1;
-        int x2 = getAbsoluteXBR() - 1;
+        int x2 = getAbsoluteXRight() - 1;
         GlStateManager.enableTexture();
         for (String text : texts) {
             switch (textAlignment) {

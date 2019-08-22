@@ -38,8 +38,8 @@ public class IntervalMenu extends Menu<TimedTriggerProcedure> {
     public void renderContents(int mouseX, int mouseY, float particleTicks) {
         RenderingHelper.drawTextCenteredVertically(
                 getUnitText(),
-                interval.getAbsoluteXBR() + MARGIN_MIDDLE_UNIT_TEXT,
-                interval.getAbsoluteY(), interval.getAbsoluteYBR(),
+                interval.getAbsoluteXRight() + MARGIN_MIDDLE_UNIT_TEXT,
+                interval.getAbsoluteY(), interval.getAbsoluteYBottom(),
                 0x000000);
     }
 

@@ -416,8 +416,8 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
 
         int x = getAbsoluteX();
         int y = getAbsoluteY();
-        int x2 = getAbsoluteXBR();
-        int y2 = getAbsoluteYBR();
+        int x2 = getAbsoluteXRight();
+        int y2 = getAbsoluteYBottom();
 
         backgroundStyle.render(x, y, x2, y2, isInside(mouseX, mouseY), isFocused());
 

@@ -69,8 +69,8 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
         Tessellator.getInstance().getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         int x1 = getAbsoluteX();
         int y1 = getAbsoluteY();
-        int x2 = getAbsoluteXBR();
-        int y2 = getAbsoluteYBR();
+        int x2 = getAbsoluteXRight();
+        int y2 = getAbsoluteYBottom();
         rectVertices(x1, y1, x2, y2, isInside(mouseX, mouseY) ? HOVERED_BORDER_COLOR : NORMAL_BORDER_COLOR);
         rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, BACKGROUND_COLOR);
         Tessellator.getInstance().draw();

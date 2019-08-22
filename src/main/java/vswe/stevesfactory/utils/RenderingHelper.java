@@ -3,6 +3,7 @@ package vswe.stevesfactory.utils;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -13,6 +14,8 @@ import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
 
 import java.awt.*;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public final class RenderingHelper {
 
@@ -89,14 +92,14 @@ public final class RenderingHelper {
 
     public static void drawRect(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {
         GlStateManager.disableTexture();
-        getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        getRenderer().begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         rectVertices(x, y, x2, y2, red, green, blue, alpha);
         Tessellator.getInstance().draw();
     }
 
     public static void drawRect(int x, int y, int x2, int y2, int color) {
         GlStateManager.disableTexture();
-        getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        getRenderer().begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         rectVertices(x, y, x2, y2, color);
         Tessellator.getInstance().draw();
     }
@@ -152,14 +155,14 @@ public final class RenderingHelper {
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         buffer.pos(x2, y1, 0F).color(r1, g1, b1, a1).endVertex();
         buffer.pos(x1, y1, 0F).color(r1, g1, b1, a1).endVertex();
         buffer.pos(x1, y2, 0F).color(r2, g2, b2, a2).endVertex();
         buffer.pos(x2, y2, 0F).color(r2, g2, b2, a2).endVertex();
         tessellator.draw();
 
-        GlStateManager.shadeModel(GL11.GL_FLAT);
+        GlStateManager.shadeModel(GL_FLAT);
         GlStateManager.disableBlend();
         GlStateManager.enableAlphaTest();
         GlStateManager.enableTexture();
@@ -179,14 +182,14 @@ public final class RenderingHelper {
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         buffer.pos(x1, y1, 0F).color(r1, g1, b1, a1).endVertex();
         buffer.pos(x1, y2, 0F).color(r1, g1, b1, a1).endVertex();
         buffer.pos(x2, y2, 0F).color(r2, g2, b2, a2).endVertex();
         buffer.pos(x2, y1, 0F).color(r2, g2, b2, a2).endVertex();
         tessellator.draw();
 
-        GlStateManager.shadeModel(GL11.GL_FLAT);
+        GlStateManager.shadeModel(GL_FLAT);
         GlStateManager.disableBlend();
         GlStateManager.enableAlphaTest();
         GlStateManager.enableTexture();
@@ -199,7 +202,7 @@ public final class RenderingHelper {
         bindTexture(texture);
 
         BufferBuilder buffer = getRenderer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         textureVertices(x1, y1, x2, y2, z, u1, v1, u2, v2);
         Tessellator.getInstance().draw();
     }
@@ -306,5 +309,17 @@ public final class RenderingHelper {
             path.append(segment).append("/");
         }
         return new ResourceLocation(StevesFactoryManager.MODID, path.toString());
+    }
+
+    public static void enableScissor(int x, int y, int width, int height) {
+        MainWindow mainWindow = Minecraft.getInstance().mainWindow;
+        double scale = mainWindow.getGuiScaleFactor();
+        glEnable(GL_SCISSOR_TEST);
+        glScissor((int) (x * scale), (int) (mainWindow.getHeight() - ((y + height) * scale)),
+                (int) (width * scale), (int) (height * scale));
+    }
+
+    public static void disableScissor() {
+        glDisable(GL_SCISSOR_TEST);
     }
 }

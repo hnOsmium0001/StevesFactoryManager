@@ -35,8 +35,8 @@ public class Checkbox extends AbstractWidget implements LeafWidgetMixin {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         int x1 = getAbsoluteX();
         int y1 = getAbsoluteY();
-        int x2 = getAbsoluteXBR();
-        int y2 = getAbsoluteYBR();
+        int x2 = getAbsoluteXRight();
+        int y2 = getAbsoluteYBottom();
         int borderColor = isEnabled() ? NORMAL_BORDER : DISABLED_BORDER;
         int contentColor = isEnabled()
                 ? (checked ? CHECKED : UNCHECKED)

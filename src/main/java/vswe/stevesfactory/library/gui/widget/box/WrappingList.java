@@ -7,7 +7,6 @@ package vswe.stevesfactory.library.gui.widget.box;
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.TextField;
@@ -46,7 +45,7 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
     }
 
     public WrappingList(String defaultText) {
-        super(0, 0,80, 80);
+        super(0, 0, 80, 80);
         this.contentArea.setSize(getDimensions());
 
         // Too lazy to add text change events, just make pressing enter update search
@@ -141,26 +140,24 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
 //                gui.drawString(Localization.ITEMS_FOUND.toString() + " " + children.size(), getStatusTextX, getStatusTextY, 0.7F, 0x404040);
 //            }
 
-        RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXBR(), getAbsoluteYBR(), 0xaaffffff);
+        RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), 0xaaffffff);
         searchBox.render(mouseX, mouseY, particleTicks);
         scrollUpArrow.render(mouseX, mouseY, particleTicks);
         scrollDownArrow.render(mouseX, mouseY, particleTicks);
 
-        double scale = minecraft().mainWindow.getGuiScaleFactor();
         int left = getAbsoluteX() + getScrollingSectionX();
-        int bottom = getAbsoluteY() + getScrollingSectionY() + contentArea.height;
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor((int) (left * scale), (int) (minecraft().mainWindow.getHeight() - (bottom * scale)),
-                (int) (contentArea.width * scale), (int) (contentArea.height * scale));
+        int top = getAbsoluteY() + getScrollingSectionY();
+        RenderingHelper.enableScissor(left, top, contentArea.width, contentArea.height);
 
         int sy = getScrollingSectionY();
         for (T child : searchResults) {
             int cy = child.getY();
-            if (cy + child.getHeight() > sy && cy < sy + contentArea.height)
+            if (cy + child.getHeight() > sy && cy < sy + contentArea.height) {
                 child.render(mouseX, mouseY, particleTicks);
+            }
         }
 
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        RenderingHelper.disableScissor();
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 

@@ -4,7 +4,6 @@ import com.google.common.base.MoreObjects;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.item.ItemStack;
-import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
@@ -43,7 +42,7 @@ public abstract class AbstractSlot extends AbstractWidget implements LeafWidgetM
 
     public void renderHoveredOverlay() {
         RenderingHelper.useBlendingGLStates();
-        RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXBR(), getAbsoluteYBR(), 0xaac4c4c4);
+        RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), 0xaac4c4c4);
         RenderingHelper.useTextureGLStates();
     }
 

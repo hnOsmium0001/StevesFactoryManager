@@ -35,7 +35,7 @@ abstract class AbstractEntry extends AbstractWidget implements IEntry, LeafWidge
 
         int x = getAbsoluteX();
         int y = getAbsoluteY();
-        int y2 = getAbsoluteYBR();
+        int y2 = getAbsoluteYBottom();
         if (isInside(mouseX, mouseY)) {
             IWindow parent = getWindow();
             RenderingHelper.drawRect(x, y, parent.getContentX() + parent.getWidth() - parent.getBorderSize() * 2, y2, 59, 134, 255, 255);

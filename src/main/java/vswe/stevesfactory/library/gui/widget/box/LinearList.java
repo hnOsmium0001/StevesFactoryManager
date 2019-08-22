@@ -21,7 +21,7 @@ import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 
-import static vswe.stevesfactory.utils.RenderingHelper.rectVertices;
+import static vswe.stevesfactory.utils.RenderingHelper.*;
 
 public class LinearList<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
 
@@ -52,7 +52,7 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     private boolean isInsideBar(double mouseX, double mouseY) {
         int barLeftX = getAbsBarLeft();
         return mouseX >= barLeftX && mouseX < barLeftX + getBarWidth()
-                && mouseY >= getAbsoluteY() && mouseY < getAbsoluteYBR();
+                && mouseY >= getAbsoluteY() && mouseY < getAbsoluteYBottom();
     }
 
     @Override
@@ -98,18 +98,15 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
 
         int left = getAbsoluteX();
         int top = getAbsoluteY();
-        int right = getAbsoluteXBR();
-        int bottom = getAbsoluteYBR();
+        int right = getAbsoluteXRight();
+        int bottom = getAbsoluteYBottom();
         int width = getWidth();
         int height = getHeight();
 
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder renderer = tess.getBuffer();
 
-        double scale = minecraft().mainWindow.getGuiScaleFactor();
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor((int) (left * scale), (int) (minecraft().mainWindow.getHeight() - (bottom * scale)),
-                (int) (width * scale), (int) (height * scale));
+        enableScissor(left, top, width, height);
 
         for (T child : getChildren()) {
             child.render(mouseX, mouseY, partialTicks);
@@ -128,19 +125,30 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
             GlStateManager.disableDepthTest();
             GlStateManager.disableTexture();
             renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-            rectVertices(barLeftX, top, barRightX, bottom, 0xff000000);
-            rectVertices(barLeftX, barTopY, barRightX, barBottomY, 0xff808080);
-            rectVertices(barLeftX, barTopY, barRightX - 1, barBottomY - 1, 0xffc0c0c0);
+            rectVertices(barLeftX, top, barRightX, bottom, getShadowColor());
+            rectVertices(barLeftX, barTopY, barRightX, barBottomY, getBarBorderColor());
+            rectVertices(barLeftX, barTopY, barRightX - 1, barBottomY - 1, getBarBodyColor());
             tess.draw();
             GlStateManager.enableTexture();
         }
 
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        disableScissor();
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
-    protected void drawOverlay() {
+    public int getBarBodyColor() {
+        return 0xffc0c0c0;
+    }
 
+    public int getBarBorderColor() {
+        return 0xff808080;
+    }
+
+    public int getShadowColor() {
+        return 0xff000000;
+    }
+
+    protected void drawOverlay() {
     }
 
     /**
@@ -152,8 +160,8 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     protected final void drawDefaultOverlay() {
         int left = getAbsoluteX();
         int top = getAbsoluteY();
-        int right = getAbsoluteXBR();
-        int bottom = getAbsoluteYBR();
+        int right = getAbsoluteXRight();
+        int bottom = getAbsoluteYBottom();
         if (minecraft().world != null) {
             GuiUtils.drawGradientRect(0, left, top, right, bottom, 0xc0101010, 0xd0101010);
         } else {

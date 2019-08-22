@@ -161,11 +161,11 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
         return absY;
     }
 
-    public int getAbsoluteXBR() {
+    public int getAbsoluteXRight() {
         return getAbsoluteX() + getWidth();
     }
 
-    public int getAbsoluteYBR() {
+    public int getAbsoluteYBottom() {
         return getAbsoluteY() + getHeight();
     }
 
@@ -280,9 +280,9 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
     @Override
     public boolean isInside(double x, double y) {
         return getAbsoluteX() <= x &&
-                getAbsoluteXBR() > x &&
+                getAbsoluteXRight() > x &&
                 getAbsoluteY() <= y &&
-                getAbsoluteYBR() > y;
+                getAbsoluteYBottom() > y;
     }
 
     @Override

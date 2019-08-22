@@ -28,7 +28,7 @@ public class Section extends AbstractContainer<IEntry> {
 
     private void renderLine() {
         int bx = getAbsoluteX() + HALF_MARGIN_SIDES;
-        int bx2 = getAbsoluteXBR() - 1;
+        int bx2 = getAbsoluteXRight() - 1;
         int by = getAbsoluteY() + 1;
         GlStateManager.disableTexture();
         GlStateManager.color3f(LINE_COLOR, LINE_COLOR, LINE_COLOR);
