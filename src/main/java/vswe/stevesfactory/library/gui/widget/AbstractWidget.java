@@ -1,6 +1,5 @@
 package vswe.stevesfactory.library.gui.widget;
 
-import javafx.geometry.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import vswe.stevesfactory.library.gui.IWidget;
@@ -8,8 +7,7 @@ import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
-import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
-import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
+import vswe.stevesfactory.library.gui.layout.properties.*;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 

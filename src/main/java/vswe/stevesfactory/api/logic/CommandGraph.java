@@ -145,18 +145,9 @@ public class CommandGraph implements Iterable<IProcedure> {
             }
         }
 
-//        IProcedure[] predecessors = node.predecessors();
-//        int[] parents = new int[predecessors.length];
-//        for (int i = 0; i < predecessors.length; i++) {
-//            IProcedure predecessor = predecessors[i];
-//            int k = idMap.getOrDefault(predecessor, -1);
-//            parents[i] = k;
-//        }
-
         tag.put("NodeData", node.serialize());
         tag.putInt("ID", id);
         tag.putIntArray("Children", children);
-//        tag.putIntArray("Parents", parents);
         return tag;
     }
 
@@ -208,15 +199,6 @@ public class CommandGraph implements Iterable<IProcedure> {
                 }
             }
         }
-
-//        int[] parents = nodeNBT.getIntArray("Parents");
-//        for (int i = 0; i < parents.length; i++) {
-//            int index = parents[i];
-//            if (index != -1) {
-//                IProcedure target = nodes.get(index);
-//                target.linkTo(i >>> 16, node, i & 16);
-//            }
-//        }
     }
 
     public static CommandGraph deserializeFrom(CompoundNBT tag) {
