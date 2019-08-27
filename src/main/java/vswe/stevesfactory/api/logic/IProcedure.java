@@ -1,5 +1,6 @@
 package vswe.stevesfactory.api.logic;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
@@ -14,12 +15,12 @@ public interface IProcedure {
      * Get an array of successor nodes. A null element represents a empty, but possible edge that can be created. If all elements in the
      * returned array are null, this node is the root of the graph.
      */
-    IProcedure[] successors();
+    Connection[] successors();
 
     /**
      * Get an array of predecessor nodes. A null element represents a empty, but possible edge that can be created.
      */
-    IProcedure[] predecessors();
+    Connection[] predecessors();
 
     /**
      * Execute this procedure, and push the next procedure the control flow should go to.
@@ -49,48 +50,58 @@ public interface IProcedure {
      */
     void remove();
 
-    /**
-     * Create a directed edge from this node to the parameter {@code successor}.
-     *
-     * @param outputIndex    Index in {@link #successors()} to put a link to {@code successor}.
-     * @param successor      Target node to connect to
-     * @param nextInputIndex Index in {@link #predecessors()} of {@code successor} to put a link to this node.
-     * @implSpec This method should call {@link #onLink(IProcedure, int)} on {@code successor} with the parameters {@code (this,
-     * nextInputIndex)}. Additionally implementation may unlink the original link at {@code outputIndex} first.
-     */
-    void linkTo(int outputIndex, IProcedure successor, int nextInputIndex);
+    void setInputConnection(Connection connection, int index);
 
-    /**
-     * Clear the edge on {@code outputIndex}.
-     *
-     * @param outputIndex Index in {@link #successors()} to remove
-     */
-    void unlink(int outputIndex);
+    void setOutputConnection(Connection connection, int index);
 
-    /**
-     * Find the index of the successor {@code successor}, and unlink the found node. This method should call {@link #unlink(int)} after the
-     * connection has been found.
-     *
-     * @see #unlink(int)
-     */
-    void unlink(IProcedure successor);
+    @CanIgnoreReturnValue
+    Connection removeInputConnection(int index);
 
-    /**
-     * Called when a edge from {@code predecessor} to {@code this} node has been added in this graph.
-     * <p>
-     * This node is in charge of updating graph references in the associated controller.
-     *
-     * @param predecessor The predecessor that has linked this node.
-     * @param inputIndex  Index in {@link #predecessors()} that should be updated to {@code predecessor}
-     */
-    void onLink(IProcedure predecessor, int inputIndex);
+    @CanIgnoreReturnValue
+    Connection removeOutputConnection(int index);
 
-    /**
-     * Called when a edge from {@code predecessor} to {@code this} node has been removed in this graph.
-     * <p>
-     * This node is in charge of updating graph references in the associated controler.
-     *
-     * @param predecessor The predecessor that has unlinked this node.
-     */
-    void onUnlink(IProcedure predecessor);
+//    /**
+//     * Create a directed edge from this node to the parameter {@code successor}.
+//     *
+//     * @param outputIndex    Index in {@link #successors()} to put a link to {@code successor}.
+//     * @param successor      Target node to connect to
+//     * @param nextInputIndex Index in {@link #predecessors()} of {@code successor} to put a link to this node.
+//     * @implSpec This method should call {@link #onLink(IProcedure, int)} on {@code successor} with the parameters {@code (this,
+//     * nextInputIndex)}. Additionally implementation may unlink the original link at {@code outputIndex} first.
+//     */
+//    void linkTo(int outputIndex, IProcedure successor, int nextInputIndex);
+//
+//    /**
+//     * Clear the edge on {@code outputIndex}.
+//     *
+//     * @param outputIndex Index in {@link #successors()} to remove
+//     */
+//    void unlink(int outputIndex);
+//
+//    /**
+//     * Find the index of the successor {@code successor}, and unlink the found node. This method should call {@link #unlink(int)} after the
+//     * connection has been found.
+//     *
+//     * @see #unlink(int)
+//     */
+//    void unlink(IProcedure successor);
+//
+//    /**
+//     * Called when a edge from {@code predecessor} to {@code this} node has been added in this graph.
+//     * <p>
+//     * This node is in charge of updating graph references in the associated controller.
+//     *
+//     * @param predecessor The predecessor that has linked this node.
+//     * @param inputIndex  Index in {@link #predecessors()} that should be updated to {@code predecessor}
+//     */
+//    void onLink(IProcedure predecessor, int inputIndex);
+//
+//    /**
+//     * Called when a edge from {@code predecessor} to {@code this} node has been removed in this graph.
+//     * <p>
+//     * This node is in charge of updating graph references in the associated controler.
+//     *
+//     * @param predecessor The predecessor that has unlinked this node.
+//     */
+//    void onUnlink(IProcedure predecessor);
 }

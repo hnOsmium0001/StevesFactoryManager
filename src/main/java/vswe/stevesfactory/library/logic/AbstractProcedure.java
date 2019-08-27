@@ -13,8 +13,10 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 
     private IProcedureType<?> type;
 
-    private IProcedure[] successors;
-    private IProcedure[] predecessors;
+    //    private IProcedure[] successors;
+//    private IProcedure[] predecessors;
+    private Connection[] successors;
+    private Connection[] predecessors;
 
     private transient CommandGraph graph;
 
@@ -26,15 +28,19 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         Preconditions.checkArgument(!graph.getController().isRemoved(), "The controller object is invalid!");
         this.type = type;
         this.graph = graph;
-        this.successors = new IProcedure[possibleChildren];
-        this.predecessors = new IProcedure[possibleParents];
+//        this.successors = new IProcedure[possibleChildren];
+//        this.predecessors = new IProcedure[possibleParents];
+        this.successors = new Connection[possibleChildren];
+        this.predecessors = new Connection[possibleChildren];
     }
 
     public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleParents, int possibleChildren) {
         this.setController(controller);
         this.type = type;
-        this.successors = new IProcedure[possibleChildren];
-        this.predecessors = new IProcedure[possibleParents];
+//        this.successors = new IProcedure[possibleChildren];
+//        this.predecessors = new IProcedure[possibleParents];
+        this.successors = new Connection[possibleChildren];
+        this.predecessors = new Connection[possibleChildren];
     }
 
     public INetworkController getController() {
@@ -57,99 +63,141 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         controller.addCommandGraph(graph);
     }
 
+//    @Override
+//    public IProcedure[] successors() {
+//        return successors;
+//    }
+//
+//    @Override
+//    public IProcedure[] predecessors() {
+//        return predecessors;
+//    }
+
     @Override
-    public IProcedure[] successors() {
+    public Connection[] successors() {
         return successors;
     }
 
     @Override
-    public IProcedure[] predecessors() {
+    public Connection[] predecessors() {
         return predecessors;
+    }
+
+    @Override
+    public void setInputConnection(Connection connection, int index) {
+        predecessors[index] = connection;
+        if (connection.getSource().getGraph() != this.graph && isRoot()) {
+            getController().removeCommandGraph(graph);
+            graph = connection.getSource().getGraph();
+        }
+    }
+
+    @Override
+    public void setOutputConnection(Connection connection, int index) {
+        successors[index] = connection;
+    }
+
+    @Override
+    public Connection removeInputConnection(int index) {
+        Connection ret = predecessors[index];
+        predecessors[index] = null;
+        getController().removeCommandGraph(graph);
+        graph = new CommandGraph(this);
+        getController().addCommandGraph(graph);
+        return ret;
+    }
+
+    @Override
+    public Connection removeOutputConnection(int index) {
+        Connection ret = successors[index];
+        setOutputConnection(null, index);
+        return ret;
     }
 
     // TODO better graph code
 
-    @Override
-    public void linkTo(int outputIndex, IProcedure successor, int nextInputIndex) {
-        unlink(outputIndex);
-
-        successors[outputIndex] = successor;
-        successor.onLink(this, nextInputIndex);
-    }
-
-    @Override
-    public void unlink(int outputIndex) {
-        IProcedure oldChild = successors[outputIndex];
-        if (oldChild != null) {
-            oldChild.onUnlink(this);
-            successors[outputIndex] = null;
-        }
-    }
-
-    @Override
-    public void unlink(IProcedure successor) {
-        for (int i = 0; i < successors.length; i++) {
-            if (successors[i] == successor) {
-                unlink(i);
-            }
-        }
-    }
-
-    @Override
-    public void onLink(IProcedure predecessor, int inputIndex) {
-        INetworkController controller = getController();
-
-        // In case this node is the root, remove the old graph because we are joining another graph
-        if (isRoot()) {
-            controller.removeCommandGraph(graph);
-        } else {
-            // If this is not a root node, means this node has a predecessor, or oldParent != null
-            IProcedure oldParent = predecessors[inputIndex];
-            // FIXME on deserialization no links will be present
-            if(oldParent != null) {
-//                Preconditions.checkState(oldParent != null, "Encountered a non-root graph node has no predecessor!");
-
-                oldParent.unlink(this);
-
-                // During unlink, we created a new graph with this node as the root (see onUnlink)
-                // However since we are linking to another predecessor node, that graph is invalid since having a predecessor means this node will not be the root
-                Preconditions.checkState(isRoot(), "Unlinking this from a predecessor did not call onUnlink on this!");
-                controller.removeCommandGraph(graph);
-            }
-        }
-
-        predecessors[inputIndex] = predecessor;
-        graph = predecessor.getGraph();
-    }
-
-    @Override
-    public void onUnlink(IProcedure predecessor) {
-        for (int i = 0; i < predecessors.length; i++) {
-            if (predecessors[i] == predecessor) {
-                predecessors[i] = null;
-            }
-        }
-        graph = graph.inducedSubgraph(this);
-        getController().addCommandGraph(graph);
-    }
+//    @Override
+//    public void linkTo(int outputIndex, IProcedure successor, int nextInputIndex) {
+//        unlink(outputIndex);
+//
+//        successors[outputIndex] = successor;
+//        successor.onLink(this, nextInputIndex);
+//    }
+//
+//    @Override
+//    public void unlink(int outputIndex) {
+//        IProcedure oldChild = successors[outputIndex];
+//        if (oldChild != null) {
+//            oldChild.onUnlink(this);
+//            successors[outputIndex] = null;
+//        }
+//    }
+//
+//    @Override
+//    public void unlink(IProcedure successor) {
+//        for (int i = 0; i < successors.length; i++) {
+//            if (successors[i] == successor) {
+//                unlink(i);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void onLink(IProcedure predecessor, int inputIndex) {
+//        INetworkController controller = getController();
+//
+//        // In case this node is the root, remove the old graph because we are joining another graph
+//        if (isRoot()) {
+//            controller.removeCommandGraph(graph);
+//        } else {
+//            // If this is not a root node, means this node has a predecessor, or oldParent != null
+//            IProcedure oldParent = predecessors[inputIndex];
+//            // FIXME on deserialization no links will be present
+//            if(oldParent != null) {
+////                Preconditions.checkState(oldParent != null, "Encountered a non-root graph node has no predecessor!");
+//
+//                oldParent.unlink(this);
+//
+//                // During unlink, we created a new graph with this node as the root (see onUnlink)
+//                // However since we are linking to another predecessor node, that graph is invalid since having a predecessor means this node will not be the root
+//                Preconditions.checkState(isRoot(), "Unlinking this from a predecessor did not call onUnlink on this!");
+//                controller.removeCommandGraph(graph);
+//            }
+//        }
+//
+//        predecessors[inputIndex] = predecessor;
+//        graph = predecessor.getGraph();
+//    }
+//
+//    @Override
+//    public void onUnlink(IProcedure predecessor) {
+//        for (int i = 0; i < predecessors.length; i++) {
+//            if (predecessors[i] == predecessor) {
+//                predecessors[i] = null;
+//            }
+//        }
+//        graph = graph.inducedSubgraph(this);
+//        getController().addCommandGraph(graph);
+//    }
+//
+//
+//    @Override
+//    public void remove() {
+//        for (IProcedure predecessor : predecessors) {
+//            if (predecessor != null) {
+//                predecessor.unlink(this);
+//            }
+//        }
+//        for (int i = 0; i < successors.length; i++) {
+//            unlink(i);
+//        }
+//        if (isRoot()) {
+//            getController().removeCommandGraph(graph);
+//        }
+//    }
 
     public boolean isRoot() {
         return graph.getRoot() == this;
-    }
-
-    @Override
-    public void remove() {
-        for (IProcedure predecessor : predecessors) {
-            if (predecessor != null) {
-                predecessor.unlink(this);
-            }
-        }
-        for (int i = 0; i < successors.length; i++) {
-            unlink(i);
-        }
-        if (isRoot()) {
-            getController().removeCommandGraph(graph);
-        }
     }
 
     @Override

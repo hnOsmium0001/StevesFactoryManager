@@ -6,11 +6,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
-import vswe.stevesfactory.library.gui.widget.mixin.*;
+import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -345,7 +345,8 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         return nodes;
     }
 
-   abstract void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure) ;
+    abstract void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure);
+
     public void removeConnection(int i) {
         nodes.get(i).disconnect();
     }
