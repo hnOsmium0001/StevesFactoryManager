@@ -9,4 +9,10 @@ public interface IProcedureClientData {
     int getComponentY();
 
     void setComponentY(int y);
+
+    String getName();
+
+    void setName(String name);
+
+    boolean isNameInitialized();
 }

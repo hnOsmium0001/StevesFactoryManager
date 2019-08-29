@@ -15,8 +15,6 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 
     private IProcedureType<?> type;
 
-//    private transient IProcedure[] successors;
-//    private transient IProcedure[] predecessors;
     private transient Connection[] successors;
     private transient Connection[] predecessors;
 
@@ -25,13 +23,12 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     // Client data
     private int componentX;
     private int componentY;
+    private String name;
 
     public AbstractProcedure(IProcedureType<?> type, CommandGraph graph, int possibleParents, int possibleChildren) {
         Preconditions.checkArgument(!graph.getController().isRemoved(), "The controller object is invalid!");
         this.type = type;
         this.graph = graph;
-//        this.successors = new IProcedure[possibleChildren];
-//        this.predecessors = new IProcedure[possibleParents];
         this.successors = new Connection[possibleChildren];
         this.predecessors = new Connection[possibleParents];
     }
@@ -39,8 +36,6 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleParents, int possibleChildren) {
         this.setController(controller);
         this.type = type;
-//        this.successors = new IProcedure[possibleChildren];
-//        this.predecessors = new IProcedure[possibleParents];
         this.successors = new Connection[possibleChildren];
         this.predecessors = new Connection[possibleParents];
     }
@@ -64,16 +59,6 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         this.graph = new CommandGraph(controller, this);
         controller.addCommandGraph(graph);
     }
-
-//    @Override
-//    public IProcedure[] successors() {
-//        return successors;
-//    }
-//
-//    @Override
-//    public IProcedure[] predecessors() {
-//        return predecessors;
-//    }
 
     @Override
     public Connection[] successors() {
@@ -116,82 +101,8 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         return ret;
     }
 
-    // TODO better graph code
-
-//    @Override
-//    public void linkTo(int outputIndex, IProcedure successor, int nextInputIndex) {
-//        unlink(outputIndex);
-//
-//        successors[outputIndex] = successor;
-//        successor.onLink(this, nextInputIndex);
-//    }
-//
-//    @Override
-//    public void unlink(int outputIndex) {
-//        IProcedure oldChild = successors[outputIndex];
-//        if (oldChild != null) {
-//            oldChild.onUnlink(this);
-//            successors[outputIndex] = null;
-//        }
-//    }
-//
-//    @Override
-//    public void unlink(IProcedure successor) {
-//        for (int i = 0; i < successors.length; i++) {
-//            if (successors[i] == successor) {
-//                unlink(i);
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void onLink(IProcedure predecessor, int inputIndex) {
-//        INetworkController controller = getController();
-//
-//        // In case this node is the root, remove the old graph because we are joining another graph
-//        if (isRoot()) {
-//            controller.removeCommandGraph(graph);
-//        } else {
-//            // If this is not a root node, means this node has a predecessor, or oldParent != null
-//            IProcedure oldParent = predecessors[inputIndex];
-//            // FIXME on deserialization no links will be present
-//            if(oldParent != null) {
-//                Preconditions.checkState(oldParent != null, "Encountered a non-root graph node has no predecessor!");
-//
-//                oldParent.unlink(this);
-//
-//                // During unlink, we created a new graph with this node as the root (see onUnlink)
-//                // However since we are linking to another predecessor node, that graph is invalid since having a predecessor means this node will not be the root
-//                Preconditions.checkState(isRoot(), "Unlinking this from a predecessor did not call onUnlink on this!");
-//                controller.removeCommandGraph(graph);
-//            }
-//        }
-//
-//        predecessors[inputIndex] = predecessor;
-//        graph = predecessor.getGraph();
-//    }
-//
-//    @Override
-//    public void onUnlink(IProcedure predecessor) {
-//        for (int i = 0; i < predecessors.length; i++) {
-//            if (predecessors[i] == predecessor) {
-//                predecessors[i] = null;
-//            }
-//        }
-//        graph = graph.inducedSubgraph(this);
-//        getController().addCommandGraph(graph);
-//    }
-
     @Override
     public void remove() {
-//        for (IProcedure predecessor : predecessors) {
-//            if (predecessor != null) {
-//                predecessor.unlink(this);
-//            }
-//        }
-//        for (int i = 0; i < successors.length; i++) {
-//            unlink(i);
-//        }
         for (Connection predecessor : predecessors) {
             if (predecessor != null) {
                 predecessor.remove();
@@ -241,6 +152,21 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         this.componentY = componentY;
     }
 
+    @Override
+    public String getName() {
+        return MoreObjects.firstNonNull(name, "");
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean isNameInitialized() {
+        return name != null;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -253,6 +179,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         tag.putString("ID", getRegistryName().toString());
         tag.putInt("CompX", componentX);
         tag.putInt("CompY", componentY);
+        tag.putString("Name", getName());
         return tag;
     }
 
@@ -262,6 +189,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         this.graph = graph;
         componentX = tag.getInt("CompX");
         componentY = tag.getInt("CompY");
+        name = tag.getString("Name");
     }
 
     @Override

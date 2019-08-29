@@ -210,6 +210,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
                 parent.renameButton.setEnabled(true);
                 parent.nameBox.scrollToFront();
                 parent.nameBox.setEditable(false);
+                parent.getDataHandler().setName(parent.getName());
                 getWindow().changeFocus(parent.nameBox, false);
                 return true;
             }
@@ -308,8 +309,10 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     }
 
     public static <P extends IProcedure & IProcedureClientData> FlowComponent<P> of(P procedure, int inputNodes, int outputNodes) {
-        String name = I18n.format("logic.sfm." + procedure.getRegistryName().getPath());
-        return new FlowComponent<>(procedure, name, inputNodes, outputNodes);
+        if (!procedure.isNameInitialized()) {
+            procedure.setName(I18n.format("logic.sfm." + procedure.getRegistryName().getPath()));
+        }
+        return new FlowComponent<>(procedure, inputNodes, outputNodes);
     }
 
     public static <P extends IProcedure & IProcedureClientData> FlowComponent<P> of(P procedure) {
@@ -344,9 +347,9 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     private int initialDragLocalX;
     private int initialDragLocalY;
 
-    public FlowComponent(P procedure, String name, int inputNodes, int outputNodes) {
+    public FlowComponent(P procedure, int inputNodes, int outputNodes) {
         super(0, 0, 0, 0);
-        this.setLinkedProcedure(procedure);
+        String name = procedure.getName();
         this.toggleStateButton = new ToggleStateButton(this);
         this.renameButton = new RenameButton(this);
         this.submitButton = new SubmitButton(this);
@@ -365,6 +368,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
             }
         });
         this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, this.inputNodes, this.outputNodes, menus);
+        this.setLinkedProcedure(procedure);
 
         this.collapse();
         this.reflow();
@@ -410,6 +414,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     public void setName(String name) {
         this.nameBox.setText(name);
         this.cancelButton.previousName = getName();
+        this.procedure.setName(name);
     }
 
     @Override
@@ -597,8 +602,17 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         return procedure;
     }
 
+    public IProcedure getProcedure() {
+        return procedure;
+    }
+
+    public IProcedureClientData getDataHandler() {
+        return procedure;
+    }
+
     public void setLinkedProcedure(P procedure) {
         this.procedure = procedure;
+        setName(procedure.getName());
         setLocation(procedure.getComponentX(), procedure.getComponentY());
     }
 
