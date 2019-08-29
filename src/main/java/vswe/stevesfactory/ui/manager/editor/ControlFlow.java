@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import vswe.stevesfactory.api.logic.Connection;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
@@ -236,8 +237,10 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         }
 
         private void linkToOther(Node other) {
-            IProcedure target = other.getLinkedProcedure();
-            getLinkedProcedure().linkTo(getIndex(), target, other.getIndex());
+            if (!getParentWidget().bootstrapping) {
+                IProcedure target = other.getLinkedProcedure();
+                Connection.createAndOverride(getLinkedProcedure(), getIndex(), target, other.getIndex());
+            }
         }
 
         @Override
@@ -290,32 +293,30 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         return new ControlFlow(amount, OutputNode::new) {
             @Override
             void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure) {
+                bootstrapping = true;
                 ImmutableList<Node> nodes = getChildren();
-                IProcedure[] successors = procedure.successors();
+                Connection[] successors = procedure.successors();
                 Preconditions.checkState(successors.length == nodes.size());
 
                 for (int i = 0; i < successors.length; i++) {
-                    IProcedure successor = successors[i];
-                    if (successor == null) {
+                    Connection connection = successors[i];
+                    if (connection == null) {
                         continue;
                     }
-                    Node node = nodes.get(i);
+                    IProcedure successor = connection.getDestination();
+                    FlowComponent<?> other = m.get(successor);
+                    Node from = nodes.get(i);
+                    Node to = other.getInputNodes().nodes.get(connection.getDestinationInputIndex());
 
-                    IProcedure[] predecessors = successor.predecessors();
-                    for (int j = 0; j < predecessors.length; j++) {
-                        IProcedure predecessor = predecessors[i];
-                        if (predecessor == procedure) {
-                            FlowComponent<?> f = m.get(successor);
-                            node.connect(f.getInputNodes().nodes.get(j));
-                            break;
-                        }
-                    }
+                    from.connect(to);
                 }
+                bootstrapping = false;
             }
         };
     }
 
     private final ImmutableList<Node> nodes;
+    boolean bootstrapping = false;
 
     @SuppressWarnings("UnstableApiUsage")
     public ControlFlow(int amountNodes, BiFunction<ControlFlow, Integer, ? extends Node> factory) {

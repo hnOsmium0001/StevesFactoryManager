@@ -116,7 +116,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
             }
         }
 
-        context.push(successors()[0]);
+        pushFrame(context, 0);
     }
 
     @Override

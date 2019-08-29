@@ -21,7 +21,7 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITickabl
 
     @Override
     public void execute(IExecutionContext context) {
-        context.push(successors()[0]);
+        pushFrame(context, 0);
     }
 
     @Override

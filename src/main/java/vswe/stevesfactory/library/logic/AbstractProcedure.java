@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.logic;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -7,16 +8,17 @@ import vswe.stevesfactory.api.SFMAPI;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public abstract class AbstractProcedure implements IProcedure, IProcedureClientData {
 
     private IProcedureType<?> type;
 
-    //    private IProcedure[] successors;
-//    private IProcedure[] predecessors;
-    private Connection[] successors;
-    private Connection[] predecessors;
+//    private transient IProcedure[] successors;
+//    private transient IProcedure[] predecessors;
+    private transient Connection[] successors;
+    private transient Connection[] predecessors;
 
     private transient CommandGraph graph;
 
@@ -31,7 +33,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 //        this.successors = new IProcedure[possibleChildren];
 //        this.predecessors = new IProcedure[possibleParents];
         this.successors = new Connection[possibleChildren];
-        this.predecessors = new Connection[possibleChildren];
+        this.predecessors = new Connection[possibleParents];
     }
 
     public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleParents, int possibleChildren) {
@@ -40,7 +42,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 //        this.successors = new IProcedure[possibleChildren];
 //        this.predecessors = new IProcedure[possibleParents];
         this.successors = new Connection[possibleChildren];
-        this.predecessors = new Connection[possibleChildren];
+        this.predecessors = new Connection[possibleParents];
     }
 
     public INetworkController getController() {
@@ -102,7 +104,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         Connection ret = predecessors[index];
         predecessors[index] = null;
         getController().removeCommandGraph(graph);
-        graph = new CommandGraph(this);
+        graph = graph.inducedSubgraph(this);
         getController().addCommandGraph(graph);
         return ret;
     }
@@ -154,7 +156,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 //            IProcedure oldParent = predecessors[inputIndex];
 //            // FIXME on deserialization no links will be present
 //            if(oldParent != null) {
-////                Preconditions.checkState(oldParent != null, "Encountered a non-root graph node has no predecessor!");
+//                Preconditions.checkState(oldParent != null, "Encountered a non-root graph node has no predecessor!");
 //
 //                oldParent.unlink(this);
 //
@@ -179,10 +181,9 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 //        graph = graph.inducedSubgraph(this);
 //        getController().addCommandGraph(graph);
 //    }
-//
-//
-//    @Override
-//    public void remove() {
+
+    @Override
+    public void remove() {
 //        for (IProcedure predecessor : predecessors) {
 //            if (predecessor != null) {
 //                predecessor.unlink(this);
@@ -191,10 +192,20 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 //        for (int i = 0; i < successors.length; i++) {
 //            unlink(i);
 //        }
-//        if (isRoot()) {
-//            getController().removeCommandGraph(graph);
-//        }
-//    }
+        for (Connection predecessor : predecessors) {
+            if (predecessor != null) {
+                predecessor.remove();
+            }
+        }
+        for (Connection successor : successors) {
+            if (successor != null) {
+                successor.remove();
+            }
+        }
+        if (isRoot()) {
+            getController().removeCommandGraph(graph);
+        }
+    }
 
     public boolean isRoot() {
         return graph.getRoot() == this;
@@ -258,6 +269,16 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         return type.getRegistryName();
     }
 
+    protected final void pushFrame(IExecutionContext context, @Nullable Connection connection) {
+        if (connection != null) {
+            context.push(connection.getDestination());
+        }
+    }
+
+    protected final void pushFrame(IExecutionContext context, int outputIndex) {
+        pushFrame(context, successors[outputIndex]);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -269,6 +290,17 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     @Override
     public int hashCode() {
         return Objects.hash(type);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("successors", successors)
+                .add("predecessors", predecessors)
+                .add("graph", "CommandGraph@" + graph.hashCode())
+                .add("componentX", componentX)
+                .add("componentY", componentY)
+                .toString();
     }
 
     public static IProcedureType<?> readType(CompoundNBT tag) {
