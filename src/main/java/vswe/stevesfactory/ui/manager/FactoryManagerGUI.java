@@ -81,13 +81,13 @@ public class FactoryManagerGUI extends WidgetScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_K) {
-            StevesFactoryManager.logger.info("K pressed:");
-            INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
-            for (CommandGraph graph : controller.getCommandGraphs()) {
-                StevesFactoryManager.logger.info(graph.collect());
-            }
-        }
+//        if (keyCode == GLFW.GLFW_KEY_K) {
+//            StevesFactoryManager.logger.info("K pressed:");
+//            INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
+//            for (CommandGraph graph : controller.getCommandGraphs()) {
+//                StevesFactoryManager.logger.info(graph.collect());
+//            }
+//        }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 

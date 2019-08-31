@@ -50,6 +50,9 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         super(ModBlocks.factoryManagerTileEntity);
     }
 
+    // TODO don't use getBlockState in onLoad/wait forge to fix this bug
+    //   see #5583
+    //   world access in #updateLinks to NetworkHelper.updateLinkType
     @Override
     public void onLoad() {
         super.onLoad();

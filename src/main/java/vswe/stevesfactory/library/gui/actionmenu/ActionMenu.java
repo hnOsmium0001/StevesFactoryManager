@@ -23,7 +23,6 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
 
     private final Point position;
     private final List<? extends IEntry> entries;
-    private final List<? extends Section> sections;
     private IEntry focusedEntry;
 
     private final Dimension contents;
@@ -47,12 +46,6 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
                 .mapToInt(IEntry::getHeight)
                 .sum();
         this.border = RenderingHelper.toBorder(contents, getBorderSize());
-
-        Section section = new Section();
-        // Safe downwards erasure cast
-        @SuppressWarnings("unchecked") List<IEntry> c = (List<IEntry>) entries;
-        section.addChildren(c);
-        this.sections = ImmutableList.of(section);
 
         int y = 0;
         for (IEntry e : entries) {
@@ -90,10 +83,6 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
                 widget.onFocusChanged(true);
             }
         }
-    }
-
-    public boolean isLastSection(Section section) {
-        return Iterables.getLast(sections) == section;
     }
 
     @Override

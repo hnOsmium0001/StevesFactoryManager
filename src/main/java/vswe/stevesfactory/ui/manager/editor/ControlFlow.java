@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
+import static org.lwjgl.opengl.GL11.*;
 import static vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 
 public abstract class ControlFlow extends AbstractContainer<Node> implements ResizableWidgetMixin {
@@ -38,17 +39,17 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
             // depth doesn't seem to be working
             GlStateManager.enableDepthTest();
             GlStateManager.disableTexture();
-            GL11.glEnable(GL11.GL_LINE_SMOOTH);
-            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-            GL11.glLineWidth(4);
-            GL11.glColor3f(94F / 255F, 94F / 255F, 94F / 255F);
-            GL11.glBegin(GL11.GL_LINES);
+            glEnable(GL11.GL_LINE_SMOOTH);
+            glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+            glLineWidth(4);
+            glColor3f(94F / 255F, 94F / 255F, 94F / 255F);
+            glBegin(GL11.GL_LINES);
             {
-                GL11.glVertex3f(x1, y1, 0F);
-                GL11.glVertex3f(x2, y2, 0F);
+                glVertex3f(x1, y1, 0F);
+                glVertex3f(x2, y2, 0F);
             }
-            GL11.glEnd();
-            GL11.glColor3f(1F, 1F, 1F);
+            glEnd();
+            glColor3f(1F, 1F, 1F);
             GlStateManager.enableTexture();
         }
 
@@ -159,6 +160,12 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
 
         public IProcedure getLinkedProcedure() {
             return getFlowComponent().getLinkedProcedure();
+        }
+
+        @Override
+        public void render(int mouseX, int mouseY, float particleTicks) {
+            GlStateManager.color3f(1F, 1F, 1F);
+            super.render(mouseX, mouseY, particleTicks);
         }
     }
 
