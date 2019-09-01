@@ -1,6 +1,7 @@
 package vswe.stevesfactory.logic.procedure;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -144,7 +145,12 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     @Override
     public FlowComponent<BatchedItemTransferProcedure> createFlowComponent() {
         FlowComponent<BatchedItemTransferProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>());
+        f.addMenu(new InventorySelectionMenu<BatchedItemTransferProcedure>() {
+            @Override
+            public String getHeadingText() {
+                return I18n.format("gui.sfm.Menu.InventorySelection.Source");
+            }
+        });
         return f;
     }
 

@@ -23,8 +23,8 @@ import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
-import vswe.stevesfactory.ui.manager.editor.DynamicWidthWidget;
-import vswe.stevesfactory.ui.manager.editor.EditorPanel;
+import vswe.stevesfactory.ui.manager.editor.*;
+import vswe.stevesfactory.ui.manager.editor.Menu;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -75,6 +75,8 @@ public class FactoryManagerGUI extends WidgetScreen {
     }
 
     private void sync() {
+        getPrimaryWindow().topLevel.editorPanel.saveAll();
+
         INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
         controller.sync();
     }

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
@@ -62,6 +61,10 @@ public class BlockIcon extends AbstractWidget implements IButton, INamedElement,
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public BlockState getBlockState() {

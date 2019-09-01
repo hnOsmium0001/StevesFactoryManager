@@ -13,11 +13,29 @@
 
   "gui.sfm.Dialogue.OK": "OK",
   "gui.sfm.Dialogue.Cancel": "Cancel",
-
   "gui.sfm.WrappingList.SearchStatus": "Found: %d",
 
-  "gui.sfm.General.Seconds": "second(s)",
-  "gui.sfm.General.Ticks": "ticks",
+  "gui.sfm.Seconds": "second(s)",
+  "gui.sfm.Ticks": "ticks",
+  "gui.sfm.Up": "Up",
+  "gui.sfm.Down": "Down",
+  "gui.sfm.North": "North",
+  "gui.sfm.South": "South",
+  "gui.sfm.East": "East",
+  "gui.sfm.West": "West",
+  "gui.sfm.WhiteList": "White list",
+  "gui.sfm.BlackList": "Black list",
+
+  // Menu texts
+  "gui.sfm.Menu.Interval": "Interval",
+  "gui.sfm.Menu.Interval.Info": "Time between this command is triggered",
+  "gui.sfm.Menu.InventorySelection": "Inventories",
+  "gui.sfm.Menu.InventorySelection.Source": "Src Inventories",
+  "gui.sfm.Menu.InventorySelection.Destination": "Dest Inventories",
+  "gui.sfm.Menu.TargetSides": "Target",
+  "gui.sfm.Menu.TargetSides.Source": "Src Target",
+  "gui.sfm.Menu.TargetSides.Destination": "Dest Target",
+  "gui.sfm.Menu.ItemFilter": "Items",
 
   // Procedure types
   "logic.sfm.timed_trigger": "Trigger",
@@ -37,10 +55,5 @@
   "logic.sfm.group": "Group",
   "logic.sfm.group_io": "Node",
   "logic.sfm.camouflage": "Camouflage",
-  "logic.sfm.sign_updater": "Sign",
-
-  // Menu texts
-  "gui.sfm.Menu.Interval": "Interval",
-  "gui.sfm.Menu.Interval.Info": "Time between this command is triggered",
-  "gui.sfm.Menu.InventorySelection": "Inventories"
+  "logic.sfm.sign_updater": "Sign"
 }

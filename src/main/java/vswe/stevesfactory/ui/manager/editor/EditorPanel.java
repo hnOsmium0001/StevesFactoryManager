@@ -160,6 +160,14 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         return false;
     }
 
+    public void saveAll() {
+        for (FlowComponent<?> flowComponent : getChildren()) {
+            for (Menu<?> menu : flowComponent.getMenusBox().getChildren()) {
+                menu.updateData();
+            }
+        }
+    }
+
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     private static class DescendingTreeSetBackedUnmodifiableCollection<E> extends AbstractCollection<E> {

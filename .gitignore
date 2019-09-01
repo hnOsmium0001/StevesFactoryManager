@@ -8,6 +8,7 @@
 !build.gradle
 !build.properties
 !project.properties
+!gradle.properties
 !settings.gradle
 
 # Include git important files
