@@ -14,6 +14,8 @@
   "gui.sfm.Dialogue.OK": "OK",
   "gui.sfm.Dialogue.Cancel": "Cancel",
 
+  "gui.sfm.WrappingList.SearchStatus": "Found: %d",
+
   "gui.sfm.General.Seconds": "second(s)",
   "gui.sfm.General.Ticks": "ticks",
 
@@ -39,5 +41,6 @@
 
   // Menu texts
   "gui.sfm.Menu.Interval": "Interval",
-  "gui.sfm.Menu.Interval.Info": "Time between this command is triggered"
+  "gui.sfm.Menu.Interval.Info": "Time between this command is triggered",
+  "gui.sfm.Menu.InventorySelection": "Inventories"
 }

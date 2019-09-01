@@ -1,6 +1,7 @@
 package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.platform.GlStateManager;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.library.gui.IWidget;
@@ -77,6 +78,12 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
         @Override
         public BoxSizing getBoxSizing() {
             return BoxSizing.PHANTOM;
+        }
+
+        @Override
+        public void render(int mouseX, int mouseY, float particleTicks) {
+            GlStateManager.color3f(1F, 1F, 1F);
+            super.render(mouseX, mouseY, particleTicks);
         }
     }
 
@@ -181,7 +188,7 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
         } else {
             toggleStateButton.render(mouseX, mouseY, particleTicks);
         }
-        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     public void renderHeadingText() {
@@ -195,7 +202,7 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
     }
 
     public int getHeadingColor() {
-        return 0x000000;
+        return 0x404040;
     }
 
     public abstract String getHeadingText();

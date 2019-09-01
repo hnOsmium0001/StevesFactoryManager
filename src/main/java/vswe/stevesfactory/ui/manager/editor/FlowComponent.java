@@ -358,6 +358,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         this.nameBox = new TextField(8, 8, 35, 10)
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setText(name)
+                .setTextColor(0xff303030,0xff303030)
                 .setEditable(false);
         this.inputNodes = ControlFlow.inputNodes(inputNodes);
         this.outputNodes = ControlFlow.outputNodes(outputNodes);

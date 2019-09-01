@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.widget.box;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -86,6 +87,7 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+        GlStateManager.color3f(1F, 1F, 1F);
         if (isEnabled()) {
             if (isClicked()) {
                 getTextureClicked().draw(getAbsoluteX(), getAbsoluteY());

@@ -6,6 +6,8 @@ package vswe.stevesfactory.library.gui.widget.box;
 
 import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import net.minecraft.client.resources.I18n;
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -13,8 +15,7 @@ import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
-import vswe.stevesfactory.utils.RenderingHelper;
-import vswe.stevesfactory.utils.VectorHelper;
+import vswe.stevesfactory.utils.*;
 
 import java.awt.*;
 import java.util.List;
@@ -87,6 +88,13 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
                 }
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
+
+            @Override
+            public void onFocusChanged(boolean focus) {
+                if (!focus) {
+                    updateSearch();
+                }
+            }
         };
         t.setParentWidget(this);
         t.setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
@@ -98,7 +106,7 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
     protected List<T> searchItems(String search) {
         List<T> result = new ArrayList<>();
         for (T child : contents) {
-            if (search.equals(child.getName())) {
+            if (StringUtils.containsIgnoreCase(child.getName(), search)) {
                 result.add(child);
             }
         }
@@ -110,8 +118,6 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         if (!isInside(mouseX, mouseY)) {
             return false;
         }
-
-        // TODO fix focus target for pressing enter
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -135,12 +141,11 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        // TODO add search status
-//            if (searchBox.getText().length() > 0 || children.size() > 0) {
-//                gui.drawString(Localization.ITEMS_FOUND.toString() + " " + children.size(), getStatusTextX, getStatusTextY, 0.7F, 0x404040);
-//            }
+        if (searchBox.getText().length() > 0 || searchResults.size() > 0) {
+            String status = I18n.format("gui.sfm.WrappingList.SearchStatus", searchResults.size());
+            RenderingHelper.drawTextCenteredVertically(status, searchBox.getAbsoluteXRight() + 2, searchBox.getAbsoluteY(), searchBox.getAbsoluteYBottom(), 0x404040);
+        }
 
-        RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), 0xaaffffff);
         searchBox.render(mouseX, mouseY, particleTicks);
         scrollUpArrow.render(mouseX, mouseY, particleTicks);
         scrollDownArrow.render(mouseX, mouseY, particleTicks);
@@ -167,10 +172,16 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         }
         offset += change;
         int min = 0;
-        int max = rows * getItemSizeWithMargin() - getVisibleRows() * getItemSizeWithMargin();
+        int contentHeight = rows * getItemSizeWithMargin();
+        int visibleHeight = getVisibleRows() * getItemSizeWithMargin();
+        int max = Utils.lowerBound(contentHeight - visibleHeight, 0);
         scrollUpArrow.setEnabled(true);
         scrollDownArrow.setEnabled(true);
-        if (offset < min) {
+        if (max == 0) {
+            offset = 0;
+            scrollUpArrow.setEnabled(false);
+            scrollDownArrow.setEnabled(false);
+        } else if (offset < min) {
             offset = min;
             scrollUpArrow.setEnabled(false);
         } else if (offset > max) {
@@ -230,7 +241,7 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         int x = initialX;
         int y = getFirstRowY();
         rows = 1;
-        for (T child : contents) {
+        for (T child : searchResults) {
             child.setLocation(x, y);
             x += getItemSizeWithMargin();
             if (x > contentArea.width) {
@@ -252,7 +263,8 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
 
     public void updateSearch() {
         if (hasSearchBox()) {
-            searchResults = searchBox.getText().isEmpty() ? contents : searchItems(searchBox.getText().toLowerCase());
+            searchResults = searchBox.getText().isEmpty() ? contents : searchItems(searchBox.getText());
+            reflow();
         } else {
             searchResults = contents;
         }
@@ -340,14 +352,6 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         return 12;
     }
 
-    public int getStatusTextX() {
-        return 75;
-    }
-
-    public int getStatusTextY() {
-        return 9;
-    }
-
     public ScrollArrow getScrollUpArrow() {
         return scrollUpArrow;
     }
@@ -367,5 +371,17 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
 
     public void alignArrows() {
         scrollDownArrow.setLocation(scrollUpArrow.getX(), scrollUpArrow.getY() + scrollUpArrow.getHeight() + getMargin());
+    }
+
+    @Override
+    public void setWidth(int width) {
+        super.setWidth(width);
+        contentArea.width = width;
+    }
+
+    @Override
+    public void setHeight(int height) {
+        super.setHeight(height);
+        contentArea.height = height;
     }
 }

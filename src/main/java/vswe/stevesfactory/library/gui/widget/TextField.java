@@ -456,6 +456,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
             int w = fontRenderer().getStringWidth(text.substring(startOffset, cursor));
             int cx = x + 5 + w;
             RenderingHelper.drawRect(cx, y + 2, cx + 1, y2 - 3, 0xff000000);
+            GlStateManager.enableTexture();
         }
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);

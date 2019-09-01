@@ -16,13 +16,14 @@ import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
+import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.SlotlessItemHandlerWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BatchedItemTransferProcedure extends AbstractProcedure {
+public class BatchedItemTransferProcedure extends AbstractProcedure implements IInventoryTarget {
 
     private List<BlockPos> sourceInventories = new ArrayList<>();
     private List<Direction> sourceDirections = new ArrayList<>();
@@ -142,6 +143,13 @@ public class BatchedItemTransferProcedure extends AbstractProcedure {
 
     @Override
     public FlowComponent<BatchedItemTransferProcedure> createFlowComponent() {
-        return FlowComponent.of(this);
+        FlowComponent<BatchedItemTransferProcedure> f = FlowComponent.of(this);
+        f.addMenu(new InventorySelectionMenu<>());
+        return f;
+    }
+
+    @Override
+    public List<BlockPos> getInventories() {
+        return sourceInventories;
     }
 }
