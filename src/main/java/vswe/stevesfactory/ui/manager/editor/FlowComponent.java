@@ -426,6 +426,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         for (Menu<P> menu : menus.getChildren()) {
             menu.collapse();
         }
+        menus.setScrollDistance(0F);
     }
 
     public void expandAllMenus() {

@@ -13,6 +13,7 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.ScissorTest;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
@@ -22,9 +23,7 @@ import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 
-import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static vswe.stevesfactory.utils.RenderingHelper.*;
+import static vswe.stevesfactory.utils.RenderingHelper.rectVertices;
 
 public class LinearList<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
 
@@ -291,4 +290,19 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
         return 4;
     }
 
+    public float getScrollDistance() {
+        return scrollDistance;
+    }
+
+    public void setScrollDistance(float scrollDistance) {
+        this.scrollDistance = scrollDistance;
+        applyScrollLimits();
+        reflow();
+    }
+
+    @Override
+    public void provideInformation(ITextReceiver receiver) {
+        super.provideInformation(receiver);
+        receiver.line("Offset=" + scrollDistance);
+    }
 }

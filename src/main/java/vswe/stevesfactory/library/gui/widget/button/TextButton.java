@@ -49,13 +49,14 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
         return button;
     }
 
-    private static final int BACKGROUND_COLOR = 0x8c8c8c;
-    private static final int NORMAL_BORDER_COLOR = 0x737373;
-    private static final int HOVERED_BORDER_COLOR = 0xc9c9c9;
+    private static final int NORMAL_BACKGROUND_COLOR = 0xff8c8c8c;
+    private static final int HOVERED_BACKGROUND_COLOR = 0xff8c8c8c;
+    private static final int NORMAL_BORDER_COLOR = 0xff737373;
+    private static final int HOVERED_BORDER_COLOR = 0xcff9c9c9;
 
     public IntConsumer onClick = DUMMY;
 
-    private String text;
+    protected String text;
 
     private boolean hovered = false;
     private boolean clicked = false;
@@ -71,14 +72,35 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
         int y1 = getAbsoluteY();
         int x2 = getAbsoluteXRight();
         int y2 = getAbsoluteYBottom();
-        rectVertices(x1, y1, x2, y2, isInside(mouseX, mouseY) ? HOVERED_BORDER_COLOR : NORMAL_BORDER_COLOR);
-        rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, BACKGROUND_COLOR);
+        boolean hovered = isInside(mouseX, mouseY);
+        rectVertices(x1, y1, x2, y2, hovered ? getHoveredBorderColor() : getNormalBorderColor());
+        rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, hovered ? getHoveredBackgroundColor() : getNormalBackgroundColor());
         Tessellator.getInstance().draw();
         GlStateManager.enableAlphaTest();
 
-        drawTextCentered(text, y1, y2, x1, x2, 0xffffff);
+        renderText();
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
+    }
+
+    protected void renderText() {
+        drawTextCentered(getText(), getAbsoluteY(), getAbsoluteYBottom(), getAbsoluteX(), getAbsoluteXRight(), 0xffffff);
+    }
+
+    public int getNormalBorderColor() {
+        return NORMAL_BORDER_COLOR;
+    }
+
+    public int getHoveredBorderColor() {
+        return HOVERED_BORDER_COLOR;
+    }
+
+    public int getNormalBackgroundColor() {
+        return NORMAL_BACKGROUND_COLOR;
+    }
+
+    public int getHoveredBackgroundColor() {
+        return HOVERED_BACKGROUND_COLOR;
     }
 
     @Override
@@ -112,12 +134,24 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
         setDimensions(fontRenderer().getStringWidth(text), 3 + fontHeight() + 2);
     }
 
+    public void setTextRaw(String text) {
+        this.text = text;
+    }
+
     public void translate(String translationKey) {
         setText(I18n.format(translationKey));
     }
 
     public void translate(String translationKey, Object... args) {
         setText(I18n.format(translationKey, args));
+    }
+
+    public void translateRaw(String translationKey) {
+        setTextRaw(I18n.format(translationKey));
+    }
+
+    public void translateRaw(String translationKey, Object... args) {
+        setTextRaw(I18n.format(translationKey, args));
     }
 
     public boolean hasClickAction() {

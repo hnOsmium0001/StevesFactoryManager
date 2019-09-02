@@ -17,6 +17,7 @@ import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
+import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.SlotlessItemHandlerWrapper;
@@ -24,7 +25,7 @@ import vswe.stevesfactory.utils.SlotlessItemHandlerWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BatchedItemTransferProcedure extends AbstractProcedure implements IInventoryTarget {
+public class BatchedItemTransferProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget {
 
     public static final int SOURCE_INVENTORIES = 0;
     public static final int DESTINATION_INVENTORIES = 1;
@@ -150,6 +151,8 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         FlowComponent<BatchedItemTransferProcedure> f = FlowComponent.of(this);
         f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Source")));
         f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Destination")));
+        f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Source")));
+        f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Destination")));
         return f;
     }
 
@@ -160,6 +163,16 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
             default:
                 return sourceInventories;
             case DESTINATION_INVENTORIES: return targetInventories;
+        }
+    }
+
+    @Override
+    public List<Direction> getDirections(int id) {
+        switch (id) {
+            case SOURCE_INVENTORIES:
+            default:
+                return sourceDirections;
+            case DESTINATION_INVENTORIES: return targetDirections;
         }
     }
 }

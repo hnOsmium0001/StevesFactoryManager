@@ -44,7 +44,7 @@ public class IntervalMenu extends Menu<TimedTriggerProcedure> {
     }
 
     private String getUnitText() {
-        return I18n.format("gui.sfm.Seconds");
+        return I18n.format("gui.sfm.seconds");
     }
 
     public int getIntervalSeconds() {

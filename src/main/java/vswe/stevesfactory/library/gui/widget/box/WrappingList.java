@@ -126,7 +126,7 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
-        if (!isInside(mouseX, mouseY)) {
+        if (!isInside(mouseX, mouseY) || !isEnabled()) {
             return false;
         }
         int x1 = getAbsoluteX() + getScrollingSectionY();

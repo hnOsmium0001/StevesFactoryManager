@@ -272,12 +272,14 @@ public final class RenderingHelper {
         int y = getYForVerticallyCenteredText(top, bottom);
         GlStateManager.enableTexture();
         fontRenderer().drawString(text, leftX, y, color);
+        GlStateManager.color3f(1F, 1F, 1F);
     }
 
     public static void drawTextCenteredHorizontally(String text, int left, int right, int topY, int color) {
         int x = getXForHorizontallyCenteredText(text, left, right);
         GlStateManager.enableTexture();
         fontRenderer().drawString(text, x, topY, color);
+        GlStateManager.color3f(1F, 1F, 1F);
     }
 
     public static void drawTextCentered(String text, int top, int bottom, int left, int right, int color) {
@@ -285,6 +287,7 @@ public final class RenderingHelper {
         int y = getYForVerticallyCenteredText(top, bottom);
         GlStateManager.enableTexture();
         fontRenderer().drawString(text, x, y, color);
+        GlStateManager.color3f(1F, 1F, 1F);
     }
 
     public static Dimension toBorder(Dimension contents, int borderSize) {

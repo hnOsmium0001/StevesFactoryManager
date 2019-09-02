@@ -17,16 +17,16 @@
   "gui.sfm.Dialogue.Cancel": "Cancel",
   "gui.sfm.WrappingList.SearchStatus": "Found: %d",
 
-  "gui.sfm.Seconds": "second(s)",
-  "gui.sfm.Ticks": "ticks",
-  "gui.sfm.Up": "Up",
-  "gui.sfm.Down": "Down",
-  "gui.sfm.North": "North",
-  "gui.sfm.South": "South",
-  "gui.sfm.East": "East",
-  "gui.sfm.West": "West",
-  "gui.sfm.WhiteList": "White list",
-  "gui.sfm.BlackList": "Black list",
+  "gui.sfm.seconds": "second(s)",
+  "gui.sfm.ticks": "ticks",
+  "gui.sfm.up": "Up",
+  "gui.sfm.down": "Down",
+  "gui.sfm.north": "North",
+  "gui.sfm.south": "South",
+  "gui.sfm.east": "East",
+  "gui.sfm.west": "West",
+  "gui.sfm.whitelist": "White list",
+  "gui.sfm.blacklist": "Black list",
 
   // Menu texts
   "gui.sfm.Menu.Interval": "Interval",
@@ -38,6 +38,8 @@
   "gui.sfm.Menu.TargetSides.Source": "Src Target",
   "gui.sfm.Menu.TargetSides.Destination": "Dest Target",
   "gui.sfm.Menu.ItemFilter": "Items",
+  "gui.sfm.Menu.Activate": "Activate",
+  "gui.sfm.Menu.Deactivate": "Deactivate",
 
   // Procedure types
   "logic.sfm.timed_trigger": "Trigger",
