@@ -222,7 +222,7 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
+            return state != State.COLLAPSED || toggleStateButton.isInside(mouseX, mouseY);
         }
         if (isInside(mouseX, mouseY)) {
             getWindow().setFocusedWidget(this);

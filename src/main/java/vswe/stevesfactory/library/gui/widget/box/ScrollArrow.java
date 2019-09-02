@@ -110,6 +110,14 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
         }
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!isEnabled()) {
+            return false;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
     @Nonnull
     @Override
     public WrappingList getParentWidget() {

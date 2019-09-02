@@ -49,7 +49,7 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IP
         int leftMid = down.getX() + down.getWidth();
         int rightMid = up.getX();
         activationButton.setLocation(RenderingHelper.getXForAlignedCenter(leftMid, rightMid, activationButton.getWidth()), y);
-        activationButton.setEnabled(false);
+        activationButton.setEditingState(false);
 
         addChildren(down);
         addChildren(up);
@@ -112,11 +112,11 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IP
     }
 
     void clearEditing() {
-        activationButton.setEnabled(false);
+        activationButton.setEditingState(false);
     }
 
     void editDirection(DirectionButton button) {
-        activationButton.setEnabled(true);
+        activationButton.setEditingState(true);
         activationButton.setTarget(button);
     }
 

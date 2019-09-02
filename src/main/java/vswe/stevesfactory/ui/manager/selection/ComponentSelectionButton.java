@@ -57,6 +57,8 @@ public class ComponentSelectionButton extends AbstractWidget implements LeafWidg
         BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).controllerPos;
         INetworkController controller = (INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos);
         FlowComponent<?> flowComponent = component.createInstance(controller).createFlowComponent();
+        // Magic number so that the flow component don't overlap with the selection panel
+        flowComponent.setLocation(10, 20);
         editorPanel.addChildren(flowComponent);
         return true;
     }

@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.gui.widget.button.TextButton;
 
 import static vswe.stevesfactory.utils.RenderingHelper.getXForHorizontallyCenteredText;
@@ -35,7 +36,7 @@ class ActivationButton extends TextButton {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isEnabled()) {
+        if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             target.selected = !target.selected;
             updateText();
             return super.mouseClicked(mouseX, mouseY, button);
@@ -52,6 +53,16 @@ class ActivationButton extends TextButton {
         if (isEnabled()) {
             super.render(mouseX, mouseY, particleTicks);
         }
+    }
+
+    public void setEditingState(boolean state) {
+        super.setEnabled(state);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        // Do nothing because we want to limit state changing through only setEditingState(boolean)
+        super.setEnabled(false);
     }
 
     @Override

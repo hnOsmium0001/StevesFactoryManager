@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
+import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
@@ -66,8 +67,11 @@ class DirectionButton extends AbstractIconButton {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        setEditing(!editing);
-        return super.mouseClicked(mouseX, mouseY, button);
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            setEditing(!editing);
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+        return false;
     }
 
     public boolean isEditing() {

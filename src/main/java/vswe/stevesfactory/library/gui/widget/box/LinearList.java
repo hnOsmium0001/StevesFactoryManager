@@ -257,10 +257,7 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     }
 
     private void applyScrollLimits() {
-        int max = getMaxScroll();
-        if (max < 0) {
-            max /= 2;
-        }
+        int max = Utils.lowerBound(getMaxScroll(), 0);
         scrollDistance = MathHelper.clamp(scrollDistance, 0.0F, max);
     }
 

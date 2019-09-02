@@ -118,7 +118,7 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!isInside(mouseX, mouseY)) {
+        if (!isEnabled()) {
             return false;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -254,6 +254,14 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
                 rows++;
             }
         }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        searchBox.setEnabled(enabled);
+        scrollUpArrow.setEnabled(enabled);
+        scrollDownArrow.setEnabled(enabled);
     }
 
     public void updateScrolling() {
