@@ -41,6 +41,12 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
 
     @Override
     public void execute(IExecutionContext context) {
+        pushFrame(context, 0);
+
+        if (hasError()) {
+            return;
+        }
+
         List<TileEntity> sourceTiles = new ArrayList<>(sourceInventories.size());
         for (BlockPos pos : sourceInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
@@ -54,14 +60,13 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
             for (Direction direction : sourceDirections) {
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
-                    SlotlessItemHandlerWrapper handler = new SlotlessItemHandlerWrapper(cap.orElseThrow(RuntimeException::new));
+                    IItemHandler handler = cap.orElseThrow(RuntimeException::new);
                     // TODO filter
-                    while (true) {
-                        ItemStack src = handler.extractItem(Integer.MAX_VALUE, true);
-                        if (src.isEmpty()) {
-                            break;
+                    for (int i = 0; i < handler.getSlots(); i++) {
+                        ItemStack stack = handler.getStackInSlot(i).copy();
+                        if (!stack.isEmpty()) {
+                            extractableItems.add(stack);
                         }
-                        extractableItems.add(src);
                     }
                 }
             }
@@ -71,14 +76,13 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         @SuppressWarnings("UnnecessaryLocalVariable") List<ItemStack> availableSourceItems = extractableItems;
         List<ItemStack> takenSourceItems = new ArrayList<>(availableSourceItems.size());
         for (ItemStack stack : availableSourceItems) {
-            ItemStack c = stack.copy();
             // Start with no items taken. Note that this operation will only set the stack to empty, but keeping the item type
-            c.setCount(0);
-            takenSourceItems.add(c);
+            takenSourceItems.add(ItemStack.EMPTY);
         }
 
         Preconditions.checkState(extractableItems.size() == takenSourceItems.size());
 
+        IItemHandler h = null;
         for (BlockPos pos : targetInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
             if (tile == null) {
@@ -88,17 +92,18 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
                     SlotlessItemHandlerWrapper handler = new SlotlessItemHandlerWrapper(cap.orElseThrow(RuntimeException::new));
+                    h  = handler;
                     // TODO filter
-                    for (int i = 0; i < takenSourceItems.size(); i++) {
-                        ItemStack source = takenSourceItems.get(i);
+                    for (int i = 0; i < availableSourceItems.size(); i++) {
+                        ItemStack source = availableSourceItems.get(i);
                         if (source.isEmpty()) {
                             continue;
                         }
                         int sourceStackSize = source.getCount();
                         ItemStack untaken = handler.insertItem(source, false);
-                        takenSourceItems.set(i, untaken);
                         int taken = sourceStackSize - untaken.getCount();
-                        availableSourceItems.get(i).grow(taken);
+                        takenSourceItems.set(i, new ItemStack(source.getItem(), taken));
+                        availableSourceItems.set(i, untaken);
                     }
                 }
             }
@@ -121,8 +126,10 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                 }
             }
         }
+    }
 
-        pushFrame(context, 0);
+    public boolean hasError() {
+        return sourceInventories.isEmpty() || sourceDirections.isEmpty() || targetInventories.isEmpty() || targetDirections.isEmpty();
     }
 
     @Override

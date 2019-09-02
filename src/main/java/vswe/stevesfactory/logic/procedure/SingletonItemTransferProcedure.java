@@ -9,7 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import vswe.stevesfactory.api.logic.*;
+import vswe.stevesfactory.api.logic.CommandGraph;
+import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
@@ -32,9 +33,11 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
 
     @Override
     public void execute(IExecutionContext context) {
-
-        // TODO update logic to fix issues
         pushFrame(context, 0);
+
+        if (hasError()) {
+            return;
+        }
 
         // TODO port with SlotlessItemHandler
         List<ItemStack> extractableItems = new ArrayList<>();
@@ -100,13 +103,21 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
         }
     }
 
+    public boolean hasError() {
+        return sourcePos == null || targetPos == null || sourceDirections.isEmpty() || targetDirections.isEmpty();
+    }
+
     @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = super.serialize();
 
-        tag.put("SourcePos", NBTUtil.writeBlockPos(sourcePos));
+        if (sourcePos != null) {
+            tag.put("SourcePos", NBTUtil.writeBlockPos(sourcePos));
+        }
         tag.putIntArray("SourceDirections", IOHelper.direction2Index(targetDirections));
-        tag.put("TargetPos", NBTUtil.writeBlockPos(targetPos));
+        if (targetPos != null) {
+            tag.put("TargetPos", NBTUtil.writeBlockPos(targetPos));
+        }
         tag.putIntArray("TargetDirections", IOHelper.direction2Index(targetDirections));
 
         return tag;
@@ -114,9 +125,13 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
 
     @Override
     public void deserialize(CommandGraph graph, CompoundNBT tag) {
-        sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
+        if (tag.contains("SourcePos")) {
+            sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
+        }
         sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
-        targetPos = NBTUtil.readBlockPos(tag.getCompound("TargetPos"));
+        if (tag.contains("TargetPos")) {
+            targetPos = NBTUtil.readBlockPos(tag.getCompound("TargetPos"));
+        }
         targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
     }
 
