@@ -1,6 +1,7 @@
 package vswe.stevesfactory.library.gui.actionmenu;
 
 import net.minecraft.util.ResourceLocation;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 
 import javax.annotation.Nullable;
 import java.util.function.IntConsumer;
@@ -17,6 +18,7 @@ public class CallbackEntry extends AbstractEntry {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         callback.accept(button);
+        WidgetScreen.getCurrentScreen().deferRemovePopupWindow(getWindow());
         return true;
     }
 }

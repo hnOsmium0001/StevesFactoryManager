@@ -14,6 +14,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.screen.ScissorTest;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -21,6 +22,8 @@ import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 
+import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.glDisable;
 import static vswe.stevesfactory.utils.RenderingHelper.*;
 
 public class LinearList<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
@@ -37,7 +40,7 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        scrolling = button == GLFW.GLFW_MOUSE_BUTTON_LEFT && isInsideBar(mouseX, mouseY);
+        scrolling = button == GLFW.GLFW_MOUSE_BUTTON_LEFT && isInsideBar(mouseX, mouseY) && isDrawingScrollBar();
         if (scrolling) {
             getWindow().setFocusedWidget(this);
             return true;
@@ -67,6 +70,9 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+            return true;
+        }
         if (scrolling) {
             int maxScroll = getHeight() - getBarHeight();
             double moved = deltaY / maxScroll;
@@ -75,65 +81,72 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
             reflow();
             return true;
         }
-        super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         return false;
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+        if (super.mouseScrolled(mouseX, mouseY, scroll)) {
+            return true;
+        }
         if (scroll != 0) {
             scrollDistance += -scroll * getScrollAmount();
             applyScrollLimits();
             reflow();
             return true;
         }
-        super.mouseScrolled(mouseX, mouseY, scroll);
         return false;
     }
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        drawBackground();
+        if (isEnabled()) {
+            RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+            drawBackground();
 
-        int left = getAbsoluteX();
-        int top = getAbsoluteY();
-        int right = getAbsoluteXRight();
-        int bottom = getAbsoluteYBottom();
-        int width = getWidth();
-        int height = getHeight();
+            int left = getAbsoluteX();
+            int top = getAbsoluteY();
+            int right = getAbsoluteXRight();
+            int bottom = getAbsoluteYBottom();
+            int width = getWidth();
+            int height = getHeight();
 
-        Tessellator tess = Tessellator.getInstance();
-        BufferBuilder renderer = tess.getBuffer();
+            Tessellator tess = Tessellator.getInstance();
+            BufferBuilder renderer = tess.getBuffer();
 
-        enableScissor(left, top, width, height);
+            ScissorTest test = ScissorTest.scaled(left, top, width, height);
 
-        for (T child : getChildren()) {
-            child.render(mouseX, mouseY, partialTicks);
+            for (T child : getChildren()) {
+                child.render(mouseX, mouseY, partialTicks);
+            }
+            drawOverlay();
+
+            int extraHeight = getBarExtraHeight();
+            if (extraHeight > 0 && isDrawingScrollBar()) {
+                int barWidth = getBarWidth();
+                int barHeight = getBarHeight();
+                int barTopY = Utils.lowerBound((int) scrollDistance * (height - barHeight) / extraHeight + top, top);
+                int barBottomY = barTopY + barHeight;
+                int barLeftX = getAbsBarLeft();
+                int barRightX = barLeftX + barWidth;
+
+                GlStateManager.disableDepthTest();
+                GlStateManager.disableTexture();
+                renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+                rectVertices(barLeftX, top, barRightX, bottom, getShadowColor());
+                rectVertices(barLeftX, barTopY, barRightX, barBottomY, getBarBorderColor());
+                rectVertices(barLeftX, barTopY, barRightX - 1, barBottomY - 1, getBarBodyColor());
+                tess.draw();
+                GlStateManager.enableTexture();
+            }
+
+            test.destroy();
+            RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
-        drawOverlay();
+    }
 
-        int extraHeight = getBarExtraHeight();
-        if (extraHeight > 0) {
-            int barWidth = getBarWidth();
-            int barHeight = getBarHeight();
-            int barTopY = Utils.lowerBound((int) scrollDistance * (height - barHeight) / extraHeight + top, top);
-            int barBottomY = barTopY + barHeight;
-            int barLeftX = getAbsBarLeft();
-            int barRightX = barLeftX + barWidth;
-
-            GlStateManager.disableDepthTest();
-            GlStateManager.disableTexture();
-            renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-            rectVertices(barLeftX, top, barRightX, bottom, getShadowColor());
-            rectVertices(barLeftX, barTopY, barRightX, barBottomY, getBarBorderColor());
-            rectVertices(barLeftX, barTopY, barRightX - 1, barBottomY - 1, getBarBodyColor());
-            tess.draw();
-            GlStateManager.enableTexture();
-        }
-
-        disableScissor();
-        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
+    protected boolean isDrawingScrollBar() {
+        return true;
     }
 
     public int getBarBodyColor() {
@@ -277,4 +290,5 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     public int getBorder() {
         return 4;
     }
+
 }

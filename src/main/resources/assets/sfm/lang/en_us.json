@@ -10,6 +10,8 @@
   "gui.sfm.ActionMenu.General.Copy": "Copy",
   "gui.sfm.ActionMenu.General.Paste": "Paste",
   "gui.sfm.ActionMenu.Global.Preferences": "User Preferences",
+  "gui.sfm.ActionMenu.Menus.CollapseAll": "Collapse All",
+  "gui.sfm.ActionMenu.Menus.ExpandAll": "Expand All",
 
   "gui.sfm.Dialogue.OK": "OK",
   "gui.sfm.Dialogue.Cancel": "Cancel",

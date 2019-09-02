@@ -1,15 +1,21 @@
 package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
+import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
+import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.box.Box;
+import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -133,20 +139,19 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
     }
 
     public void expand() {
-        for (Menu<P> menu : flowComponent.getMenusBox().getChildren()) {
-            if (menu != this) {
-                menu.collapse();
-            }
+        if (state == State.COLLAPSED) {
+            state = State.EXPANDED;
+            growHeight(getContentHeight());
+            updateChildrenEnableState(true);
         }
-        state = State.EXPANDED;
-        growHeight(getContentHeight());
-        updateChildrenEnableState(true);
     }
 
     public void collapse() {
-        state = State.COLLAPSED;
-        shrinkHeight(getContentHeight());
-        updateChildrenEnableState(false);
+        if (state == State.EXPANDED) {
+            state = State.COLLAPSED;
+            shrinkHeight(getContentHeight());
+            updateChildrenEnableState(false);
+        }
     }
 
     private void updateChildrenEnableState(boolean state) {
@@ -221,6 +226,13 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
         }
         if (isInside(mouseX, mouseY)) {
             getWindow().setFocusedWidget(this);
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
+                        new CallbackEntry(null, "gui.sfm.ActionMenu.Menus.CollapseAll", b -> flowComponent.collapseAllMenus()),
+                        new CallbackEntry(null, "gui.sfm.ActionMenu.Menus.ExpandAll", b -> flowComponent.expandAllMenus())
+                ));
+                WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+            }
             return true;
         }
         return false;
@@ -242,8 +254,8 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public Box<Menu<P>> getParentWidget() {
-        return Objects.requireNonNull((Box<Menu<P>>) super.getParentWidget());
+    public LinearList<Menu<P>> getParentWidget() {
+        return Objects.requireNonNull((LinearList<Menu<P>>) super.getParentWidget());
     }
 
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {

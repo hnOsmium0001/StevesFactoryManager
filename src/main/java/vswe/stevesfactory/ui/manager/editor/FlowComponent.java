@@ -13,12 +13,11 @@ import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
-import vswe.stevesfactory.library.gui.widget.box.Box;
+import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -335,7 +334,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     private final TextField nameBox;
     private final ControlFlow inputNodes;
     private final ControlFlow outputNodes;
-    private final Box<Menu<P>> menus;
+    private final LinearList<Menu<P>> menus;
     // A list that refers to all the widgets above
     private final List<IWidget> children;
 
@@ -358,16 +357,12 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         this.nameBox = new TextField(8, 8, 35, 10)
                 .setBackgroundStyle(TextField.BackgroundStyle.NONE)
                 .setText(name)
-                .setTextColor(0xff303030,0xff303030)
+                .setTextColor(0xff303030, 0xff303030)
                 .setEditable(false);
         this.inputNodes = ControlFlow.inputNodes(inputNodes);
         this.outputNodes = ControlFlow.outputNodes(outputNodes);
-        this.menus = new Box<>(2, 20, 120, 130);
-        this.menus.setLayout(m -> {
-            if (menus.isEnabled()) {
-                FlowLayout.reflow(m);
-            }
-        });
+        this.menus = new MenusList<>(120, 130);
+        this.menus.setLocation(2, 20);
         this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, this.inputNodes, this.outputNodes, menus);
         this.setLinkedProcedure(procedure);
 
@@ -423,7 +418,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         return children;
     }
 
-    public Box<Menu<P>> getMenusBox() {
+    public LinearList<Menu<P>> getMenusBox() {
         return menus;
     }
 
@@ -638,5 +633,27 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     public void provideInformation(ITextReceiver receiver) {
         super.provideInformation(receiver);
         receiver.line("Z=" + this.getZIndex());
+    }
+
+    public static class MenusList<T extends IWidget> extends LinearList<T> {
+
+        public MenusList(int width, int height) {
+            super(width, height);
+        }
+
+        @Override
+        protected boolean isDrawingScrollBar() {
+            return false;
+        }
+
+        @Override
+        public int getBorder() {
+            return 0;
+        }
+
+        @Override
+        public int getMarginMiddle() {
+            return 0;
+        }
     }
 }

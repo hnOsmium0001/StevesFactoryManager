@@ -3,7 +3,6 @@ package vswe.stevesfactory.utils;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -15,7 +14,8 @@ import vswe.stevesfactory.StevesFactoryManager;
 
 import java.awt.*;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_FLAT;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
 
 public final class RenderingHelper {
 
@@ -309,17 +309,5 @@ public final class RenderingHelper {
             path.append(segment).append("/");
         }
         return new ResourceLocation(StevesFactoryManager.MODID, path.toString());
-    }
-
-    public static void enableScissor(int x, int y, int width, int height) {
-        MainWindow mainWindow = Minecraft.getInstance().mainWindow;
-        double scale = mainWindow.getGuiScaleFactor();
-        glEnable(GL_SCISSOR_TEST);
-        glScissor((int) (x * scale), (int) (mainWindow.getHeight() - ((y + height) * scale)),
-                (int) (width * scale), (int) (height * scale));
-    }
-
-    public static void disableScissor() {
-        glDisable(GL_SCISSOR_TEST);
     }
 }

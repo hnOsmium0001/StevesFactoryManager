@@ -3,7 +3,7 @@ package vswe.stevesfactory.library.gui.window;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import vswe.stevesfactory.library.gui.IWidget;
-import vswe.stevesfactory.library.gui.background.BackgroundRenderers;
+import vswe.stevesfactory.library.gui.BackgroundRenderers;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;

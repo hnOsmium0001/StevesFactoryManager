@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.screen.ScissorTest;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
@@ -19,6 +20,9 @@ import vswe.stevesfactory.utils.*;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+
+import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.glDisable;
 
 
 public class WrappingList<T extends IWidget & INamedElement> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
@@ -151,7 +155,8 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
 
         int left = getAbsoluteX() + getScrollingSectionX();
         int top = getAbsoluteY() + getScrollingSectionY();
-        RenderingHelper.enableScissor(left, top, contentArea.width, contentArea.height);
+
+        ScissorTest test = ScissorTest.scaled(left, top, contentArea.width, contentArea.height);
 
         int sy = getScrollingSectionY();
         for (T child : searchResults) {
@@ -161,7 +166,7 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
             }
         }
 
-        RenderingHelper.disableScissor();
+        test.destroy();
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
