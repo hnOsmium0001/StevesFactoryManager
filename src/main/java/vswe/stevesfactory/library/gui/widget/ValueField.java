@@ -1,7 +1,5 @@
 package vswe.stevesfactory.library.gui.widget;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
-
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -86,7 +84,7 @@ public abstract class ValueField<V> extends TextField {
             throw new UnsupportedOperationException();
         }
 
-        @CanIgnoreReturnValue
+        @SuppressWarnings("UnusedReturnValue")
         public ValidatorBasedValueField<V> setValueFormat(Predicate<String> formatValidator, Function<String, V> parser, Function<V, String> stringifier) {
             this.formatValidator = formatValidator;
             super.setValueFormat(parser, stringifier);
@@ -108,7 +106,7 @@ public abstract class ValueField<V> extends TextField {
         super(x, y, width, height);
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public ValueField<V> setValueFormat(Function<String, V> parser, Function<V, String> stringifier) {
         this.parser = parser;
         this.stringifier = stringifier;
@@ -126,7 +124,7 @@ public abstract class ValueField<V> extends TextField {
         return number;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public ValueField<V> setValue(V number) {
         this.number = number;
         super.updateText(stringifier.apply(number));

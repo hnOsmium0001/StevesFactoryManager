@@ -26,6 +26,9 @@ import java.util.List;
 
 public class BatchedItemTransferProcedure extends AbstractProcedure implements IInventoryTarget {
 
+    public static final int SOURCE_INVENTORIES = 0;
+    public static final int DESTINATION_INVENTORIES = 1;
+
     private List<BlockPos> sourceInventories = new ArrayList<>();
     private List<Direction> sourceDirections = new ArrayList<>();
     private List<BlockPos> targetInventories = new ArrayList<>();
@@ -145,17 +148,18 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     @Override
     public FlowComponent<BatchedItemTransferProcedure> createFlowComponent() {
         FlowComponent<BatchedItemTransferProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<BatchedItemTransferProcedure>() {
-            @Override
-            public String getHeadingText() {
-                return I18n.format("gui.sfm.Menu.InventorySelection.Source");
-            }
-        });
+        f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Source")));
+        f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Destination")));
         return f;
     }
 
     @Override
-    public List<BlockPos> getInventories() {
-        return sourceInventories;
+    public List<BlockPos> getInventories(int id) {
+        switch (id) {
+            case SOURCE_INVENTORIES:
+            default:
+                return sourceInventories;
+            case DESTINATION_INVENTORIES: return targetInventories;
+        }
     }
 }

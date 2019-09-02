@@ -1,7 +1,6 @@
 package vswe.stevesfactory.setup.builder;
 
 import com.google.common.base.Preconditions;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
@@ -130,7 +129,7 @@ public final class BlockBuilder<T extends TileEntity> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public boolean tryRegisterTileEntityRenderer() {
         if (hasTileEntityRenderer()) {
             ClientRegistry.bindTileEntitySpecialRenderer(tileClass, tileEntityRenderer);

@@ -427,6 +427,18 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         return menus;
     }
 
+    public void collapseAllMenus() {
+        for (Menu<P> menu : menus.getChildren()) {
+            menu.collapse();
+        }
+    }
+
+    public void expandAllMenus() {
+        for (Menu<P> menu : menus.getChildren()) {
+            menu.expand();
+        }
+    }
+
     @Override
     public void reflow() {
         toggleStateButton.updateTo(state);

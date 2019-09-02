@@ -1,6 +1,5 @@
 package vswe.stevesfactory.api.network;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
@@ -46,17 +45,17 @@ public interface INetworkController {
      *
      * @return {@code true} if the position didn't exist already.
      */
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     boolean addLink(BlockPos pos);
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     boolean addLinks(Collection<BlockPos> poses);
 
     /**
      * @return {@code true} if the network has the position and successfully removed it.
      * @see #addLink(BlockPos)
      */
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     boolean removeLink(BlockPos pos);
 
     void removeAllLinks();
@@ -65,13 +64,13 @@ public interface INetworkController {
 
     Collection<CommandGraph> getCommandGraphs();
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     boolean addCommandGraph(CommandGraph graph);
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     boolean addCommandGraphs(Collection<CommandGraph> graphs);
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     boolean removeCommandGraph(CommandGraph graph);
 
     void removeAllCommandGraphs();

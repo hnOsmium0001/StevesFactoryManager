@@ -1,7 +1,6 @@
 package vswe.stevesfactory.utils;
 
 import com.google.common.base.Preconditions;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -31,7 +30,7 @@ public final class NetworkHelper {
         return LinkType.DEFAULT;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public static LinkingStatus updateLinkType(World world, LinkingStatus linkingStatus) {
         BlockPos center = linkingStatus.getCenter();
         for (Direction direction : Direction.values()) {

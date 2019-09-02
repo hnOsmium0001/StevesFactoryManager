@@ -4,7 +4,6 @@
 
 package vswe.stevesfactory.library.gui.widget;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
@@ -123,7 +122,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return editable;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField setEditable(boolean editable) {
         this.editable = editable;
         return this;
@@ -133,7 +132,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return text;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField setText(String text) {
         updateText(text);
         cursor = text.length();
@@ -249,7 +248,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return false;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public boolean insertTextAtCursor(String in) {
         if (insertTextAt(cursor, in)) {
             cursor += in.length();
@@ -258,12 +257,12 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return false;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public boolean insertTextAt(int index, String in) {
         return updateText(text.substring(0, index) + in + text.substring(index));
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public boolean removeTextAtCursor(int length) {
         int a = cursor + length;
         int b = cursor;
@@ -280,7 +279,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
      * @param start Inclusive index
      * @param end   Exclusive index
      */
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public boolean removeTextAt(int start, int end) {
         return updateText(text.substring(0, start) + text.substring(end));
     }
@@ -288,7 +287,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
     /**
      * Update the text reference for internal usages. This method is meant to be overridden for validation purposes.
      */
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     protected boolean updateText(String text) {
         this.text = text;
         return true;
@@ -324,26 +323,26 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         this.cursor = MathHelper.clamp(cursor, 0, text.length());
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField scrollToFront() {
         cursor = 0;
         startOffset = 0;
         return this;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField selectAll() {
         return setSelection(0, text.length());
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField setSelection(int start, int end) {
         selection = start;
         cursor = end;
         return this;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField clearSelection() {
         selection = -1;
         return this;
@@ -371,7 +370,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return text.substring(getSelectionStart(), getSelectionEnd());
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField replaceSelectedRegion(String replacement) {
         int selectionStart = getSelectionStart();
         if (updateText(text.substring(0, selectionStart) + replacement + text.substring(getSelectionEnd()))) {
@@ -466,13 +465,13 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return backgroundStyle;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField setBackgroundStyle(IBackgroundRenderer backgroundStyle) {
         this.backgroundStyle = backgroundStyle;
         return this;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField setBackgroundStyle(BackgroundStyle backgroundStyle) {
         this.backgroundStyle = backgroundStyle;
         this.setTextColor(backgroundStyle.textColor, backgroundStyle.textColorUneditable);
@@ -487,7 +486,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return textColorUneditable;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public TextField setTextColor(int textColor, int textColorUneditable) {
         this.textColor = textColor;
         this.textColorUneditable = textColorUneditable;

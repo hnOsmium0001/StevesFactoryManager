@@ -1,6 +1,5 @@
 package vswe.stevesfactory.api.logic;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
@@ -54,10 +53,10 @@ public interface IProcedure {
 
     void setOutputConnection(Connection connection, int index);
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     Connection removeInputConnection(int index);
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     Connection removeOutputConnection(int index);
 
 //    /**

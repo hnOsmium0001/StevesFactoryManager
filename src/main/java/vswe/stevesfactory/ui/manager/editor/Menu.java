@@ -133,6 +133,11 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
     }
 
     public void expand() {
+        for (Menu<P> menu : flowComponent.getMenusBox().getChildren()) {
+            if (menu != this) {
+                menu.collapse();
+            }
+        }
         state = State.EXPANDED;
         growHeight(getContentHeight());
         updateChildrenEnableState(true);

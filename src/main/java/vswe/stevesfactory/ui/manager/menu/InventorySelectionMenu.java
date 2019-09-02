@@ -19,7 +19,17 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
 
     private WrappingList<Target> list;
 
-    public InventorySelectionMenu() {
+    private final int id;
+    private final String name;
+
+    public InventorySelectionMenu(int id) {
+        this(id, I18n.format("gui.sfm.Menu.InventorySelection"));
+    }
+
+    public InventorySelectionMenu(int id, String name) {
+        this.id = id;
+        this.name = name;
+
         list = new WrappingList<>("");
         list.setLocation(4, HEADING_BOX.getPortionHeight() + 4);
         list.setDimensions(getWidth() - 4 * 2, getContentHeight() - 4 * 2);
@@ -41,7 +51,7 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
     @Override
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
-        Set<BlockPos> poses = new HashSet<>(flowComponent.getLinkedProcedure().getInventories());
+        Set<BlockPos> poses = new HashSet<>(flowComponent.getLinkedProcedure().getInventories(id));
         for (Target target : list.getContents()) {
             if (poses.contains(target.pos)) {
                 target.setSelected(true);
@@ -56,7 +66,7 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menu.InventorySelection");
+        return name;
     }
 
     @Override
@@ -65,7 +75,7 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
 
     @Override
     protected void updateData() {
-        List<BlockPos> inventories = getLinkedProcedure().getInventories();
+        List<BlockPos> inventories = getLinkedProcedure().getInventories(id);
         inventories.clear();
         for (Target target : list.getContents()) {
             if (target.isSelected()) {

@@ -1,7 +1,6 @@
 package vswe.stevesfactory.library.gui.layout;
 
 import com.google.common.base.Preconditions;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import vswe.stevesfactory.library.gui.IContainer;
@@ -40,19 +39,19 @@ public class GridLayout {
         this.bondWidget = bondWidget;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public GridLayout gridGap(int gridGap) {
         setGridGap(gridGap);
         return this;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public GridLayout rows(int rows) {
         setRows(rows);
         return this;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public GridLayout columns(int columns) {
         setColumns(columns);
         return this;
@@ -62,7 +61,7 @@ public class GridLayout {
      * The width of each column will be {@code n/s} pixels of the width of the bond widget minus the gaps, where {@code n} is the array
      * element, {@code s} is the <i>sum</i> of all elements in the array.
      */
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public GridLayout widths(int... widthFactors) {
         setColumnWidths(widthFactors);
         return this;
@@ -72,13 +71,13 @@ public class GridLayout {
      * The width of each row will be {@code n/s} pixels of the height of the bond widget minus the gaps, where {@code n} is the array
      * element, {@code s} is the <i>sum</i> of all elements in the array.
      */
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public GridLayout heights(int... heightFactors) {
         setRowHeights(heightFactors);
         return this;
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public GridLayout areas(int... areas) {
         this.setAreas(areas);
         return this;

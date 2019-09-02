@@ -325,10 +325,9 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
     private final ImmutableList<Node> nodes;
     boolean bootstrapping = false;
 
-    @SuppressWarnings("UnstableApiUsage")
     public ControlFlow(int amountNodes, BiFunction<ControlFlow, Integer, ? extends Node> factory) {
         super(0, 0, 0, Node.HEIGHT);
-        ImmutableList.Builder<Node> builder = ImmutableList.builderWithExpectedSize(amountNodes);
+        ImmutableList.Builder<Node> builder = ImmutableList.builder();
         for (int i = 0; i < amountNodes; i++) {
             builder.add(factory.apply(this, i));
         }

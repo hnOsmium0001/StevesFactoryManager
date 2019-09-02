@@ -1,6 +1,5 @@
 package vswe.stevesfactory.library.gui.window;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import vswe.stevesfactory.library.gui.IWidget;
@@ -368,7 +367,7 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
         bindRemoveSelf(buttons.getChildren().size() - 1);
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public boolean tryAddSelfToActiveGUI() {
         if (Minecraft.getInstance().currentScreen instanceof WidgetScreen) {
             WidgetScreen.getCurrentScreen().addPopupWindow(this);

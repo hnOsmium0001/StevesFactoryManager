@@ -1,6 +1,5 @@
 package vswe.stevesfactory.ui.manager.editor;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public static List<DynamicWidthWidget<?>> reflowDynamicWidth(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {
         int amountMinWidth = 0;
         int amountMaxWidth = 0;

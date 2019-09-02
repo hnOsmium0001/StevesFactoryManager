@@ -5,7 +5,6 @@
 package vswe.stevesfactory.library.gui.widget.box;
 
 import com.google.common.base.Preconditions;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.client.resources.I18n;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
@@ -227,7 +226,7 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         throw new UnsupportedOperationException();
     }
 
-    @CanIgnoreReturnValue
+    @SuppressWarnings("UnusedReturnValue")
     public WrappingList<T> addElement(T widget) {
         Preconditions.checkArgument(widget.getWidth() == getItemSize() && widget.getHeight() == getItemSize());
         contents.add(widget);
