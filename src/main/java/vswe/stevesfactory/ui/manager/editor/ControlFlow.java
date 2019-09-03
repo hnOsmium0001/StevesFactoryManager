@@ -171,8 +171,8 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
 
     private static final class InputNode extends Node {
 
-        private static final TextureWrapper INPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 64, WIDTH, HEIGHT);
-        private static final TextureWrapper INPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 64, WIDTH, HEIGHT);
+        private static final TextureWrapper INPUT_NORMAL = TextureWrapper.ofFlowComponent(18, 51, WIDTH, HEIGHT);
+        private static final TextureWrapper INPUT_HOVERED = INPUT_NORMAL.toRight(1);
 
         public InputNode(ControlFlow parent, int index) {
             super(parent, index);
@@ -218,8 +218,8 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
 
     private static final class OutputNode extends Node {
 
-        private static final TextureWrapper OUTPUT_NORMAL = TextureWrapper.ofFlowComponent(0, 58, WIDTH, HEIGHT);
-        private static final TextureWrapper OUTPUT_HOVERED = TextureWrapper.ofFlowComponent(7, 58, WIDTH, HEIGHT);
+        private static final TextureWrapper OUTPUT_NORMAL = TextureWrapper.ofFlowComponent(18, 45, WIDTH, HEIGHT);
+        private static final TextureWrapper OUTPUT_HOVERED = OUTPUT_NORMAL.toRight(1);
 
         public OutputNode(ControlFlow parent, int index) {
             super(parent, index);

@@ -18,7 +18,7 @@ public class CallbackEntry extends AbstractEntry {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         callback.accept(button);
-        WidgetScreen.getCurrentScreen().deferRemovePopupWindow(getWindow());
+        getWindow().alive = false;
         return true;
     }
 }

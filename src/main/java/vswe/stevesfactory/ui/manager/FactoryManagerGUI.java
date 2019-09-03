@@ -20,7 +20,7 @@ import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
+import vswe.stevesfactory.library.gui.window.NestedEventHandlerMixin;
 import vswe.stevesfactory.ui.manager.editor.*;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
 import vswe.stevesfactory.utils.RenderingHelper;

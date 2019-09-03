@@ -1,7 +1,5 @@
 package vswe.stevesfactory.library.gui.screen;
 
-import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -10,16 +8,14 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.library.collections.CompositeCollection;
+import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
 import vswe.stevesfactory.library.gui.IWindow;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.window.DiscardCondition;
 import vswe.stevesfactory.library.gui.window.IPopupWindow;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
@@ -37,11 +33,10 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     private IWindow primaryWindow;
     private List<IWindow> regularWindows = new ArrayList<>();
-    private EnumMap<DiscardCondition, Set<IPopupWindow>> popupWindows = new EnumMap<>(DiscardCondition.class);
+    private List<IPopupWindow> popupWindows = new ArrayList<>();
     private Collection<IWindow> windows;
 
     private final Queue<Consumer<WidgetScreen>> tasks = new ArrayDeque<>();
-    private final Object2LongMap<IPopupWindow> lifespanCache = new Object2LongOpenHashMap<>();
 
     private final WidgetTreeInspections inspectionHandler = new WidgetTreeInspections();
 
@@ -51,24 +46,9 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     protected WidgetScreen(ITextComponent title) {
         super(title);
-        for (DiscardCondition condition : DiscardCondition.values()) {
-            popupWindows.put(condition, new HashSet<>());
-        }
-        windows = createWindowReferences();
-    }
-
-    private CompositeCollection<IWindow> createWindowReferences() {
-        // Internal usages only
-        @SuppressWarnings("unchecked") Collection<IWindow>[] arr = new Collection[popupWindows.size() + 1];
-        arr[0] = regularWindows;
-        int i = 1;
-        for (Set<IPopupWindow> set : popupWindows.values()) {
-            // Safe (downwards) covariant cast
-            @SuppressWarnings("unchecked") Collection<IWindow> c = (Collection<IWindow>) (Collection<? extends IWindow>) set;
-            arr[i] = c;
-            i++;
-        }
-        return new CompositeCollection<>(arr);
+        // Safe downwards erasure cast
+        @SuppressWarnings("unchecked") List<IWindow> popupWindows = (List<IWindow>) (List<? extends IWindow>) this.popupWindows;
+        windows = CompositeUnmodifiableList.of(regularWindows, popupWindows);
     }
 
     @Override
@@ -76,7 +56,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         StevesFactoryManager.logger.trace("(Re)initialized widget-based GUI {}", this);
         primaryWindow = null;
         regularWindows.clear();
-        popupWindows.forEach((c, s) -> s.clear());
+        popupWindows.clear();
         RenderEventDispatcher.listeners.put(Inspections.class, inspectionHandler);
     }
 
@@ -86,14 +66,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
             tasks.remove().accept(this);
         }
 
-        long currentTime = Minecraft.getInstance().world.getGameTime();
-        for (Object2LongMap.Entry<IPopupWindow> entry : lifespanCache.object2LongEntrySet()) {
-            long diff = currentTime - entry.getLongValue();
-            IPopupWindow popup = entry.getKey();
-            if (diff >= popup.getLifespan()) {
-                deferRemovePopupWindow(popup);
-            }
-        }
+        popupWindows.removeIf(IPopupWindow::shouldDiscard);
 
         float particleTicks = Minecraft.getInstance().getRenderPartialTicks();
         for (IWindow window : windows) {
@@ -146,9 +119,6 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Set<IPopupWindow> clickDiscards = popupWindows.get(DiscardCondition.UNFOCUSED_CLICK);
-        removePopupWindows(clickDiscards, p -> !p.isInside(mouseX, mouseY));
-
         if (windows.stream().anyMatch(window -> window.mouseClicked(mouseX, mouseY, button))) {
             return true;
         } else {
@@ -185,9 +155,6 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        Set<IPopupWindow> exitHoverDiscards = popupWindows.get(DiscardCondition.EXIT_HOVER);
-        removePopupWindows(exitHoverDiscards, p -> !p.isInside(mouseX, mouseY));
-
         for (IWindow window : regularWindows) {
             window.mouseMoved(mouseX, mouseY);
         }
@@ -265,37 +232,12 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         setHoveringText(cachedHoveringTextList, x, y);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Popup window support
-    ///////////////////////////////////////////////////////////////////////////
-
     public void addPopupWindow(IPopupWindow popup) {
-        if (popup.getLifespan() == 0) {
-            StevesFactoryManager.logger.debug("The popup {} has a lifespan of 0, therefore it is removed immediately", popup);
-            return;
-        }
-        popupWindows.get(popup.getDiscardCondition()).add(popup);
-        if (popup.getLifespan() > -1) {
-            lifespanCache.put(popup, Minecraft.getInstance().world.getGameTime());
-        }
+        popupWindows.add(popup);
     }
 
     public void removePopupWindow(IPopupWindow popup) {
-        popupWindows.get(popup.getDiscardCondition()).remove(popup);
+        popupWindows.remove(popup);
         popup.onRemoved();
-    }
-
-    public void deferRemovePopupWindow(IPopupWindow popup) {
-        scheduleTask(self -> self.removePopupWindow(popup));
-    }
-
-    private void removePopupWindows(Set<? extends IPopupWindow> popupWindows, Predicate<IPopupWindow> condition) {
-        popupWindows.removeIf(actionMenu -> {
-            if (condition.test(actionMenu)) {
-                actionMenu.onRemoved();
-                return true;
-            }
-            return false;
-        });
     }
 }

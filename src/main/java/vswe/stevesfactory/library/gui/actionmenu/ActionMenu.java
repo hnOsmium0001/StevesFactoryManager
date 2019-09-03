@@ -1,13 +1,10 @@
 package vswe.stevesfactory.library.gui.actionmenu;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.window.DiscardCondition;
 import vswe.stevesfactory.library.gui.window.IPopupWindow;
-import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
+import vswe.stevesfactory.library.gui.window.NestedEventHandlerMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nullable;
@@ -27,6 +24,8 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
 
     private final Dimension contents;
     private final Dimension border;
+
+    public boolean alive = true;
 
     public ActionMenu(int x, int y, List<? extends IEntry> entries) {
         this(new Point(x, y), entries);
@@ -64,6 +63,14 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
             entry.render(mouseX, mouseY, particleTicks);
         }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!isInside(mouseX, mouseY)) {
+            alive = false;
+        }
+        return NestedEventHandlerMixin.super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Nullable
@@ -111,12 +118,7 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     @Override
-    public int getLifespan() {
-        return -1;
-    }
-
-    @Override
-    public DiscardCondition getDiscardCondition() {
-        return DiscardCondition.UNFOCUSED_CLICK;
+    public boolean shouldDiscard() {
+        return !alive;
     }
 }

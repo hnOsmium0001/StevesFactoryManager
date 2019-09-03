@@ -141,8 +141,8 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     public static class RenameButton extends AbstractIconButton {
 
-        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(32, 188, 9, 9);
-        public static final TextureWrapper HOVERING = TextureWrapper.ofFlowComponent(41, 188, 9, 9);
+        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 120, 9, 9);
+        public static final TextureWrapper HOVERING = NORMAL.toRight(1);
 
         public RenameButton(FlowComponent parent) {
             super(-1, -1, 9, 9);
@@ -191,8 +191,8 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     public static class SubmitButton extends AbstractIconButton {
 
-        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(32, 197, 7, 7);
-        public static final TextureWrapper HOVERING = TextureWrapper.ofFlowComponent(39, 197, 7, 7);
+        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 129, 7, 7);
+        public static final TextureWrapper HOVERING = NORMAL.toRight(1);
 
         public SubmitButton(FlowComponent parent) {
             super(-1, -1, 7, 7);
@@ -244,8 +244,8 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     public static class CancelButton extends AbstractIconButton {
 
-        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(32, 204, 7, 7);
-        public static final TextureWrapper HOVERING = TextureWrapper.ofFlowComponent(39, 204, 7, 7);
+        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 136, 7, 7);
+        public static final TextureWrapper HOVERING = NORMAL.toRight(1);
 
         private String previousName;
 
@@ -549,18 +549,11 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     private void openActionMenu(double mouseX, double mouseY) {
         openedActionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
-                new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.General.Delete", button -> {
-                    removeSelf();
-                    // Delay this to avoid ConcurrentModificationException
-                    WidgetScreen.getCurrentScreen().deferRemovePopupWindow(openedActionMenu);
-                }),
+                new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.General.Delete", button -> removeSelf()),
                 // TODO implement these
-                new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.General.Cut", button -> {
-                }),
-                new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.General.Copy", button -> {
-                }),
-                new CallbackEntry(PASTE_ICON, "gui.sfm.ActionMenu.General.Paste", button -> {
-                })
+                new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.General.Cut", button -> { }),
+                new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.General.Copy", button -> { }),
+                new CallbackEntry(PASTE_ICON, "gui.sfm.ActionMenu.General.Paste", button -> { })
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(openedActionMenu);
     }

@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.window.mixin;
+package vswe.stevesfactory.library.gui.window;
 
 import vswe.stevesfactory.library.gui.*;
 

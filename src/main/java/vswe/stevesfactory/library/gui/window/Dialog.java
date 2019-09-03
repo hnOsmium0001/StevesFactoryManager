@@ -11,7 +11,6 @@ import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.Box;
 import vswe.stevesfactory.library.gui.widget.TextButton;
-import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -136,6 +135,7 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     public Runnable onPostReflow = () -> {};
 
     private int initialDragLocalX, initialDragLocalY;
+    private boolean alive = true;
 
     public Dialog() {
         this.position = new Point();
@@ -246,11 +246,6 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     @Override
-    public int getLifespan() {
-        return -1;
-    }
-
-    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (NestedEventHandlerMixin.super.mouseClicked(mouseX, mouseY, button)) {
             return true;
@@ -293,11 +288,6 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
 
     private boolean isDragging() {
         return initialDragLocalX != -1 && initialDragLocalY != -1;
-    }
-
-    @Override
-    public DiscardCondition getDiscardCondition() {
-        return DiscardCondition.NONE;
     }
 
     @Override
@@ -355,11 +345,11 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
         if (button.hasClickAction()) {
             IntConsumer oldAction = button.onClick;
             button.onClick = b -> {
-                WidgetScreen.getCurrentScreen().deferRemovePopupWindow(this);
+                alive = false;
                 oldAction.accept(b);
             };
         } else {
-            button.onClick = b -> WidgetScreen.getCurrentScreen().deferRemovePopupWindow(this);
+            button.onClick = b -> alive = false;
         }
     }
 
@@ -374,5 +364,10 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean shouldDiscard() {
+        return !alive;
     }
 }
