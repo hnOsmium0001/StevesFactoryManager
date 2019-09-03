@@ -18,7 +18,7 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
-import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 import vswe.stevesfactory.utils.RenderingHelper;
 

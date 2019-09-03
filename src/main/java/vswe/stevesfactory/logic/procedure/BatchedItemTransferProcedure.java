@@ -14,7 +14,7 @@ import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.library.logic.AbstractProcedure;
+import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;

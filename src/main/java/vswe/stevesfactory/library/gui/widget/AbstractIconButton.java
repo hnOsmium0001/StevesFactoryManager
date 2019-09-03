@@ -1,9 +1,8 @@
-package vswe.stevesfactory.library.gui.widget.button;
+package vswe.stevesfactory.library.gui.widget;
 
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 
 import java.awt.*;

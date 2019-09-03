@@ -10,7 +10,7 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.Box;
-import vswe.stevesfactory.library.gui.widget.button.TextButton;
+import vswe.stevesfactory.library.gui.widget.TextButton;
 import vswe.stevesfactory.library.gui.window.mixin.NestedEventHandlerMixin;
 
 import javax.annotation.Nullable;

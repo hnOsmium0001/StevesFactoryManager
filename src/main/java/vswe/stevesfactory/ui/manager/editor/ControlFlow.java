@@ -9,7 +9,7 @@ import vswe.stevesfactory.api.logic.Connection;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 

@@ -14,9 +14,8 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.widget.box.Box;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
-import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 

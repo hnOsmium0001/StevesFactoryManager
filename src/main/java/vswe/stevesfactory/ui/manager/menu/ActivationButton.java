@@ -3,10 +3,7 @@ package vswe.stevesfactory.ui.manager.menu;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.library.gui.widget.button.TextButton;
-
-import static vswe.stevesfactory.utils.RenderingHelper.getXForHorizontallyCenteredText;
-import static vswe.stevesfactory.utils.RenderingHelper.getYForVerticallyCenteredText;
+import vswe.stevesfactory.library.gui.widget.TextButton;
 
 class ActivationButton extends TextButton {
 

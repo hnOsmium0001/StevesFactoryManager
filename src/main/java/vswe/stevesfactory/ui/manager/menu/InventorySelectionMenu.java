@@ -1,17 +1,22 @@
 package vswe.stevesfactory.ui.manager.menu;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
+import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.box.WrappingList;
 import vswe.stevesfactory.logic.procedure.IInventoryTarget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
+import vswe.stevesfactory.utils.BlockHighlight;
 
 import java.util.*;
 
@@ -84,13 +89,25 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
         }
     }
 
-    private static class Target extends BlockIcon {
+    private static class Target extends BlockTarget {
 
         public final BlockPos pos;
 
         public Target(BlockPos pos) {
             this.pos = pos;
             this.setBlockState(Minecraft.getInstance().world.getBlockState(pos));
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
+                        new CallbackEntry(null, "gui.sfm.ActionMenu.BlockTarget.Highlight", b -> BlockHighlight.createHighlight(pos, 80))
+                ));
+                WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+                return true;
+            }
+            return super.mouseClicked(mouseX, mouseY, button);
         }
     }
 }

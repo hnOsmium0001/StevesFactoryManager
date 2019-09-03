@@ -5,7 +5,9 @@ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.collections.CompositeCollection;
@@ -42,6 +44,10 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     private final Object2LongMap<IPopupWindow> lifespanCache = new Object2LongOpenHashMap<>();
 
     private final WidgetTreeInspections inspectionHandler = new WidgetTreeInspections();
+
+    private final ArrayList<String> cachedHoveringTextList = new ArrayList<>();
+    private List<String> hoveringText;
+    private int hoveringTextX, hoveringTextY;
 
     protected WidgetScreen(ITextComponent title) {
         super(title);
@@ -122,6 +128,11 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
         // This should do nothing because we are not adding vanilla buttons
         super.render(mouseX, mouseY, particleTicks);
+
+        if (hoveringText != null) {
+            GuiUtils.drawHoveringText(hoveringText, hoveringTextX, hoveringTextY, scaledWidth(), scaledHeight(), Integer.MAX_VALUE, font);
+            hoveringText = null;
+        }
     }
 
     public void addWindow(IWindow window) {
@@ -236,6 +247,22 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    public void setHoveringText(List<String> hoveringText, int x, int y) {
+        this.hoveringText = hoveringText;
+        this.hoveringTextX = x;
+        this.hoveringTextY = y;
+    }
+
+    public void setHoveringText(ItemStack stack, int x, int y) {
+        setHoveringText(getTooltipFromItem(stack), x, y);
+    }
+
+    public void setHoveringText(String hoveringText, int x, int y) {
+        cachedHoveringTextList.clear();
+        cachedHoveringTextList.add(hoveringText);
+        setHoveringText(cachedHoveringTextList, x, y);
     }
 
     ///////////////////////////////////////////////////////////////////////////

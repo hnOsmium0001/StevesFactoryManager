@@ -9,7 +9,6 @@ import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.library.logic.SimpleProcedureType;
 import vswe.stevesfactory.logic.procedure.*;
 import vswe.stevesfactory.utils.RenderingHelper;
 

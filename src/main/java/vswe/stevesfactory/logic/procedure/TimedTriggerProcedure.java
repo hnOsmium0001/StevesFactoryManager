@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundNBT;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.library.logic.AbstractProcedure;
+import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.execution.ITickable;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;

@@ -7,7 +7,7 @@ import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.button.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;

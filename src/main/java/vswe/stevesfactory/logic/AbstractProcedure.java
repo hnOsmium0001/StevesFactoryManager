@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.logic;
+package vswe.stevesfactory.logic;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;

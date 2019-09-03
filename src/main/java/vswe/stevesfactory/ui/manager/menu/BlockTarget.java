@@ -8,13 +8,12 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.AbstractWidget;
-import vswe.stevesfactory.library.gui.widget.INamedElement;
-import vswe.stevesfactory.library.gui.widget.button.IButton;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
+import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
-public class BlockIcon extends AbstractWidget implements IButton, INamedElement, LeafWidgetMixin {
+public class BlockTarget extends AbstractWidget implements IButton, INamedElement, LeafWidgetMixin {
 
     private boolean hovered = false;
     private boolean clicked = false;
@@ -23,11 +22,11 @@ public class BlockIcon extends AbstractWidget implements IButton, INamedElement,
     private BlockState state;
     private ItemStack cachedItemStack;
 
-    public BlockIcon() {
+    public BlockTarget() {
         this(16);
     }
 
-    public BlockIcon(int size) {
+    public BlockTarget(int size) {
         super(0, 0, size, size);
     }
 
@@ -92,10 +91,16 @@ public class BlockIcon extends AbstractWidget implements IButton, INamedElement,
                 : (hovered ? 0xffd4d4d4 : 0xffa4a4a4);
         RenderingHelper.drawRect(x, y, getAbsoluteXRight(), getAbsoluteYBottom(), color);
 
-        // 16 is the standard item size
+        // No depth test so that popups get correctly rendered
+        GlStateManager.disableDepthTest();
         GlStateManager.enableTexture();
         RenderHelper.enableGUIStandardItemLighting();
+        // 16 is the standard item size
         Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(cachedItemStack, x + (getWidth() - 16) / 2, y + (getHeight() - 16) / 2);
+
+        if (hovered) {
+            WidgetScreen.getCurrentScreen().setHoveringText(new ItemStack(state.getBlock().asItem()), (int) mouseX, (int) mouseY);
+        }
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
