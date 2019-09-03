@@ -50,7 +50,7 @@ public class PacketSyncCommandGraphs {
     /**
      * Main packet handling logic. Must be run on main (Server/Client Thread) thread.
      */
-    private static void handle(PacketSyncCommandGraphs msg) {
+    static void handle(PacketSyncCommandGraphs msg) {
         World world = Utils.getWorldForSide(msg.dimension);
 
         TileEntity tile = world.getTileEntity(msg.pos);
@@ -62,11 +62,6 @@ public class PacketSyncCommandGraphs {
         } else {
             StevesFactoryManager.logger.warn("Received packet with invalid controller position! {}", msg);
         }
-    }
-
-    static void handleBuffer(PacketBuffer buf) {
-        PacketSyncCommandGraphs pkt = decode(buf);
-        handle(pkt);
     }
 
     private List<CompoundNBT> data;

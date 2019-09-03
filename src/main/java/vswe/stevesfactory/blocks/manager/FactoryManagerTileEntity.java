@@ -94,10 +94,10 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         Preconditions.checkState(!world.isRemote);
         StevesFactoryManager.logger.trace("Player {} activated a factory manager at {}", player, pos);
 
-        ServerPlayerEntity client = (ServerPlayerEntity) player;
-        PacketRequest.openFactoryManager(client, getDimension(), getPos(), graphs);
-
         search();
+
+        ServerPlayerEntity client = (ServerPlayerEntity) player;
+        PacketOpenManagerGUI.openFactoryManager(client, getDimension(), getPos(), linkedInventories, graphs);
     }
 
     private void search() {

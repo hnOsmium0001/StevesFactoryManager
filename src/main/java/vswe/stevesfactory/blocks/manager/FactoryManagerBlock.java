@@ -2,7 +2,6 @@ package vswe.stevesfactory.blocks.manager;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
@@ -13,8 +12,6 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import vswe.stevesfactory.blocks.BaseBlock;
-import vswe.stevesfactory.network.PacketRequest;
-import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -40,8 +37,6 @@ public class FactoryManagerBlock extends BaseBlock {
                     manager.activate(player);
                 }
             }
-        } else {
-            PacketRequest.requestLinkedInventories(world.getDimension().getType(), pos);
         }
         return true;
     }

@@ -35,7 +35,7 @@ public final class NetworkHandler {
     }
 
     private static void registerBoth() {
-        registerMessage(PacketRequest.class, PacketRequest::encode, PacketRequest::decode, PacketRequest::handle);
+        registerMessage(PacketOpenManagerGUI.class, PacketOpenManagerGUI::encode, PacketOpenManagerGUI::decode, PacketOpenManagerGUI::handle);
         registerMessage(PacketSyncCommandGraphs.class, PacketSyncCommandGraphs::encode, PacketSyncCommandGraphs::decode, PacketSyncCommandGraphs::handle);
     }
 
