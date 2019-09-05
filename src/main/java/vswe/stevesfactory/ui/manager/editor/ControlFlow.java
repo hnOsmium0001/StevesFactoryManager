@@ -253,7 +253,6 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         @Override
         protected void onDisconnect() {
             super.onDisconnect();
-
         }
 
         @Override

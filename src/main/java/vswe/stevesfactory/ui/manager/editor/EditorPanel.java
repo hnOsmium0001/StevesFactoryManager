@@ -55,6 +55,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         }
     }
 
+    public TreeSet<FlowComponent<?>> getFlowComponents() {
+        return children;
+    }
+
     @Override
     public Collection<FlowComponent<?>> getChildren() {
         return childrenView;

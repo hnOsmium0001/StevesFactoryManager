@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
@@ -549,7 +550,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     private void openActionMenu(double mouseX, double mouseY) {
         openedActionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
-                new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.General.Delete", button -> removeSelf()),
+                new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.General.Delete", button -> delete()),
                 // TODO implement these
                 new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.General.Cut", button -> { }),
                 new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.General.Copy", button -> { }),
@@ -558,13 +559,31 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         WidgetScreen.getCurrentScreen().addPopupWindow(openedActionMenu);
     }
 
-    public void removeSelf() {
+    private void delete() {
+        if (Screen.hasShiftDown()) {
+            removeGraph();
+        } else {
+            removeSelf();
+        }
+    }
+
+    private void removeLinkedProcedure() {
         inputNodes.removeAllConnections();
         outputNodes.removeAllConnections();
-
-        getParentWidget().removeFlowComponent(this);
-
         procedure.remove();
+    }
+
+    public void removeGraph() {
+        Set<FlowComponent<?>> children = getParentWidget().getFlowComponents();
+        for (FlowComponent<?> flowComponent : children) {
+            flowComponent.removeLinkedProcedure();
+        }
+        children.clear();
+    }
+
+    public void removeSelf() {
+        removeLinkedProcedure();
+        getParentWidget().getFlowComponents().remove(this);
     }
 
     public ControlFlow getInputNodes() {
