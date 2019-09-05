@@ -4,6 +4,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
+import javax.annotation.Nonnull;
+
 public interface IProcedure {
 
     IProcedureType<?> getType();
@@ -49,58 +51,13 @@ public interface IProcedure {
      */
     void remove();
 
-    void setInputConnection(Connection connection, int index);
+    void setInputConnection(@Nonnull Connection connection, int index);
 
-    void setOutputConnection(Connection connection, int index);
+    void setOutputConnection(@Nonnull Connection connection, int index);
 
     @SuppressWarnings("UnusedReturnValue")
     Connection removeInputConnection(int index);
 
     @SuppressWarnings("UnusedReturnValue")
     Connection removeOutputConnection(int index);
-
-//    /**
-//     * Create a directed edge from this node to the parameter {@code successor}.
-//     *
-//     * @param outputIndex    Index in {@link #successors()} to put a link to {@code successor}.
-//     * @param successor      Target node to connect to
-//     * @param nextInputIndex Index in {@link #predecessors()} of {@code successor} to put a link to this node.
-//     * @implSpec This method should call {@link #onLink(IProcedure, int)} on {@code successor} with the parameters {@code (this,
-//     * nextInputIndex)}. Additionally implementation may unlink the original link at {@code outputIndex} first.
-//     */
-//    void linkTo(int outputIndex, IProcedure successor, int nextInputIndex);
-//
-//    /**
-//     * Clear the edge on {@code outputIndex}.
-//     *
-//     * @param outputIndex Index in {@link #successors()} to remove
-//     */
-//    void unlink(int outputIndex);
-//
-//    /**
-//     * Find the index of the successor {@code successor}, and unlink the found node. This method should call {@link #unlink(int)} after the
-//     * connection has been found.
-//     *
-//     * @see #unlink(int)
-//     */
-//    void unlink(IProcedure successor);
-//
-//    /**
-//     * Called when a edge from {@code predecessor} to {@code this} node has been added in this graph.
-//     * <p>
-//     * This node is in charge of updating graph references in the associated controller.
-//     *
-//     * @param predecessor The predecessor that has linked this node.
-//     * @param inputIndex  Index in {@link #predecessors()} that should be updated to {@code predecessor}
-//     */
-//    void onLink(IProcedure predecessor, int inputIndex);
-//
-//    /**
-//     * Called when a edge from {@code predecessor} to {@code this} node has been removed in this graph.
-//     * <p>
-//     * This node is in charge of updating graph references in the associated controler.
-//     *
-//     * @param predecessor The predecessor that has unlinked this node.
-//     */
-//    void onUnlink(IProcedure predecessor);
 }

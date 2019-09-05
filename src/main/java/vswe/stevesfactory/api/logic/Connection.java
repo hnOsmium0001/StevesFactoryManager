@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 
 public final class Connection {
 
+    @SuppressWarnings("UnusedReturnValue")
     public static Connection create(IProcedure from, int out, IProcedure to, int in) {
         Connection connection = new Connection(from, out, to, in);
         from.setOutputConnection(connection, out);
@@ -11,6 +12,7 @@ public final class Connection {
         return connection;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static Connection createAndOverride(IProcedure from, int out, IProcedure to, int in) {
         Connection successor = from.successors()[out];
         if (successor != null) {

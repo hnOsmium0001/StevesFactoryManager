@@ -8,8 +8,8 @@ import vswe.stevesfactory.api.SFMAPI;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 public abstract class AbstractProcedure implements IProcedure, IProcedureClientData {
 
@@ -71,7 +71,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     }
 
     @Override
-    public void setInputConnection(Connection connection, int index) {
+    public void setInputConnection(@Nonnull Connection connection, int index) {
         predecessors[index] = connection;
         if (connection.getSource().getGraph() != this.graph && isRoot()) {
             getController().removeCommandGraph(graph);
@@ -80,15 +80,16 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     }
 
     @Override
-    public void setOutputConnection(Connection connection, int index) {
+    public void setOutputConnection(@Nonnull Connection connection, int index) {
         successors[index] = connection;
     }
 
     @Override
     public Connection removeInputConnection(int index) {
+        Preconditions.checkState(!isRoot());
         Connection ret = predecessors[index];
+
         predecessors[index] = null;
-        getController().removeCommandGraph(graph);
         graph = graph.inducedSubgraph(this);
         getController().addCommandGraph(graph);
         return ret;
@@ -97,7 +98,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     @Override
     public Connection removeOutputConnection(int index) {
         Connection ret = successors[index];
-        setOutputConnection(null, index);
+        successors[index] = null;
         return ret;
     }
 
