@@ -1,7 +1,6 @@
 package vswe.stevesfactory.logic.execution;
 
 import net.minecraft.world.IWorld;
-import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;

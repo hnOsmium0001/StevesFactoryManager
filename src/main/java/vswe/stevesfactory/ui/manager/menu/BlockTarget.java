@@ -1,16 +1,22 @@
 package vswe.stevesfactory.ui.manager.menu;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
+import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
+import vswe.stevesfactory.utils.BlockHighlight;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 public class BlockTarget extends AbstractWidget implements IButton, INamedElement, LeafWidgetMixin {
@@ -19,19 +25,31 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
     private boolean clicked = false;
     private boolean selected = false;
 
+    public final BlockPos pos;
+
     private BlockState state;
     private ItemStack cachedItemStack;
 
-    public BlockTarget() {
-        this(16);
+    public BlockTarget(BlockPos pos) {
+        this(pos, 16);
     }
 
-    public BlockTarget(int size) {
+    public BlockTarget(BlockPos pos, int size) {
         super(0, 0, size, size);
+        this.pos = pos;
+        this.setBlockState(minecraft().world.getBlockState(pos));
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
+                    new CallbackEntry(null, "gui.sfm.ActionMenu.BlockTarget.Highlight", b -> BlockHighlight.createHighlight(pos, 80))
+            ));
+            WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+            return true;
+        }
+
         clicked = true;
         selected = !selected;
         return true;
@@ -96,7 +114,7 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
         GlStateManager.enableTexture();
         RenderHelper.enableGUIStandardItemLighting();
         // 16 is the standard item size
-        Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(cachedItemStack, x + (getWidth() - 16) / 2, y + (getHeight() - 16) / 2);
+        minecraft().getItemRenderer().renderItemIntoGUI(cachedItemStack, x + (getWidth() - 16) / 2, y + (getHeight() - 16) / 2);
 
         if (hovered) {
             WidgetScreen.getCurrentScreen().setHoveringText(new ItemStack(state.getBlock().asItem()), (int) mouseX, (int) mouseY);

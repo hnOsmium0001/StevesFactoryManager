@@ -2,6 +2,7 @@ package vswe.stevesfactory.logic.procedure;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -9,8 +10,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -63,7 +63,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
                     // TODO filter
                     for (int i = 0; i < handler.getSlots(); i++) {
-                        ItemStack stack = handler.getStackInSlot(i).copy();
+                        ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
                         if (!stack.isEmpty()) {
                             extractableItems.add(stack);
                         }
@@ -75,14 +75,13 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         // Alias for the code to be understandable
         @SuppressWarnings("UnnecessaryLocalVariable") List<ItemStack> availableSourceItems = extractableItems;
         List<ItemStack> takenSourceItems = new ArrayList<>(availableSourceItems.size());
-        for (ItemStack stack : availableSourceItems) {
+        for (int i = 0; i < availableSourceItems.size(); i++) {
             // Start with no items taken. Note that this operation will only set the stack to empty, but keeping the item type
             takenSourceItems.add(ItemStack.EMPTY);
         }
 
         Preconditions.checkState(extractableItems.size() == takenSourceItems.size());
 
-        IItemHandler h = null;
         for (BlockPos pos : targetInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
             if (tile == null) {
@@ -91,16 +90,16 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
             for (Direction direction : targetDirections) {
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
-                    SlotlessItemHandlerWrapper handler = new SlotlessItemHandlerWrapper(cap.orElseThrow(RuntimeException::new));
-                    h  = handler;
-                    // TODO filter
+                    IItemHandler handler = cap.orElseThrow(RuntimeException::new);
+                    // We don't need filter here because this is just in one procedure
+                    // It does not make sense to have multiple filters for one item transferring step
                     for (int i = 0; i < availableSourceItems.size(); i++) {
                         ItemStack source = availableSourceItems.get(i);
                         if (source.isEmpty()) {
                             continue;
                         }
                         int sourceStackSize = source.getCount();
-                        ItemStack untaken = handler.insertItem(source, false);
+                        ItemStack untaken = ItemHandlerHelper.insertItem(handler, source, false);
                         int taken = sourceStackSize - untaken.getCount();
                         takenSourceItems.set(i, new ItemStack(source.getItem(), taken));
                         availableSourceItems.set(i, untaken);
@@ -119,7 +118,6 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                         if (stack.isEmpty()) {
                             continue;
                         }
-
                         ItemStack extracted = handler.extractItem(stack, flag, false);
                         stack.shrink(extracted.getCount());
                     }

@@ -18,7 +18,6 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
-import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -506,10 +505,13 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
             return false;
         }
 
-        initialDragLocalX = (int) mouseX - getAbsoluteX();
-        initialDragLocalY = (int) mouseY - getAbsoluteY();
         getWindow().setFocusedWidget(this);
-
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            initialDragLocalX = (int) mouseX - getAbsoluteX();
+            initialDragLocalY = (int) mouseY - getAbsoluteY();
+        } else {
+            clearDrag();
+        }
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             openActionMenu(mouseX, mouseY);
         }
@@ -526,8 +528,6 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
             int x = (int) mouseX - parent.getAbsoluteX() - initialDragLocalX;
             int y = (int) mouseY - parent.getAbsoluteY() - initialDragLocalY;
             setLocation(x, y);
-            procedure.setComponentX(x);
-            procedure.setComponentY(y);
             return true;
         }
         return false;
@@ -627,6 +627,13 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     public void provideInformation(ITextReceiver receiver) {
         super.provideInformation(receiver);
         receiver.line("Z=" + this.getZIndex());
+    }
+
+    @Override
+    public void setLocation(int x, int y) {
+        super.setLocation(x, y);
+        procedure.setComponentX(x);
+        procedure.setComponentY(y);
     }
 
     public static class MenusList<T extends IWidget> extends LinearList<T> {

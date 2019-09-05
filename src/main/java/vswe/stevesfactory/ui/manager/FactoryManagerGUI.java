@@ -67,8 +67,8 @@ public class FactoryManagerGUI extends WidgetScreen {
 
     @Override
     public void onClose() {
-        super.onClose();
         sync();
+        super.onClose();
     }
 
     private void sync() {

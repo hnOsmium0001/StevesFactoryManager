@@ -208,23 +208,10 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AbstractProcedure that = (AbstractProcedure) o;
-        return type.equals(that.type);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type);
-    }
-
-    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("successors", successors)
-                .add("predecessors", predecessors)
+                .add("successors", stringifyIdentity(successors))
+                .add("predecessors", stringifyIdentity(predecessors))
                 .add("graph", "CommandGraph@" + graph.hashCode())
                 .add("componentX", componentX)
                 .add("componentY", componentY)
@@ -234,5 +221,23 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     public static IProcedureType<?> readType(CompoundNBT tag) {
         ResourceLocation id = new ResourceLocation(tag.getString("ID"));
         return SFMAPI.getProceduresRegistry().getValue(id);
+    }
+
+    public static String stringifyIdentity(@Nullable Connection connection) {
+        if (connection == null) {
+            return "null";
+        }
+        IProcedure node = connection.getDestination();
+        return node.getClass().getSimpleName() + '@' + System.identityHashCode(node);
+    }
+
+    public static String stringifyIdentity(Connection[] connections) {
+        StringBuilder result = new StringBuilder();
+        result.append('[');
+        for (Connection connection : connections) {
+            result.append(stringifyIdentity(connection));
+        }
+        result.append(']');
+        return result.toString();
     }
 }

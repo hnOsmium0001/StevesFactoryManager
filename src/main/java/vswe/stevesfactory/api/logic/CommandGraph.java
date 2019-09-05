@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
+import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.utils.NetworkHelper;
@@ -54,6 +55,12 @@ public class CommandGraph implements Iterable<IProcedure> {
         new ProcedureExecutor(controller, controller.getWorld()).start(root);
     }
 
+    @Nonnull
+    @Override
+    public Iterator<IProcedure> iterator() {
+        return collect().iterator();
+    }
+
     public Set<IProcedure> collect() {
         Set<IProcedure> result = new HashSet<>();
         if (root != null) {
@@ -61,12 +68,6 @@ public class CommandGraph implements Iterable<IProcedure> {
             dfs(result, root);
         }
         return result;
-    }
-
-    @Nonnull
-    @Override
-    public Iterator<IProcedure> iterator() {
-        return collect().iterator();
     }
 
     private Set<IProcedure> dfsCollectNoRoot() {
@@ -162,7 +163,9 @@ public class CommandGraph implements Iterable<IProcedure> {
         Int2ObjectMap<IProcedure> nodes = new Int2ObjectOpenHashMap<>();
         for (int i = 0; i < nodesNBT.size(); i++) {
             CompoundNBT nodeNBT = nodesNBT.getCompound(i);
-            nodes.put(nodeNBT.getInt("ID"), deserializeNode(nodeNBT));
+            int id = nodeNBT.getInt("ID");
+            IProcedure node = deserializeNode(nodeNBT);
+            nodes.put(id, node);
         }
 
         ListNBT connectionNBT = tag.getList("Connections", Constants.NBT.TAG_COMPOUND);

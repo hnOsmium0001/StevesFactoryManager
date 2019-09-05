@@ -8,6 +8,8 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.*;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -33,11 +35,6 @@ import java.util.*;
 @ParametersAreNonnullByDefault
 public class FactoryManagerTileEntity extends BaseTileEntity implements ITickableTileEntity, INetworkController, ICable {
 
-    private static final String KEY_CONNECTED_CABLES = "ConnectedCables";
-    private static final String KEY_LINKED_INVENTORIES = "LinkedInventories";
-    private static final String KEY_LINKING_STATUS = "LinkingStatus";
-    private static final String KEY_COMMAND_GRAPHS = "CommandGraphs";
-
     private Set<BlockPos> connectedCables = new HashSet<>();
     private Multiset<BlockPos> linkedInventories = HashMultiset.create();
 
@@ -45,6 +42,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private Set<BlockPos> neighborInventories = new ObjectArraySet<>(6);
 
     private Set<CommandGraph> graphs = new HashSet<>();
+    private boolean lockedGraphs = false;
 
     public FactoryManagerTileEntity() {
         super(ModBlocks.factoryManagerTileEntity);
@@ -97,7 +95,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         search();
 
         ServerPlayerEntity client = (ServerPlayerEntity) player;
-        PacketOpenManagerGUI.openFactoryManager(client, getDimension(), getPos(), linkedInventories, graphs);
+        PacketOpenManagerGUI.openFactoryManager(client, getDimension(), getPos(), write(new CompoundNBT()));
     }
 
     private void search() {
@@ -216,22 +214,33 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public boolean addCommandGraph(CommandGraph graph) {
-        return graphs.add(graph);
+        if (!lockedGraphs) {
+            return graphs.add(graph);
+        }
+        return false;
     }
 
     @Override
     public boolean addCommandGraphs(Collection<CommandGraph> graphs) {
-        return this.graphs.addAll(graphs);
+        if (!lockedGraphs) {
+            return this.graphs.addAll(graphs);
+        }
+        return false;
     }
 
     @Override
     public boolean removeCommandGraph(CommandGraph graph) {
-        return graphs.remove(graph);
+        if (!lockedGraphs) {
+            return graphs.remove(graph);
+        }
+        return false;
     }
 
     @Override
     public void removeAllCommandGraphs() {
-        graphs.clear();
+        if (!lockedGraphs) {
+            graphs.clear();
+        }
     }
 
     /**
@@ -290,26 +299,49 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         }
     }
 
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(pos, 0, write(new CompoundNBT()));
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+        read(pkt.getNbtCompound());
+    }
+
+    public void lockGraphs() {
+        lockedGraphs = true;
+    }
+
+    public void unlockGraphs() {
+        lockedGraphs = false;
+    }
+
     @Override
     public void read(CompoundNBT compound) {
         StevesFactoryManager.logger.trace("Restoring data from NBT {}", compound);
 
         super.read(compound);
 
-        linkingStatus = LinkingStatus.readFrom(compound.getCompound(KEY_LINKING_STATUS));
-        connectedCables = IOHelper.readBlockPoses(compound.getList(KEY_CONNECTED_CABLES, Constants.NBT.TAG_COMPOUND), new HashSet<>());
+        linkingStatus = LinkingStatus.readFrom(compound.getCompound("LinkingStatus"));
+        connectedCables = IOHelper.readBlockPoses(compound.getList("ConnectedCables", Constants.NBT.TAG_COMPOUND), new HashSet<>());
 
-        ListNBT serializedInventories = compound.getList(KEY_LINKED_INVENTORIES, Constants.NBT.TAG_COMPOUND);
+        ListNBT serializedInventories = compound.getList("LinkedInventories", Constants.NBT.TAG_COMPOUND);
         linkedInventories.clear();
         for (int i = 0; i < serializedInventories.size(); i++) {
             linkedInventories.add(NBTUtil.readBlockPos(serializedInventories.getCompound(i)));
         }
 
-        ListNBT commandGraphs = compound.getList(KEY_COMMAND_GRAPHS, Constants.NBT.TAG_COMPOUND);
+        ListNBT commandGraphs = compound.getList("CommandGraphs", Constants.NBT.TAG_COMPOUND);
         graphs.clear();
         for (int i = 0; i < commandGraphs.size(); i++) {
-            // TODO cross implementation compat
-            graphs.add(CommandGraph.deserializeFrom(commandGraphs.getCompound(i)));
+            // Creating Connection objects will write into controller command graphs storage,
+            // but at the same time we are putting graphs in too, which causes duplicates
+            lockGraphs();
+            CommandGraph graph = CommandGraph.deserializeFrom(commandGraphs.getCompound(i));
+            unlockGraphs();
+            graphs.add(graph);
         }
     }
 
@@ -317,14 +349,14 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public CompoundNBT write(CompoundNBT compound) {
         StevesFactoryManager.logger.trace("Writing data into NBT ({})", pos);
 
-        compound.put(KEY_LINKING_STATUS, linkingStatus.write());
-        compound.put(KEY_CONNECTED_CABLES, IOHelper.writeBlockPoses(connectedCables));
+        compound.put("LinkingStatus", linkingStatus.write());
+        compound.put("ConnectedCables", IOHelper.writeBlockPoses(connectedCables));
 
         ListNBT serializedInventories = new ListNBT();
         for (BlockPos pos : linkedInventories) {
             serializedInventories.add(NBTUtil.writeBlockPos(pos));
         }
-        compound.put(KEY_LINKED_INVENTORIES, serializedInventories);
+        compound.put("LinkedInventories", serializedInventories);
 
         ListNBT commandGraphs = new ListNBT();
         for (CommandGraph graph : graphs) {
