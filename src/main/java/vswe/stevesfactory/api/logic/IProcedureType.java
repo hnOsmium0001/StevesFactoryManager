@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 public interface IProcedureType<P extends IProcedure> extends IForgeRegistryEntry<IProcedureType<?>> {
 
@@ -15,6 +14,16 @@ public interface IProcedureType<P extends IProcedure> extends IForgeRegistryEntr
      */
     P createInstance(INetworkController controller);
 
+    /**
+     * Retrieve a procedure object from the given compound tag. This should automatically assign the this retrieved procedure to the given
+     * controller and to a newly created {@link CommandGraph}.
+     */
+    P retrieveInstance(INetworkController controller, CompoundNBT tag);
+
+    /**
+     * Retrieve procedure object from the given tag, and bind itself to the graph. It is very important to check the parameter graph's state
+     * beforehand, since this could create invalid connection state and invalid command graphs.
+     */
     P retrieveInstance(CommandGraph graph, CompoundNBT tag);
 
     /**

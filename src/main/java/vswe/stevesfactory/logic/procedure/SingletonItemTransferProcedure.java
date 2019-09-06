@@ -28,7 +28,11 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     private List<Direction> targetDirections = new ArrayList<>();
 
     public SingletonItemTransferProcedure(INetworkController controller) {
-        super(Procedures.SINGLETON_ITEM_TRANSFER.getFactory(), controller, 1, 1);
+        super(Procedures.SINGLETON_ITEM_TRANSFER.getFactory(), controller);
+    }
+
+    public SingletonItemTransferProcedure(CommandGraph graph) {
+        super(Procedures.SINGLETON_ITEM_TRANSFER.getFactory(), graph);
     }
 
     @Override
@@ -124,7 +128,8 @@ public class SingletonItemTransferProcedure extends AbstractProcedure {
     }
 
     @Override
-    public void deserialize(CommandGraph graph, CompoundNBT tag) {
+    public void deserialize(CompoundNBT tag) {
+        super.deserialize(tag);
         if (tag.contains("SourcePos")) {
             sourcePos = NBTUtil.readBlockPos(tag.getCompound("SourcePos"));
         }

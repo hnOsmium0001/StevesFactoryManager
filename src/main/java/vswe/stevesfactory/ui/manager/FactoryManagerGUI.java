@@ -9,21 +9,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.library.gui.IWidget;
-import vswe.stevesfactory.library.gui.IWindow;
+import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
-import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
-import vswe.stevesfactory.library.gui.DisplayListCaches;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.window.NestedEventHandlerMixin;
-import vswe.stevesfactory.ui.manager.editor.*;
+import vswe.stevesfactory.ui.manager.editor.DynamicWidthWidget;
+import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -35,7 +31,16 @@ import java.util.Objects;
 
 public class FactoryManagerGUI extends WidgetScreen {
 
+    public static FactoryManagerGUI getActiveGUI() {
+        return (FactoryManagerGUI) Minecraft.getInstance().currentScreen;
+    }
+
     public static final StrictTableLayout DOWN_RIGHT_4_STRICT_TABLE = new StrictTableLayout(GrowDirection.DOWN, GrowDirection.RIGHT, 4);
+
+    public static final ResourceLocation DELETE_ICON = RenderingHelper.linkTexture("gui/actions/delete.png");
+    public static final ResourceLocation COPY_ICON = RenderingHelper.linkTexture("gui/actions/copy.png");
+    public static final ResourceLocation CUT_ICON = RenderingHelper.linkTexture("gui/actions/cut.png");
+    public static final ResourceLocation PASTE_ICON = RenderingHelper.linkTexture("gui/actions/paste.png");
 
     ///////////////////////////////////////////////////////////////////////////
     // GUI code
@@ -76,19 +81,23 @@ public class FactoryManagerGUI extends WidgetScreen {
     private void sync() {
         getPrimaryWindow().topLevel.editorPanel.saveAll();
 
-        INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
+        INetworkController controller = getController();
         controller.sync();
+    }
+
+    public INetworkController getController() {
+        return Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_K) {
-            StevesFactoryManager.logger.info("K pressed:");
-            INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
-            for (CommandGraph graph : controller.getCommandGraphs()) {
-                StevesFactoryManager.logger.info(graph.collect());
-            }
-        }
+//        if (keyCode == GLFW.GLFW_KEY_K) {
+//            StevesFactoryManager.logger.info("K pressed:");
+//            INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
+//            for (CommandGraph graph : controller.getCommandGraphs()) {
+//                StevesFactoryManager.logger.info(graph.collect());
+//            }
+//        }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -203,7 +212,6 @@ public class FactoryManagerGUI extends WidgetScreen {
 
     public static class TopLevelWidget extends AbstractContainer<DynamicWidthWidget<?>> {
 
-        public static final ResourceLocation USER_PREFERENCES_ICON = RenderingHelper.linkTexture("gui/actions/preferences.png");
         public final SelectionPanel selectionPanel;
         public final EditorPanel editorPanel;
         private final ImmutableList<DynamicWidthWidget<?>> children;
@@ -260,13 +268,11 @@ public class FactoryManagerGUI extends WidgetScreen {
             }
             // Fallback action menu
             if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
-                        new CallbackEntry(USER_PREFERENCES_ICON, "gui.sfm.ActionMenu.UserPreferences", button1 -> {
-                        })
-                ));
+                ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(new UserPreferencesPanel.OpenerEntry()));
                 WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
             }
             return false;
         }
     }
+
 }

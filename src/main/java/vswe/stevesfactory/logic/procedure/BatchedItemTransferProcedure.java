@@ -2,7 +2,6 @@ package vswe.stevesfactory.logic.procedure;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -36,7 +35,11 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     private List<Direction> targetDirections = new ArrayList<>();
 
     public BatchedItemTransferProcedure(INetworkController controller) {
-        super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), controller, 1, 1);
+        super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), controller);
+    }
+
+    public BatchedItemTransferProcedure(CommandGraph graph) {
+        super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), graph);
     }
 
     @Override
@@ -143,8 +146,8 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     }
 
     @Override
-    public void deserialize(CommandGraph graph, CompoundNBT tag) {
-        super.deserialize(graph, tag);
+    public void deserialize(CompoundNBT tag) {
+        super.deserialize(tag);
         sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
         targetInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());

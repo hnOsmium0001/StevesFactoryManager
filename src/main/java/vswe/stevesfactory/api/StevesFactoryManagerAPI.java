@@ -10,7 +10,7 @@ import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedureType;
 
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
-public class SFMAPI {
+public class StevesFactoryManagerAPI {
 
     private static IForgeRegistry<IProcedureType<?>> procedures;
 

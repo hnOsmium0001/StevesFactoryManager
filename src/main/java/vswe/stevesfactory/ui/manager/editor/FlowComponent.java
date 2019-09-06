@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundNBT;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
@@ -21,12 +21,13 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
-import vswe.stevesfactory.utils.RenderingHelper;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+
+import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.*;
 
 public class FlowComponent<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
 
@@ -319,11 +320,6 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         return of(procedure, 1, 1);
     }
 
-    private static final ResourceLocation DELETE_ICON = RenderingHelper.linkTexture("gui/actions/delete.png");
-    private static final ResourceLocation COPY_ICON = RenderingHelper.linkTexture("gui/actions/copy.png");
-    private static final ResourceLocation CUT_ICON = RenderingHelper.linkTexture("gui/actions/cut.png");
-    private static final ResourceLocation PASTE_ICON = RenderingHelper.linkTexture("gui/actions/paste.png");
-
     private P procedure;
 
     private int id;
@@ -571,11 +567,20 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     }
 
     private void actionCopy() {
-
+        save();
+        CompoundNBT tag = procedure.serialize();
+        minecraft().keyboardListener.setClipboardString(tag.toString());
     }
 
     private void actionCut() {
+        actionCopy();
+        removeSelf();
+    }
 
+    public void save() {
+        for (Menu<?> menu : menus.getChildren()) {
+            menu.updateData();
+        }
     }
 
     public void removeGraph() {

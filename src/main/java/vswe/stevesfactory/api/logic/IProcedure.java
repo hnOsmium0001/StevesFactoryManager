@@ -39,17 +39,19 @@ public interface IProcedure {
      */
     CompoundNBT serialize();
 
-    void deserialize(CommandGraph graph, CompoundNBT tag);
+    void deserialize(CompoundNBT tag);
 
     FlowComponent<?> createFlowComponent();
 
     CommandGraph getGraph();
 
+    void setGraph(CommandGraph graph);
+
     /**
      * Remove this procedure and unlink all the related nodes.
      * <p>
      * The result of this operation should split the graph {@link #getGraph()} into {@code n+1} different graphs, where {@code n} is the
-     * number of predecessor nodes this node have. Note that this mechanism should be handled in each of the predecessor nodes, not here.
+     * number of successor nodes this node have. Note that this mechanism should be handled in each of the predecessor nodes, not here.
      */
     void remove();
 

@@ -19,6 +19,10 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITickabl
         super(Procedures.TIMED_TRIGGER.getFactory(), controller, 0, 1);
     }
 
+    public TimedTriggerProcedure(CommandGraph graph) {
+        super(Procedures.TIMED_TRIGGER.getFactory(), graph, 0, 1);
+    }
+
     @Override
     public void execute(IExecutionContext context) {
         pushFrame(context, 0);
@@ -50,8 +54,8 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITickabl
     }
 
     @Override
-    public void deserialize(CommandGraph graph, CompoundNBT tag) {
-        super.deserialize(graph, tag);
+    public void deserialize(CompoundNBT tag) {
+        super.deserialize(tag);
         interval = tag.getInt("Interval");
     }
 

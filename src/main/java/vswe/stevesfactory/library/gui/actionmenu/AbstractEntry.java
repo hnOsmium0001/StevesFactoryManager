@@ -10,7 +10,7 @@ import vswe.stevesfactory.utils.RenderingHelper;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-abstract class AbstractEntry extends AbstractWidget implements IEntry, LeafWidgetMixin {
+public abstract class AbstractEntry extends AbstractWidget implements IEntry, LeafWidgetMixin {
 
     public static final int MARGIN_SIDES = 2;
     public static final int HALF_MARGIN_SIDES = MARGIN_SIDES / 2;

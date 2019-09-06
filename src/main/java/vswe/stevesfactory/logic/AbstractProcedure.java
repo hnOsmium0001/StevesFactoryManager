@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import vswe.stevesfactory.api.SFMAPI;
+import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 
@@ -25,12 +25,20 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     private int componentY;
     private String name;
 
+    public AbstractProcedure(IProcedureType<?> type, CommandGraph graph) {
+        this(type, graph, 1, 1);
+    }
+
     public AbstractProcedure(IProcedureType<?> type, CommandGraph graph, int possibleParents, int possibleChildren) {
         Preconditions.checkArgument(!graph.getController().isRemoved(), "The controller object is invalid!");
         this.type = type;
         this.graph = graph;
         this.successors = new Connection[possibleChildren];
         this.predecessors = new Connection[possibleParents];
+    }
+
+    public AbstractProcedure(IProcedureType<?> type, INetworkController controller) {
+        this(type, controller, 1, 1);
     }
 
     public AbstractProcedure(IProcedureType<?> type, INetworkController controller, int possibleParents, int possibleChildren) {
@@ -134,6 +142,11 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     }
 
     @Override
+    public void setGraph(CommandGraph graph) {
+        this.graph = graph;
+    }
+
+    @Override
     public int getComponentX() {
         return componentX;
     }
@@ -185,9 +198,8 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     }
 
     @Override
-    public void deserialize(CommandGraph graph, CompoundNBT tag) {
+    public void deserialize(CompoundNBT tag) {
         Preconditions.checkArgument(readType(tag) == type);
-        this.graph = graph;
         componentX = tag.getInt("CompX");
         componentY = tag.getInt("CompY");
         name = tag.getString("Name");
@@ -221,7 +233,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 
     public static IProcedureType<?> readType(CompoundNBT tag) {
         ResourceLocation id = new ResourceLocation(tag.getString("ID"));
-        return SFMAPI.getProceduresRegistry().getValue(id);
+        return StevesFactoryManagerAPI.getProceduresRegistry().getValue(id);
     }
 
     public static String stringifyIdentity(@Nullable Connection connection) {

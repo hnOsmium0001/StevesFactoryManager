@@ -2,7 +2,7 @@ package vswe.stevesfactory.ui.manager.selection;
 
 import com.google.common.collect.ImmutableList;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.api.SFMAPI;
+import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
@@ -33,7 +33,7 @@ public final class SelectionPanel extends DynamicWidthWidget<ComponentSelectionB
     @SuppressWarnings("unchecked")
     private ImmutableList<ComponentSelectionButton> createStaticIcons() {
         ImmutableList.Builder<ComponentSelectionButton> icons = ImmutableList.builder();
-        for (IProcedureType<?> factory : SFMAPI.getProceduresRegistry().getValues()) {
+        for (IProcedureType<?> factory : StevesFactoryManagerAPI.getProceduresRegistry().getValues()) {
             icons.add(new ComponentSelectionButton(this, (IProcedureType<IProcedure>) factory));
         }
         return icons.build();

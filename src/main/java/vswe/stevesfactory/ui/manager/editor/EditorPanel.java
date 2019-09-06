@@ -1,17 +1,27 @@
 package vswe.stevesfactory.ui.manager.editor;
 
+import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
+import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
+import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
+import vswe.stevesfactory.ui.manager.UserPreferencesPanel;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
+import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -112,11 +122,43 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
                 return true;
             }
         }
-        if (isInside(mouseX, mouseY) && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-            getWindow().setFocusedWidget(this);
+        if (isInside(mouseX, mouseY)) {
+            if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                getWindow().setFocusedWidget(this);
+            }
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                openActionMenu(mouseX, mouseY);
+            }
             return true;
         }
         return false;
+    }
+
+    private void openActionMenu(double mouseX, double mouseY) {
+        ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
+                new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.ActionMenu.Paste", b -> actionPaste()),
+                // TODO implement
+                new CallbackEntry(null, "gui.sfm.ActionMenu.CleanupProcedures", b -> {}),
+                new UserPreferencesPanel.OpenerEntry()
+        ));
+        WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+    }
+
+    private void actionPaste() {
+        String json = minecraft().keyboardListener.getClipboardString();
+        CompoundNBT tag;
+        try {
+            tag = JsonToNBT.getTagFromJson(json);
+        } catch (CommandSyntaxException e) {
+            StevesFactoryManager.logger.debug("Syntax error on pasting procedure}", e);
+            Dialog.createDialog("gui.sfm.ActionMenu.Paste.Procedure.Fail").tryAddSelfToActiveGUI();
+            return;
+        }
+
+        INetworkController controller = FactoryManagerGUI.getActiveGUI().getController();
+        IProcedure procedure = NetworkHelper.recreateProcedureAndAdd(controller, tag);
+
+        addChildren(procedure.createFlowComponent());
     }
 
     @Override
@@ -166,9 +208,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
     public void saveAll() {
         for (FlowComponent<?> flowComponent : getChildren()) {
-            for (Menu<?> menu : flowComponent.getMenusBox().getChildren()) {
-                menu.updateData();
-            }
+            flowComponent.save();
         }
     }
 
