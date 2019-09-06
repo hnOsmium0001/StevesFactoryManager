@@ -6,6 +6,7 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.utils.Utils;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,17 +59,8 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         this.fitContents = fitContents;
     }
 
-    public void editLine(int line, String newText) {
-        texts.set(line, newText);
-        tryExpand(newText);
-    }
-
-    public void translateLine(int line, String translationKey) {
-        editLine(line, I18n.format(translationKey));
-    }
-
-    public void translateLine(int line, String translationKey, Object... args) {
-        editLine(line, I18n.format(translationKey, args));
+    public List<String> getTexts() {
+        return textView;
     }
 
     public String getLine(int line) {
@@ -88,8 +80,24 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         addLine(I18n.format(translationKey, args));
     }
 
-    public List<String> getTexts() {
-        return textView;
+    public void addLineSplit(int maxWidth, String text) {
+        int end = fontRenderer().sizeStringToWidth(text, maxWidth);
+        if (end >= text.length()) {
+            addLine(text);
+        } else {
+            String trimmed = text.substring(0, end);
+            String after = text.substring(end).trim();
+            addLine(trimmed);
+            addTranslatedLineSplit(maxWidth, after);
+        }
+    }
+
+    public void addTranslatedLineSplit(int maxWidth, String translationKey) {
+        addLineSplit(maxWidth, I18n.format(translationKey));
+    }
+
+    public void addTranslatedLineSplit(int maxWidth, String translationKey, Object... args) {
+        addLineSplit(maxWidth, I18n.format(translationKey, args));
     }
 
     private void tryExpand(String line) {

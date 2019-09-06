@@ -20,7 +20,7 @@ public final class DisplayListCaches {
     }
 
     private static final Cache<Rectangle, Integer> VANILLA_BACKGROUND_CACHE = CacheBuilder.newBuilder()
-            .expireAfterAccess(60, TimeUnit.SECONDS)
+            .expireAfterAccess(120, TimeUnit.SECONDS)
             .removalListener(removal -> {
                 StevesFactoryManager.logger.info("Removed background display list with size {}", removal.getKey());
                 GLAllocation.deleteDisplayLists((Integer) removal.getValue());

@@ -261,7 +261,7 @@ public class FactoryManagerGUI extends WidgetScreen {
             // Fallback action menu
             if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                 ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
-                        new CallbackEntry(USER_PREFERENCES_ICON, "gui.sfm.ActionMenu.Global.Preferences", button1 -> {
+                        new CallbackEntry(USER_PREFERENCES_ICON, "gui.sfm.ActionMenu.UserPreferences", button1 -> {
                         })
                 ));
                 WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);

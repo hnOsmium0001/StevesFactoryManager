@@ -51,7 +51,7 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
     private static final int NORMAL_BACKGROUND_COLOR = 0xff8c8c8c;
     private static final int HOVERED_BACKGROUND_COLOR = 0xff8c8c8c;
     private static final int NORMAL_BORDER_COLOR = 0xff737373;
-    private static final int HOVERED_BORDER_COLOR = 0xcff9c9c9;
+    private static final int HOVERED_BORDER_COLOR = 0xffc9c9c9;
 
     public IntConsumer onClick = DUMMY;
 

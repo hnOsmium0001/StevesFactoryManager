@@ -2,15 +2,14 @@ package vswe.stevesfactory.library.gui.window;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.BackgroundRenderers;
+import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.Box;
-import vswe.stevesfactory.library.gui.widget.TextButton;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -36,18 +35,16 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     public static Dialog createPrompt(String message, String defaultText, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
-        return createPrompt(message, defaultText, "gui.sfm.Dialogue.OK", "gui.sfm.Dialogue.Cancel", onConfirm, onCancel);
+        return createPrompt(message, defaultText, "gui.sfm.ok", "gui.sfm.cancel", onConfirm, onCancel);
     }
 
     public static Dialog createPrompt(String message, String defaultText, String confirm, String cancel, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
         Dialog dialog = dialogue(message);
 
         TextField inputBox = new TextField(0, 0, 0, 16).setText(defaultText);
-//        inputBox.setMarginBotttom(4);
         dialog.insertBeforeButtons(inputBox);
         dialog.onPostReflow = inputBox::expandHorizontally;
 
-        // TODO add margin support
         dialog.insertBeforeButtons(new Spacer(0, 4));
 
         dialog.buttons.addChildren(TextButton.of(confirm, b -> onConfirm.accept(b, inputBox.getText())));
@@ -66,7 +63,7 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     public static Dialog createBiSelectionDialog(String message, IntConsumer onConfirm, IntConsumer onCancel) {
-        return createBiSelectionDialog(message, "gui.sfm.Dialogue.OK", "gui.sfm.Dialogue.Cancel", onConfirm, onCancel);
+        return createBiSelectionDialog(message, "gui.sfm.ok", "gui.sfm.cancel", onConfirm, onCancel);
     }
 
     public static Dialog createBiSelectionDialog(String message, String confirm, String cancel, IntConsumer onConfirm, IntConsumer onCancel) {
@@ -87,7 +84,7 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     public static Dialog createDialog(String message, IntConsumer onConfirm) {
-        return createDialog(message, "gui.sfm.Dialogue.OK", onConfirm);
+        return createDialog(message, "gui.sfm.ok", onConfirm);
     }
 
     public static Dialog createDialog(String message, String ok, IntConsumer onConfirm) {
@@ -103,9 +100,9 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
 
     private static Dialog dialogue(String message) {
         Dialog dialog = new Dialog();
-        // TODO and replace this with bottom margin
         dialog.insertBeforeMessage(new Spacer(0, 5));
-        dialog.messageBox.addTranslatedLine(message);
+        // TODO un-hardcode
+        dialog.messageBox.addTranslatedLineSplit(128, message);
         return dialog;
     }
 

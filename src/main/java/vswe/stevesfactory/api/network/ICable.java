@@ -48,5 +48,4 @@ public interface ICable {
      * network.
      */
     void onLeaveNetwork(INetworkController network);
-
 }

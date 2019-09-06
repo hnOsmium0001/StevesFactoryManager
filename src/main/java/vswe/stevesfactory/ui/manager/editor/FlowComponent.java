@@ -19,6 +19,7 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
+import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -550,27 +551,31 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     private void openActionMenu(double mouseX, double mouseY) {
         openedActionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
-                new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.General.Delete", button -> delete()),
-                // TODO implement these
-                new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.General.Cut", button -> { }),
-                new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.General.Copy", button -> { }),
-                new CallbackEntry(PASTE_ICON, "gui.sfm.ActionMenu.General.Paste", button -> { })
+                new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.Delete", b -> actionDelete()),
+                new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.Cut", b -> actionCut()),
+                new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.Copy", b -> actionCopy())
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(openedActionMenu);
     }
 
-    private void delete() {
+    private void actionDelete() {
         if (Screen.hasShiftDown()) {
-            removeGraph();
+            Dialog.createBiSelectionDialog(
+                    "gui.sfm.ActionMenu.DeleteAll.ConfirmMsg",
+                    "gui.sfm.yes",
+                    "gui.sfm.no",
+                    b -> removeGraph(), b -> {}).tryAddSelfToActiveGUI();
         } else {
             removeSelf();
         }
     }
 
-    private void removeLinkedProcedure() {
-        inputNodes.removeAllConnections();
-        outputNodes.removeAllConnections();
-        procedure.remove();
+    private void actionCopy() {
+
+    }
+
+    private void actionCut() {
+
     }
 
     public void removeGraph() {
@@ -584,6 +589,12 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     public void removeSelf() {
         removeLinkedProcedure();
         getParentWidget().getFlowComponents().remove(this);
+    }
+
+    private void removeLinkedProcedure() {
+        inputNodes.removeAllConnections();
+        outputNodes.removeAllConnections();
+        procedure.remove();
     }
 
     public ControlFlow getInputNodes() {

@@ -152,5 +152,4 @@ public final class LinkingStatus implements Iterable<Pair<Direction, LinkType>> 
         west = LinkType.fromID(compound.getInt(KEY_WEST));
         east = LinkType.fromID(compound.getInt(KEY_EAST));
     }
-
 }

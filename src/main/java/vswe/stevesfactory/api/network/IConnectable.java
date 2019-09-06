@@ -48,5 +48,4 @@ public interface IConnectable {
             return VALUES.get(id);
         }
     }
-
 }
