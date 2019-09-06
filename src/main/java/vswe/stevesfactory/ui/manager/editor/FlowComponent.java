@@ -388,7 +388,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         state = State.EXPANDED;
 
         nameBox.setWidth(95);
-        menus.setEnabled(true);
+        updateMenusEnableState(true);
         reflow();
     }
 
@@ -396,8 +396,15 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         state = State.COLLAPSED;
 
         nameBox.setWidth(35);
-        menus.setEnabled(false);
+        updateMenusEnableState(false);
         reflow();
+    }
+
+    private void updateMenusEnableState(boolean enabled) {
+        menus.setEnabled(enabled);
+        for (Menu<P> menu : menus.getChildren()) {
+            menu.setEnabled(enabled);
+        }
     }
 
     public String getName() {
@@ -518,7 +525,10 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (submitButton.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+        if (!isEnabled()) {
+            return false;
+        }
+        if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
         }
         if (isFocused() && isDragging()) {
@@ -529,6 +539,46 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (!isEnabled()) {
+            return false;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+        if (!isEnabled()) {
+            return false;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scroll);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (!isEnabled()) {
+            return false;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (!isEnabled()) {
+            return false;
+        }
+        return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char charTyped, int keyCode) {
+        if (!isEnabled()) {
+            return false;
+        }
+        return super.charTyped(charTyped, keyCode);
     }
 
     private void clearDrag() {

@@ -14,8 +14,8 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -185,6 +185,10 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
+        if (!isEnabled()) {
+            return;
+        }
+
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         HEADING_BOX.draw(getAbsoluteX(), getAbsoluteY());
         renderHeadingText();
@@ -220,6 +224,9 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!isEnabled()) {
+            return false;
+        }
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return state != State.COLLAPSED || toggleStateButton.isInside(mouseX, mouseY);
         }

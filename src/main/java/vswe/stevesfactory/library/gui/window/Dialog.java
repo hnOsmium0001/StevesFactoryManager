@@ -101,8 +101,7 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     private static Dialog dialogue(String message) {
         Dialog dialog = new Dialog();
         dialog.insertBeforeMessage(new Spacer(0, 5));
-        // TODO un-hardcode
-        dialog.messageBox.addTranslatedLineSplit(128, message);
+        dialog.messageBox.addTranslatedLineSplit(160, message);
         return dialog;
     }
 
