@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class FactoryManagerGUI extends WidgetScreen {
 
@@ -104,7 +105,7 @@ public class FactoryManagerGUI extends WidgetScreen {
     @Override
     public void resize(@Nonnull Minecraft mc, int newWidth, int newHeight) {
         super.resize(mc, newWidth, newHeight);
-        getPrimaryWindow().updateScreenBounds();
+        getPrimaryWindow().asProportional();
     }
 
     @Override
@@ -113,6 +114,9 @@ public class FactoryManagerGUI extends WidgetScreen {
     }
 
     public static class PrimaryWindow implements IWindow, NestedEventHandlerMixin {
+
+        // TODO move to config
+        public static final Supplier<Boolean> USE_BACKGROUND_ON_FULLSCREEN = () -> false;
 
         // The location and dimensions will be set in the constructor
         private Rectangle screenBounds = new Rectangle();
@@ -124,11 +128,14 @@ public class FactoryManagerGUI extends WidgetScreen {
         private TopLevelWidget topLevel;
         private IWidget focusedWidget;
 
+        private boolean fullscreen = false;
+
         private PrimaryWindow() {
-            this.updateScreenBounds();
-            // Make sure the width/height are initialized before we touch the children
             this.topLevel = new TopLevelWidget(this);
             this.focusedWidget = topLevel;
+
+            this.asProportional();
+            this.topLevel.reflow();
         }
 
         @Override
@@ -159,7 +166,11 @@ public class FactoryManagerGUI extends WidgetScreen {
         @Override
         public void render(int mouseX, int mouseY, float particleTicks) {
             RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-            GlStateManager.callList(backgroundDL);
+            if (fullscreen && !USE_BACKGROUND_ON_FULLSCREEN.get()) {
+                RenderingHelper.drawRect(getPosition(), getBorder(), 0xffc6c6c6);
+            } else {
+                GlStateManager.callList(backgroundDL);
+            }
             topLevel.render(mouseX, mouseY, particleTicks);
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
@@ -203,10 +214,25 @@ public class FactoryManagerGUI extends WidgetScreen {
             backgroundDL = DisplayListCaches.createVanillaStyleBackground(new Rectangle(screenBounds), 0F);
         }
 
-        private void updateScreenBounds() {
+        private void asProportional() {
             int width = (int) (scaledWidth() * WIDTH_PROPORTION);
             int height = (int) (scaledHeight() * HEIGHT_PROPORTION);
             setScreenBounds(width, height);
+            topLevel.reflow();
+        }
+
+        private void asFullscreen() {
+            setScreenBounds(scaledWidth(), scaledHeight());
+            topLevel.reflow();
+        }
+
+        public void toggleFullscreen() {
+            fullscreen = !fullscreen;
+            if (fullscreen) {
+                asFullscreen();
+            } else {
+                asProportional();
+            }
         }
     }
 
@@ -221,7 +247,6 @@ public class FactoryManagerGUI extends WidgetScreen {
             this.selectionPanel = new SelectionPanel();
             this.editorPanel = new EditorPanel();
             this.children = ImmutableList.of(selectionPanel, editorPanel);
-            this.reflow();
         }
 
         @Override
