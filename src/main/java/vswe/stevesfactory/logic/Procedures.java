@@ -8,7 +8,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.procedure.*;
+import vswe.stevesfactory.logic.procedure.BatchedItemTransferProcedure;
+import vswe.stevesfactory.logic.procedure.TimedTriggerProcedure;
 import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.lang.reflect.Modifier;
@@ -19,7 +20,6 @@ import java.util.function.Function;
 public final class Procedures<P extends IProcedure> {
 
     public static final Procedures<TimedTriggerProcedure> TIMED_TRIGGER = new Procedures<>("timed_trigger", TimedTriggerProcedure::new, TimedTriggerProcedure::new);
-    public static final Procedures<SingletonItemTransferProcedure> SINGLETON_ITEM_TRANSFER = new Procedures<>("singleton_item_transfer", SingletonItemTransferProcedure::new, SingletonItemTransferProcedure::new);
     public static final Procedures<BatchedItemTransferProcedure> BATCHED_ITEM_TRANSFER = new Procedures<>("batched_item_transfer", BatchedItemTransferProcedure::new, BatchedItemTransferProcedure::new);
 
 //    ITEM_IMPORT("item_import", DummyProcedure::new),
@@ -44,7 +44,7 @@ public final class Procedures<P extends IProcedure> {
 
     private Procedures(String id, Function<INetworkController, P> constructor, Function<CommandGraph, P> retriever) {
         this.id = id;
-        this.factory = new SimpleProcedureType<P>(constructor, retriever, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
+        this.factory = new SimpleProcedureType<>(constructor, retriever, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
         this.factory.setRegistryName(new ResourceLocation(StevesFactoryManager.MODID, id));
     }
 

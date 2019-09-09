@@ -1,10 +1,10 @@
 package vswe.stevesfactory.utils;
 
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.*;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import vswe.stevesfactory.logic.item.SingleItemFilter;
 
 import java.util.*;
 import java.util.function.IntFunction;
@@ -37,6 +37,32 @@ public final class IOHelper {
         for (BlockPos linkable : poses) {
             buf.writeBlockPos(linkable);
         }
+    }
+
+    public static SingleItemFilter deserializeItemFiler(CompoundNBT tag) {
+        SingleItemFilter filter = new SingleItemFilter();
+        filter.read(tag);
+        return filter;
+    }
+
+    public static <T extends Collection<SingleItemFilter>> T readItemFilters(ListNBT serializedFilters, T target) {
+        for (int i = 0; i < serializedFilters.size(); i++) {
+            target.add(deserializeItemFiler(serializedFilters.getCompound(i)));
+        }
+        return target;
+    }
+
+    public static ListNBT writeItemFilters(Collection<SingleItemFilter> filters) {
+        return writeItemFilters(filters, new ListNBT());
+    }
+
+    public static ListNBT writeItemFilters(Collection<SingleItemFilter> filters, ListNBT target) {
+        for (SingleItemFilter filter : filters) {
+            CompoundNBT tag = new CompoundNBT();
+            filter.write(tag);
+            target.add(tag);
+        }
+        return target;
     }
 
     public static <T extends Collection<BlockPos>> T readBlockPoses(PacketBuffer buf, T target) {
