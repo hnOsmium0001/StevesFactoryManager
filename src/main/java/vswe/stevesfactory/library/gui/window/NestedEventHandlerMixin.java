@@ -6,9 +6,6 @@ public interface NestedEventHandlerMixin extends IWindow {
 
     @Override
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!isInside(mouseX, mouseY)) {
-            return false;
-        }
         for (IWidget child : getChildren()) {
             if (!(child instanceof IContainer<?>) && !child.isInside(mouseX, mouseY)) {
                 continue;
@@ -22,9 +19,6 @@ public interface NestedEventHandlerMixin extends IWindow {
 
     @Override
     default boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (!isInside(mouseX, mouseY)) {
-            return false;
-        }
         for (IWidget child : getChildren()) {
             if (!(child instanceof IContainer<?>) && !child.isInside(mouseX, mouseY)) {
                 continue;
@@ -38,9 +32,6 @@ public interface NestedEventHandlerMixin extends IWindow {
 
     @Override
     default boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (!isInside(mouseX, mouseY)) {
-            return false;
-        }
         for (IWidget child : getChildren()) {
             if (!(child instanceof IContainer<?>) && !child.isFocused()) {
                 continue;
@@ -54,9 +45,6 @@ public interface NestedEventHandlerMixin extends IWindow {
 
     @Override
     default boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
-        if (!isInside(mouseX, mouseY)) {
-            return false;
-        }
         for (IWidget child : getChildren()) {
             if (!(child instanceof IContainer<?>) && !child.isInside(mouseX, mouseY)) {
                 continue;

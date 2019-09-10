@@ -139,6 +139,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
                 new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.ActionMenu.Paste", b -> actionPaste()),
                 // TODO implement
                 new CallbackEntry(null, "gui.sfm.ActionMenu.CleanupProcedures", b -> {}),
+                new CallbackEntry(null, "gui.sfm.ActionMenu.ToggleFullscreen", b -> actionToggleFullscreen()),
                 new UserPreferencesPanel.OpenerEntry()
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
@@ -159,6 +160,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         IProcedure procedure = NetworkHelper.recreateProcedureAndAdd(controller, tag);
 
         addChildren(procedure.createFlowComponent());
+    }
+
+    private void actionToggleFullscreen() {
+        FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen();
     }
 
     @Override

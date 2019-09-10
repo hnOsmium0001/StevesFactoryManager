@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
@@ -23,6 +24,7 @@ import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
@@ -709,16 +711,22 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     }
 
     @Override
-    public void provideInformation(ITextReceiver receiver) {
-        super.provideInformation(receiver);
-        receiver.line("Z=" + this.getZIndex());
-    }
-
-    @Override
     public void setLocation(int x, int y) {
+        @Nullable IWidget parent = super.getParentWidget();
+        if (parent != null) {
+            Dimension bounds = parent.getDimensions();
+            x = MathHelper.clamp(x, 0, bounds.width);
+            y = MathHelper.clamp(y, 0, bounds.height);
+        }
         super.setLocation(x, y);
         procedure.setComponentX(x);
         procedure.setComponentY(y);
+    }
+
+    @Override
+    public void provideInformation(ITextReceiver receiver) {
+        super.provideInformation(receiver);
+        receiver.line("Z=" + this.getZIndex());
     }
 
     public static class MenusList<T extends IWidget> extends LinearList<T> {
