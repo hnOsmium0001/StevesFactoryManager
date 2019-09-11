@@ -4,10 +4,14 @@ import net.minecraft.item.ItemStack;
 
 import java.util.function.IntConsumer;
 
-public class ItemSlot extends AbstractSlot {
+public class ItemSlot extends AbstractItemSlot {
 
     private ItemStack renderedStack;
     private IntConsumer action;
+
+    public ItemSlot(ItemStack renderedStack) {
+        this(renderedStack, b -> {});
+    }
 
     public ItemSlot(ItemStack renderedStack, IntConsumer action) {
         this.renderedStack = renderedStack;

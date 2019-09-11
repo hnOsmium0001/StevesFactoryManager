@@ -17,10 +17,10 @@ import java.util.*;
 
 public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IProcedureClientData> extends Menu<P> {
 
-    private WrappingList<BlockTarget> list;
-
     private final int id;
     private final String name;
+
+    private WrappingList<BlockTarget> list;
 
     public InventorySelectionMenu(int id) {
         this(id, I18n.format("gui.sfm.Menu.InventorySelection"));

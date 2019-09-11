@@ -9,9 +9,9 @@ import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 
-public abstract class AbstractSlot extends AbstractWidget implements LeafWidgetMixin {
+public abstract class AbstractItemSlot extends AbstractWidget implements LeafWidgetMixin {
 
-    public AbstractSlot() {
+    public AbstractItemSlot() {
         super(0, 0, 18, 18);
     }
 

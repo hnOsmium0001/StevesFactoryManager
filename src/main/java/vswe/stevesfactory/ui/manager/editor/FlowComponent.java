@@ -729,7 +729,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         receiver.line("Z=" + this.getZIndex());
     }
 
-    public static class MenusList<T extends IWidget> extends LinearList<T> {
+    public static class MenusList<T extends Menu<?>> extends LinearList<T> {
 
         public MenusList(int width, int height) {
             super(width, height);

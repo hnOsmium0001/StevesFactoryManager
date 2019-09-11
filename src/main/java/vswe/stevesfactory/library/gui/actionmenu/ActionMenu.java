@@ -50,6 +50,7 @@ public class ActionMenu implements IPopupWindow, NestedEventHandlerMixin {
         for (IEntry e : entries) {
             e.attach(this);
             e.setLocation(0, y);
+            e.setWidth(contents.width);
             y += e.getHeight();
         }
     }

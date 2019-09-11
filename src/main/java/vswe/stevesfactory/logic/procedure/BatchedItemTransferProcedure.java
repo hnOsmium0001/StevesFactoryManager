@@ -15,10 +15,10 @@ import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.item.GroupItemFilter;
 import vswe.stevesfactory.logic.item.SingleItemFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
-import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
+import vswe.stevesfactory.ui.manager.menu.*;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.SlotlessItemHandlerWrapper;
 
@@ -35,7 +35,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     private List<Direction> sourceDirections = new ArrayList<>();
     private List<BlockPos> targetInventories = new ArrayList<>();
     private List<Direction> targetDirections = new ArrayList<>();
-    private List<SingleItemFilter> filters = new ArrayList<>();
+    private GroupItemFilter filter = new GroupItemFilter();
 
     public BatchedItemTransferProcedure(INetworkController controller) {
         super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), controller);
@@ -144,7 +144,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         tag.putIntArray("SourceDirections", IOHelper.direction2Index(sourceDirections));
         tag.put("TargetPoses", IOHelper.writeBlockPoses(targetInventories));
         tag.putIntArray("TargetDirections", IOHelper.direction2Index(targetDirections));
-        tag.put("Filters", IOHelper.writeItemFilters(filters));
+        tag.put("Filters", filter.write());
 
         return tag;
     }
@@ -156,7 +156,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
         targetInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
-        filters = IOHelper.readItemFilters(tag.getList("Filters", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        filter = GroupItemFilter.recover(tag.getCompound("Filters"));
     }
 
     @Override
@@ -166,6 +166,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Destination")));
         f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Source")));
         f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Destination")));
+        f.addMenu(new ItemFilterMenu<>(FILTERS));
         return f;
     }
 
@@ -190,7 +191,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     }
 
     @Override
-    public List<SingleItemFilter> getFilters(int id) {
-        return filters;
+    public GroupItemFilter getFilters(int id) {
+        return filter;
     }
 }

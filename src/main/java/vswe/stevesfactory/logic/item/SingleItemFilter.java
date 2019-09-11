@@ -86,7 +86,8 @@ public class SingleItemFilter {
         return !matchTag || (item.areShareTagsEqual(stack));
     }
 
-    public void extractFromInventory(List<ItemStack> target, IItemHandler handler, boolean simulate) {
+    @SuppressWarnings("UnusedReturnValue")
+    public List<ItemStack> extractFromInventory(List<ItemStack> target, IItemHandler handler, boolean simulate) {
         int desired = isMatchingAmount() ? item.getCount() : Integer.MAX_VALUE;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.extractItem(i, desired, simulate);
@@ -96,6 +97,7 @@ public class SingleItemFilter {
             desired -= stack.getCount();
             target.add(stack);
         }
+        return target;
     }
 
     public ItemStack extractFromInventoryMerge(IItemHandler handler, boolean simulate) {

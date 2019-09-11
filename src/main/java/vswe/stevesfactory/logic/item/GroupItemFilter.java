@@ -1,12 +1,15 @@
 package vswe.stevesfactory.logic.item;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.logic.FilterType;
+import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,28 +20,32 @@ public class GroupItemFilter {
 
     private List<ItemStack> items = new ArrayList<>();
 
-    private boolean matchDamage;
-    private boolean matchTag;
+    private boolean matchingDamage;
+    private boolean matchingTag;
     private boolean matchingAmount;
+
+    public List<ItemStack> getItems() {
+        return items;
+    }
 
     public FilterType getType() {
         return type;
     }
 
     public boolean isMatchingDamage() {
-        return matchDamage;
+        return matchingDamage;
     }
 
     public void setMatchingDamage(boolean matchingDamage) {
-        this.matchDamage = matchingDamage;
+        this.matchingDamage = matchingDamage;
     }
 
     public boolean isMatchingTag() {
-        return matchTag;
+        return matchingTag;
     }
 
     public void setMatchingTag(boolean matchingTag) {
-        this.matchTag = matchingTag;
+        this.matchingTag = matchingTag;
     }
 
     public boolean isMatchingAmount() {
@@ -67,28 +74,69 @@ public class GroupItemFilter {
         throw new IllegalStateException();
     }
 
-    public void extractFromInventory(List<ItemStack> target, IItemHandler handler) {
-        Object2IntMap<Item> counts = new Object2IntOpenHashMap<>();
+    @SuppressWarnings("UnusedReturnValue")
+    public List<ItemStack> extractFromInventorySimulate(List<ItemStack> target, IItemHandler handler, boolean merge) {
+        // Lower end: desired count
+        // Higher end: extracted count
+        Object2LongMap<Item> counts = new Object2LongOpenHashMap<>();
+        for (ItemStack item : items) {
+            counts.put(item.getItem(), getData(0, item.getCount()));
+        }
+
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
             if (stack.isEmpty()) {
                 continue;
             }
 
-            int count = stack.getCount();
-            Item item = stack.getItem();
-            int collectedCount = counts.getInt(item);
+            boolean accepted = test(stack);
+            if (accepted) {
+                Item item = stack.getItem();
+                long data = counts.getLong(item);
+                int desired = getDesiredCount(data);
+                if (desired == 0) {
+                    continue;
+                }
+                int extracted = getExtractedCount(data);
 
-            boolean b = test(stack);
-            // TODO
+                int used = Utils.upperBound(stack.getCount(), desired);
+                stack.setCount(used);
+
+                counts.put(item, getData(extracted + used, desired - used));
+                if (!merge) {
+                    target.add(stack);
+                }
+            }
         }
+
+        if (merge) {
+            for (Object2LongMap.Entry<Item> entry : counts.object2LongEntrySet()) {
+                long data = entry.getLongValue();
+                ItemStack stack = new ItemStack(entry.getKey(), getExtractedCount(data));
+                target.add(stack);
+            }
+        }
+
+        return target;
+    }
+
+    private int getDesiredCount(long data) {
+        return (int) (data & Integer.MAX_VALUE);
+    }
+
+    private int getExtractedCount(long data) {
+        return (int) (data >>> 32);
+    }
+
+    private long getData(int extracted, int desired) {
+        return (long) extracted << 32 | desired;
     }
 
     private boolean isEqual(int filterIndex, ItemStack stack) {
         ItemStack item = items.get(filterIndex);
         return !item.isItemEqual(stack)
-                || (matchDamage && item.getDamage() != stack.getDamage())
-                || (matchTag && !item.areShareTagsEqual(stack));
+                || (matchingDamage && item.getDamage() != stack.getDamage())
+                || (matchingTag && !item.areShareTagsEqual(stack));
     }
 
     private boolean doesItemMatch(int filterIndex, ItemStack stack) {
@@ -104,10 +152,28 @@ public class GroupItemFilter {
     }
 
     public void read(CompoundNBT tag) {
-
+        items = IOHelper.readItemStacks(tag.getList("Items", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        matchingDamage = tag.getBoolean("MatchDamage");
+        matchingTag = tag.getBoolean("MatchTag");
+        matchingAmount = tag.getBoolean("MatchAmount");
     }
 
     public void write(CompoundNBT tag) {
+        tag.put("Items", IOHelper.writeItemStacks(items));
+        tag.putBoolean("MatchDamage", matchingDamage);
+        tag.putBoolean("MatchTag", matchingTag);
+        tag.putBoolean("MatchAmount", matchingAmount);
+    }
 
+    public CompoundNBT write() {
+        CompoundNBT tag = new CompoundNBT();
+        write(tag);
+        return tag;
+    }
+
+    public static GroupItemFilter recover(CompoundNBT tag) {
+        GroupItemFilter filter = new GroupItemFilter();
+        filter.read(tag);
+        return filter;
     }
 }

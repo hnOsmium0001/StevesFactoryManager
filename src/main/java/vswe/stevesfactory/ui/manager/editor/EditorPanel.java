@@ -151,7 +151,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         try {
             tag = JsonToNBT.getTagFromJson(json);
         } catch (CommandSyntaxException e) {
-            StevesFactoryManager.logger.debug("Syntax error on pasting procedure}", e);
             Dialog.createDialog("gui.sfm.ActionMenu.Paste.Procedure.Fail").tryAddSelfToActiveGUI();
             return;
         }

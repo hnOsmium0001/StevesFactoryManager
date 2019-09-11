@@ -1,5 +1,6 @@
 package vswe.stevesfactory.utils;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
@@ -39,28 +40,20 @@ public final class IOHelper {
         }
     }
 
-    public static SingleItemFilter deserializeItemFiler(CompoundNBT tag) {
-        SingleItemFilter filter = new SingleItemFilter();
-        filter.read(tag);
-        return filter;
-    }
-
-    public static <T extends Collection<SingleItemFilter>> T readItemFilters(ListNBT serializedFilters, T target) {
+    public static <T extends Collection<ItemStack>> T readItemStacks(ListNBT serializedFilters, T target) {
         for (int i = 0; i < serializedFilters.size(); i++) {
-            target.add(deserializeItemFiler(serializedFilters.getCompound(i)));
+            target.add(ItemStack.read(serializedFilters.getCompound(i)));
         }
         return target;
     }
 
-    public static ListNBT writeItemFilters(Collection<SingleItemFilter> filters) {
-        return writeItemFilters(filters, new ListNBT());
+    public static ListNBT writeItemStacks(Collection<ItemStack> stacks) {
+        return writeItemStacks(stacks, new ListNBT());
     }
 
-    public static ListNBT writeItemFilters(Collection<SingleItemFilter> filters, ListNBT target) {
-        for (SingleItemFilter filter : filters) {
-            CompoundNBT tag = new CompoundNBT();
-            filter.write(tag);
-            target.add(tag);
+    public static ListNBT writeItemStacks(Collection<ItemStack> filters, ListNBT target) {
+        for (ItemStack stack : filters) {
+            target.add(stack.write(new CompoundNBT()));
         }
         return target;
     }

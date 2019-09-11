@@ -11,16 +11,12 @@ import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.Box;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.*;
 
-import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledHeight;
-import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
-
-public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
+public class Dialog extends AbstractWindow implements IPopupWindow {
 
     public static Dialog createPrompt(String message, BiConsumer<Integer, String> onConfirm) {
         return createPrompt(message, onConfirm, (b, t) -> {});
@@ -115,17 +111,12 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     };
     public static final int FLAT_STYLE_BORDER_SIZE = 2 + 1;
 
-    private final Point position;
-    private final Dimension contents;
-    private final Dimension border;
-
     private Consumer<Dialog> backgroundRenderer;
     private int borderSize;
 
     private TextList messageBox;
     private Box<TextButton> buttons;
     private List<AbstractWidget> children;
-    private IWidget focusedWidget;
 
     public Runnable onPreReflow = () -> {};
     public Runnable onPostReflow = () -> {};
@@ -134,9 +125,6 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     private boolean alive = true;
 
     public Dialog() {
-        this.position = new Point();
-        this.contents = new Dimension();
-        this.border = new Dimension();
         this.messageBox = new TextList(10, 10, new ArrayList<>());
         this.messageBox.setFitContents(true);
         this.buttons = new Box<TextButton>(0, 0, 10, 10)
@@ -154,23 +142,17 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
         }
         this.useVanillaBorders();
 
-        centralize();
+        for (AbstractWidget child : children) {
+            child.setWindow(this);
+        }
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         backgroundRenderer.accept(this);
-        for (IWidget child : children) {
-            child.render(mouseX, mouseY, particleTicks);
-        }
+        renderChildren(mouseX, mouseY, particleTicks);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
-    }
-
-    public void centralize() {
-        position.x = scaledWidth() / 2 - getWidth() / 2;
-        position.y = scaledHeight() / 2 - getHeight() / 2;
-        notifyChildren();
     }
 
     public void reflow() {
@@ -182,16 +164,11 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
         FlowLayout.reflow(children);
 
         updateDimensions();
-        notifyChildren();
+        updatePosition();
         onPostReflow.run();
     }
 
     private void updateDimensions() {
-        updateContentDimensions();
-        updateBorderDimensions();
-    }
-
-    private void updateContentDimensions() {
         int rightmost = 0;
         int bottommost = 0;
         for (IWidget child : children) {
@@ -204,21 +181,7 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
                 bottommost = bottom;
             }
         }
-        contents.width = rightmost;
-        contents.height = bottommost;
-    }
-
-    private void updateBorderDimensions() {
-        border.width = contents.width + getBorderSize() * 2;
-        border.height = contents.height + getBorderSize() * 2;
-    }
-
-    public void notifyChildren() {
-        for (AbstractWidget child : children) {
-            // This will update the absolute position as well (because we know all the children are at least AbstractWidget)
-            // so no need to call child.onParentPositionChanged() here
-            child.setWindow(this);
-        }
+        setContents(rightmost, bottommost);
     }
 
     public TextList getMessageBox() {
@@ -230,20 +193,23 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     }
 
     public void insertBeforeMessage(AbstractWidget widget) {
+        widget.setWindow(this);
         children.add(0, widget);
     }
 
     public void insertBeforeButtons(AbstractWidget widget) {
+        widget.setWindow(this);
         children.add(children.size() - 1, widget);
     }
 
     public void appendChild(AbstractWidget widget) {
+        widget.setWindow(this);
         children.add(widget);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (NestedEventHandlerMixin.super.mouseClicked(mouseX, mouseY, button)) {
+        if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
         if (isInside(mouseX, mouseY)) {
@@ -257,7 +223,7 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (NestedEventHandlerMixin.super.mouseReleased(mouseX, mouseY, button)) {
+        if (super.mouseReleased(mouseX, mouseY, button)) {
             return true;
         }
         if (isInside(mouseX, mouseY)) {
@@ -270,13 +236,13 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (NestedEventHandlerMixin.super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+        if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
         }
         if (isInside(mouseX, mouseY) && isDragging()) {
-            position.x = (int) mouseX - initialDragLocalX;
-            position.y = (int) mouseY - initialDragLocalY;
-            notifyChildren();
+            int x = (int) mouseX - initialDragLocalX;
+            int y = (int) mouseY - initialDragLocalY;
+            setPosition(x, y);
             return true;
         }
         return false;
@@ -309,17 +275,6 @@ public class Dialog implements IPopupWindow, NestedEventHandlerMixin {
     @Override
     public Point getPosition() {
         return position;
-    }
-
-    @Nullable
-    @Override
-    public IWidget getFocusedWidget() {
-        return focusedWidget;
-    }
-
-    @Override
-    public void setFocusedWidget(@Nullable IWidget widget) {
-        focusedWidget = widget;
     }
 
     public void setStyle(Consumer<Dialog> renderer, int borderSize) {
