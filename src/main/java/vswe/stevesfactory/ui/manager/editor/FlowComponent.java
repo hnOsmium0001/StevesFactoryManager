@@ -145,7 +145,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     public static class RenameButton extends AbstractIconButton {
 
-        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 120, 9, 9);
+        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 124, 9, 9);
         public static final TextureWrapper HOVERING = NORMAL.toRight(1);
 
         public RenameButton(FlowComponent parent) {
@@ -195,7 +195,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     public static class SubmitButton extends AbstractIconButton {
 
-        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 129, 7, 7);
+        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 133, 7, 7);
         public static final TextureWrapper HOVERING = NORMAL.toRight(1);
 
         public SubmitButton(FlowComponent parent) {
@@ -248,7 +248,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     public static class CancelButton extends AbstractIconButton {
 
-        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 136, 7, 7);
+        public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 140, 7, 7);
         public static final TextureWrapper HOVERING = NORMAL.toRight(1);
 
         private String previousName;

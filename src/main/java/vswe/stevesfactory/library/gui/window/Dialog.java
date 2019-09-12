@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.*;
 
-public class Dialog extends AbstractWindow implements IPopupWindow {
+public class Dialog extends AbstractPopupWindow {
 
     public static Dialog createPrompt(String message, BiConsumer<Integer, String> onConfirm) {
         return createPrompt(message, onConfirm, (b, t) -> {});
@@ -121,9 +121,6 @@ public class Dialog extends AbstractWindow implements IPopupWindow {
     public Runnable onPreReflow = () -> {};
     public Runnable onPostReflow = () -> {};
 
-    private int initialDragLocalX, initialDragLocalY;
-    private boolean alive = true;
-
     public Dialog() {
         this.messageBox = new TextList(10, 10, new ArrayList<>());
         this.messageBox.setFitContents(true);
@@ -208,51 +205,6 @@ public class Dialog extends AbstractWindow implements IPopupWindow {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
-        if (isInside(mouseX, mouseY)) {
-            setFocusedWidget(null);
-            initialDragLocalX = (int) mouseX - position.x;
-            initialDragLocalY = (int) mouseY - position.y;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (super.mouseReleased(mouseX, mouseY, button)) {
-            return true;
-        }
-        if (isInside(mouseX, mouseY)) {
-            initialDragLocalX = -1;
-            initialDragLocalY = -1;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
-            return true;
-        }
-        if (isInside(mouseX, mouseY) && isDragging()) {
-            int x = (int) mouseX - initialDragLocalX;
-            int y = (int) mouseY - initialDragLocalY;
-            setPosition(x, y);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isDragging() {
-        return initialDragLocalX != -1 && initialDragLocalY != -1;
-    }
-
-    @Override
     public Dimension getBorder() {
         return border;
     }
@@ -315,10 +267,5 @@ public class Dialog extends AbstractWindow implements IPopupWindow {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean shouldDiscard() {
-        return !alive;
     }
 }

@@ -31,6 +31,18 @@ public abstract class AbstractContainer<T extends IWidget> extends AbstractWidge
     }
 
     @Override
+    public void setWindow(IWindow window) {
+        super.setWindow(window);
+        Collection<T> children = getChildren();
+        if (children != null) {
+            for (T child : children) {
+                // Based on the docs, this will inherit a reference to window from this widget
+                child.setParentWidget(this);
+            }
+        }
+    }
+
+    @Override
     public IContainer<T> addChildren(T widget) {
         throw new UnsupportedOperationException();
     }

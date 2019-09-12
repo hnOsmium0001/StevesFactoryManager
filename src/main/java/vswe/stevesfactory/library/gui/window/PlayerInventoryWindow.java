@@ -6,41 +6,40 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
-import vswe.stevesfactory.library.gui.widget.slot.*;
+import vswe.stevesfactory.library.gui.widget.slot.AbstractItemSlot;
+import vswe.stevesfactory.library.gui.widget.slot.ItemSlotPanel;
 
-import java.awt.*;
 import java.util.List;
 import java.util.function.Function;
 
-public class PlayerInventoryWindow extends AbstractWindow implements IPopupWindow {
-
-    private static final TextureWrapper CLOSE = TextureWrapper.ofGUITexture("textures/gui/close.png", 64, 64, 0, 0, 64, 64);
+public class PlayerInventoryWindow extends AbstractPopupWindow {
 
     private final List<IWidget> children;
-    private boolean alive = true;
 
     public PlayerInventoryWindow() {
-        this(0, 0, ItemSlot::new);
+        this(0, 0, ItemSlotPanel.DefaultSlot::new);
     }
 
     public PlayerInventoryWindow(int x, int y, Function<ItemStack, AbstractItemSlot> factory) {
-        setPosition(x, y);
-
         PlayerInventory playerInventory = Minecraft.getInstance().player.inventory;
+
         ItemSlotPanel inventory = new ItemSlotPanel(9, 3, playerInventory.mainInventory.subList(9, playerInventory.mainInventory.size()), factory);
-        inventory.setLocation(0, 8 + 2);
+        inventory.setWindow(this);
+        inventory.setLocation(0, 8 + 2 + 1);
         ItemSlotPanel hotbar = new ItemSlotPanel(9, 1, playerInventory.mainInventory.subList(0, 9), factory);
+        hotbar.setWindow(this);
         hotbar.setLocation(0, inventory.getY() + inventory.getHeight() + 4);
-        AbstractIconButton close = new AbstractIconButton(0, 0, inventory.getWidth() - 8, 0) {
+        AbstractIconButton close = new AbstractIconButton(inventory.getWidth() - 8 - 1, 1, 8, 8) {
             @Override
             public TextureWrapper getTextureNormal() {
-                return CLOSE;
+                return WidgetScreen.CLOSE;
             }
 
             @Override
             public TextureWrapper getTextureHovered() {
-                return CLOSE;
+                return WidgetScreen.CLOSE_HOVERED;
             }
 
             @Override
@@ -49,20 +48,17 @@ public class PlayerInventoryWindow extends AbstractWindow implements IPopupWindo
                 return super.mouseClicked(mouseX, mouseY, button);
             }
         };
-        close.setDimensions(8, 8);
+        close.setWindow(this);
+
         children = ImmutableList.of(close, inventory, hotbar);
 
-        setContents(inventory.getWidth(), 8 + 2 + inventory.getHeight() + hotbar.getHeight());
+        setPosition(x, y);
+        setContents(inventory.getWidth(), hotbar.getY() + hotbar.getHeight());
     }
 
     @Override
     public int getBorderSize() {
         return 4;
-    }
-
-    @Override
-    public Dimension getContentDimensions() {
-        return null;
     }
 
     @Override
@@ -76,10 +72,5 @@ public class PlayerInventoryWindow extends AbstractWindow implements IPopupWindo
         BackgroundRenderers.drawVanillaStyle(getX(), getY(), getWidth(), getHeight(), 0F);
         renderChildren(mouseX, mouseY, particleTicks);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
-    }
-
-    @Override
-    public boolean shouldDiscard() {
-        return !alive;
     }
 }

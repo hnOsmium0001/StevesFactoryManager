@@ -16,7 +16,7 @@ import java.util.List;
 
 public class GroupItemFilter {
 
-    private FilterType type = FilterType.WHITELIST;
+    public FilterType type = FilterType.WHITELIST;
 
     private List<ItemStack> items = new ArrayList<>();
 
@@ -26,10 +26,6 @@ public class GroupItemFilter {
 
     public List<ItemStack> getItems() {
         return items;
-    }
-
-    public FilterType getType() {
-        return type;
     }
 
     public boolean isMatchingDamage() {
@@ -144,7 +140,7 @@ public class GroupItemFilter {
     }
 
     private boolean getTypeFlag() {
-        switch (getType()) {
+        switch (type) {
             case WHITELIST: return false;
             case BLACKLIST: return true;
         }

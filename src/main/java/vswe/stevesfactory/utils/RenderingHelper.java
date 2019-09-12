@@ -291,10 +291,6 @@ public final class RenderingHelper {
         GlStateManager.color3f(1F, 1F, 1F);
     }
 
-    public static Dimension toBorder(Dimension contents, int borderSize) {
-        return new Dimension(contents.width + borderSize * 2, contents.height + borderSize * 2);
-    }
-
     public static ResourceLocation linkTexture(String path) {
         return new ResourceLocation(StevesFactoryManager.MODID, "textures/" + path);
     }

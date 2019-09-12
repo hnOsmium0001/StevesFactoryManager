@@ -55,9 +55,11 @@ public class ItemSlotPanel extends AbstractContainer<AbstractItemSlot> {
 
     private void updateDimensions() {
         int pw = children.stream()
+                .limit(width)
                 .mapToInt(IWidget::getWidth)
                 .sum();
         int ph = children.stream()
+                .limit(height)
                 .mapToInt(IWidget::getWidth)
                 .sum();
         setDimensions(pw, ph);
@@ -86,11 +88,12 @@ public class ItemSlotPanel extends AbstractContainer<AbstractItemSlot> {
         int y = 0;
         int i = 0;
         for (int yi = 0; yi < height; yi++) {
+            x = 0;
             int maxHeight = 0;
             for (int xi = 0; xi < width; xi++) {
                 AbstractItemSlot slot = children.get(i);
                 slot.setLocation(x, y);
-                y += slot.getWidth();
+                x += slot.getWidth();
                 maxHeight = Math.max(maxHeight, slot.getHeight());
                 i++;
             }
@@ -98,7 +101,7 @@ public class ItemSlotPanel extends AbstractContainer<AbstractItemSlot> {
         }
     }
 
-    static class DefaultSlot extends AbstractItemSlot {
+    public static class DefaultSlot extends AbstractItemSlot {
 
         private ItemStack stack;
 

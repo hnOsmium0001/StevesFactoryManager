@@ -1,7 +1,6 @@
 package vswe.stevesfactory.library.gui.window;
 
-import vswe.stevesfactory.library.gui.IWidget;
-import vswe.stevesfactory.library.gui.IWindow;
+import vswe.stevesfactory.library.gui.*;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.Inspections.IInspectionInfoProvider;
 
@@ -11,7 +10,7 @@ import java.awt.*;
 import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledHeight;
 import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
 
-public abstract class AbstractWindow implements IWindow, IInspectionInfoProvider, NestedEventHandlerMixin {
+public abstract class AbstractWindow implements IWindow, IInspectionInfoProvider {
 
     public final Point position;
     public final Dimension contents;
@@ -59,13 +58,15 @@ public abstract class AbstractWindow implements IWindow, IInspectionInfoProvider
 
     @Override
     public void setPosition(int x, int y) {
-        NestedEventHandlerMixin.super.setPosition(x, y);
+        IWindow.super.setPosition(x, y);
         updatePosition();
     }
 
     protected final void updatePosition() {
-        for (IWidget child : getChildren()) {
-            child.onParentPositionChanged();
+        if (getChildren() != null) {
+            for (IWidget child : getChildren()) {
+                child.onParentPositionChanged();
+            }
         }
     }
 
@@ -89,6 +90,118 @@ public abstract class AbstractWindow implements IWindow, IInspectionInfoProvider
     @Override
     public void setFocusedWidget(@Nullable IWidget widget) {
         focusedWidget = widget;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        for (IWidget child : getChildren()) {
+            if (!(child instanceof IContainer<?>) && !child.isInside(mouseX, mouseY)) {
+                continue;
+            }
+            if (child.mouseClicked(mouseX, mouseY, button)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        for (IWidget child : getChildren()) {
+            if (!(child instanceof IContainer<?>) && !child.isInside(mouseX, mouseY)) {
+                continue;
+            }
+            if (child.mouseReleased(mouseX, mouseY, button)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        for (IWidget child : getChildren()) {
+            if (!(child instanceof IContainer<?>) && !child.isFocused()) {
+                continue;
+            }
+            if (child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+        for (IWidget child : getChildren()) {
+            if (!(child instanceof IContainer<?>) && !child.isInside(mouseX, mouseY)) {
+                continue;
+            }
+            if (child.mouseScrolled(mouseX, mouseY, scroll)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        for (IWidget child : getChildren()) {
+            if (!(child instanceof IContainer<?>) && !child.isFocused()) {
+                continue;
+            }
+            if (child.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        for (IWidget child : getChildren()) {
+            if (!(child instanceof IContainer<?>) && !child.isFocused()) {
+                continue;
+            }
+            if (child.keyReleased(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean charTyped(char charTyped, int keyCode) {
+        for (IWidget child : getChildren()) {
+            if (!(child instanceof IContainer<?>) && !child.isFocused()) {
+                continue;
+            }
+            if (child.charTyped(charTyped, keyCode)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        for (IWidget child : getChildren()) {
+            child.mouseMoved(mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public void update(float particleTicks) {
+        for (IWidget child : getChildren()) {
+            child.update(particleTicks);
+        }
+    }
+
+    @Override
+    public void onRemoved() {
+        for (IWidget child : getChildren()) {
+            child.onRemoved();
+        }
     }
 
     @Override

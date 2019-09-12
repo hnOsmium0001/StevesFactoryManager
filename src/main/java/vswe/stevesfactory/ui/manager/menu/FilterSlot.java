@@ -4,12 +4,15 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import vswe.stevesfactory.library.gui.*;
+import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.slot.AbstractItemSlot;
 import vswe.stevesfactory.library.gui.window.PlayerInventoryWindow;
+import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.util.Collection;
 
@@ -19,14 +22,15 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 public class FilterSlot extends AbstractWidget implements INamedElement, LeafWidgetMixin {
 
     private static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(36, 20, 16, 16);
-    private static final TextureWrapper HOVERED = NORMAL.down(1);
+    private static final TextureWrapper HOVERED = NORMAL.toDown(1);
 
-    private ItemStack stack;
+    public ItemStack stack;
 
     private Editor editor;
 
     public FilterSlot(ItemStack stack) {
         this.stack = stack;
+        this.setDimensions(16, 16);
     }
 
     @Override
@@ -49,8 +53,7 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
-            PlayerInventoryWindow popup = new PlayerInventoryWindow();
-            WidgetScreen.getCurrentScreen().addPopupWindow(popup);
+            openInventorySelection();
             return true;
         }
         if (button == GLFW_MOUSE_BUTTON_RIGHT && !stack.isEmpty()) {
@@ -58,6 +61,45 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
             return true;
         }
         return false;
+    }
+
+    private void openInventorySelection() {
+        AbstractItemSlot[] selected = new AbstractItemSlot[1];
+        PlayerInventoryWindow popup = new PlayerInventoryWindow(getAbsoluteXRight() + 4, getAbsoluteY(), stack -> new AbstractItemSlot() {
+            @Override
+            public ItemStack getRenderedStack() {
+                return stack;
+            }
+
+            @Override
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                selected[0] = isSelected() || stack.isEmpty() ? null : this;
+                return super.mouseClicked(mouseX, mouseY, button);
+            }
+
+            @Override
+            protected void renderBase() {
+                super.renderBase();
+                if (isSelected()) {
+                    RenderingHelper.useBlendingGLStates();
+                    RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), 0x66ffff00);
+                    GlStateManager.disableBlend();
+                    GlStateManager.enableTexture();
+                }
+            }
+
+            private boolean isSelected() {
+                return selected[0] == this;
+            }
+        }) {
+            @Override
+            public void onRemoved() {
+                if (selected[0] != null) {
+                    stack = selected[0].getRenderedStack();
+                }
+            }
+        };
+        WidgetScreen.getCurrentScreen().addPopupWindow(popup);
     }
 
     private Editor getDedicatedEditor() {

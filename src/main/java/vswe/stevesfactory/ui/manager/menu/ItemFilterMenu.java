@@ -8,6 +8,7 @@ import vswe.stevesfactory.library.gui.IWidget;
 import vswe.stevesfactory.library.gui.widget.RadioButton;
 import vswe.stevesfactory.library.gui.widget.RadioController;
 import vswe.stevesfactory.library.gui.widget.box.WrappingList;
+import vswe.stevesfactory.logic.FilterType;
 import vswe.stevesfactory.logic.item.GroupItemFilter;
 import vswe.stevesfactory.logic.procedure.IItemFilterTarget;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
@@ -23,6 +24,7 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
 
     private final int id;
 
+    private final RadioButton whitelist, blacklist;
     private final WrappingList<FilterSlot> slots;
     private IWidget openEditor;
 
@@ -30,8 +32,8 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
         this.id = id;
 
         RadioController filterTypeController = new RadioController();
-        RadioButton whitelist = new RadioButton(filterTypeController);
-        RadioButton blacklist = new RadioButton(filterTypeController);
+        whitelist = new RadioButton(filterTypeController);
+        blacklist = new RadioButton(filterTypeController);
         int y = HEADING_BOX.getPortionHeight() + 4;
         whitelist.setLocation(4, y);
         whitelist.setLabel(I18n.format("gui.sfm.whitelist"));
@@ -39,12 +41,11 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
         blacklist.setLabel(I18n.format("gui.sfm.blacklist"));
 
         slots = new WrappingList<>(false);
-        slots.setLocation(4, y + 2);
+        slots.setLocation(4, y + whitelist.getHeight() + 2 + 4);
         slots.setDimensions(getWidth() - 4 * 2 - slots.getScrollUpArrow().getWidth(), getContentHeight() - whitelist.getHeight() - 2 - 4 * 2);
-        slots.getContentArea().y += slots.getSearchBoxHeight() + 2;
         slots.setItemsPerRow(5);
         slots.setVisibleRows(2);
-        slots.getScrollUpArrow().setLocation(100, 24);
+        slots.getScrollUpArrow().setLocation(100, 10);
         slots.alignArrows();
 
         addChildren(whitelist);
@@ -67,15 +68,36 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
             FilterSlot slot = new FilterSlot(stack);
             slots.addElement(slot);
         }
+
+        switch (filter.type) {
+            case WHITELIST:
+                whitelist.check(true);
+                break;
+            case BLACKLIST:
+                blacklist.check(true);
+                break;
+        }
     }
 
     @Override
     protected void updateData() {
+        GroupItemFilter filter = getLinkedProcedure().getFilters(id);
+        int i = 0;
+        for (FilterSlot slot : slots.getContents()) {
+            filter.getItems().set(i, slot.stack);
+            i++;
+        }
+
+        if (whitelist.isChecked()) {
+            filter.type = FilterType.WHITELIST;
+        } else {
+            filter.type = FilterType.BLACKLIST;
+        }
     }
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menus.ItemFilter");
+        return I18n.format("gui.sfm.Menu.ItemFilter");
     }
 
     @Override

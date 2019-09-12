@@ -1,7 +1,6 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -39,7 +38,7 @@ public class RadioButton extends AbstractWidget implements IButton, LeafWidgetMi
         int x2 = getAbsoluteXRight() + 2;
         int y1 = getAbsoluteY();
         int y2 = getAbsoluteYBottom();
-        texture.draw(x1, y1, x2, y2);
+        texture.draw(x1, y1);
 
         if (!label.isEmpty()) {
             RenderingHelper.drawTextCenteredVertically(label, x2, y1, y2, 0xffffffff);
