@@ -9,7 +9,7 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
-import vswe.stevesfactory.library.gui.IWindow;
+import vswe.stevesfactory.library.gui.window.IWindow;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;

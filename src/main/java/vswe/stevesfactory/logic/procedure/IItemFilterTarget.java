@@ -4,9 +4,9 @@ import vswe.stevesfactory.logic.item.GroupItemFilter;
 
 public interface IItemFilterTarget {
 
-    GroupItemFilter getFilters(int id);
+    GroupItemFilter getFilter(int id);
 
-    default GroupItemFilter getFilters() {
-        return getFilters(0);
+    default GroupItemFilter getFilter() {
+        return getFilter(0);
     }
 }

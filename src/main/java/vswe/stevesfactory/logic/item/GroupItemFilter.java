@@ -117,7 +117,8 @@ public class GroupItemFilter {
     }
 
     private int getDesiredCount(long data) {
-        return (int) (data & Integer.MAX_VALUE);
+        // Throw away the high-end bits
+        return (int) data;
     }
 
     private int getExtractedCount(long data) {
@@ -130,9 +131,12 @@ public class GroupItemFilter {
 
     private boolean isEqual(int filterIndex, ItemStack stack) {
         ItemStack item = items.get(filterIndex);
-        return !item.isItemEqual(stack)
-                || (matchingDamage && item.getDamage() != stack.getDamage())
-                || (matchingTag && !item.areShareTagsEqual(stack));
+        if (item.isEmpty()) {
+            return stack.isEmpty();
+        }
+        return item.isItemEqual(stack)
+                && (matchingDamage && item.getDamage() == stack.getDamage())
+                && (matchingTag && item.areShareTagsEqual(stack));
     }
 
     private boolean doesItemMatch(int filterIndex, ItemStack stack) {
@@ -148,6 +152,7 @@ public class GroupItemFilter {
     }
 
     public void read(CompoundNBT tag) {
+        type = tag.getBoolean("Blacklist") ? FilterType.BLACKLIST : FilterType.WHITELIST;
         items = IOHelper.readItemStacks(tag.getList("Items", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         matchingDamage = tag.getBoolean("MatchDamage");
         matchingTag = tag.getBoolean("MatchTag");
@@ -155,6 +160,7 @@ public class GroupItemFilter {
     }
 
     public void write(CompoundNBT tag) {
+        tag.putBoolean("Blacklist", type == FilterType.BLACKLIST);
         tag.put("Items", IOHelper.writeItemStacks(items));
         tag.putBoolean("MatchDamage", matchingDamage);
         tag.putBoolean("MatchTag", matchingTag);

@@ -6,7 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
-import vswe.stevesfactory.library.gui.IWidget;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
@@ -195,9 +195,6 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
 
         if (state == State.EXPANDED) {
             renderContents(mouseX, mouseY, particleTicks);
-            for (IWidget child : children) {
-                child.render(mouseX, mouseY, particleTicks);
-            }
         } else {
             toggleStateButton.render(mouseX, mouseY, particleTicks);
         }
@@ -220,7 +217,11 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
 
     public abstract String getHeadingText();
 
-    public abstract void renderContents(int mouseX, int mouseY, float particleTicks);
+    public void renderContents(int mouseX, int mouseY, float particleTicks) {
+        for (IWidget child : children) {
+            child.render(mouseX, mouseY, particleTicks);
+        }
+    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {

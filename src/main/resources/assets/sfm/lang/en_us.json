@@ -63,5 +63,9 @@
   "gui.sfm.Menu.TargetSides.Destination": "Dest Target",
   "gui.sfm.Menu.ItemFilter": "Items",
   "gui.sfm.Menu.Activate": "Activate",
-  "gui.sfm.Menu.Deactivate": "Deactivate"
+  "gui.sfm.Menu.Deactivate": "Deactivate",
+  "gui.sfm.Menu.Delete": "Delete",
+  "gui.sfm.Menu.Delete.Info": "Remove this item filter",
+  "gui.sfm.Menu.MatchAmount": "Match count",
+  "gui.sfm.Menu.MatchDamage": "Match damage"
 }

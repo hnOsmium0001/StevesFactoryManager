@@ -41,14 +41,16 @@ public class RadioButton extends AbstractWidget implements IButton, LeafWidgetMi
         texture.draw(x1, y1);
 
         if (!label.isEmpty()) {
-            RenderingHelper.drawTextCenteredVertically(label, x2, y1, y2, 0xffffffff);
+            RenderingHelper.drawTextCenteredVertically(label, x2, y1, y2, 0xff404040);
         }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        check(!checked);
+        if (!checked) {
+            check(true);
+        }
         return true;
     }
 

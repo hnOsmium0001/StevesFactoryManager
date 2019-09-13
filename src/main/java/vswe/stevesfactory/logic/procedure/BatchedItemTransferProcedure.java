@@ -67,13 +67,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    // TODO filter
-                    for (int i = 0; i < handler.getSlots(); i++) {
-                        ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
-                        if (!stack.isEmpty()) {
-                            extractableItems.add(stack);
-                        }
-                    }
+                    filter.extractFromInventorySimulate(extractableItems, handler, true);
                 }
             }
         }
@@ -191,7 +185,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     }
 
     @Override
-    public GroupItemFilter getFilters(int id) {
+    public GroupItemFilter getFilter(int id) {
         return filter;
     }
 }

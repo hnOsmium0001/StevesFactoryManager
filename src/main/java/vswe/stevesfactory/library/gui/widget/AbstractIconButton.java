@@ -27,7 +27,8 @@ public abstract class AbstractIconButton extends AbstractWidget implements IButt
         GlStateManager.color3f(1F,1F,1F);
         TextureWrapper tex = isDisabled() ? getTextureDisabled()
                 : isClicked() ? getTextureClicked()
-                : isHovered() ? getTextureHovered()
+                // For some reason sometimes hovered isn't updating correctly
+                : isInside(mouseX, mouseY) ? getTextureHovered()
                 : getTextureNormal();
         tex.draw(getAbsoluteX(), getAbsoluteY());
         postRenderEvent(mouseX, mouseY);

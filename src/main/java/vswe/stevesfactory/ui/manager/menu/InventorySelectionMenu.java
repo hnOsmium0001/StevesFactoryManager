@@ -70,10 +70,6 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
     }
 
     @Override
-    public void renderContents(int mouseX, int mouseY, float particleTicks) {
-    }
-
-    @Override
     protected void updateData() {
         List<BlockPos> inventories = getLinkedProcedure().getInventories(id);
         inventories.clear();
