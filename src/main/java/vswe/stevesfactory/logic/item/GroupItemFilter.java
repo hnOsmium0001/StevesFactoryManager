@@ -76,7 +76,9 @@ public class GroupItemFilter {
         // Higher end: extracted count
         Object2LongMap<Item> counts = new Object2LongOpenHashMap<>();
         for (ItemStack item : items) {
-            counts.put(item.getItem(), getData(0, item.getCount()));
+            if (!item.isEmpty()) {
+                counts.put(item.getItem(), getData(0, matchingAmount ? item.getCount() : Integer.MAX_VALUE));
+            }
         }
 
         for (int i = 0; i < handler.getSlots(); i++) {
@@ -88,7 +90,8 @@ public class GroupItemFilter {
             boolean accepted = test(stack);
             if (accepted) {
                 Item item = stack.getItem();
-                long data = counts.getLong(item);
+                long data = counts.getOrDefault(item, Integer.MAX_VALUE);
+                boolean trackCount = data == Integer.MAX_VALUE;
                 int desired = getDesiredCount(data);
                 if (desired == 0) {
                     continue;
@@ -98,7 +101,9 @@ public class GroupItemFilter {
                 int used = Utils.upperBound(stack.getCount(), desired);
                 stack.setCount(used);
 
-                counts.put(item, getData(extracted + used, desired - used));
+                if (trackCount) {
+                    counts.put(item, getData(extracted + used, desired - used));
+                }
                 if (!merge) {
                     target.add(stack);
                 }
@@ -135,8 +140,8 @@ public class GroupItemFilter {
             return stack.isEmpty();
         }
         return item.isItemEqual(stack)
-                && (matchingDamage && item.getDamage() == stack.getDamage())
-                && (matchingTag && item.areShareTagsEqual(stack));
+                && (!matchingDamage || item.getDamage() == stack.getDamage())
+                && (!matchingTag || item.areShareTagsEqual(stack));
     }
 
     private boolean doesItemMatch(int filterIndex, ItemStack stack) {

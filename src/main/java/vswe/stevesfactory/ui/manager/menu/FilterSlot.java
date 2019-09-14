@@ -42,7 +42,9 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
         GlStateManager.color3f(1F, 1F, 1F);
         if (isInside(mouseX, mouseY)) {
             HOVERED.draw(getAbsoluteX(), getAbsoluteY());
-            WidgetScreen.getCurrentScreen().setHoveringText(stack, mouseX, mouseY);
+            if (!stack.isEmpty()) {
+                WidgetScreen.getCurrentScreen().setHoveringText(stack, mouseX, mouseY);
+            }
         } else {
             NORMAL.draw(getAbsoluteX(), getAbsoluteY());
         }
@@ -163,12 +165,16 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
             delete.translate("gui.sfm.Menu.Delete");
             delete.setDimensions(32, 11);
             delete.setLocation(getWidth() - delete.getWidth() - 2, 2);
+            delete.onClick = b -> {
+                slot.closeEditor();
+                slot.stack = ItemStack.EMPTY;
+            };
             AbstractIconButton close = new AbstractIconButton(getWidth() - 8 - 1, getHeight() - 8 - 1, 8, 8) {
                 @Override
                 public void render(int mouseX, int mouseY, float particleTicks) {
                     super.render(mouseX, mouseY, particleTicks);
                     if (isHovered()) {
-                        WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.Delete.Info"), mouseX, mouseY);
+                        WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.CloseEditor"), mouseX, mouseY);
                     }
                 }
 
@@ -196,7 +202,7 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
             count = NumberField.integerFieldRanged(width, height, 1, 1, Integer.MAX_VALUE)
                     .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
                     .setValue(slot.stack.getCount());
-            count.setLocation(x, 20);
+            count.setLocation(x, 24);
             count.setEnabled(filter.isMatchingAmount());
             damage = NumberField.integerField(width, height)
                     .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
@@ -217,8 +223,8 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
             RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
             super.render(mouseX, mouseY, particleTicks);
             int x = getAbsoluteX() + 2;
-            fontRenderer().drawString(I18n.format("gui.sfm.Menu.MatchAmount"), x, count.getAbsoluteY(), 0xff000000);
-            fontRenderer().drawString(I18n.format("gui.sfm.Menu.MatchDamage"), x, damage.getAbsoluteY(), 0xff000000);
+            fontRenderer().drawString(I18n.format("gui.sfm.Menu.MatchAmount"), x, count.getAbsoluteY() + 2, 0xff000000);
+            fontRenderer().drawString(I18n.format("gui.sfm.Menu.MatchDamage"), x, damage.getAbsoluteY() + 2, 0xff000000);
             renderItem();
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
@@ -247,7 +253,7 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
         protected void renderText() {
             GlStateManager.pushMatrix();
             GlStateManager.enableTexture();
-            GlStateManager.translatef(getAbsoluteX() + 2, getAbsoluteY() + getHeight() / 2 - fontRenderer().FONT_HEIGHT / 2, 0F);
+            GlStateManager.translatef(getAbsoluteX() + 2, getAbsoluteY() + 2, 0F);
             GlStateManager.scalef(0.8F, 0.8F, 1F);
             fontRenderer().drawString(getText(), 0, 0, getTextColor());
             GlStateManager.popMatrix();
