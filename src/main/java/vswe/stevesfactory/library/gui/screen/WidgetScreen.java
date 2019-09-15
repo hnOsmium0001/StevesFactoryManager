@@ -21,8 +21,6 @@ import java.util.function.Consumer;
 public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     public static final TextureWrapper ITEM_SLOT = TextureWrapper.ofFlowComponent(0, 106, 18, 18);
-    public static final TextureWrapper CLOSE = TextureWrapper.ofFlowComponent(18, 36, 9, 9);
-    public static final TextureWrapper CLOSE_HOVERED = CLOSE.toRight(1);
 
     public static WidgetScreen getCurrentScreen() {
         return (WidgetScreen) Minecraft.getInstance().currentScreen;

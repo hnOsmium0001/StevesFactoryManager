@@ -5,11 +5,17 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.library.gui.TextureWrapper;
+import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
+import vswe.stevesfactory.library.gui.layout.properties.Side;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
+import vswe.stevesfactory.library.gui.widget.box.ScrollArrow;
 import vswe.stevesfactory.library.gui.widget.box.WrappingList;
 import vswe.stevesfactory.logic.FilterType;
 import vswe.stevesfactory.logic.item.GroupItemFilter;
 import vswe.stevesfactory.logic.procedure.IItemFilterTarget;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 
@@ -24,6 +30,7 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
 
     private final RadioButton whitelist, blacklist;
     private final WrappingList<FilterSlot> slots;
+    private FilterSettings settings;
     private IWidget openEditor;
 
     public ItemFilterMenu(int id) {
@@ -34,21 +41,53 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
         blacklist = new RadioButton(filterTypeController);
         int y = HEADING_BOX.getPortionHeight() + 4;
         whitelist.setLocation(4, y);
-        whitelist.setLabel(I18n.format("gui.sfm.whitelist"));
+        whitelist.translateLabel("gui.sfm.whitelist");
         blacklist.setLocation(getWidth() / 2, y);
-        blacklist.setLabel(I18n.format("gui.sfm.blacklist"));
+        blacklist.translateLabel("gui.sfm.blacklist");
 
         slots = new WrappingList<>(false);
         slots.setLocation(4, y + whitelist.getHeight() + 2 + 4);
-        slots.setDimensions(getWidth() - 4 * 2 - slots.getScrollUpArrow().getWidth(), getContentHeight() - whitelist.getHeight() - 2 - 4 * 2);
         slots.setItemsPerRow(5);
         slots.setVisibleRows(2);
-        slots.getScrollUpArrow().setLocation(100, 10);
+        slots.setDimensions(slots.getContentArea().width, getContentHeight() - whitelist.getHeight() - 2 - 4 * 2);
+        slots.getScrollUpArrow().setLocation(100, 0);
         slots.alignArrows();
+
+        AbstractIconButton openSettings = new AbstractIconButton(0, 0, 12, 12) {
+            @Override
+            public TextureWrapper getTextureNormal() {
+                return FactoryManagerGUI.SETTINGS_ICON;
+            }
+
+            @Override
+            public TextureWrapper getTextureHovered() {
+                return FactoryManagerGUI.SETTINGS_ICON_HOVERED;
+            }
+
+            @Override
+            public void render(int mouseX, int mouseY, float particleTicks) {
+                super.render(mouseX, mouseY, particleTicks);
+                if (isHovered()) {
+                    WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.ItemFilter.Settings"), mouseX, mouseY);
+                }
+            }
+
+            @Override
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                openEditor(getSettings());
+                return true;
+            }
+        };
+        ScrollArrow arrow = slots.getScrollDownArrow();
+        int ax = slots.getX() + arrow.getX();
+        int ay = slots.getY() + arrow.getY();
+        openSettings.alignTo(ax, ay, ax + arrow.getWidth(), ay + arrow.getHeight(), Side.BOTTOM, HorizontalAlignment.CENTER);
+        openSettings.moveY(8);
 
         addChildren(whitelist);
         addChildren(blacklist);
         addChildren(slots);
+        addChildren(openSettings);
     }
 
     @Override
@@ -93,6 +132,14 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
         }
     }
 
+    public FilterSettings getSettings() {
+        if (settings == null) {
+            settings = new FilterSettings(this);
+            settings.setParentWidget(this);
+        }
+        return settings;
+    }
+
     public GroupItemFilter getLinkedFilter() {
         return getLinkedProcedure().getFilter(id);
     }
@@ -106,6 +153,7 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
     public void renderContents(int mouseX, int mouseY, float particleTicks) {
         GlStateManager.color3f(1F, 1F, 1F);
         if (openEditor != null) {
+            getToggleStateButton().render(mouseX, mouseY, particleTicks);
             openEditor.render(mouseX, mouseY, particleTicks);
         } else {
             super.renderContents(mouseX, mouseY, particleTicks);
@@ -115,6 +163,9 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (openEditor != null) {
+            if (getToggleStateButton().isInside(mouseX, mouseY)) {
+                return getToggleStateButton().mouseClicked(mouseX, mouseY, button);
+            }
             return openEditor.mouseClicked(mouseX, mouseY, button);
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -123,6 +174,9 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (openEditor != null) {
+            if (getToggleStateButton().isInside(mouseX, mouseY)) {
+                return getToggleStateButton().mouseReleased(mouseX, mouseY, button);
+            }
             return openEditor.mouseReleased(mouseX, mouseY, button);
         }
         return super.mouseReleased(mouseX, mouseY, button);
@@ -185,11 +239,11 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
     }
 
     @Override
-    public void onRemoved() {
+    public void notifyChildrenForPositionChange() {
+        super.notifyChildrenForPositionChange();
         if (openEditor != null) {
-            openEditor.onRemoved();
+            openEditor.onParentPositionChanged();
         }
-        super.onRemoved();
     }
 
     public IWidget getOpenEditor() {

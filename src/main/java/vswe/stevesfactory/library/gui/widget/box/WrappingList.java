@@ -5,6 +5,7 @@
 package vswe.stevesfactory.library.gui.widget.box;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
@@ -152,13 +153,13 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
 
         int left = getAbsoluteX() + getScrollingSectionX();
         int top = getAbsoluteY() + getScrollingSectionY();
-
         ScissorTest test = ScissorTest.scaled(left, top, contentArea.width, contentArea.height);
 
-        int sy = getScrollingSectionY();
+        int sTop = getScrollingSectionY();
+        int sBottom = sTop + contentArea.height;
         for (T child : searchResults) {
             int cy = child.getY();
-            if (cy + child.getHeight() > sy && cy < sy + contentArea.height) {
+            if (cy + child.getHeight() > sTop && cy < sBottom) {
                 child.render(mouseX, mouseY, particleTicks);
             }
         }
@@ -385,12 +386,10 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
     @Override
     public void setWidth(int width) {
         super.setWidth(width);
-        contentArea.width = width;
     }
 
     @Override
     public void setHeight(int height) {
         super.setHeight(height);
-        contentArea.height = height;
     }
 }

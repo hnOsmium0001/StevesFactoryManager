@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -13,6 +14,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.slot.AbstractItemSlot;
 import vswe.stevesfactory.library.gui.window.PlayerInventoryWindow;
 import vswe.stevesfactory.logic.item.GroupItemFilter;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -40,19 +42,24 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         GlStateManager.color3f(1F, 1F, 1F);
+        int x = getAbsoluteX();
+        int y = getAbsoluteY();
         if (isInside(mouseX, mouseY)) {
-            HOVERED.draw(getAbsoluteX(), getAbsoluteY());
+            HOVERED.draw(x, y);
             if (!stack.isEmpty()) {
                 WidgetScreen.getCurrentScreen().setHoveringText(stack, mouseX, mouseY);
             }
         } else {
-            NORMAL.draw(getAbsoluteX(), getAbsoluteY());
+            NORMAL.draw(x, y);
         }
 
         GlStateManager.disableDepthTest();
         GlStateManager.enableTexture();
         RenderHelper.enableGUIStandardItemLighting();
-        minecraft().getItemRenderer().renderItemIntoGUI(stack, getAbsoluteX(), getAbsoluteY());
+        ItemRenderer ir = minecraft().getItemRenderer();
+        ir.renderItemAndEffectIntoGUI(stack, x, y);
+        ir.renderItemOverlayIntoGUI(fontRenderer(), stack, x, y, "");
+        RenderHelper.disableStandardItemLighting();
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
@@ -174,18 +181,18 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
                 public void render(int mouseX, int mouseY, float particleTicks) {
                     super.render(mouseX, mouseY, particleTicks);
                     if (isHovered()) {
-                        WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.CloseEditor"), mouseX, mouseY);
+                        WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.CloseEditor.Info"), mouseX, mouseY);
                     }
                 }
 
                 @Override
                 public TextureWrapper getTextureNormal() {
-                    return WidgetScreen.CLOSE;
+                    return FactoryManagerGUI.CLOSE_ICON;
                 }
 
                 @Override
                 public TextureWrapper getTextureHovered() {
-                    return WidgetScreen.CLOSE_HOVERED;
+                    return FactoryManagerGUI.CLOSE_ICON_HOVERED;
                 }
 
                 @Override
@@ -203,12 +210,10 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
                     .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
                     .setValue(slot.stack.getCount());
             count.setLocation(x, 24);
-            count.setEnabled(filter.isMatchingAmount());
             damage = NumberField.integerField(width, height)
                     .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
                     .setValue(slot.stack.getDamage());
             damage.setLocation(x, count.getY() + count.getHeight() + 4);
-            damage.setEnabled(slot.stack.isDamageable() && filter.isMatchingDamage());
 
             children = ImmutableList.of(close, delete, count, damage);
         }
@@ -223,8 +228,8 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
             RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
             super.render(mouseX, mouseY, particleTicks);
             int x = getAbsoluteX() + 2;
-            fontRenderer().drawString(I18n.format("gui.sfm.Menu.MatchAmount"), x, count.getAbsoluteY() + 2, 0xff000000);
-            fontRenderer().drawString(I18n.format("gui.sfm.Menu.MatchDamage"), x, damage.getAbsoluteY() + 2, 0xff000000);
+            fontRenderer().drawString(I18n.format("gui.sfm.Menu.FilterAmount"), x, count.getAbsoluteY() + 2, 0xff000000);
+            fontRenderer().drawString(I18n.format("gui.sfm.Menu.FilterDamage"), x, damage.getAbsoluteY() + 2, 0xff000000);
             renderItem();
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
@@ -233,7 +238,13 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
             GlStateManager.disableDepthTest();
             GlStateManager.enableTexture();
             RenderHelper.enableGUIStandardItemLighting();
-            minecraft().getItemRenderer().renderItemIntoGUI(slot.stack, getAbsoluteX() + 4, getAbsoluteY() + 4);
+            ItemRenderer ir = minecraft().getItemRenderer();
+            int x = getAbsoluteX() + 4;
+            int y = getAbsoluteY() + 4;
+            ir.renderItemAndEffectIntoGUI(slot.stack, x, y);
+            ir.renderItemOverlayIntoGUI(fontRenderer(), slot.stack, x, y, "");
+            RenderHelper.disableStandardItemLighting();
+            GlStateManager.color3f(1F, 1F, 1F);
         }
 
         @Override
@@ -245,9 +256,25 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
         @Override
         public void reflow() {
         }
+
+        @Override
+        public void setParentWidget(IWidget newParent) {
+            super.setParentWidget(newParent);
+            GroupItemFilter filter = slot.getLinkedFiler();
+            count.setEnabled(filter.isMatchingAmount());
+            damage.setEnabled(slot.stack.isDamageable() && filter.isMatchingDamage());
+        }
     }
 
     private static class DeleteFilterButton extends TextButton {
+
+        @Override
+        public void render(int mouseX, int mouseY, float particleTicks) {
+            super.render(mouseX, mouseY, particleTicks);
+            if (isHovered()) {
+                WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.Delete.Info"), mouseX, mouseY);
+            }
+        }
 
         @Override
         protected void renderText() {

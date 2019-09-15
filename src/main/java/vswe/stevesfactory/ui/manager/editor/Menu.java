@@ -6,15 +6,13 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
-import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
-import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -121,6 +119,10 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
     public void reflow() {
     }
 
+    public ToggleStateButton getToggleStateButton() {
+        return toggleStateButton;
+    }
+
     @Override
     public Menu<P> addChildren(IWidget widget) {
         children.add(widget);
@@ -190,6 +192,7 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
         }
 
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+        GlStateManager.color3f(1F, 1F, 1F);
         HEADING_BOX.draw(getAbsoluteX(), getAbsoluteY());
         renderHeadingText();
 
