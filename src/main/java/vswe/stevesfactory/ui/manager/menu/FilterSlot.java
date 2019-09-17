@@ -13,7 +13,7 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.slot.AbstractItemSlot;
 import vswe.stevesfactory.library.gui.window.PlayerInventoryWindow;
-import vswe.stevesfactory.logic.item.GroupItemFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 import vswe.stevesfactory.utils.RenderingHelper;
@@ -141,12 +141,12 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
     }
 
     @Nonnull
-    public ItemFilterMenu<?> getMenu() {
+    public ItemTraitsFilterMenu<?> getMenu() {
         IWidget parentWidget = Objects.requireNonNull(super.getParentWidget());
-        return (ItemFilterMenu<?>) Objects.requireNonNull(parentWidget.getParentWidget());
+        return (ItemTraitsFilterMenu<?>) Objects.requireNonNull(parentWidget.getParentWidget());
     }
 
-    public GroupItemFilter getLinkedFiler() {
+    public ItemTraitsFilter getLinkedFiler() {
         return getMenu().getLinkedFilter();
     }
 
@@ -165,7 +165,7 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
 
         public Editor(FilterSlot slot) {
             this.slot = slot;
-            ItemFilterMenu<?> menu = slot.getMenu();
+            ItemTraitsFilterMenu<?> menu = slot.getMenu();
             setDimensions(menu.getWidth(), menu.getHeight() - Menu.HEADING_BOX.getPortionHeight());
 
             TextButton delete = new DeleteFilterButton();
@@ -202,7 +202,6 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
                 }
             };
 
-            GroupItemFilter filter = slot.getLinkedFiler();
             int width = 33;
             int height = 12;
             int x = getWidth() - width - 4;
@@ -260,7 +259,7 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
         @Override
         public void setParentWidget(IWidget newParent) {
             super.setParentWidget(newParent);
-            GroupItemFilter filter = slot.getLinkedFiler();
+            ItemTraitsFilter filter = slot.getLinkedFiler();
             count.setEnabled(filter.isMatchingAmount());
             damage.setEnabled(slot.stack.isDamageable() && filter.isMatchingDamage());
         }

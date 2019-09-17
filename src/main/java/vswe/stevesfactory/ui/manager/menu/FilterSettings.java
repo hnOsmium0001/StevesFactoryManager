@@ -1,12 +1,11 @@
 package vswe.stevesfactory.ui.manager.menu;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
-import vswe.stevesfactory.logic.item.GroupItemFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 
@@ -17,7 +16,7 @@ public class FilterSettings extends AbstractContainer<IWidget> {
 
     private final List<IWidget> children;
 
-    public FilterSettings(ItemFilterMenu<?> menu) {
+    public FilterSettings(ItemTraitsFilterMenu<?> menu) {
         setDimensions(menu.getWidth(), menu.getHeight() - Menu.HEADING_BOX.getPortionHeight());
 
         AbstractIconButton close = new AbstractIconButton(getWidth() - 8 - 1, getHeight() - 8 - 1, 8, 8) {
@@ -46,7 +45,7 @@ public class FilterSettings extends AbstractContainer<IWidget> {
             }
         };
 
-        GroupItemFilter filter = menu.getLinkedFilter();
+        ItemTraitsFilter filter = menu.getLinkedFilter();
         int x = 4;
         Checkbox matchAmount = new Checkbox(x, 4, 8, 8);
         matchAmount.setChecked(filter.isMatchingAmount());
@@ -75,7 +74,7 @@ public class FilterSettings extends AbstractContainer<IWidget> {
 
     @Nonnull
     @Override
-    public ItemFilterMenu<?> getParentWidget() {
-        return (ItemFilterMenu<?>) Objects.requireNonNull(super.getParentWidget());
+    public ItemTraitsFilterMenu<?> getParentWidget() {
+        return (ItemTraitsFilterMenu<?>) Objects.requireNonNull(super.getParentWidget());
     }
 }

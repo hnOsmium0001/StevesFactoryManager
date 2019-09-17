@@ -290,9 +290,17 @@ public abstract class AbstractWidget implements IWidget, Inspections.IInspection
         return getPosition().x;
     }
 
+    public int getXRight() {
+        return getX() + getWidth();
+    }
+
     @Override
     public int getY() {
         return getPosition().y;
+    }
+
+    public int getYBottom() {
+        return getY() + getHeight();
     }
 
     @Override

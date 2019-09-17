@@ -5,11 +5,9 @@
 package vswe.stevesfactory.library.gui.widget.box;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.ScissorTest;
 import vswe.stevesfactory.library.gui.widget.TextField;
@@ -144,7 +142,7 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         if (searchBox.getText().length() > 0 || searchResults.size() > 0) {
             String status = I18n.format("gui.sfm.WrappingList.SearchStatus", searchResults.size());
-            RenderingHelper.drawTextCenteredVertically(status, searchBox.getAbsoluteXRight() + 2, searchBox.getAbsoluteY(), searchBox.getAbsoluteYBottom(), 0x404040);
+            RenderingHelper.drawTextCenteredVertically(status, searchBox.getAbsoluteXRight() + 4, searchBox.getAbsoluteY(), searchBox.getAbsoluteYBottom(), 8, 0x404040);
         }
 
         searchBox.render(mouseX, mouseY, particleTicks);

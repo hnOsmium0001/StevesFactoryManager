@@ -32,10 +32,10 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
 
         list = new WrappingList<>("");
         list.setLocation(4, HEADING_BOX.getPortionHeight() + 4);
-        list.setDimensions(getWidth() - 4 * 2 - list.getScrollUpArrow().getWidth(), getContentHeight() - 4 * 2);
-        list.getContentArea().y += list.getSearchBoxHeight() + 2;
         list.setItemsPerRow(5);
         list.setVisibleRows(2);
+        list.getContentArea().y += list.getSearchBoxHeight() + 2;
+        list.setDimensions(list.getContentArea().width, getContentHeight() - 4 * 2);
         list.getScrollUpArrow().setLocation(100, 24);
         list.alignArrows();
         FactoryManagerGUI gui = (FactoryManagerGUI) WidgetScreen.getCurrentScreen();

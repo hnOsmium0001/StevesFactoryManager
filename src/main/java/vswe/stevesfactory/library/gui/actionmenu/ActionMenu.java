@@ -86,6 +86,11 @@ public class ActionMenu extends AbstractPopupWindow {
     }
 
     @Override
+    public boolean shouldDrag() {
+        return false;
+    }
+
+    @Override
     public int getBorderSize() {
         return 1;
     }

@@ -47,8 +47,12 @@ public class FactoryManagerGUI extends WidgetScreen {
 
     public static final TextureWrapper CLOSE_ICON = TextureWrapper.ofFlowComponent(18, 36, 9, 9);
     public static final TextureWrapper CLOSE_ICON_HOVERED = CLOSE_ICON.toRight(1);
-    public static final TextureWrapper SETTINGS_ICON = TextureWrapper.ofFlowComponent(18,106, 18, 18);
+    public static final TextureWrapper SETTINGS_ICON = TextureWrapper.ofFlowComponent(18, 106, 18, 18);
     public static final TextureWrapper SETTINGS_ICON_HOVERED = SETTINGS_ICON.toRight(1);
+    public static final TextureWrapper ADD_ENTRY_ICON = TextureWrapper.ofFlowComponent(18, 125, 8, 8);
+    public static final TextureWrapper ADD_ENTRY_HOVERED_ICON = ADD_ENTRY_ICON.toRight(1);
+    private static final TextureWrapper REMOVE_ENTRY_ICON = TextureWrapper.ofFlowComponent(34, 125, 8, 8);
+    private static final TextureWrapper REMOVE_ENTRY_HOVERED_ICON = REMOVE_ENTRY_ICON.toRight(1);
 
     ///////////////////////////////////////////////////////////////////////////
     // GUI code

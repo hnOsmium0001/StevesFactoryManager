@@ -13,7 +13,8 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.ScrollArrow;
 import vswe.stevesfactory.library.gui.widget.box.WrappingList;
 import vswe.stevesfactory.logic.FilterType;
-import vswe.stevesfactory.logic.item.GroupItemFilter;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.logic.procedure.IItemFilterTarget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
@@ -22,7 +23,7 @@ import vswe.stevesfactory.ui.manager.editor.Menu;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends Menu<P> {
+public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends Menu<P> {
 
     private static final Supplier<Integer> FILTER_SLOTS = () -> 20;
 
@@ -33,7 +34,7 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
     private FilterSettings settings;
     private IWidget openEditor;
 
-    public ItemFilterMenu(int id) {
+    public ItemTraitsFilterMenu(int id) {
         this.id = id;
 
         RadioController filterTypeController = new RadioController();
@@ -46,10 +47,10 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
         blacklist.translateLabel("gui.sfm.blacklist");
 
         slots = new WrappingList<>(false);
-        slots.setLocation(4, y + whitelist.getHeight() + 2 + 4);
+        slots.setLocation(4, whitelist.getYBottom() + 4);
         slots.setItemsPerRow(5);
         slots.setVisibleRows(2);
-        slots.setDimensions(slots.getContentArea().width, getContentHeight() - whitelist.getHeight() - 2 - 4 * 2);
+        slots.setDimensions(slots.getContentArea().width, getContentHeight() - whitelist.getHeight() - 4 * 2);
         slots.getScrollUpArrow().setLocation(100, 0);
         slots.alignArrows();
 
@@ -68,7 +69,7 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
             public void render(int mouseX, int mouseY, float particleTicks) {
                 super.render(mouseX, mouseY, particleTicks);
                 if (isHovered()) {
-                    WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.ItemFilter.Settings"), mouseX, mouseY);
+                    WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.ItemFilter.Traits.Settings"), mouseX, mouseY);
                 }
             }
 
@@ -93,7 +94,7 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
     @Override
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
-        GroupItemFilter filter = getLinkedFilter();
+        ItemTraitsFilter filter = getLinkedFilter();
         for (Integer i = 0; i < FILTER_SLOTS.get(); i++) {
             ItemStack stack;
             if (i < filter.getItems().size()) {
@@ -118,7 +119,7 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
 
     @Override
     protected void updateData() {
-        GroupItemFilter filter = getLinkedFilter();
+        ItemTraitsFilter filter = getLinkedFilter();
         int i = 0;
         for (FilterSlot slot : slots.getContents()) {
             filter.getItems().set(i, slot.stack);
@@ -140,13 +141,13 @@ public class ItemFilterMenu<P extends IProcedure & IProcedureClientData & IItemF
         return settings;
     }
 
-    public GroupItemFilter getLinkedFilter() {
-        return getLinkedProcedure().getFilter(id);
+    public ItemTraitsFilter getLinkedFilter() {
+        return (ItemTraitsFilter) getLinkedProcedure().getFilter(id);
     }
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menu.ItemFilter");
+        return I18n.format("gui.sfm.Menu.ItemFilter.Traits");
     }
 
     @Override

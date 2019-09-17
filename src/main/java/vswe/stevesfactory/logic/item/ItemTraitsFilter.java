@@ -14,15 +14,24 @@ import vswe.stevesfactory.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupItemFilter {
-
-    public FilterType type = FilterType.WHITELIST;
+public class ItemTraitsFilter implements IItemFilter {
 
     private List<ItemStack> items = new ArrayList<>();
 
+    public FilterType type = FilterType.WHITELIST;
     private boolean matchingDamage;
     private boolean matchingTag;
     private boolean matchingAmount;
+
+    @Override
+    public FilterType getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(FilterType type) {
+        this.type = type;
+    }
 
     public List<ItemStack> getItems() {
         return items;
@@ -52,32 +61,30 @@ public class GroupItemFilter {
         this.matchingAmount = matchingAmount;
     }
 
+    @Override
     public boolean test(ItemStack stack) {
         for (int i = 0; i < items.size(); i++) {
             boolean b = isEqual(i, stack);
             if (b) {
-                switch (type) {
-                    case WHITELIST: return true;
-                    case BLACKLIST: return false;
-                }
+                return !getTypeFlag();
             }
         }
 
-        switch (type) {
-            case WHITELIST: return false;
-            case BLACKLIST: return true;
-        }
-        throw new IllegalStateException();
+        return getTypeFlag();
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public List<ItemStack> extractFromInventorySimulate(List<ItemStack> target, IItemHandler handler, boolean merge) {
+    @Override
+    public void extractFromInventory(List<ItemStack> target, IItemHandler handler, boolean merge) {
         // Lower end: desired count
         // Higher end: extracted count
         Object2LongMap<Item> counts = new Object2LongOpenHashMap<>();
-        for (ItemStack item : items) {
-            if (!item.isEmpty()) {
-                counts.put(item.getItem(), getData(0, matchingAmount ? item.getCount() : Integer.MAX_VALUE));
+        // For blacklist, the accepted items will not be in this map anyways
+        // so we can simply not build this map if we are in blacklisting mode
+        if (type == FilterType.WHITELIST) {
+            for (ItemStack item : items) {
+                if (!item.isEmpty()) {
+                    counts.put(item.getItem(), getData(0, matchingAmount ? item.getCount() : Integer.MAX_VALUE));
+                }
             }
         }
 
@@ -91,7 +98,6 @@ public class GroupItemFilter {
             if (accepted) {
                 Item item = stack.getItem();
                 long data = counts.getOrDefault(item, Integer.MAX_VALUE);
-                boolean trackCount = data == Integer.MAX_VALUE;
                 int desired = getDesiredCount(data);
                 if (desired == 0) {
                     continue;
@@ -101,9 +107,8 @@ public class GroupItemFilter {
                 int used = Utils.upperBound(stack.getCount(), desired);
                 stack.setCount(used);
 
-                if (trackCount) {
-                    counts.put(item, getData(extracted + used, desired - used));
-                }
+                // We put in data regardless of the filter because the extracted count record is necessary if we're merging stacks
+                counts.put(item, getData(extracted + used, desired - used));
                 if (!merge) {
                     target.add(stack);
                 }
@@ -117,8 +122,6 @@ public class GroupItemFilter {
                 target.add(stack);
             }
         }
-
-        return target;
     }
 
     private int getDesiredCount(long data) {
@@ -134,7 +137,7 @@ public class GroupItemFilter {
         return (long) extracted << 32 | desired;
     }
 
-    private boolean isEqual(int filterIndex, ItemStack stack) {
+    public boolean isEqual(int filterIndex, ItemStack stack) {
         ItemStack item = items.get(filterIndex);
         if (item.isEmpty()) {
             return stack.isEmpty();
@@ -144,7 +147,7 @@ public class GroupItemFilter {
                 && (!matchingTag || item.areShareTagsEqual(stack));
     }
 
-    private boolean doesItemMatch(int filterIndex, ItemStack stack) {
+    public boolean doesItemMatch(int filterIndex, ItemStack stack) {
         return isEqual(filterIndex, stack) ^ getTypeFlag();
     }
 
@@ -156,6 +159,7 @@ public class GroupItemFilter {
         throw new IllegalStateException();
     }
 
+    @Override
     public void read(CompoundNBT tag) {
         type = tag.getBoolean("Blacklist") ? FilterType.BLACKLIST : FilterType.WHITELIST;
         items = IOHelper.readItemStacks(tag.getList("Items", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
@@ -164,6 +168,7 @@ public class GroupItemFilter {
         matchingAmount = tag.getBoolean("MatchAmount");
     }
 
+    @Override
     public void write(CompoundNBT tag) {
         tag.putBoolean("Blacklist", type == FilterType.BLACKLIST);
         tag.put("Items", IOHelper.writeItemStacks(items));
@@ -172,14 +177,8 @@ public class GroupItemFilter {
         tag.putBoolean("MatchAmount", matchingAmount);
     }
 
-    public CompoundNBT write() {
-        CompoundNBT tag = new CompoundNBT();
-        write(tag);
-        return tag;
-    }
-
-    public static GroupItemFilter recover(CompoundNBT tag) {
-        GroupItemFilter filter = new GroupItemFilter();
+    public static ItemTraitsFilter recover(CompoundNBT tag) {
+        ItemTraitsFilter filter = new ItemTraitsFilter();
         filter.read(tag);
         return filter;
     }

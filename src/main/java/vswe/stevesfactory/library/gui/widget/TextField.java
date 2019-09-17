@@ -470,8 +470,8 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         }
 
         if (isFocused()) {
-            int w = fontRenderer().getStringWidth(text.substring(startOffset, cursor));
-            int cx = x + 5 + w;
+            int w = (int) (fontRenderer().getStringWidth(text.substring(startOffset, cursor)) * scaleFactor);
+            int cx = x + 2 + w;
             RenderingHelper.drawRect(cx, y + 2, cx + 1, y2 - 3, 0xff000000);
             GlStateManager.enableTexture();
         }

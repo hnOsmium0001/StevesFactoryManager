@@ -213,6 +213,7 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
 
     @Override
     public LinearList<T> addChildren(T widget) {
+        widget.setParentWidget(this);
         elements.add(widget);
         return this;
     }
@@ -220,6 +221,9 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     @Override
     public LinearList<T> addChildren(Collection<T> widgets) {
         elements.addAll(widgets);
+        for (T widget : widgets) {
+            widget.setParentWidget(this);
+        }
         return this;
     }
 
@@ -241,7 +245,7 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     }
 
     public int getMarginMiddle() {
-        return 10;
+        return 4;
     }
 
     public int getBarLeft() {

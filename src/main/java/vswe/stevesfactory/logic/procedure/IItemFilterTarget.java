@@ -1,12 +1,13 @@
 package vswe.stevesfactory.logic.procedure;
 
-import vswe.stevesfactory.logic.item.GroupItemFilter;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 
 public interface IItemFilterTarget {
 
-    GroupItemFilter getFilter(int id);
+    IItemFilter getFilter(int id);
 
-    default GroupItemFilter getFilter() {
+    default IItemFilter getFilter() {
         return getFilter(0);
     }
 }

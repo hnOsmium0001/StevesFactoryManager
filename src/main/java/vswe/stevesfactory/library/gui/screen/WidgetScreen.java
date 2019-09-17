@@ -164,7 +164,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        for (IWindow window : regularWindows) {
+        for (IWindow window : windows) {
             window.mouseMoved(mouseX, mouseY);
         }
         primaryWindow.mouseMoved(mouseX, mouseY);
