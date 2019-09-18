@@ -1,6 +1,5 @@
 package vswe.stevesfactory.logic.procedure;
 
-import com.google.common.base.Preconditions;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,7 +18,6 @@ import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.*;
 import vswe.stevesfactory.utils.IOHelper;
-import vswe.stevesfactory.utils.SlotlessItemHandlerWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,32 +50,20 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
             return;
         }
 
-        List<TileEntity> sourceTiles = new ArrayList<>(sourceInventories.size());
+        List<ItemBufferElement> items = new ArrayList<>();
         for (BlockPos pos : sourceInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
-            if (tile != null) {
-                sourceTiles.add(tile);
+            if (tile == null) {
+                continue;
             }
-        }
-
-        List<ItemStack> availableSourceItems = new ArrayList<>();
-        for (TileEntity tile : sourceTiles) {
             for (Direction direction : sourceDirections) {
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    filter.extractFromInventory(availableSourceItems, handler, true);
+                    filter.extractFromInventory((stack, slot) -> items.add(new ItemBufferElement(stack, handler, slot)), handler);
                 }
             }
         }
-
-        List<ItemStack> takenSourceItems = new ArrayList<>(availableSourceItems.size());
-        for (int i = 0; i < availableSourceItems.size(); i++) {
-            // Start with no items taken. Note that this operation will only set the stack to empty, but keeping the item type
-            takenSourceItems.add(ItemStack.EMPTY);
-        }
-
-        Preconditions.checkState(availableSourceItems.size() == takenSourceItems.size());
 
         for (BlockPos pos : targetInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
@@ -90,35 +76,24 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
                     // We don't need filter here because this is just in one procedure
                     // It does not make sense to have multiple filters for one item transferring step
-                    for (int i = 0; i < availableSourceItems.size(); i++) {
-                        ItemStack source = availableSourceItems.get(i);
+                    for (ItemBufferElement buffer : items) {
+                        ItemStack source = buffer.stack;
                         if (source.isEmpty()) {
                             continue;
                         }
                         int sourceStackSize = source.getCount();
                         ItemStack untaken = ItemHandlerHelper.insertItem(handler, source, false);
-                        int taken = sourceStackSize - untaken.getCount();
-                        takenSourceItems.set(i, new ItemStack(source.getItem(), taken));
-                        availableSourceItems.set(i, untaken);
+
+                        buffer.used += sourceStackSize - untaken.getCount();
+                        buffer.stack = untaken;
                     }
                 }
             }
         }
 
-        int flag = SlotlessItemHandlerWrapper.ITEM | SlotlessItemHandlerWrapper.DAMAGE | SlotlessItemHandlerWrapper.STACKSIZE;
-        for (TileEntity tile : sourceTiles) {
-            for (Direction direction : sourceDirections) {
-                LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
-                if (cap.isPresent()) {
-                    SlotlessItemHandlerWrapper handler = new SlotlessItemHandlerWrapper(cap.orElseThrow(RuntimeException::new));
-                    for (ItemStack stack : takenSourceItems) {
-                        if (stack.isEmpty()) {
-                            continue;
-                        }
-                        ItemStack extracted = handler.extractItem(stack, flag, false);
-                        stack.shrink(extracted.getCount());
-                    }
-                }
+        for (ItemBufferElement buffer : items) {
+            if (buffer.used > 0) {
+                buffer.inventory.extractItem(buffer.slot, buffer.used, false);
             }
         }
     }
@@ -147,7 +122,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
         targetInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
-        filter = ItemTraitsFilter.recover(tag.getCompound("Filters"));
+        filter = ItemTagFilter.recover(tag.getCompound("Filters"));
     }
 
     @Override

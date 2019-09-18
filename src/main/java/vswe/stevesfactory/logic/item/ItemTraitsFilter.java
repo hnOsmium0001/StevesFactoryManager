@@ -13,6 +13,7 @@ import vswe.stevesfactory.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class ItemTraitsFilter implements IItemFilter {
 
@@ -120,6 +121,47 @@ public class ItemTraitsFilter implements IItemFilter {
                 long data = entry.getLongValue();
                 ItemStack stack = new ItemStack(entry.getKey(), getExtractedCount(data));
                 target.add(stack);
+            }
+        }
+    }
+
+    @Override
+    public void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler) {
+        // Lower end: desired count
+        // Higher end: extracted count
+        Object2LongMap<Item> counts = new Object2LongOpenHashMap<>();
+        // For blacklist, the accepted items will not be in this map anyways
+        // so we can simply not build this map if we are in blacklisting mode
+        if (type == FilterType.WHITELIST) {
+            for (ItemStack item : items) {
+                if (!item.isEmpty()) {
+                    counts.put(item.getItem(), getData(0, matchingAmount ? item.getCount() : Integer.MAX_VALUE));
+                }
+            }
+        }
+
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            boolean accepted = test(stack);
+            if (accepted) {
+                Item item = stack.getItem();
+                long data = counts.getOrDefault(item, Integer.MAX_VALUE);
+                int desired = getDesiredCount(data);
+                if (desired == 0) {
+                    continue;
+                }
+                int extracted = getExtractedCount(data);
+
+                int used = Utils.upperBound(stack.getCount(), desired);
+                stack.setCount(used);
+
+                // We put in data regardless of the filter because the extracted count record is necessary if we're merging stacks
+                counts.put(item, getData(extracted + used, desired - used));
+                receiver.accept(stack, i);
             }
         }
     }

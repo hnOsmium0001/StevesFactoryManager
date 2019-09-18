@@ -10,6 +10,7 @@ import vswe.stevesfactory.logic.FilterType;
 import vswe.stevesfactory.utils.IOHelper;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public class ItemTagFilter implements IItemFilter {
 
@@ -46,6 +47,16 @@ public class ItemTagFilter implements IItemFilter {
             extractFromInventoryMerge(target, handler);
         } else {
             extractFromInventoryNoMerge(target, handler);
+        }
+    }
+
+    @Override
+    public void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler) {
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
+            if (test(stack)) {
+                receiver.accept(stack, i);
+            }
         }
     }
 

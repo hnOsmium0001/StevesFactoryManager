@@ -12,11 +12,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.ScissorTest;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.RenderingHelper;
 import vswe.stevesfactory.utils.Utils;
@@ -88,7 +88,7 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
         if (super.mouseScrolled(mouseX, mouseY, scroll)) {
             return true;
         }
-        if (scroll != 0) {
+        if (isInside(mouseX, mouseY) && scroll != 0) {
             scrollDistance += -scroll * getScrollAmount();
             applyScrollLimits();
             reflow();

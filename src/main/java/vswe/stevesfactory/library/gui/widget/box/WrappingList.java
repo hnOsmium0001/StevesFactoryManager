@@ -132,9 +132,11 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         if (!VectorHelper.isInside((int) mouseX, (int) mouseY, x1, y1, x2, y2)) {
             return false;
         }
+
+        int oldOffset = offset;
         // "Windows style scrolling": scroll wheel is controlling the page
         scroll((int) scroll * -5);
-        return true;
+        return oldOffset != offset;
     }
 
     @Override

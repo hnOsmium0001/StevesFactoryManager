@@ -6,6 +6,7 @@ import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.logic.FilterType;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public interface IItemFilter {
 
@@ -13,7 +14,9 @@ public interface IItemFilter {
 
     void extractFromInventory(List<ItemStack> target, IItemHandler handler, boolean merge);
 
-    FilterType getType();;
+    void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler);
+
+    FilterType getType();
 
     void setType(FilterType type);
 

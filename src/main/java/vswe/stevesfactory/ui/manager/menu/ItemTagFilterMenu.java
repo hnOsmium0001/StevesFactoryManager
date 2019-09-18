@@ -21,6 +21,7 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends Menu<P> {
@@ -73,10 +74,6 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
 
         fields = new LinearList<>(addEntryButton.getX() - 4 * 2, getContentHeight() - whitelist.getHeight() - 4 * 2);
         fields.setLocation(4, contentY);
-        for (int i = 0; i < 2; i++) {
-            fields.addChildren(new Entry());
-        }
-        fields.reflow();
 
         addChildren(whitelist);
         addChildren(blacklist);
@@ -88,11 +85,19 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
         ItemTagFilter filter = getLinkedFilter();
-        for (Tag<Item> tag : filter.getTags()) {
-            Entry entry = new Entry();
-            entry.readTag(tag);
-            fields.addChildren(entry);
+        Set<Tag<Item>> tags = filter.getTags();
+        if (tags.isEmpty()) {
+            for (int i = 0; i < 2; i++) {
+                fields.addChildren(new Entry());
+            }
+        } else {
+            for (Tag<Item> tag : tags) {
+                Entry entry = new Entry();
+                entry.readTag(tag);
+                fields.addChildren(entry);
+            }
         }
+        fields.reflow();
 
         switch (filter.type) {
             case WHITELIST:
@@ -108,8 +113,12 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
     protected void updateData() {
         super.updateData();
         ItemTagFilter filter = getLinkedFilter();
+        filter.getTags().clear();
         for (Entry entry : fields.getChildren()) {
-            filter.getTags().add(entry.createTag());
+            Tag<Item> tag = entry.createTag();
+            if (tag != null) {
+                filter.getTags().add(tag);
+            }
         }
 
         if (whitelist.isChecked()) {
@@ -183,8 +192,12 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
             this.tag.setText(tag.getId().toString());
         }
 
+        @Nullable
         public Tag<Item> createTag() {
             ResourceLocation id = new ResourceLocation(tag.getText());
+            if (ItemTags.getCollection().get(id) == null) {
+                return null;
+            }
             return new ItemTags.Wrapper(id);
         }
 
