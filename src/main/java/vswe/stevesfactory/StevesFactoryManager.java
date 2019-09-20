@@ -20,6 +20,7 @@ import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.setup.ModItems;
+import vswe.stevesfactory.ui.manager.selection.ComponentGroup;
 import vswe.stevesfactory.utils.BlockHighlight;
 
 @Mod(StevesFactoryManager.MODID)
@@ -54,6 +55,7 @@ public class StevesFactoryManager {
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
+        ComponentGroup.setup();
     }
 
     private void loadComplete(final FMLLoadCompleteEvent event) {
