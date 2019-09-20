@@ -1,4 +1,4 @@
-package vswe.stevesfactory.ui.manager.editor;
+package vswe.stevesfactory.ui.manager;
 
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
