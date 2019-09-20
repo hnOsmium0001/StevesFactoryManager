@@ -9,6 +9,8 @@ import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.procedure.BatchedItemTransferProcedure;
+import vswe.stevesfactory.logic.procedure.ItemExportProcedure;
+import vswe.stevesfactory.logic.procedure.ItemImportProcedure;
 import vswe.stevesfactory.logic.procedure.TimedTriggerProcedure;
 import vswe.stevesfactory.utils.RenderingHelper;
 
@@ -21,9 +23,9 @@ public final class Procedures<P extends IProcedure> {
 
     public static final Procedures<TimedTriggerProcedure> TIMED_TRIGGER = new Procedures<>("timed_trigger", TimedTriggerProcedure::new, TimedTriggerProcedure::new);
     public static final Procedures<BatchedItemTransferProcedure> BATCHED_ITEM_TRANSFER = new Procedures<>("batched_item_transfer", BatchedItemTransferProcedure::new, BatchedItemTransferProcedure::new);
+    public static final Procedures<ItemImportProcedure> ITEM_IMPORT = new Procedures<>("item_import", ItemImportProcedure::new, ItemImportProcedure::new);
+    public static final Procedures<ItemExportProcedure> ITEM_EXPORT = new Procedures<>("item_export", ItemExportProcedure::new, ItemExportProcedure::new);
 
-//    ITEM_IMPORT("item_import", DummyProcedure::new),
-//    ITEM_EXPORT("item_export", DummyProcedure::new),
 //    ITEM_CONDITION("item_condition", DummyProcedure::new),
 //    FLOW_CONTROL("flow_control", DummyProcedure::new),
 //    FLUID_IMPORT("fluid_import", DummyProcedure::new),

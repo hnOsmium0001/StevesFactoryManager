@@ -26,7 +26,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
 
     public static final int SOURCE_INVENTORIES = 0;
     public static final int DESTINATION_INVENTORIES = 1;
-    public static final int FILTERS = 0;
+    public static final int FILTER = 0;
 
     private List<BlockPos> sourceInventories = new ArrayList<>();
     private List<Direction> sourceDirections = new ArrayList<>();
@@ -105,13 +105,11 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = super.serialize();
-
         tag.put("SourcePoses", IOHelper.writeBlockPoses(sourceInventories));
         tag.putIntArray("SourceDirections", IOHelper.direction2Index(sourceDirections));
         tag.put("TargetPoses", IOHelper.writeBlockPoses(targetInventories));
         tag.putIntArray("TargetDirections", IOHelper.direction2Index(targetDirections));
         tag.put("Filters", filter.write());
-
         return tag;
     }
 
@@ -133,7 +131,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Source")));
         f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Destination")));
 //        f.addMenu(new ItemTraitsFilterMenu<>(FILTERS));
-        f.addMenu(new ItemTagFilterMenu<>(FILTERS));
+        f.addMenu(new ItemTagFilterMenu<>(FILTER));
         return f;
     }
 

@@ -32,7 +32,8 @@ public class UserPreferencesPanel extends AbstractContainer<IWidget> {
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             // TODO open user preferences panel
-            return super.mouseClicked(mouseX, mouseY, button);
+            getWindow().alive = false;
+            return true;
         }
     }
 }
