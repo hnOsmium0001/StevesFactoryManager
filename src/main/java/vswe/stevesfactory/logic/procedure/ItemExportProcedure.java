@@ -55,7 +55,7 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
         FlowComponent<ItemExportProcedure> f = FlowComponent.of(this);
         f.addMenu(new InventorySelectionMenu<>(INVENTORIES, "gui.sfm.Menu.InventorySelection"));
         f.addMenu(new DirectionSelectionMenu<>(INVENTORIES, "gui.sfm.Menu.TargetSides"));
-        f.addMenu(new ItemTagFilterMenu<>(FILTER));
+        IItemFilterTarget.createFilterMenu(this, f, FILTER);
         return f;
     }
 
@@ -88,5 +88,12 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
     @Override
     public IItemFilter getFilter(int id) {
         return filter;
+    }
+
+    @Override
+    public void setFilter(int id, IItemFilter filter) {
+        if (id == FILTER) {
+            this.filter = filter;
+        }
     }
 }

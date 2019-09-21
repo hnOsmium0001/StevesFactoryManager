@@ -180,4 +180,11 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     public IItemFilter getFilter(int id) {
         return filter;
     }
+
+    @Override
+    public void setFilter(int filterID, IItemFilter filter) {
+        if (filterID == FILTER) {
+            this.filter = filter;
+        }
+    }
 }
