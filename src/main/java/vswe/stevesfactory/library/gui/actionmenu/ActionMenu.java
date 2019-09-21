@@ -33,6 +33,15 @@ public class ActionMenu extends AbstractPopupWindow {
         Preconditions.checkArgument(!entries.isEmpty());
 
         this.entries = entries;
+        setPosition(x, y);
+
+        for (IEntry entry : entries) {
+            entry.attach(this);
+        }
+        reflow();
+    }
+
+    public void reflow() {
         int width = entries.stream()
                 .max(Comparator.comparingInt(IEntry::getWidth))
                 .orElseThrow(IllegalArgumentException::new)
@@ -41,11 +50,9 @@ public class ActionMenu extends AbstractPopupWindow {
                 .mapToInt(IEntry::getHeight)
                 .sum();
         setContents(width, height);
-        setPosition(x, y);
 
         int ey = 0;
         for (IEntry e : entries) {
-            e.attach(this);
             e.setLocation(0, ey);
             e.setWidth(contents.width);
             ey += e.getHeight();

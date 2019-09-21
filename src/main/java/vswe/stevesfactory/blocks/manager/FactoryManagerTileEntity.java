@@ -44,24 +44,17 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private Set<CommandGraph> graphs = new HashSet<>();
     private boolean lockedGraphs = false;
 
+    private boolean firstTick;
+
     public FactoryManagerTileEntity() {
         super(ModBlocks.factoryManagerTileEntity);
     }
 
-    // TODO don't use getBlockState in onLoad/wait forge to fix this bug
-    //   see #5583
-    //   world access in #updateLinks to NetworkHelper.updateLinkType
     @Override
     public void onLoad() {
         super.onLoad();
         linkingStatus = new LinkingStatus(pos);
-
-        assert world != null;
-        if (!world.isRemote) {
-            if (!connectedCables.contains(pos)) {
-                addCableToNetwork(this, pos);
-            }
-        }
+        firstTick = true;
     }
 
     @Override
@@ -84,6 +77,17 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
                     ((ITickable) hat).tick();
                 }
             }
+
+            if (firstTick) {
+                reload();
+                firstTick = false;
+            }
+        }
+    }
+
+    private void reload() {
+        if (!connectedCables.contains(pos)) {
+            addCableToNetwork(this, pos);
         }
     }
 

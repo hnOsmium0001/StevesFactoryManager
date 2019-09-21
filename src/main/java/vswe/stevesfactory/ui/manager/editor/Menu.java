@@ -256,11 +256,6 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
     }
 
     @Override
-    public void onFocusChanged(boolean focus) {
-        updateData();
-    }
-
-    @Override
     public void onRemoved() {
         updateData();
     }
