@@ -5,7 +5,7 @@
   "block.sfm.cable": "Inventory Cable",
 
   "logic.sfm.timed_trigger": "Trigger",
-  "logic.sfm.batched_item_transfer": "Item Transfer (B)",
+  "logic.sfm.batched_item_transfer": "Item Transfer",
   "logic.sfm.item_import": "Input",
   "logic.sfm.item_export": "Output",
   "logic.sfm.item_condition": "Condition",
