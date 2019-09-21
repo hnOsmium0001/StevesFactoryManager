@@ -90,7 +90,7 @@ public final class IOHelper {
         } else if (filter instanceof ItemTagFilter) {
             return 1;
         }
-        return -1;
+        throw new IllegalArgumentException();
     }
 
     private static IItemFilter getItemFilterByID(int id, CompoundNBT tag) {

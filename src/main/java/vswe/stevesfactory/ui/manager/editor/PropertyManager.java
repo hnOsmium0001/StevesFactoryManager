@@ -5,12 +5,12 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
-import vswe.stevesfactory.library.gui.actionmenu.AbstractEntry;
-import vswe.stevesfactory.library.gui.actionmenu.IEntry;
+import vswe.stevesfactory.library.gui.actionmenu.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.*;
 
 public final class PropertyManager<T, P extends IProcedure & IProcedureClientData> {
@@ -43,17 +43,13 @@ public final class PropertyManager<T, P extends IProcedure & IProcedureClientDat
         return propertyGetter.get();
     }
 
-    private void setPropertyRaw(T property) {
-        propertySetter.accept(property);
-    }
-
     public void setProperty(@Nonnull T property) {
-        setPropertyRaw(Objects.requireNonNull(property));
+        Preconditions.checkNotNull(property);
         int i = 0;
         for (Case<T, P> caseElement : cases) {
             if (caseElement.matches(property)) {
                 if (i != selectedIndex) {
-                    setPropertyBase(i, caseElement);
+                    setPropertyBase(i, caseElement, property);
                 }
                 break;
             }
@@ -66,19 +62,25 @@ public final class PropertyManager<T, P extends IProcedure & IProcedureClientDat
         T newProp = expectedCase.createProperty();
         Preconditions.checkNotNull(newProp);
         Preconditions.checkState(expectedCase.matches(newProp));
-        setPropertyRaw(newProp);
-        setPropertyBase(index, expectedCase);
+        setPropertyBase(index, expectedCase, newProp);
     }
 
-    private void setPropertyBase(int index, Case<T, P> caseElement) {
+    private void setPropertyBase(int index, Case<T, P> caseElement, T property) {
         selectedIndex = index;
 
         Menu<P> oldMenu = menu;
-        menu = caseElement.menuFactory.get();
-        menu.useActionList(actions);
+        if (oldMenu != null) {
+            flowComponent.getMenusBox().getChildren().remove(oldMenu);
+            oldMenu.onRemoved();
+        }
 
-        flowComponent.getMenusBox().getChildren().remove(oldMenu);
+        propertySetter.accept(property);
+
+        menu = caseElement.menuFactory.get();
         flowComponent.addMenu(menu);
+        menu.setParentWidget(flowComponent.getMenusBox());
+        flowComponent.getMenusBox().reflow();
+        menu.useActionList(actions);
     }
 
     public Menu<P> getMenu() {
@@ -98,26 +100,38 @@ public final class PropertyManager<T, P extends IProcedure & IProcedureClientDat
 
     public void actionCycling() {
         action(() -> new AbstractEntry(null, "gui.sfm.ActionMenu.Menus.CycleProperty") {
-            private int lastSelectedIndex = selectedIndex;
+            private int cachedIndex = -1;
             private String cachedText;
 
             @Override
             public String getText() {
-                // Lazy initialization so that even if the property is updated without using the cycling action, the text will still be in sync
-                if (lastSelectedIndex != selectedIndex || cachedText == null) {
-                    Case<T, P> caseElement = cases.get(selectedIndex);
-                    cachedText = caseElement.hasName() ? I18n.format("gui.sfm.ActionMenu.Menus.CycleProperty.Named", caseElement.getName()) : super.getText();
-                    lastSelectedIndex = selectedIndex;
-                }
+                updateText(selectedIndex);
                 return cachedText;
             }
 
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                int nextIndex = selectedIndex + 1;
-                selectedIndex = nextIndex >= cases.size() ? 0 : nextIndex;
-                setProperty(selectedIndex);
+                int nextIndex = selectedIndex + 1 >= cases.size() ? 0 : selectedIndex + 1;
+                setProperty(nextIndex);
+                getWindow().alive = false;
                 return true;
+            }
+
+            private void updateText(int currentIndex) {
+                // Lazy initialization so that even if the property is updated without using the cycling action, the text will still be in sync
+                int nextIndex = currentIndex + 1 >= cases.size() ? 0 : currentIndex + 1;
+                if (cachedIndex != nextIndex || cachedText == null) {
+                    Case<T, P> caseElement = cases.get(nextIndex);
+                    cachedText = caseElement.hasName() ? I18n.format("gui.sfm.ActionMenu.Menus.CycleProperty.Named", caseElement.getName()) : super.getText();
+                    cachedIndex = nextIndex;
+                    reflowSafe();
+                }
+            }
+
+            private void reflowSafe() {
+                if (getWindow() != null) {
+                    getWindow().reflow();
+                }
             }
         });
     }

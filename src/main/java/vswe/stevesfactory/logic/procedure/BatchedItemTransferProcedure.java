@@ -133,15 +133,14 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Destination")));
 
         PropertyManager<IItemFilter, BatchedItemTransferProcedure> pm = new PropertyManager<>(f, this::getFilter, this::setFilter);
-        String filterName = I18n.format("gui.sfm.Menu.ItemFilter");
         pm.on(filter -> filter instanceof ItemTraitsFilter)
                 .name(I18n.format("gui.sfm.Menu.ItemFilter.Traits"))
                 .prop(ItemTraitsFilter::new)
-                .then(() -> new ItemTraitsFilterMenu<>(FILTER, filterName));
+                .then(() -> new ItemTraitsFilterMenu<>(FILTER, I18n.format("gui.sfm.Menu.ItemFilter.Traits")));
         pm.on(filter -> filter instanceof ItemTagFilter)
                 .name(I18n.format("gui.sfm.Menu.ItemFilter.Tags"))
                 .prop(ItemTagFilter::new)
-                .then(() -> new ItemTagFilterMenu<>(FILTER, filterName));
+                .then(() -> new ItemTagFilterMenu<>(FILTER, I18n.format("gui.sfm.Menu.ItemFilter.Tags")));
         pm.actionCycling();
         pm.setProperty(filter);
         return f;
