@@ -5,13 +5,12 @@ import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.utils.RenderingHelper;
-import vswe.stevesfactory.utils.Utils;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import java.util.Collections;
 import java.util.List;
 
-import static vswe.stevesfactory.utils.RenderingHelper.*;
+import static vswe.stevesfactory.library.gui.RenderingHelper.*;
 
 public class TextList extends AbstractWidget implements LeafWidgetMixin {
 

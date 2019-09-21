@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
+import vswe.stevesfactory.logic.item.*;
 
 import java.util.*;
 import java.util.function.IntFunction;
@@ -81,6 +82,35 @@ public final class IOHelper {
 
     public static <T> ListNBT writeTags(Collection<Tag<T>> tags) {
         return writeTags(tags, new ListNBT());
+    }
+
+    private static int getItemFilterTypeID(IItemFilter filter) {
+        if (filter instanceof ItemTraitsFilter) {
+            return 0;
+        } else if (filter instanceof ItemTagFilter) {
+            return 1;
+        }
+        return -1;
+    }
+
+    private static IItemFilter getItemFilterByID(int id, CompoundNBT tag) {
+        switch (id) {
+            case 0: return ItemTraitsFilter.recover(tag);
+            case 1: return ItemTagFilter.recover(tag);
+        }
+        throw new IllegalArgumentException();
+    }
+
+    public static CompoundNBT writeItemFilter(IItemFilter filter) {
+        CompoundNBT tag = new CompoundNBT();
+        tag.putInt("TypeID", getItemFilterTypeID(filter));
+        filter.write(tag);
+        return tag;
+    }
+
+    public static IItemFilter readItemFilter(CompoundNBT tag) {
+        int typeID = tag.getInt("TypeID");
+        return getItemFilterByID(typeID, tag);
     }
 
     public static <T extends Collection<BlockPos>> T readBlockPoses(PacketBuffer buf, T target) {

@@ -17,7 +17,7 @@ import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.screen.ScissorTest;
+import vswe.stevesfactory.library.gui.ScissorTest;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
@@ -27,7 +27,7 @@ import vswe.stevesfactory.ui.manager.UserPreferencesPanel;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.OutputNode;
 import vswe.stevesfactory.utils.NetworkHelper;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -185,7 +185,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
                 getWindow().setFocusedWidget(this);
             }
             if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-                openActionMenu(mouseX, mouseY);
+                openActionMenu();
             }
             return true;
         }
@@ -261,8 +261,8 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    private void openActionMenu(double mouseX, double mouseY) {
-        ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
+    private void openActionMenu() {
+        ActionMenu actionMenu = ActionMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.ActionMenu.Paste", b -> actionPaste()),
                 new CallbackEntry(null, "gui.sfm.ActionMenu.CleanupProcedures", b -> actionCleanup()),
                 new CallbackEntry(null, "gui.sfm.ActionMenu.ToggleFullscreen", b -> actionToggleFullscreen()),

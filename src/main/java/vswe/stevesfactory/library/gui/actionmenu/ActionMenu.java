@@ -1,16 +1,26 @@
 package vswe.stevesfactory.library.gui.actionmenu;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHelper;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.AbstractPopupWindow;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 
 public class ActionMenu extends AbstractPopupWindow {
+
+    public static ActionMenu atCursor(List<? extends IEntry> entries) {
+        MouseHelper m = Minecraft.getInstance().mouseHelper;
+        double scale = Minecraft.getInstance().mainWindow.getGuiScaleFactor();
+        double mouseX = m.getMouseX() / scale;
+        double mouseY = m.getMouseY() / scale;
+        return atCursor(mouseX + RenderingHelper.translationX, mouseY + RenderingHelper.translationY, entries);
+    }
 
     public static ActionMenu atCursor(double mouseX, double mouseY, List<? extends IEntry> entries) {
         return new ActionMenu((int) mouseX, (int) mouseY, entries);

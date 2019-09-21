@@ -6,10 +6,9 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.*;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.*;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -21,7 +20,6 @@ import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.setup.ModItems;
 import vswe.stevesfactory.ui.manager.selection.ComponentGroup;
-import vswe.stevesfactory.utils.BlockHighlight;
 
 @Mod(StevesFactoryManager.MODID)
 public class StevesFactoryManager {
@@ -34,6 +32,8 @@ public class StevesFactoryManager {
     public static StevesFactoryManager instance;
 
     public StevesFactoryManager() {
+        instance = this;
+
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::setup);
         eventBus.addListener(this::loadComplete);
@@ -41,17 +41,13 @@ public class StevesFactoryManager {
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
-        MinecraftForge.EVENT_BUS.addListener(this::renderWorldLast);
 
         ModBlocks.init();
         ModItems.init();
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        instance = (StevesFactoryManager) ModLoadingContext.get().getActiveContainer().getMod();
-        DeferredWorkQueue.runLater(() -> {
-            NetworkHandler.register();
-        });
+        NetworkHandler.register();
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
@@ -66,10 +62,6 @@ public class StevesFactoryManager {
     private void serverStarting(final FMLServerStartingEvent event) {
         event.getCommandDispatcher().register(Commands.literal(MODID)
                 .then(settingsCommand()));
-    }
-
-    private void renderWorldLast(final RenderWorldLastEvent event) {
-        BlockHighlight.renderWorld(event);
     }
 
     ///////////////////////////////////////////////////////////////////////////

@@ -51,6 +51,8 @@
   "gui.sfm.ActionMenu.ToggleFullscreen": "Toggle Fullscreen",
   "gui.sfm.ActionMenu.Menus.CollapseAll": "Collapse All",
   "gui.sfm.ActionMenu.Menus.ExpandAll": "Expand All",
+  "gui.sfm.ActionMenu.Menus.CycleProperty": "Cycle property",
+  "gui.sfm.ActionMenu.Menus.CycleProperty.Named": "Cycle to %s",
   "gui.sfm.ActionMenu.BlockTarget.Highlight": "Highlight in world",
 
   "gui.sfm.Editor.XOff": "X: ",
@@ -66,10 +68,11 @@
   "gui.sfm.Menu.TargetSides": "Target",
   "gui.sfm.Menu.TargetSides.Source": "Src Target",
   "gui.sfm.Menu.TargetSides.Destination": "Dest Target",
-  "gui.sfm.Menu.ItemFilter.Tag": "Tags",
+  "gui.sfm.Menu.ItemFilter.Tags": "Tags Filter",
   "gui.sfm.Menu.AddEntry": "Add entry",
-  "gui.sfm.Menu.ItemFilter.Traits": "Items",
+  "gui.sfm.Menu.ItemFilter.Traits": "Traits Filter",
   "gui.sfm.Menu.ItemFilter.Traits.Settings": "Filter settings",
+  "gui.sfm.Menu.ItemFilter": "Items",
   "gui.sfm.Menu.FilterAmount": "Item count",
   "gui.sfm.Menu.FilterDamage": "Item damage",
   "gui.sfm.Menu.MatchAmount": "Match count",
@@ -81,6 +84,6 @@
   "gui.sfm.Menu.Delete.Info": "Remove this item filter",
   "gui.sfm.Menu.CloseEditor.Info": "Return to last menu",
 
-  "ComponentGroup.sfm.ItemIO": "Item I/O",
-  "ComponentGroup.sfm.Trigger": "Triggers"
+  "component_group.sfm.ItemIO": "Item I/O",
+  "component_group.sfm.Trigger": "Triggers"
 }

@@ -10,7 +10,7 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

@@ -10,7 +10,7 @@ import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.procedure.BatchedItemTransferProcedure;
 import vswe.stevesfactory.logic.procedure.TimedTriggerProcedure;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;

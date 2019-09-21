@@ -9,10 +9,10 @@ import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
-import static vswe.stevesfactory.utils.RenderingHelper.getRenderer;
-import static vswe.stevesfactory.utils.RenderingHelper.rectVertices;
+import static vswe.stevesfactory.library.gui.RenderingHelper.getRenderer;
+import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
 
 public class Checkbox extends AbstractWidget implements LeafWidgetMixin {
 

@@ -22,7 +22,7 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.AbstractWindow;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -289,7 +289,7 @@ public class FactoryManagerGUI extends WidgetScreen {
             }
             // Fallback action menu
             if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(new UserPreferencesPanel.OpenerEntry()));
+                ActionMenu actionMenu = ActionMenu.atCursor(ImmutableList.of(new UserPreferencesPanel.OpenerEntry()));
                 WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
             }
             return false;

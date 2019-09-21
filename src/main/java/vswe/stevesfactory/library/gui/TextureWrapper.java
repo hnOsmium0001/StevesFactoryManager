@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.utils.RenderingHelper;
 
 import java.awt.*;
 

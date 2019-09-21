@@ -26,10 +26,10 @@ public final class ComponentGroup {
     public static final Set<IProcedureType<?>> ungroupedTypes = new HashSet<>();
     public static final List<ComponentGroup> groups = new ArrayList<>();
 
-    private static final String defaultComponentsPath = "/assets/" + StevesFactoryManager.MODID + "/components/";
+    private static final String defaultComponentsPath = "/assets/" + StevesFactoryManager.MODID + "/component_groups/";
 
     private static File getConfigDirectory() {
-        return new File("./config/" + StevesFactoryManager.MODID + "/ComponentGroup/");
+        return new File("./config/" + StevesFactoryManager.MODID + "/component_groups/");
     }
 
     public static void setup() {

@@ -2,6 +2,8 @@ package vswe.stevesfactory.api.logic;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import javax.annotation.Nonnull;
@@ -41,6 +43,7 @@ public interface IProcedure {
 
     void deserialize(CompoundNBT tag);
 
+    @OnlyIn(Dist.CLIENT)
     FlowComponent<?> createFlowComponent();
 
     CommandGraph getGraph();

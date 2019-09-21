@@ -3,7 +3,6 @@ package vswe.stevesfactory.ui.manager.menu;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -17,7 +16,7 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.utils.BlockHighlight;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
 public class BlockTarget extends AbstractWidget implements IButton, INamedElement, LeafWidgetMixin {
 
@@ -43,7 +42,7 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
+            ActionMenu actionMenu = ActionMenu.atCursor(ImmutableList.of(
                     new CallbackEntry(null, "gui.sfm.ActionMenu.BlockTarget.Highlight", b -> BlockHighlight.createHighlight(pos, 80))
             ));
             WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);

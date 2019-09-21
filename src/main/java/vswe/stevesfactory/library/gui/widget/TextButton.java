@@ -10,7 +10,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 
 import java.util.function.IntConsumer;
 
-import static vswe.stevesfactory.utils.RenderingHelper.*;
+import static vswe.stevesfactory.library.gui.RenderingHelper.*;
 
 public class TextButton extends AbstractWidget implements IButton, LeafWidgetMixin {
 
