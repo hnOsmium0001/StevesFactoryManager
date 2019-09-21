@@ -1,15 +1,14 @@
-package vswe.stevesfactory.library.gui.screen;
+package vswe.stevesfactory.library.gui;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.utils.RenderingHelper;
 
 import static org.lwjgl.opengl.GL11.*;
 
 // https://stackoverflow.com/questions/30254602/java-lwjgl-multiple-scissor-test
-public class ScissorTest {
+public final class ScissorTest {
 
     private static final int max = 100;
     private static ScissorTest[] objects = new ScissorTest[max];

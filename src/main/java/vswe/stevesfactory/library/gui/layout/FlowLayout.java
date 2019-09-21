@@ -3,7 +3,7 @@ package vswe.stevesfactory.library.gui.layout;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.utils.Utils;
 
 import java.awt.*;

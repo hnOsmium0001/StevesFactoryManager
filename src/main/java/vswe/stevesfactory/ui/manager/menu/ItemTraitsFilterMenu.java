@@ -28,6 +28,7 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
     private static final Supplier<Integer> FILTER_SLOTS = () -> 20;
 
     private final int id;
+    private final String name;
 
     private final RadioButton whitelist, blacklist;
     private final WrappingList<FilterSlot> slots;
@@ -35,7 +36,12 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
     private IWidget openEditor;
 
     public ItemTraitsFilterMenu(int id) {
+        this(id, I18n.format("gui.sfm.Menu.ItemFilter.Traits"));
+    }
+
+    public ItemTraitsFilterMenu(int id, String name) {
         this.id = id;
+        this.name = name;
 
         RadioController filterTypeController = new RadioController();
         whitelist = new RadioButton(filterTypeController);
@@ -147,7 +153,7 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menu.ItemFilter.Traits");
+        return name;
     }
 
     @Override

@@ -27,12 +27,18 @@ import java.util.*;
 public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends Menu<P> {
 
     private final int id;
+    private final String name;
 
     private final RadioButton whitelist, blacklist;
     private final LinearList<Entry> fields;
 
     public ItemTagFilterMenu(int id) {
+        this(id, I18n.format("gui.sfm.Menu.ItemFilter.Tag"));
+    }
+
+    public ItemTagFilterMenu(int id, String name) {
         this.id = id;
+        this.name = name;
 
         RadioController filterTypeController = new RadioController();
         whitelist = new RadioButton(filterTypeController);
@@ -134,7 +140,7 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menu.ItemFilter.Tag");
+        return name;
     }
 
     private static class Entry extends AbstractContainer<IWidget> {

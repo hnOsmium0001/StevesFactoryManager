@@ -5,7 +5,6 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
-import vswe.stevesfactory.utils.RenderingHelper;
 
 class OffsetText extends AbstractWidget implements LeafWidgetMixin {
 

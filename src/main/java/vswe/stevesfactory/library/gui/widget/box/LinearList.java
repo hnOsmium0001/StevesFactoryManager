@@ -14,16 +14,16 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.screen.ScissorTest;
+import vswe.stevesfactory.library.gui.ScissorTest;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 
-import static vswe.stevesfactory.utils.RenderingHelper.rectVertices;
+import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
 
 public class LinearList<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
 

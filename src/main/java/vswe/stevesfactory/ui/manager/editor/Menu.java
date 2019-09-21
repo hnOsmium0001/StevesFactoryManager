@@ -7,18 +7,18 @@ import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
-import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.actionmenu.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Supplier;
 
 public abstract class Menu<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
 
@@ -90,6 +90,8 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
         }
     }
 
+    private static final List<Supplier<IEntry>> EMPTY_LIST = ImmutableList.of();
+
     public static final TextureWrapper HEADING_BOX = TextureWrapper.ofFlowComponent(66, 152, 120, 13);
     public static final int DEFAULT_CONTENT_HEIGHT = 65;
 
@@ -99,6 +101,8 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
 
     private ToggleStateButton toggleStateButton;
     private final List<IWidget> children;
+
+    private List<Supplier<IEntry>> actionMenuEntries = EMPTY_LIST;
 
     public Menu() {
         // Start at a collapsed state
@@ -237,10 +241,13 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
         if (isInside(mouseX, mouseY)) {
             getWindow().setFocusedWidget(this);
             if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                ActionMenu actionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
-                        new CallbackEntry(null, "gui.sfm.ActionMenu.Menus.CollapseAll", b -> flowComponent.collapseAllMenus()),
-                        new CallbackEntry(null, "gui.sfm.ActionMenu.Menus.ExpandAll", b -> flowComponent.expandAllMenus())
-                ));
+                ImmutableList.Builder<IEntry> list = ImmutableList.<IEntry>builder()
+                        .add(new CallbackEntry(null, "gui.sfm.ActionMenu.Menus.CollapseAll", b -> flowComponent.collapseAllMenus()))
+                        .add(new CallbackEntry(null, "gui.sfm.ActionMenu.Menus.ExpandAll", b -> flowComponent.expandAllMenus()));
+                for (Supplier<IEntry> entry : actionMenuEntries) {
+                    list.add(entry.get());
+                }
+                ActionMenu actionMenu = ActionMenu.atCursor(list.build());
                 WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
             }
             return true;
@@ -280,5 +287,18 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
 
     public P getLinkedProcedure() {
         return flowComponent.getLinkedProcedure();
+    }
+
+    public void enableActionInject() {
+        Preconditions.checkState(actionMenuEntries == EMPTY_LIST);
+        actionMenuEntries = new ArrayList<>();
+    }
+
+    void useActionList(List<Supplier<IEntry>> actions) {
+        actionMenuEntries = actions;
+    }
+
+    public void injectAction(Supplier<IEntry> action) {
+        actionMenuEntries.add(action);
     }
 }

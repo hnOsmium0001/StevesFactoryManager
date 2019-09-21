@@ -2,7 +2,6 @@ package vswe.stevesfactory.ui.manager.selection;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
-import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
@@ -10,7 +9,7 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.utils.RenderingHelper;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 
 public interface IComponentChoice extends IWidget {
 

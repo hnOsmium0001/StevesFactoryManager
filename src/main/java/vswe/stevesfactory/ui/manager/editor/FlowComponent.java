@@ -20,6 +20,7 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
+import vswe.stevesfactory.library.gui.widget.box.MinimumLinearList;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 
@@ -330,7 +331,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     private final TextField nameBox;
     private final ControlFlow inputNodes;
     private final ControlFlow outputNodes;
-    private final LinearList<Menu<P>> menus;
+    private final MinimumLinearList<Menu<P>> menus;
     // A list that refers to all the widgets above
     private final List<IWidget> children;
 
@@ -358,7 +359,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
                 .setFontHeight(6);
         this.inputNodes = ControlFlow.inputNodes(inputNodes);
         this.outputNodes = ControlFlow.outputNodes(outputNodes);
-        this.menus = new MenusList<>(120, 130);
+        this.menus = new MinimumLinearList<>(120, 130);
         this.menus.setLocation(2, 20);
         this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, this.inputNodes, this.outputNodes, menus);
         this.setLinkedProcedure(procedure);
@@ -522,7 +523,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
             clearDrag();
         }
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            openActionMenu(mouseX, mouseY);
+            openActionMenu();
         }
         return true;
     }
@@ -599,8 +600,8 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         id = parent.nextID();
     }
 
-    private void openActionMenu(double mouseX, double mouseY) {
-        openedActionMenu = ActionMenu.atCursor(mouseX, mouseY, ImmutableList.of(
+    private void openActionMenu() {
+        openedActionMenu = ActionMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.Delete", b -> actionDelete()),
                 new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.Cut", b -> actionCut()),
                 new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.Copy", b -> actionCopy())
@@ -723,27 +724,5 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     public void provideInformation(ITextReceiver receiver) {
         super.provideInformation(receiver);
         receiver.line("Z=" + this.getZIndex());
-    }
-
-    public static class MenusList<T extends Menu<?>> extends LinearList<T> {
-
-        public MenusList(int width, int height) {
-            super(width, height);
-        }
-
-        @Override
-        protected boolean isDrawingScrollBar() {
-            return false;
-        }
-
-        @Override
-        public int getBorder() {
-            return 0;
-        }
-
-        @Override
-        public int getMarginMiddle() {
-            return 0;
-        }
     }
 }

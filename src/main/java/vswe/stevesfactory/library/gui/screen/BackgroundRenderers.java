@@ -10,7 +10,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
 
-import static vswe.stevesfactory.utils.RenderingHelper.*;
+import static vswe.stevesfactory.library.gui.RenderingHelper.*;
 
 @OnlyIn(Dist.CLIENT)
 public final class BackgroundRenderers {
