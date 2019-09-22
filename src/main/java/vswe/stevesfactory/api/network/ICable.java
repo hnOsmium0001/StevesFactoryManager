@@ -2,9 +2,6 @@ package vswe.stevesfactory.api.network;
 
 import net.minecraft.util.math.BlockPos;
 
-import javax.annotation.Nullable;
-import java.util.Set;
-
 /**
  * A block that is a part of a network, such as cables.
  * <p>
@@ -21,31 +18,5 @@ public interface ICable {
      */
     boolean isCable();
 
-    /**
-     * Update the links to neighboring inventories.
-     */
-    LinkingStatus getLinkingStatus();
-
-    /**
-     * Get a set of linked inventories.
-     * <p>
-     * If implementations do not support this method, they may return {@code null} to indicate so.
-     */
-    @Nullable
-    Set<BlockPos> getNeighborInventories();
-
-    void updateLinks();
-
-    /**
-     * Triggers wen this cable components joins a network. Cable implementations can add hooks and capabilities to this network.
-     *
-     * @implNote It is ok to store a reference to the joined networks.
-     */
-    void onJoinNetwork(INetworkController network);
-
-    /**
-     * Triggers when this cable component leaves a network. Cable implementations can should removed added hooks and capabilities from the
-     * network.
-     */
-    void onLeaveNetwork(INetworkController network);
+    void addLinksFor(INetworkController controller);
 }

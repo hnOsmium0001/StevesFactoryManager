@@ -11,10 +11,10 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ObjectHolder;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.blocks.cable.CableBlock;
-import vswe.stevesfactory.blocks.cable.CableTileEntity;
-import vswe.stevesfactory.blocks.manager.FactoryManagerBlock;
-import vswe.stevesfactory.blocks.manager.FactoryManagerTileEntity;
+import vswe.stevesfactory.blocks.CableBlock;
+import vswe.stevesfactory.blocks.CableTileEntity;
+import vswe.stevesfactory.blocks.FactoryManagerBlock;
+import vswe.stevesfactory.blocks.FactoryManagerTileEntity;
 import vswe.stevesfactory.setup.builder.BlockBuilder;
 
 import java.util.ArrayList;

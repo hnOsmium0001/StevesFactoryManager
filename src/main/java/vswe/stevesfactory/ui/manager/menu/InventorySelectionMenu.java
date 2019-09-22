@@ -3,6 +3,7 @@ package vswe.stevesfactory.ui.manager.menu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.items.CapabilityItemHandler;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -40,7 +41,7 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
         list.alignArrows();
         FactoryManagerGUI gui = (FactoryManagerGUI) WidgetScreen.getCurrentScreen();
         INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(gui.controllerPos));
-        for (BlockPos pos : controller.getLinkedInventories()) {
+        for (BlockPos pos : controller.getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) {
             list.addElement(new BlockTarget(pos));
         }
 

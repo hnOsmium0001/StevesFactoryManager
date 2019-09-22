@@ -1,10 +1,8 @@
-package vswe.stevesfactory.blocks.manager;
+package vswe.stevesfactory.blocks;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.*;
@@ -15,31 +13,28 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.network.*;
-import vswe.stevesfactory.blocks.BaseTileEntity;
+import vswe.stevesfactory.api.network.ICable;
+import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.execution.ITickable;
 import vswe.stevesfactory.network.*;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
 public class FactoryManagerTileEntity extends BaseTileEntity implements ITickableTileEntity, INetworkController, ICable {
 
     private Set<BlockPos> connectedCables = new HashSet<>();
-    private Multiset<BlockPos> linkedInventories = HashMultiset.create();
-
-    private LinkingStatus linkingStatus;
-    private Set<BlockPos> neighborInventories = new ObjectArraySet<>(6);
+    private Map<Capability<?>, Multiset<BlockPos>> linkedInventories = new HashMap<>();
 
     private Set<CommandGraph> graphs = new HashSet<>();
     private boolean lockedGraphs = false;
@@ -53,7 +48,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     @Override
     public void onLoad() {
         super.onLoad();
-        linkingStatus = new LinkingStatus(pos);
         firstTick = true;
     }
 
@@ -110,6 +104,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         // Relocate all the cables to prevent the last cable, for example, from being recognized as connected
         // [manager] - [cable] - [removed cable (air)] - [unconnected cable]
         connectedCables.clear();
+        linkedInventories.clear();
 
         addCableToNetwork(this, pos);
         search(pos);
@@ -130,20 +125,19 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     private void addCableToNetwork(ICable cable, BlockPos pos) {
-        cable.onJoinNetwork(this);
+        cable.addLinksFor(this);
         connectedCables.add(pos);
     }
 
     private void removeAllCableFromNetwork() {
-        assert world != null;
-        StevesFactoryManager.logger.trace("Started removing all cables from the network {}", pos);
-        for (BlockPos pos : connectedCables) {
-            @Nullable
-            ICable cable = (ICable) world.getTileEntity(pos);
-            if (cable != null) {
-                cable.onLeaveNetwork(this);
-            }
-        }
+//        assert world != null;
+//        StevesFactoryManager.logger.trace("Started removing all cables from the network {}", pos);
+//        for (BlockPos pos : connectedCables) {
+//            @Nullable ICable cable = (ICable) world.getTileEntity(pos);
+//            if (cable != null) {
+//                cable.onLeaveNetwork(this);
+//            }
+//        }
     }
 
     public void dump() {
@@ -160,9 +154,13 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
             }
         }
 
-        logger.debug("Linked inventories:");
-        for (BlockPos pos : linkedInventories) {
-            logger.debug("    {}: {}", pos, world.getTileEntity(pos));
+        for (Map.Entry<Capability<?>, Multiset<BlockPos>> entry : linkedInventories.entrySet()) {
+            Capability<?> cap = entry.getKey();
+            Multiset<BlockPos> set = entry.getValue();
+            logger.debug("Linked inventories ({}):", cap.getName());
+            for (BlockPos pos : set) {
+                logger.debug("    {}: {}", pos, world.getTileEntity(pos));
+            }
         }
 
         logger.debug("======== Finished dumping Factory Manager ========");
@@ -183,27 +181,37 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public void removeCable(BlockPos cable) {
         assert world != null;
         connectedCables.remove(cable);
-        Objects.requireNonNull((ICable) world.getTileEntity(cable)).onLeaveNetwork(this);
+//        Objects.requireNonNull((ICable) world.getTileEntity(cable)).onLeaveNetwork(this);
+    }
+
+    public <T> Multiset<BlockPos> getInventoryMultiset(Capability<T> cap) {
+        Multiset<BlockPos> multiset = linkedInventories.get(cap);
+        if (multiset == null) {
+            Multiset<BlockPos> newSet = HashMultiset.create();
+            linkedInventories.put(cap, newSet);
+            return newSet;
+        }
+        return multiset;
     }
 
     @Override
-    public Set<BlockPos> getLinkedInventories() {
-        return linkedInventories.elementSet();
+    public <T> Set<BlockPos> getLinkedInventories(Capability<T> cap) {
+        return getInventoryMultiset(cap).elementSet();
     }
 
     /**
      * @return {@code true} always. See {@link Multiset#add(Object)} for details.
      */
     @Override
-    public boolean addLink(BlockPos pos) {
+    public <T> boolean addLink(Capability<T> cap, BlockPos pos) {
         StevesFactoryManager.logger.trace("Added link");
-        return linkedInventories.add(pos);
+        return getInventoryMultiset(cap).add(pos);
     }
 
     @Override
-    public boolean addLinks(Collection<BlockPos> poses) {
+    public <T> boolean addLinks(Capability<T> cap, Collection<BlockPos> poses) {
         StevesFactoryManager.logger.trace("Added {} links", poses.size());
-        return linkedInventories.addAll(poses);
+        return getInventoryMultiset(cap).addAll(poses);
     }
 
     @Override
@@ -251,42 +259,28 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
      * @return {@code true} always. See {@link Multiset#add(Object)} for details.
      */
     @Override
-    public boolean removeLink(BlockPos pos) {
+    public <T> boolean removeLink(Capability<T> cap, BlockPos pos) {
         StevesFactoryManager.logger.trace("Removed link");
-        return linkedInventories.remove(pos);
+        return getInventoryMultiset(cap).remove(pos);
     }
 
     @Override
-    public LinkingStatus getLinkingStatus() {
-        return linkingStatus;
-    }
-
-    @Nullable
-    @Override
-    public Set<BlockPos> getNeighborInventories() {
-        return neighborInventories;
-    }
-
-    @Override
-    public void updateLinks() {
-        assert world != null;
-        NetworkHelper.updateLinkType(world, linkingStatus);
-
-        // TODO add links
-    }
-
-    @Override
-    public void onJoinNetwork(INetworkController network) {
-        if (network != this) {
-            updateLinks();
-            neighborInventories.forEach(network::addLink);
+    public void addLinksFor(INetworkController controller) {
+        for (Capability<?> cap : StevesFactoryManagerAPI.getRecognizableCapabilities()) {
+            updateLinks(controller, cap);
         }
     }
 
-    @Override
-    public void onLeaveNetwork(INetworkController network) {
-        if (network != this) {
-            neighborInventories.forEach(network::removeLink);
+    private void updateLinks(INetworkController controller, Capability<?> cap) {
+        assert world != null;
+        for (BlockPos neighbor : getNeighbors()) {
+            TileEntity tile = world.getTileEntity(neighbor);
+            if (tile == null) {
+                continue;
+            }
+            if (Utils.hasCapabilityAtAll(tile, cap)) {
+                controller.addLink(cap, neighbor);
+            }
         }
     }
 
@@ -328,13 +322,24 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
         super.read(compound);
 
-        linkingStatus = LinkingStatus.readFrom(compound.getCompound("LinkingStatus"));
         connectedCables = IOHelper.readBlockPoses(compound.getList("ConnectedCables", Constants.NBT.TAG_COMPOUND), new HashSet<>());
 
         ListNBT serializedInventories = compound.getList("LinkedInventories", Constants.NBT.TAG_COMPOUND);
-        linkedInventories.clear();
         for (int i = 0; i < serializedInventories.size(); i++) {
-            linkedInventories.add(NBTUtil.readBlockPos(serializedInventories.getCompound(i)));
+            CompoundNBT element = serializedInventories.getCompound(i);
+
+            // Apparently normal string and internal string behave differently in an IdentityHashMap
+            // (CapabilityManager interns the capability name before putting them in the map)
+            String capName = element.getString("Name").intern();
+            Capability<?> cap = CapabilityManager.INSTANCE.providers.get(capName);
+
+            ListNBT serializedPoses = element.getList("Positions", Constants.NBT.TAG_COMPOUND);
+            Multiset<BlockPos> set = HashMultiset.create();
+            for (int j = 0; j < serializedPoses.size(); j++) {
+                set.add(NBTUtil.readBlockPos(serializedPoses.getCompound(j)));
+            }
+
+            linkedInventories.put(cap, set);
         }
 
         ListNBT commandGraphs = compound.getList("CommandGraphs", Constants.NBT.TAG_COMPOUND);
@@ -353,12 +358,22 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public CompoundNBT write(CompoundNBT compound) {
         StevesFactoryManager.logger.trace("Writing data into NBT ({})", pos);
 
-        compound.put("LinkingStatus", linkingStatus.write());
         compound.put("ConnectedCables", IOHelper.writeBlockPoses(connectedCables));
 
         ListNBT serializedInventories = new ListNBT();
-        for (BlockPos pos : linkedInventories) {
-            serializedInventories.add(NBTUtil.writeBlockPos(pos));
+        for (Map.Entry<Capability<?>, Multiset<BlockPos>> entry : linkedInventories.entrySet()) {
+            Capability<?> cap = entry.getKey();
+            Multiset<BlockPos> set = entry.getValue();
+
+            ListNBT serializedPoses = new ListNBT();
+            for (BlockPos pos : set) {
+                serializedPoses.add(NBTUtil.writeBlockPos(pos));
+            }
+
+            CompoundNBT element = new CompoundNBT();
+            element.putString("Name", cap.getName());
+            element.put("Positions", serializedPoses);
+            serializedInventories.add(element);
         }
         compound.put("LinkedInventories", serializedInventories);
 
