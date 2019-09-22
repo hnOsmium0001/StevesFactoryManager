@@ -1,13 +1,11 @@
 package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -21,7 +19,6 @@ import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
-import vswe.stevesfactory.ui.manager.menu.ItemTagFilterMenu;
 import vswe.stevesfactory.utils.IOHelper;
 
 import java.util.*;
@@ -64,8 +61,9 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
                         if (buffers.containsKey(item)) {
                             ItemBufferElement buffer = buffers.get(item);
                             buffer.stack.grow(stack.getCount());
+                            buffer.addInventory(handler, slot);
                         } else {
-                            ItemBufferElement buffer = new ItemBufferElement(stack, handler, slot);
+                            ItemBufferElement buffer = new ItemBufferElement(stack).addInventory(handler, slot);
                             buffers.put(item, buffer);
                         }
                     }, handler);

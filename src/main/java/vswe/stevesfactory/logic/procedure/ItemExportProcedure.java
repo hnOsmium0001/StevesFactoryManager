@@ -19,7 +19,6 @@ import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
-import vswe.stevesfactory.ui.manager.menu.ItemTagFilterMenu;
 import vswe.stevesfactory.utils.IOHelper;
 
 import java.util.*;

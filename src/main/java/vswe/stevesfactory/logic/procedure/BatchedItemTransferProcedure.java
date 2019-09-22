@@ -50,7 +50,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
             return;
         }
 
-        List<ItemBufferElement> items = new ArrayList<>();
+        List<SingleItemBufferElement> items = new ArrayList<>();
         for (BlockPos pos : sourceInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
             if (tile == null) {
@@ -60,7 +60,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    filter.extractFromInventory((stack, slot) -> items.add(new ItemBufferElement(stack, handler, slot)), handler);
+                    filter.extractFromInventory((stack, slot) -> items.add(new SingleItemBufferElement(stack, handler, slot)), handler);
                 }
             }
         }
@@ -76,7 +76,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
                     // We don't need filter here because this is just in one procedure
                     // It does not make sense to have multiple filters for one item transferring step
-                    for (ItemBufferElement buffer : items) {
+                    for (SingleItemBufferElement buffer : items) {
                         ItemStack source = buffer.stack;
                         if (source.isEmpty()) {
                             continue;
@@ -91,7 +91,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
             }
         }
 
-        for (ItemBufferElement buffer : items) {
+        for (SingleItemBufferElement buffer : items) {
             if (buffer.used > 0) {
                 buffer.inventory.extractItem(buffer.slot, buffer.used, false);
             }
