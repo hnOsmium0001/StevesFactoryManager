@@ -12,8 +12,7 @@ import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.*;
 import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.PropertyManager;
@@ -100,7 +99,8 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     }
 
     public boolean hasError() {
-        return sourceInventories.isEmpty() || sourceDirections.isEmpty() || targetInventories.isEmpty() || targetDirections.isEmpty();
+        return sourceInventories.isEmpty() || sourceDirections.isEmpty()
+                || targetInventories.isEmpty() || targetDirections.isEmpty();
     }
 
     @Override

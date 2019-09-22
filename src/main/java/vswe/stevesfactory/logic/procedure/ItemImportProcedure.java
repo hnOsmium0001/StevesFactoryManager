@@ -1,24 +1,30 @@
 package vswe.stevesfactory.logic.procedure;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
-import vswe.stevesfactory.logic.item.IItemFilter;
-import vswe.stevesfactory.logic.item.ItemTagFilter;
+import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.ItemTagFilterMenu;
 import vswe.stevesfactory.utils.IOHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ItemImportProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
@@ -27,34 +33,52 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
 
     private List<BlockPos> inventories = new ArrayList<>();
     private List<Direction> directions = new ArrayList<>();
-    private IItemFilter filter = new ItemTagFilter();
+    private IItemFilter filter = new ItemTraitsFilter();
 
     public ItemImportProcedure(CommandGraph graph) {
         super(Procedures.ITEM_IMPORT.getFactory(), graph);
-    }
-
-    public ItemImportProcedure(CommandGraph graph, int possibleParents, int possibleChildren) {
-        super(Procedures.ITEM_IMPORT.getFactory(), graph, possibleParents, possibleChildren);
     }
 
     public ItemImportProcedure(INetworkController controller) {
         super(Procedures.ITEM_IMPORT.getFactory(), controller);
     }
 
-    public ItemImportProcedure(INetworkController controller, int possibleParents, int possibleChildren) {
-        super(Procedures.ITEM_IMPORT.getFactory(), controller, possibleParents, possibleChildren);
-    }
-
     @Override
     public void execute(IExecutionContext context) {
         pushFrame(context, 0);
+
+        Map<Item, ItemBufferElement> buffers = context.getItemBufferElements();
+        IWorld world = context.getControllerWorld();
+        for (BlockPos pos : inventories) {
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile == null) {
+                continue;
+            }
+
+            for (Direction direction : directions) {
+                LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
+                if (cap.isPresent()) {
+                    IItemHandler handler = cap.orElseThrow(RuntimeException::new);
+                    filter.extractFromInventory((stack, slot) -> {
+                        Item item = stack.getItem();
+                        if (buffers.containsKey(item)) {
+                            ItemBufferElement buffer = buffers.get(item);
+                            buffer.stack.grow(stack.getCount());
+                        } else {
+                            ItemBufferElement buffer = new ItemBufferElement(stack, handler, slot);
+                            buffers.put(item, buffer);
+                        }
+                    }, handler);
+                }
+            }
+        }
     }
 
     @Override
     public FlowComponent<ItemImportProcedure> createFlowComponent() {
         FlowComponent<ItemImportProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>(INVENTORIES, "gui.sfm.Menu.InventorySelection"));
-        f.addMenu(new DirectionSelectionMenu<>(INVENTORIES, "gui.sfm.Menu.TargetSides"));
+        f.addMenu(new InventorySelectionMenu<>(INVENTORIES));
+        f.addMenu(new DirectionSelectionMenu<>(INVENTORIES));
         IItemFilterTarget.createFilterMenu(this, f, FILTER);
         return f;
     }
@@ -64,7 +88,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         CompoundNBT tag = super.serialize();
         tag.put("Inventories", IOHelper.writeBlockPoses(inventories));
         tag.putIntArray("Directions", IOHelper.direction2Index(directions));
-        tag.put("Filter", filter.write());
+        tag.put("Filter", IOHelper.writeItemFilter(filter));
         return tag;
     }
 
@@ -73,6 +97,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         super.deserialize(tag);
         inventories = IOHelper.readBlockPoses(tag.getList("Inventories", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         directions = IOHelper.index2Direction(tag.getIntArray("Directions"));
+        filter = IOHelper.readItemFilter(tag.getCompound("Filter"));
     }
 
     @Override
