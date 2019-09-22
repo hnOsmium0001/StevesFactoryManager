@@ -12,8 +12,7 @@ import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.*;
 import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.PropertyManager;
@@ -27,7 +26,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
 
     public static final int SOURCE_INVENTORIES = 0;
     public static final int DESTINATION_INVENTORIES = 1;
-    public static final int FILTERS = 0;
+    public static final int FILTER = 0;
 
     private List<BlockPos> sourceInventories = new ArrayList<>();
     private List<Direction> sourceDirections = new ArrayList<>();
@@ -51,7 +50,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
             return;
         }
 
-        List<ItemBufferElement> items = new ArrayList<>();
+        List<SingleItemBufferElement> items = new ArrayList<>();
         for (BlockPos pos : sourceInventories) {
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
             if (tile == null) {
@@ -61,7 +60,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    filter.extractFromInventory((stack, slot) -> items.add(new ItemBufferElement(stack, handler, slot)), handler);
+                    filter.extractFromInventory((stack, slot) -> items.add(new SingleItemBufferElement(stack, handler, slot)), handler);
                 }
             }
         }
@@ -77,7 +76,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
                     // We don't need filter here because this is just in one procedure
                     // It does not make sense to have multiple filters for one item transferring step
-                    for (ItemBufferElement buffer : items) {
+                    for (SingleItemBufferElement buffer : items) {
                         ItemStack source = buffer.stack;
                         if (source.isEmpty()) {
                             continue;
@@ -92,7 +91,7 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
             }
         }
 
-        for (ItemBufferElement buffer : items) {
+        for (SingleItemBufferElement buffer : items) {
             if (buffer.used > 0) {
                 buffer.inventory.extractItem(buffer.slot, buffer.used, false);
             }
@@ -100,19 +99,18 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     }
 
     public boolean hasError() {
-        return sourceInventories.isEmpty() || sourceDirections.isEmpty() || targetInventories.isEmpty() || targetDirections.isEmpty();
+        return sourceInventories.isEmpty() || sourceDirections.isEmpty()
+                || targetInventories.isEmpty() || targetDirections.isEmpty();
     }
 
     @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = super.serialize();
-
         tag.put("SourcePoses", IOHelper.writeBlockPoses(sourceInventories));
         tag.putIntArray("SourceDirections", IOHelper.direction2Index(sourceDirections));
         tag.put("TargetPoses", IOHelper.writeBlockPoses(targetInventories));
         tag.putIntArray("TargetDirections", IOHelper.direction2Index(targetDirections));
         tag.put("Filter", IOHelper.writeItemFilter(filter));
-
         return tag;
     }
 
@@ -138,11 +136,11 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
         pm.on(filter -> filter instanceof ItemTraitsFilter)
                 .name(I18n.format("gui.sfm.Menu.ItemFilter.Traits"))
                 .prop(ItemTraitsFilter::new)
-                .then(() -> new ItemTraitsFilterMenu<>(FILTERS, I18n.format("gui.sfm.Menu.ItemFilter.Traits")));
+                .then(() -> new ItemTraitsFilterMenu<>(FILTER, I18n.format("gui.sfm.Menu.ItemFilter.Traits")));
         pm.on(filter -> filter instanceof ItemTagFilter)
                 .name(I18n.format("gui.sfm.Menu.ItemFilter.Tags"))
                 .prop(ItemTagFilter::new)
-                .then(() -> new ItemTagFilterMenu<>(FILTERS, I18n.format("gui.sfm.Menu.ItemFilter.Tags")));
+                .then(() -> new ItemTagFilterMenu<>(FILTER, I18n.format("gui.sfm.Menu.ItemFilter.Tags")));
         pm.actionCycling();
         pm.setProperty(filter);
         return f;
@@ -180,5 +178,12 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     @Override
     public IItemFilter getFilter(int id) {
         return filter;
+    }
+
+    @Override
+    public void setFilter(int filterID, IItemFilter filter) {
+        if (filterID == FILTER) {
+            this.filter = filter;
+        }
     }
 }

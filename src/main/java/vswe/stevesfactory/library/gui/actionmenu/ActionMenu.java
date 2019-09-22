@@ -23,7 +23,7 @@ public class ActionMenu extends AbstractPopupWindow {
     }
 
     public static ActionMenu atCursor(double mouseX, double mouseY, List<? extends IEntry> entries) {
-        return new ActionMenu((int) mouseX, (int) mouseY, entries);
+        return new ActionMenu((int) mouseX + RenderingHelper.translationX, (int) mouseY + RenderingHelper.translationY, entries);
     }
 
     private final List<? extends IEntry> entries;
