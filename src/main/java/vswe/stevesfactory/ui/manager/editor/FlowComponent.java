@@ -3,13 +3,10 @@ package vswe.stevesfactory.ui.manager.editor;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
-import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
@@ -25,7 +22,6 @@ import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
@@ -208,17 +204,21 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-                setEnabled(false);
-                FlowComponent parent = getParentWidget();
-                parent.cancelButton.setEnabled(false);
-                parent.renameButton.setEnabled(true);
-                parent.nameBox.scrollToFront();
-                parent.nameBox.setEditable(false);
-                parent.getDataHandler().setName(parent.getName());
-                getWindow().changeFocus(parent.nameBox, false);
+                submit();
                 return true;
             }
             return false;
+        }
+
+        public void submit() {
+            setEnabled(false);
+            FlowComponent parent = getParentWidget();
+            parent.cancelButton.setEnabled(false);
+            parent.renameButton.setEnabled(true);
+            parent.nameBox.scrollToFront();
+            parent.nameBox.setEditable(false);
+            parent.getDataHandler().setName(parent.getName());
+            getWindow().changeFocus(parent.nameBox, false);
         }
 
         @Override
@@ -264,18 +264,22 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-                setEnabled(false);
-                FlowComponent parent = getParentWidget();
-                parent.submitButton.setEnabled(false);
-                parent.renameButton.setEnabled(true);
-                parent.setName(previousName);
-                parent.nameBox.scrollToFront();
-                parent.nameBox.setEditable(false);
-                getWindow().changeFocus(parent.nameBox, false);
-                previousName = "";
+                cancel();
                 return true;
             }
             return false;
+        }
+
+        public void cancel() {
+            setEnabled(false);
+            FlowComponent parent = getParentWidget();
+            parent.submitButton.setEnabled(false);
+            parent.renameButton.setEnabled(true);
+            parent.setName(previousName);
+            parent.nameBox.scrollToFront();
+            parent.nameBox.setEditable(false);
+            getWindow().changeFocus(parent.nameBox, false);
+            previousName = "";
         }
 
         @Override
@@ -336,7 +340,6 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     private final List<IWidget> children;
 
     private State state;
-    private ActionMenu openedActionMenu;
     private int zIndex;
 
     // Temporary data
@@ -389,6 +392,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         state = State.EXPANDED;
 
         nameBox.setWidth(95);
+        renameButton.setEnabled(true);
         updateMenusEnableState(true);
         reflow();
     }
@@ -397,8 +401,16 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         state = State.COLLAPSED;
 
         nameBox.setWidth(35);
+        if (isEditing()) {
+            cancelButton.cancel();
+        }
+        renameButton.setEnabled(false);
         updateMenusEnableState(false);
         reflow();
+    }
+
+    public boolean isEditing() {
+        return submitButton.isEnabled();
     }
 
     private void updateMenusEnableState(boolean enabled) {
@@ -601,7 +613,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     }
 
     private void openActionMenu() {
-        openedActionMenu = ActionMenu.atCursor(ImmutableList.of(
+        ActionMenu openedActionMenu = ActionMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.Delete", b -> actionDelete()),
                 new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.Cut", b -> actionCut()),
                 new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.Copy", b -> actionCopy())

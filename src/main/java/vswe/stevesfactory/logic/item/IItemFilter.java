@@ -12,6 +12,10 @@ public interface IItemFilter {
 
     boolean test(ItemStack stack);
 
+    boolean isMatchingAmount();
+
+    void setMatchingAmount(boolean matchingAmount);
+
     void extractFromInventory(List<ItemStack> target, IItemHandler handler, boolean merge);
 
     void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler);

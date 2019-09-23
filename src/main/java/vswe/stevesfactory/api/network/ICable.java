@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
  */
 public interface ICable {
 
-    BlockPos getPos();
+    BlockPos getPosition();
 
     /**
      * This block will only be recognized if this method returns {@code true}. This could be used at situations such as making a block

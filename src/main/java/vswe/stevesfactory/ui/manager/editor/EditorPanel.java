@@ -200,7 +200,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         if (yOffset.isInside(mouseX, mouseY)) {
             return yOffset.mouseReleased(mouseX, mouseY, button);
         }
-        getWindow().setFocusedWidget(null);
+//        getWindow().setFocusedWidget(null);
         return super.mouseReleased(mouseX - xOffset.get(), mouseY - yOffset.get(), button);
     }
 

@@ -12,6 +12,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -29,12 +30,13 @@ import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class FactoryManagerTileEntity extends BaseTileEntity implements ITickableTileEntity, INetworkController, ICable {
 
     private Set<BlockPos> connectedCables = new HashSet<>();
-    private Map<Capability<?>, Multiset<BlockPos>> linkedInventories = new HashMap<>();
+    private Map<Capability<?>, Multiset<BlockPos>> linkedInventories = new IdentityHashMap<>();
 
     private Set<CommandGraph> graphs = new HashSet<>();
     private boolean lockedGraphs = false;
@@ -49,16 +51,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public void onLoad() {
         super.onLoad();
         firstTick = true;
-    }
-
-    @Override
-    public void onChunkUnloaded() {
-        removeAllCableFromNetwork();
-    }
-
-    @Override
-    public void onRemoved() {
-        removeAllCableFromNetwork();
     }
 
     @Override
@@ -80,9 +72,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     }
 
     private void reload() {
-        if (!connectedCables.contains(pos)) {
-            addCableToNetwork(this, pos);
-        }
+        search();
     }
 
     public void activate(PlayerEntity player) {
@@ -93,13 +83,11 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         search();
 
         ServerPlayerEntity client = (ServerPlayerEntity) player;
-        PacketOpenManagerGUI.openFactoryManager(client, getDimension(), getPos(), write(new CompoundNBT()));
+        PacketOpenManagerGUI.openFactoryManager(client, getDimension(), getPosition(), write(new CompoundNBT()));
     }
 
     private void search() {
         StevesFactoryManager.logger.trace("Triggered searching process on a factory manager at {}", pos);
-
-        removeAllCableFromNetwork();
 
         // Relocate all the cables to prevent the last cable, for example, from being recognized as connected
         // [manager] - [cable] - [removed cable (air)] - [unconnected cable]
@@ -127,17 +115,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private void addCableToNetwork(ICable cable, BlockPos pos) {
         cable.addLinksFor(this);
         connectedCables.add(pos);
-    }
-
-    private void removeAllCableFromNetwork() {
-//        assert world != null;
-//        StevesFactoryManager.logger.trace("Started removing all cables from the network {}", pos);
-//        for (BlockPos pos : connectedCables) {
-//            @Nullable ICable cable = (ICable) world.getTileEntity(pos);
-//            if (cable != null) {
-//                cable.onLeaveNetwork(this);
-//            }
-//        }
     }
 
     public void dump() {
@@ -181,7 +158,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public void removeCable(BlockPos cable) {
         assert world != null;
         connectedCables.remove(cable);
-//        Objects.requireNonNull((ICable) world.getTileEntity(cable)).onLeaveNetwork(this);
     }
 
     public <T> Multiset<BlockPos> getInventoryMultiset(Capability<T> cap) {
@@ -284,6 +260,25 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         }
     }
 
+    // Even though these methods are implemented in TileEntity, after reobfuscation the names would be different from the ones in INetworkController
+    // which will cause AbstractMethodError at run time
+
+    @Override
+    public boolean isValid() {
+        return !removed;
+    }
+
+    @Override
+    public BlockPos getPosition() {
+        return pos;
+    }
+
+    @Nullable
+    @Override
+    public World getWorld() {
+        return world;
+    }
+
     @Override
     public boolean isCable() {
         return true;
@@ -293,7 +288,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     public void sync() {
         assert world != null;
         if (world.isRemote) {
-            NetworkHandler.sendToServer(new PacketSyncCommandGraphs(graphs, getDimension(), getPos()));
+            NetworkHandler.sendToServer(new PacketSyncCommandGraphs(graphs, getDimension(), getPosition()));
         }
     }
 
@@ -328,10 +323,22 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         for (int i = 0; i < serializedInventories.size(); i++) {
             CompoundNBT element = serializedInventories.getCompound(i);
 
-            // Apparently normal string and internal string behave differently in an IdentityHashMap
+            // Constructed (heap) string and interned string behave differently in an IdentityHashMap
             // (CapabilityManager interns the capability name before putting them in the map)
             String capName = element.getString("Name").intern();
-            Capability<?> cap = CapabilityManager.INSTANCE.providers.get(capName);
+
+//            Capability<?> cap = CapabilityManager.INSTANCE.providers.get(capName);
+            // TODO de-crime-lize this reflection black magic
+            Capability<?> cap;
+            try {
+                Field field = CapabilityManager.class.getDeclaredField("providers");
+                field.setAccessible(true);
+                @SuppressWarnings("unchecked") Map<String, Capability<?>> caps = (Map<String, Capability<?>>) field.get(CapabilityManager.INSTANCE);
+                cap = caps.get(capName);
+            } catch (NoSuchFieldException | IllegalAccessException | ClassCastException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
 
             ListNBT serializedPoses = element.getList("Positions", Constants.NBT.TAG_COMPOUND);
             Multiset<BlockPos> set = HashMultiset.create();

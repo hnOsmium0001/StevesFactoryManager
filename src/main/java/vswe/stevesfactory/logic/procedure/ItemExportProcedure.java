@@ -66,6 +66,9 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
                         if (source.isEmpty()) {
                             continue;
                         }
+                        if (testFullness(handler, source)) {
+                            continue;
+                        }
                         int sourceStackSize = source.getCount();
                         ItemStack untaken = ItemHandlerHelper.insertItem(handler, source, false);
 
@@ -75,6 +78,20 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
                 }
             }
         }
+    }
+
+    private boolean testFullness(IItemHandler handler, ItemStack target) {
+        if (!filter.isMatchingAmount()) {
+            return false;
+        }
+        int totalCount = 0;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            if (stack.getItem() == target.getItem()) {
+                totalCount += stack.getCount();
+            }
+        }
+        return totalCount >= target.getCount();
     }
 
     @Override

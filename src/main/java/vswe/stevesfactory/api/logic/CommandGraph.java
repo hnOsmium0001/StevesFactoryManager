@@ -9,7 +9,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.Constants;
-import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.utils.NetworkHelper;
@@ -100,7 +99,7 @@ public class CommandGraph implements Iterable<IProcedure> {
         CompoundNBT tag = new CompoundNBT();
 
         tag.putString("Dimension", Objects.requireNonNull(controller.getDimension().getRegistryName()).toString());
-        tag.put("ControllerPos", NBTUtil.writeBlockPos(controller.getPos()));
+        tag.put("ControllerPos", NBTUtil.writeBlockPos(controller.getPosition()));
 
         Object2IntMap<IProcedure> idMap = createIDMap();
         ListNBT nodesNBT = new ListNBT();

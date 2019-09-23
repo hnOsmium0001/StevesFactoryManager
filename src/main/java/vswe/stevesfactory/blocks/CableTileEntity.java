@@ -39,4 +39,9 @@ public class CableTileEntity extends BaseTileEntity implements ICable {
     public boolean isCable() {
         return true;
     }
+
+    @Override
+    public BlockPos getPosition() {
+        return pos;
+    }
 }

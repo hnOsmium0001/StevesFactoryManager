@@ -14,8 +14,10 @@ import java.util.function.BiConsumer;
 
 public class ItemTagFilter implements IItemFilter {
 
-    private Set<Tag<Item>> tags = new HashSet<>();
     public FilterType type = FilterType.WHITELIST;
+    private Set<Tag<Item>> tags = new HashSet<>();
+
+    private boolean matchingAmount;
 
     public Set<Tag<Item>> getTags() {
         return tags;
@@ -29,6 +31,16 @@ public class ItemTagFilter implements IItemFilter {
     @Override
     public void setType(FilterType type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean isMatchingAmount() {
+        return matchingAmount;
+    }
+
+    @Override
+    public void setMatchingAmount(boolean matchingAmount) {
+        this.matchingAmount = matchingAmount;
     }
 
     @Override
@@ -61,9 +73,12 @@ public class ItemTagFilter implements IItemFilter {
     }
 
     private void extractFromInventoryNoMerge(List<ItemStack> target, IItemHandler handler) {
+        int total = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
+            // TODO stack count limit
             ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
             if (test(stack)) {
+                total += stack.getCount();
                 target.add(stack);
             }
         }

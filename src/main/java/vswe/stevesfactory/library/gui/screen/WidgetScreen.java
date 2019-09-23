@@ -6,18 +6,19 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
-import vswe.stevesfactory.library.gui.window.IWindow;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.window.IPopupWindow;
-import vswe.stevesfactory.library.gui.RenderingHelper;
+import vswe.stevesfactory.library.gui.window.IWindow;
 
 import java.util.*;
 import java.util.function.Consumer;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
 
 public abstract class WidgetScreen extends Screen implements IGuiEventListener {
 
@@ -182,8 +183,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_E) {
-            this.onClose();
+        if (keyCode == GLFW_KEY_E) {
             Minecraft.getInstance().player.closeScreen();
             return true;
         }
@@ -209,8 +209,7 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
         for (IWindow window : windows) {
             window.onRemoved();
         }

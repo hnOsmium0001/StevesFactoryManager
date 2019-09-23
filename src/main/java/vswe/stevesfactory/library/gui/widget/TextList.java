@@ -83,7 +83,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
             String trimmed = text.substring(0, end);
             String after = text.substring(end).trim();
             addLine(trimmed);
-            addTranslatedLineSplit(maxWidth, after);
+            addLineSplit(maxWidth, after);
         }
     }
 

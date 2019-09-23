@@ -54,10 +54,12 @@ public class ItemTraitsFilter implements IItemFilter {
         this.matchingTag = matchingTag;
     }
 
+    @Override
     public boolean isMatchingAmount() {
         return matchingAmount;
     }
 
+    @Override
     public void setMatchingAmount(boolean matchingAmount) {
         this.matchingAmount = matchingAmount;
     }

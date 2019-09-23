@@ -30,7 +30,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     }
 
     public AbstractProcedure(IProcedureType<?> type, CommandGraph graph, int possibleParents, int possibleChildren) {
-        Preconditions.checkArgument(!graph.getController().isRemoved(), "The controller object is invalid!");
+        Preconditions.checkArgument(graph.getController().isValid(), "The controller object is invalid!");
         this.type = type;
         this.graph = graph;
         this.successors = new Connection[possibleChildren];
@@ -50,12 +50,12 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 
     public INetworkController getController() {
         INetworkController controller = graph.getController();
-        Preconditions.checkArgument(!controller.isRemoved(), "The controller object is invalid!");
+        Preconditions.checkArgument(controller.isValid(), "The controller object is invalid!");
         return controller;
     }
 
     public void setController(INetworkController controller) {
-        Preconditions.checkArgument(!controller.isRemoved(), "The controller object is invalid!");
+        Preconditions.checkArgument(controller.isValid(), "The controller object is invalid!");
 
         if (graph != null) {
             INetworkController oldController = graph.getController();

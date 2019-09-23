@@ -13,9 +13,11 @@ public interface INetworkController {
 
     DimensionType getDimension();
 
-    BlockPos getPos();
+    BlockPos getPosition();
 
     IWorld getWorld();
+
+    boolean isValid();
 
     Set<BlockPos> getConnectedCables();
 
@@ -59,8 +61,6 @@ public interface INetworkController {
     <T> boolean removeLink(Capability<T> cap, BlockPos pos);
 
     void removeAllLinks();
-
-    boolean isRemoved();
 
     Collection<CommandGraph> getCommandGraphs();
 

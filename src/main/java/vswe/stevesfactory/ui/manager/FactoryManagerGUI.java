@@ -1,6 +1,5 @@
 package vswe.stevesfactory.ui.manager;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -10,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -22,10 +22,8 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.AbstractWindow;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
@@ -131,18 +129,15 @@ public class FactoryManagerGUI extends WidgetScreen {
         // The location and dimensions will be set in the constructor
         private Rectangle screenBounds = new Rectangle();
 
-        private int backgroundDL;
-
         private TopLevelWidget topLevel;
-        private IWidget focusedWidget;
 
+        private int backgroundDL;
         private boolean fullscreen = false;
 
         private PrimaryWindow() {
             this.topLevel = new TopLevelWidget(this);
-            this.focusedWidget = topLevel;
-
-            this.asProportional();
+            setFocusedWidget(topLevel);
+            asProportional();
         }
 
         @Override
@@ -153,11 +148,6 @@ public class FactoryManagerGUI extends WidgetScreen {
         @Override
         public List<? extends IWidget> getChildren() {
             return ImmutableList.of(topLevel);
-        }
-
-        @Override
-        public Point getPosition() {
-            return screenBounds.getLocation();
         }
 
         @Override
@@ -172,21 +162,6 @@ public class FactoryManagerGUI extends WidgetScreen {
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
 
-        @Nonnull
-        @Override
-        public IWidget getFocusedWidget() {
-            return focusedWidget;
-        }
-
-        @Override
-        public void setFocusedWidget(@Nullable IWidget widget) {
-            if (focusedWidget != widget) {
-                focusedWidget.onFocusChanged(false);
-                focusedWidget = MoreObjects.firstNonNull(widget, topLevel);
-                focusedWidget.onFocusChanged(true);
-            }
-        }
-
         public Rectangle getScreenBounds() {
             return screenBounds;
         }
@@ -199,6 +174,7 @@ public class FactoryManagerGUI extends WidgetScreen {
             this.screenBounds.x = scaledWidth() / 2 - width / 2;
             this.screenBounds.y = scaledHeight() / 2 - height / 2;
 
+            setPosition(screenBounds.x, screenBounds.y);
             setBorder(width, height);
             updateBackgroundDL();
         }

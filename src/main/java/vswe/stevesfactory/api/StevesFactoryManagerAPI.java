@@ -19,12 +19,7 @@ import java.util.Set;
 public class StevesFactoryManagerAPI {
 
     private static IForgeRegistry<IProcedureType<?>> procedures;
-    private static Set<Capability<?>> recognizableCapabilities = new HashSet<>();
-
-    static {
-        recognizableCapabilities.add(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        recognizableCapabilities.add(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
-    }
+    private static Set<Capability<?>> recognizableCapabilities;
 
     public static IForgeRegistry<IProcedureType<?>> getProceduresRegistry() {
         if (procedures == null) {
@@ -34,6 +29,11 @@ public class StevesFactoryManagerAPI {
     }
 
     public static Set<Capability<?>> getRecognizableCapabilities() {
+        if (recognizableCapabilities == null) {
+            recognizableCapabilities = new HashSet<>();
+            recognizableCapabilities.add(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+            recognizableCapabilities.add(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+        }
         return recognizableCapabilities;
     }
 
