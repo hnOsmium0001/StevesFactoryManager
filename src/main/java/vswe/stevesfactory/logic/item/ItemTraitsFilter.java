@@ -78,18 +78,7 @@ public class ItemTraitsFilter implements IItemFilter {
 
     @Override
     public void extractFromInventory(List<ItemStack> target, IItemHandler handler, boolean merge) {
-        // Lower end: desired count
-        // Higher end: extracted count
-        Object2LongMap<Item> counts = new Object2LongOpenHashMap<>();
-        // For blacklist, the accepted items will not be in this map anyways
-        // so we can simply not build this map if we are in blacklisting mode
-        if (type == FilterType.WHITELIST) {
-            for (ItemStack item : items) {
-                if (!item.isEmpty()) {
-                    counts.put(item.getItem(), getData(0, matchingAmount ? item.getCount() : Integer.MAX_VALUE));
-                }
-            }
-        }
+        Object2LongMap<Item> counts = constructResultMap();
 
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
@@ -99,19 +88,9 @@ public class ItemTraitsFilter implements IItemFilter {
 
             boolean accepted = test(stack);
             if (accepted) {
-                Item item = stack.getItem();
-                long data = counts.getOrDefault(item, Integer.MAX_VALUE);
-                int desired = getDesiredCount(data);
-                if (desired == 0) {
+                if (processExtractableStack(counts, stack)) {
                     continue;
                 }
-                int extracted = getExtractedCount(data);
-
-                int used = Utils.upperBound(stack.getCount(), desired);
-                stack.setCount(used);
-
-                // We put in data regardless of the filter because the extracted count record is necessary if we're merging stacks
-                counts.put(item, getData(extracted + used, desired - used));
                 if (!merge) {
                     target.add(stack);
                 }
@@ -131,6 +110,44 @@ public class ItemTraitsFilter implements IItemFilter {
     public void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler) {
         // Lower end: desired count
         // Higher end: extracted count
+        Object2LongMap<Item> counts = constructResultMap();
+
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            boolean accepted = test(stack);
+            if (accepted) {
+                if (processExtractableStack(counts, stack)) {
+                    continue;
+                }
+                receiver.accept(stack, i);
+            }
+        }
+    }
+
+    private boolean processExtractableStack(Object2LongMap<Item> counts, ItemStack stack) {
+        Item item = stack.getItem();
+        long data = counts.getOrDefault(item, Integer.MAX_VALUE);
+        int desired = getDesiredCount(data);
+        if (desired == 0) {
+            return true;
+        }
+        int extracted = getExtractedCount(data);
+
+        int used = Utils.upperBound(stack.getCount(), desired);
+        stack.setCount(used);
+
+        // We put in data regardless of the filter because the extracted count record is necessary if we're merging stacks
+        counts.put(item, getData(extracted + used, desired - used));
+        return false;
+    }
+
+    private Object2LongMap<Item> constructResultMap() {
+        // Lower end: desired count
+        // Higher end: extracted count
         Object2LongMap<Item> counts = new Object2LongOpenHashMap<>();
         // For blacklist, the accepted items will not be in this map anyways
         // so we can simply not build this map if we are in blacklisting mode
@@ -141,31 +158,7 @@ public class ItemTraitsFilter implements IItemFilter {
                 }
             }
         }
-
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
-            if (stack.isEmpty()) {
-                continue;
-            }
-
-            boolean accepted = test(stack);
-            if (accepted) {
-                Item item = stack.getItem();
-                long data = counts.getOrDefault(item, Integer.MAX_VALUE);
-                int desired = getDesiredCount(data);
-                if (desired == 0) {
-                    continue;
-                }
-                int extracted = getExtractedCount(data);
-
-                int used = Utils.upperBound(stack.getCount(), desired);
-                stack.setCount(used);
-
-                // We put in data regardless of the filter because the extracted count record is necessary if we're merging stacks
-                counts.put(item, getData(extracted + used, desired - used));
-                receiver.accept(stack, i);
-            }
-        }
+        return counts;
     }
 
     private int getDesiredCount(long data) {
@@ -197,8 +190,10 @@ public class ItemTraitsFilter implements IItemFilter {
 
     private boolean getTypeFlag() {
         switch (type) {
-            case WHITELIST: return false;
-            case BLACKLIST: return true;
+            case WHITELIST:
+                return false;
+            case BLACKLIST:
+                return true;
         }
         throw new IllegalStateException();
     }

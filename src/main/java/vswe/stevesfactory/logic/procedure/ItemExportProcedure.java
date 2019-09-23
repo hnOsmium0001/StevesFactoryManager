@@ -9,19 +9,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.*;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
-import vswe.stevesfactory.logic.item.*;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.ItemBufferElement;
+import vswe.stevesfactory.logic.item.ItemTagFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.Utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ItemExportProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
@@ -61,37 +69,57 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
                         if (!filter.test(buffer.stack)) {
                             continue;
                         }
-
-                        ItemStack source = buffer.stack;
-                        if (source.isEmpty()) {
+                        if (buffer.stack.isEmpty()) {
                             continue;
                         }
-                        if (testFullness(handler, source)) {
+
+                        // Simulate limit input stack size
+                        int need = calculateNeededAmount(handler, buffer.stack);
+                        if (need == 0) {
                             continue;
                         }
-                        int sourceStackSize = source.getCount();
-                        ItemStack untaken = ItemHandlerHelper.insertItem(handler, source, false);
+                        int sourceCount = buffer.stack.getCount();
+                        buffer.stack.setCount(need);
 
-                        buffer.used += sourceStackSize - untaken.getCount();
-                        buffer.stack = untaken;
+                        ItemStack untaken = ItemHandlerHelper.insertItem(handler, buffer.stack, false);
+                        int untakenCount = untaken.getCount();
+                        int takenCount = need - untakenCount;
+
+                        buffer.used += takenCount;
+                        buffer.stack.setCount(sourceCount - takenCount);
                     }
                 }
             }
         }
     }
 
-    private boolean testFullness(IItemHandler handler, ItemStack target) {
-        if (!filter.isMatchingAmount()) {
-            return false;
+    private int calculateNeededAmount(IItemHandler handler, ItemStack source) {
+        if (!this.filter.isMatchingAmount()) {
+            return 0;
         }
         int totalCount = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
-            if (stack.getItem() == target.getItem()) {
+            if (source.isItemEqual(stack)) {
                 totalCount += stack.getCount();
             }
         }
-        return totalCount >= target.getCount();
+
+        // TODO generalize this operation (move to interface)
+        if (filter instanceof ItemTraitsFilter) {
+            ItemTraitsFilter filter = (ItemTraitsFilter) this.filter;
+            int stackLimit = Integer.MAX_VALUE;
+            for (int i = 0; i < filter.getItems().size(); i++) {
+                if (filter.isEqual(i, source)) {
+                    stackLimit = filter.getItems().get(i).getCount();
+                    break;
+                }
+            }
+            return Utils.lowerBound(stackLimit - totalCount, 0);
+        } else if (filter instanceof ItemTagFilter) {
+            return Utils.lowerBound(((ItemTagFilter) filter).stackLimit - totalCount, 0);
+        }
+        return 0;
     }
 
     @Override

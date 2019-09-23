@@ -71,7 +71,7 @@ public class ProcedureExecutor implements IExecutionContext {
             if (buffer.used > 0) {
                 for (Pair<IItemHandler, Integer> pair : buffer.inventories) {
                     IItemHandler handler = pair.getLeft();
-                    Integer slot = pair.getRight();
+                    int slot = pair.getRight();
                     ItemStack extracted = handler.extractItem(slot, buffer.used, false);
                     buffer.used -= extracted.getCount();
                 }

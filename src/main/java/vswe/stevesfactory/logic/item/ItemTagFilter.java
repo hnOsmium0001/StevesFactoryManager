@@ -15,6 +15,7 @@ import java.util.function.BiConsumer;
 public class ItemTagFilter implements IItemFilter {
 
     public FilterType type = FilterType.WHITELIST;
+    public int stackLimit;
     private Set<Tag<Item>> tags = new HashSet<>();
 
     private boolean matchingAmount;
@@ -64,10 +65,17 @@ public class ItemTagFilter implements IItemFilter {
 
     @Override
     public void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler) {
+        int total = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
             if (test(stack)) {
+                int need = Math.min(stack.getCount(), stackLimit - total);
+                total += need;
+                stack.setCount(need);
                 receiver.accept(stack, i);
+            }
+            if (total >= stackLimit) {
+                break;
             }
         }
     }
@@ -75,27 +83,38 @@ public class ItemTagFilter implements IItemFilter {
     private void extractFromInventoryNoMerge(List<ItemStack> target, IItemHandler handler) {
         int total = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
-            // TODO stack count limit
             ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
             if (test(stack)) {
-                total += stack.getCount();
+                int need = Math.min(stack.getCount(), stackLimit - total);
+                total += need;
+                stack.setCount(need);
                 target.add(stack);
+            }
+            if (total >= stackLimit) {
+                break;
             }
         }
     }
 
     private void extractFromInventoryMerge(List<ItemStack> target, IItemHandler handler) {
+        int total = 0;
         Map<Item, ItemStack> results = new HashMap<>();
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);
             if (test(stack)) {
                 Item item = stack.getItem();
+                int need = Math.min(stack.getCount(), stackLimit - total);
+                total += need;
+                stack.setCount(need);
                 if (results.containsKey(item)) {
                     ItemStack result = results.get(item);
                     result.grow(stack.getCount());
                 } else {
                     results.put(item, stack);
                 }
+            }
+            if (total >= stackLimit) {
+                break;
             }
         }
 
