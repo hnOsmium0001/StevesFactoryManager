@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.actionmenu;
+package vswe.stevesfactory.library.gui.contextmenu;
 
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.library.gui.window.IWindow;
@@ -65,13 +65,13 @@ public abstract class AbstractEntry extends AbstractWidget implements IEntry, Le
     }
 
     @Override
-    public void attach(ActionMenu actionMenu) {
-        setWindow(actionMenu);
+    public void attach(ContextMenu contextMenu) {
+        setWindow(contextMenu);
     }
 
     @Override
-    public ActionMenu getWindow() {
-        return (ActionMenu) super.getWindow();
+    public ContextMenu getWindow() {
+        return (ContextMenu) super.getWindow();
     }
 
     private int computeWidth() {

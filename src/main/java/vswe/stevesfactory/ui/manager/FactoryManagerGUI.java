@@ -11,7 +11,7 @@ import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
@@ -258,8 +258,8 @@ public class FactoryManagerGUI extends WidgetScreen {
             }
             // Fallback action menu
             if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                ActionMenu actionMenu = ActionMenu.atCursor(ImmutableList.of(new UserPreferencesPanel.OpenerEntry()));
-                WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+                ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(new UserPreferencesPanel.OpenerEntry()));
+                WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
             }
             return false;
         }

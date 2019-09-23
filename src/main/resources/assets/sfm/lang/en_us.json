@@ -4,7 +4,7 @@
   "block.sfm.factory_manager": "Factory Manager",
   "block.sfm.cable": "Inventory Cable",
 
-  "logic.sfm.timed_trigger": "Trigger",
+  "logic.sfm.interval_trigger": "Interval Trigger",
   "logic.sfm.batched_item_transfer": "Item Transfer",
   "logic.sfm.item_import": "Input",
   "logic.sfm.item_export": "Output",
@@ -21,6 +21,9 @@
   "logic.sfm.group_io": "Node",
   "logic.sfm.camouflage": "Camouflage",
   "logic.sfm.sign_updater": "Sign",
+
+  "component_group.sfm.ItemIO": "Item I/O",
+  "component_group.sfm.Trigger": "Trigger",
 
   "gui.sfm.seconds": "second(s)",
   "gui.sfm.ticks": "ticks",
@@ -39,6 +42,11 @@
 
   "gui.sfm.WrappingList.SearchStatus": "Found: %d",
 
+  "gui.sfm.Editor.XOff": "X: ",
+  "gui.sfm.Editor.YOff": "Y: ",
+  "gui.sfm.Editor.EditOffset": "Enter a new offset: ",
+  "gui.sfm.Editor.InvalidNumberFormat": "Invalid number format: %s!",
+
   "gui.sfm.ActionMenu.Delete": "Delete",
   "gui.sfm.ActionMenu.DeleteAll": "Delete All",
   "gui.sfm.ActionMenu.DeleteAll.ConfirmMsg": "Are you sure you want to delete all connected procedures?",
@@ -54,11 +62,6 @@
   "gui.sfm.ActionMenu.Menus.CycleProperty": "Cycle to next property",
   "gui.sfm.ActionMenu.Menus.CycleProperty.Named": "Change to %s",
   "gui.sfm.ActionMenu.BlockTarget.Highlight": "Highlight in world",
-
-  "gui.sfm.Editor.XOff": "X: ",
-  "gui.sfm.Editor.YOff": "Y: ",
-  "gui.sfm.Editor.EditOffset": "Enter a new offset: ",
-  "gui.sfm.Editor.InvalidNumberFormat": "Invalid number format: %s!",
 
   "gui.sfm.Menu.Interval": "Interval",
   "gui.sfm.Menu.Interval.Info": "Time between this command is triggered",
@@ -82,8 +85,5 @@
   "gui.sfm.Menu.Deactivate": "Deactivate",
   "gui.sfm.Menu.Delete": "Delete",
   "gui.sfm.Menu.Delete.Info": "Remove this item filter",
-  "gui.sfm.Menu.CloseEditor.Info": "Return to last menu",
-
-  "component_group.sfm.ItemIO": "Item I/O",
-  "component_group.sfm.Trigger": "Triggers"
+  "gui.sfm.Menu.CloseEditor.Info": "Return to last menu"
 }

@@ -3,6 +3,7 @@ package vswe.stevesfactory.library.gui.window;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHelper;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import vswe.stevesfactory.library.gui.*;
@@ -18,6 +19,18 @@ import java.util.List;
 import java.util.function.Function;
 
 public class PlayerInventoryWindow extends AbstractPopupWindow {
+
+    public static PlayerInventoryWindow atCursor() {
+        return atCursor(ItemSlotPanel.DefaultSlot::new);
+    }
+
+    public static PlayerInventoryWindow atCursor(Function<ItemStack, AbstractItemSlot> factory) {
+        MouseHelper m = Minecraft.getInstance().mouseHelper;
+        double scale = Minecraft.getInstance().mainWindow.getGuiScaleFactor();
+        int mouseX = (int) (m.getMouseX() / scale);
+        int mouseY = (int) (m.getMouseY() / scale);
+        return new PlayerInventoryWindow(mouseX, mouseY, factory);
+    }
 
     private final List<IWidget> children;
 

@@ -72,7 +72,6 @@ public class ItemTraitsFilter implements IItemFilter {
                 return !getTypeFlag();
             }
         }
-
         return getTypeFlag();
     }
 

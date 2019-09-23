@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.actionmenu;
+package vswe.stevesfactory.library.gui.contextmenu;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.client.Minecraft;
@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 
-public class ActionMenu extends AbstractPopupWindow {
+public class ContextMenu extends AbstractPopupWindow {
 
-    public static ActionMenu atCursor(List<? extends IEntry> entries) {
+    public static ContextMenu atCursor(List<? extends IEntry> entries) {
         MouseHelper m = Minecraft.getInstance().mouseHelper;
         double scale = Minecraft.getInstance().mainWindow.getGuiScaleFactor();
         double mouseX = m.getMouseX() / scale;
@@ -22,14 +22,14 @@ public class ActionMenu extends AbstractPopupWindow {
         return atCursor(mouseX + RenderingHelper.translationX, mouseY + RenderingHelper.translationY, entries);
     }
 
-    public static ActionMenu atCursor(double mouseX, double mouseY, List<? extends IEntry> entries) {
-        return new ActionMenu((int) mouseX + RenderingHelper.translationX, (int) mouseY + RenderingHelper.translationY, entries);
+    public static ContextMenu atCursor(double mouseX, double mouseY, List<? extends IEntry> entries) {
+        return new ContextMenu((int) mouseX + RenderingHelper.translationX, (int) mouseY + RenderingHelper.translationY, entries);
     }
 
     private final List<? extends IEntry> entries;
     private IEntry focusedEntry;
 
-    public ActionMenu(int x, int y, List<? extends IEntry> entries) {
+    public ContextMenu(int x, int y, List<? extends IEntry> entries) {
         Preconditions.checkArgument(!entries.isEmpty());
 
         this.entries = entries;

@@ -86,6 +86,7 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
                         int takenCount = need - untakenCount;
 
                         buffer.used += takenCount;
+                        buffer.stack = untaken;
                         buffer.stack.setCount(sourceCount - takenCount);
                     }
                 }
@@ -95,7 +96,7 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
 
     private int calculateNeededAmount(IItemHandler handler, ItemStack source) {
         if (!this.filter.isMatchingAmount()) {
-            return 0;
+            return source.getCount();
         }
         int totalCount = 0;
         for (int i = 0; i < handler.getSlots(); i++) {

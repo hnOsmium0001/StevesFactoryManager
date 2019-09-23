@@ -79,7 +79,7 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
 
     private void openInventorySelection() {
         AbstractItemSlot[] selected = new AbstractItemSlot[1];
-        PlayerInventoryWindow popup = new PlayerInventoryWindow(getAbsoluteXRight() + 4, getAbsoluteY(), stack -> new AbstractItemSlot() {
+        PlayerInventoryWindow popup = PlayerInventoryWindow.atCursor(stack -> new AbstractItemSlot() {
             private ItemStack representative;
 
             @Override

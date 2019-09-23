@@ -8,8 +8,8 @@ import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
-import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
+import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
@@ -367,7 +367,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, this.inputNodes, this.outputNodes, menus);
         this.setLinkedProcedure(procedure);
 
-        this.collapse();
+        this.state = State.COLLAPSED;
         this.reflow();
     }
 
@@ -535,7 +535,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
             clearDrag();
         }
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            openActionMenu();
+            openContextMenu();
         }
         return true;
     }
@@ -610,15 +610,16 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     public void setParentWidget(EditorPanel parent) {
         this.setParentWidget((IWidget) parent);
         id = parent.nextID();
+        collapse();
     }
 
-    private void openActionMenu() {
-        ActionMenu openedActionMenu = ActionMenu.atCursor(ImmutableList.of(
+    private void openContextMenu() {
+        ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.Delete", b -> actionDelete()),
                 new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.Cut", b -> actionCut()),
                 new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.Copy", b -> actionCopy())
         ));
-        WidgetScreen.getCurrentScreen().addPopupWindow(openedActionMenu);
+        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
     }
 
     private void actionDelete() {

@@ -7,7 +7,7 @@ import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.actionmenu.*;
+import vswe.stevesfactory.library.gui.contextmenu.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
@@ -247,8 +247,8 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
                 for (Supplier<IEntry> entry : actionMenuEntries) {
                     list.add(entry.get());
                 }
-                ActionMenu actionMenu = ActionMenu.atCursor(list.build());
-                WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+                ContextMenu contextMenu = ContextMenu.atCursor(list.build());
+                WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
             }
             return true;
         }

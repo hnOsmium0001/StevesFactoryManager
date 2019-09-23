@@ -1,4 +1,4 @@
-package vswe.stevesfactory.library.gui.actionmenu;
+package vswe.stevesfactory.library.gui.contextmenu;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
@@ -25,5 +25,5 @@ public interface IEntry extends IWidget, ResizableWidgetMixin {
     @Override
     Dimension getDimensions();
 
-    void attach(ActionMenu actionMenu);
+    void attach(ContextMenu contextMenu);
 }

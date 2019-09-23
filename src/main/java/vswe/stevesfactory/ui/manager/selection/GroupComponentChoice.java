@@ -2,9 +2,9 @@ package vswe.stevesfactory.ui.manager.selection;
 
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.logic.IProcedureType;
-import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
-import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
-import vswe.stevesfactory.library.gui.actionmenu.IEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
+import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.IEntry;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
@@ -40,8 +40,8 @@ public class GroupComponentChoice extends AbstractWidget implements IComponentCh
         for (IProcedureType<?> type : group.getMembers()) {
             entries.add(new CallbackEntry(type.getIcon(), type.getLocalizedName(), b -> createFlowComponent(type)));
         }
-        ActionMenu actionMenu = ActionMenu.atCursor(getAbsoluteXRight() + 2, getAbsoluteY(), entries);
-        WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+        ContextMenu contextMenu = ContextMenu.atCursor(getAbsoluteXRight() + 2, getAbsoluteY(), entries);
+        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
         return true;
     }
 

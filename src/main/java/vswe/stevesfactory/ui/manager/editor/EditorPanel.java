@@ -13,8 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
-import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
+import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.ScissorTest;
@@ -119,12 +119,12 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         ScissorTest test = ScissorTest.scaled(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
         GlStateManager.pushMatrix();
         {
+            if (selectedNode != null) {
+                Node.drawConnectionLine(selectedNode.getCenterX() + xOffset.get(), selectedNode.getCenterY() + yOffset.get(), mouseX, mouseY);
+            }
+
             GlStateManager.translatef(xOffset.get(), yOffset.get(), 0F);
             RenderingHelper.translate(xOffset.get(), yOffset.get());
-
-            if (selectedNode != null) {
-                Node.drawConnectionLine(selectedNode, mouseX, mouseY);
-            }
 
             // If this is put into the rendering logic of the nodes, the connection line will be above of of the flow components if
             // they are in a certain order.
@@ -200,7 +200,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         if (yOffset.isInside(mouseX, mouseY)) {
             return yOffset.mouseReleased(mouseX, mouseY, button);
         }
-//        getWindow().setFocusedWidget(null);
         return super.mouseReleased(mouseX - xOffset.get(), mouseY - yOffset.get(), button);
     }
 
@@ -262,13 +261,13 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     }
 
     private void openActionMenu() {
-        ActionMenu actionMenu = ActionMenu.atCursor(ImmutableList.of(
+        ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.ActionMenu.Paste", b -> actionPaste()),
                 new CallbackEntry(null, "gui.sfm.ActionMenu.CleanupProcedures", b -> actionCleanup()),
                 new CallbackEntry(null, "gui.sfm.ActionMenu.ToggleFullscreen", b -> actionToggleFullscreen()),
                 new UserPreferencesPanel.OpenerEntry()
         ));
-        WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
     }
 
     private void actionPaste() {

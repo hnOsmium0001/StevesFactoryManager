@@ -21,7 +21,7 @@ import java.util.function.Function;
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
 public final class Procedures<P extends IProcedure> {
 
-    public static final Procedures<TimedTriggerProcedure> TIMED_TRIGGER = new Procedures<>("timed_trigger", TimedTriggerProcedure::new, TimedTriggerProcedure::new);
+    public static final Procedures<TimedTriggerProcedure> TIMED_TRIGGER = new Procedures<>("interval_trigger", TimedTriggerProcedure::new, TimedTriggerProcedure::new);
     public static final Procedures<BatchedItemTransferProcedure> BATCHED_ITEM_TRANSFER = new Procedures<>("batched_item_transfer", BatchedItemTransferProcedure::new, BatchedItemTransferProcedure::new);
     public static final Procedures<ItemImportProcedure> ITEM_IMPORT = new Procedures<>("item_import", ItemImportProcedure::new, ItemImportProcedure::new);
     public static final Procedures<ItemExportProcedure> ITEM_EXPORT = new Procedures<>("item_export", ItemExportProcedure::new, ItemExportProcedure::new);

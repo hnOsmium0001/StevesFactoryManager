@@ -8,8 +8,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.library.gui.actionmenu.ActionMenu;
-import vswe.stevesfactory.library.gui.actionmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
+import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
@@ -42,10 +42,10 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            ActionMenu actionMenu = ActionMenu.atCursor(ImmutableList.of(
+            ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                     new CallbackEntry(null, "gui.sfm.ActionMenu.BlockTarget.Highlight", b -> BlockHighlight.createHighlight(pos, 80))
             ));
-            WidgetScreen.getCurrentScreen().addPopupWindow(actionMenu);
+            WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
             return true;
         }
 
