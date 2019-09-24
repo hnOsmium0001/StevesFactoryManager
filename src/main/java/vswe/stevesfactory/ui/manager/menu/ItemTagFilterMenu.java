@@ -18,19 +18,19 @@ import vswe.stevesfactory.logic.item.ItemTagFilter;
 import vswe.stevesfactory.logic.procedure.IItemFilterTarget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends Menu<P> {
+public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends MultiLayerMenu<P> {
 
     private final int id;
     private final String name;
 
     private final RadioButton whitelist, blacklist;
     private final LinearList<Entry> fields;
+    private SettingsEditor settings;
 
     public ItemTagFilterMenu(int id) {
         this(id, I18n.format("gui.sfm.Menu.ItemFilter.Tag"));
@@ -78,6 +78,8 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
             }
         };
 
+        OpenSettingsButton openSettings = new OpenSettingsButton(getWidth() - 2 - 12, getHeight() + getContentHeight() - 2 - 12);
+
         fields = new LinearList<>(addEntryButton.getX() - 4 * 2, getContentHeight() - whitelist.getHeight() - 4 * 2);
         fields.setLocation(4, contentY);
 
@@ -85,6 +87,17 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
         addChildren(blacklist);
         addChildren(fields);
         addChildren(addEntryButton);
+        addChildren(openSettings);
+    }
+
+    @Override
+    public SettingsEditor getEditor() {
+        if (settings == null) {
+            settings = new SettingsEditor(this);
+            ItemTagFilter filter = getLinkedFilter();
+            settings.addOption(filter.isMatchingAmount(), filter::setMatchingAmount, "gui.sfm.Menu.MatchAmount");
+        }
+        return settings;
     }
 
     @Override

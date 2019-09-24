@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.opengl.GL11;
+import vswe.stevesfactory.Config;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 
@@ -48,11 +49,6 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
         return button;
     }
 
-    private static final int NORMAL_BACKGROUND_COLOR = 0xff8c8c8c;
-    private static final int HOVERED_BACKGROUND_COLOR = 0xff8c8c8c;
-    private static final int NORMAL_BORDER_COLOR = 0xff737373;
-    private static final int HOVERED_BORDER_COLOR = 0xffc9c9c9;
-
     public IntConsumer onClick = DUMMY;
 
     protected String text;
@@ -91,19 +87,19 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
     }
 
     public int getNormalBorderColor() {
-        return NORMAL_BORDER_COLOR;
+        return Config.CLIENT.textButtonBackgroundColor.get();
     }
 
     public int getHoveredBorderColor() {
-        return HOVERED_BORDER_COLOR;
+        return Config.CLIENT.textButtonBorderColor.get();
     }
 
     public int getNormalBackgroundColor() {
-        return NORMAL_BACKGROUND_COLOR;
+        return Config.CLIENT.textButtonBackgroundColorHovered.get();
     }
 
     public int getHoveredBackgroundColor() {
-        return HOVERED_BACKGROUND_COLOR;
+        return Config.CLIENT.textButtonBorderColorHovered.get();
     }
 
     @Override

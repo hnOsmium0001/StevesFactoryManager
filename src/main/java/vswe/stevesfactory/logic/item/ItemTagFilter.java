@@ -135,6 +135,7 @@ public class ItemTagFilter implements IItemFilter {
     @Override
     public void read(CompoundNBT tag) {
         type = tag.getBoolean("Blacklist") ? FilterType.BLACKLIST : FilterType.WHITELIST;
+        matchingAmount = tag.getBoolean("MatchAmount");
         tags.clear();
         IOHelper.readItemTags(tag.getList("ItemTags", Constants.NBT.TAG_STRING), tags);
     }
@@ -143,6 +144,7 @@ public class ItemTagFilter implements IItemFilter {
     public void write(CompoundNBT tag) {
         tag.putBoolean("Blacklist", type == FilterType.BLACKLIST);
         tag.put("ItemTags", IOHelper.writeTags(tags));
+        tag.putBoolean("MatchAmount", matchingAmount);
     }
 
     public static ItemTagFilter recover(CompoundNBT tag) {

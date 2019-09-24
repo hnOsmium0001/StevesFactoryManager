@@ -8,6 +8,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.Config;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
@@ -27,7 +28,6 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 public class FactoryManagerGUI extends WidgetScreen {
 
@@ -116,9 +116,6 @@ public class FactoryManagerGUI extends WidgetScreen {
 
     public static class PrimaryWindow extends AbstractWindow {
 
-        // TODO move to config
-        public static final Supplier<Boolean> USE_BACKGROUND_ON_FULLSCREEN = () -> false;
-
         // The location and dimensions will be set in the constructor
         private Rectangle screenBounds = new Rectangle();
 
@@ -146,7 +143,7 @@ public class FactoryManagerGUI extends WidgetScreen {
         @Override
         public void render(int mouseX, int mouseY, float particleTicks) {
             RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-            if (fullscreen && !USE_BACKGROUND_ON_FULLSCREEN.get()) {
+            if (fullscreen && !Config.CLIENT.useBackgroundOnFullscreen.get()) {
                 RenderingHelper.drawRect(getPosition(), getBorder(), 0xffc6c6c6);
             } else {
                 GlStateManager.callList(backgroundDL);

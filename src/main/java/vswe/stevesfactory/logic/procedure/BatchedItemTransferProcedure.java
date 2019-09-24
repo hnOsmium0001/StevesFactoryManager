@@ -35,11 +35,11 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     private IItemFilter filter = new ItemTraitsFilter();
 
     public BatchedItemTransferProcedure(INetworkController controller) {
-        super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), controller);
+        super(Procedures.ITEM_TRANSFER.getFactory(), controller);
     }
 
     public BatchedItemTransferProcedure(CommandGraph graph) {
-        super(Procedures.BATCHED_ITEM_TRANSFER.getFactory(), graph);
+        super(Procedures.ITEM_TRANSFER.getFactory(), graph);
     }
 
     @Override

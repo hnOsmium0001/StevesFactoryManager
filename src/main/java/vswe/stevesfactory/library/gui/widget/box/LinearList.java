@@ -12,6 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import vswe.stevesfactory.Config;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.ScissorTest;
@@ -241,7 +242,7 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     }
 
     public int getScrollAmount() {
-        return 20;
+        return Config.CLIENT.scrollSpeed.get();
     }
 
     public int getMarginMiddle() {

@@ -10,6 +10,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.util.math.BlockPos;
+import vswe.stevesfactory.Config;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -33,16 +34,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> implements RelocatableContainerMixin<FlowComponent<?>> {
-
-    // TODO move to config
-    private static final Supplier<Integer> DEFAULT_MOVE_SPEED = () -> 2;
-    private static final Supplier<Integer> ACCELERATED_MOVE_SPEED = () -> 20;
 
     /**
      * This is a tree set (ordered set) because handling z-index of the flow components need things to be sorted.
@@ -242,7 +238,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        int offset = Screen.hasShiftDown() ? ACCELERATED_MOVE_SPEED.get() : DEFAULT_MOVE_SPEED.get();
+        int offset = Screen.hasShiftDown() ? Config.CLIENT.acceleratedEditorMoveSpeed.get() : Config.CLIENT.defaultEditorMoveSpeed.get();
         switch (keyCode) {
             case GLFW_KEY_UP:
                 yOffset.subtract(offset);

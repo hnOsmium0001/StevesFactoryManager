@@ -22,18 +22,6 @@ public final class NetworkHandler {
             .simpleChannel();
 
     public static void register() {
-        registerServer();
-        registerClient();
-        registerBoth();
-    }
-
-    private static void registerServer() {
-    }
-
-    private static void registerClient() {
-    }
-
-    private static void registerBoth() {
         registerMessage(PacketOpenManagerGUI.class, PacketOpenManagerGUI::encode, PacketOpenManagerGUI::decode, PacketOpenManagerGUI::handle);
         registerMessage(PacketSyncCommandGraphs.class, PacketSyncCommandGraphs::encode, PacketSyncCommandGraphs::decode, PacketSyncCommandGraphs::handle);
     }

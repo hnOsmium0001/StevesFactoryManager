@@ -16,11 +16,11 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITickabl
     public int interval = 20;
 
     public TimedTriggerProcedure(INetworkController controller) {
-        super(Procedures.TIMED_TRIGGER.getFactory(), controller, 0, 1);
+        super(Procedures.INTERVAL_TRIGGER.getFactory(), controller, 0, 1);
     }
 
     public TimedTriggerProcedure(CommandGraph graph) {
-        super(Procedures.TIMED_TRIGGER.getFactory(), graph, 0, 1);
+        super(Procedures.INTERVAL_TRIGGER.getFactory(), graph, 0, 1);
     }
 
     @Override

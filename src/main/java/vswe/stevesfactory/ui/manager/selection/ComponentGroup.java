@@ -1,24 +1,17 @@
 package vswe.stevesfactory.ui.manager.selection;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.FilenameUtils;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.IProcedureType;
+import vswe.stevesfactory.logic.Procedures;
 
 import javax.annotation.Nullable;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.*;
+import java.util.*;
 
 public final class ComponentGroup {
 
@@ -95,7 +88,7 @@ public final class ComponentGroup {
             groupedType.addAll(group.members);
         }
         for (IProcedureType<?> type : StevesFactoryManagerAPI.getProceduresRegistry().getValues()) {
-            if (!groupedType.contains(type)) {
+            if (!groupedType.contains(type) && Procedures.isEnabled(type)) {
                 ungroupedTypes.add(type);
             }
         }
@@ -161,7 +154,9 @@ public final class ComponentGroup {
         for (JsonElement memberElement : members) {
             ResourceLocation member = new ResourceLocation(memberElement.getAsString());
             IProcedureType<?> type = StevesFactoryManagerAPI.getProceduresRegistry().getValue(member);
-            this.members.add(type);
+            if (type != null && Procedures.isEnabled(type)) {
+                this.members.add(type);
+            }
         }
     }
 }
