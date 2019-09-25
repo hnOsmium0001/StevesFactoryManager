@@ -17,6 +17,8 @@ import java.util.function.BiConsumer;
 
 public class ItemTraitsFilter implements IItemFilter {
 
+    private static int TYPE_ID = ItemFilters.allocateID(ItemTraitsFilter::recover);
+
     private List<ItemStack> items = new ArrayList<>();
 
     public FilterType type = FilterType.WHITELIST;
@@ -187,6 +189,18 @@ public class ItemTraitsFilter implements IItemFilter {
         return isEqual(filterIndex, stack) ^ getTypeFlag();
     }
 
+    @Override
+    public int limitFlowRate(ItemStack buffered, int existingCount) {
+        int stackLimit = Integer.MAX_VALUE;
+        for (int i = 0; i < items.size(); i++) {
+            if (isEqual(i, buffered)) {
+                stackLimit = items.get(i).getCount();
+                break;
+            }
+        }
+        return Utils.lowerBound(stackLimit - existingCount, 0);
+    }
+
     private boolean getTypeFlag() {
         switch (type) {
             case WHITELIST:
@@ -195,6 +209,11 @@ public class ItemTraitsFilter implements IItemFilter {
                 return true;
         }
         throw new IllegalStateException();
+    }
+
+    @Override
+    public int getTypeID() {
+        return TYPE_ID;
     }
 
     @Override

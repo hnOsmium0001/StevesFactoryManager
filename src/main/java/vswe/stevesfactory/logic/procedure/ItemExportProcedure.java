@@ -19,13 +19,11 @@ import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.item.IItemFilter;
 import vswe.stevesfactory.logic.item.ItemBufferElement;
-import vswe.stevesfactory.logic.item.ItemTagFilter;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
-import vswe.stevesfactory.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,22 +103,7 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
                 totalCount += stack.getCount();
             }
         }
-
-        // TODO generalize this operation (move to interface)
-        if (filter instanceof ItemTraitsFilter) {
-            ItemTraitsFilter filter = (ItemTraitsFilter) this.filter;
-            int stackLimit = Integer.MAX_VALUE;
-            for (int i = 0; i < filter.getItems().size(); i++) {
-                if (filter.isEqual(i, source)) {
-                    stackLimit = filter.getItems().get(i).getCount();
-                    break;
-                }
-            }
-            return Utils.lowerBound(stackLimit - totalCount, 0);
-        } else if (filter instanceof ItemTagFilter) {
-            return Utils.lowerBound(((ItemTagFilter) filter).stackLimit - totalCount, 0);
-        }
-        return 0;
+        return filter.limitFlowRate(source, totalCount);
     }
 
     @Override

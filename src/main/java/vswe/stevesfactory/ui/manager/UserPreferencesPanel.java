@@ -3,7 +3,7 @@ package vswe.stevesfactory.ui.manager;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.library.gui.widget.IWidget;
-import vswe.stevesfactory.library.gui.contextmenu.AbstractEntry;
+import vswe.stevesfactory.library.gui.contextmenu.DefaultEntry;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 
@@ -21,7 +21,7 @@ public class UserPreferencesPanel extends AbstractContainer<IWidget> {
     }
 
     // "AM" stands for Action Menu
-    public static class OpenerEntry extends AbstractEntry {
+    public static class OpenerEntry extends DefaultEntry {
 
         public static final ResourceLocation ICON = RenderingHelper.linkTexture("gui/actions/preferences.png");
 

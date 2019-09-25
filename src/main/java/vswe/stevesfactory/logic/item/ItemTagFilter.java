@@ -8,11 +8,14 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.logic.FilterType;
 import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 import java.util.function.BiConsumer;
 
 public class ItemTagFilter implements IItemFilter {
+
+    private static int TYPE_ID = ItemFilters.allocateID(ItemTagFilter::recover);
 
     public FilterType type = FilterType.WHITELIST;
     public int stackLimit;
@@ -124,12 +127,22 @@ public class ItemTagFilter implements IItemFilter {
         }
     }
 
+    @Override
+    public int limitFlowRate(ItemStack buffered, int existingCount) {
+        return Utils.lowerBound(stackLimit - existingCount, 0);
+    }
+
     private boolean getTypeFlag() {
         switch (type) {
             case WHITELIST: return false;
             case BLACKLIST: return true;
         }
         throw new IllegalStateException();
+    }
+
+    @Override
+    public int getTypeID() {
+        return TYPE_ID;
     }
 
     @Override

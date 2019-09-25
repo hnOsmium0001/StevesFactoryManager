@@ -10,7 +10,10 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 public final class SettingsEditor extends AbstractContainer<IWidget> {
 
@@ -55,13 +58,24 @@ public final class SettingsEditor extends AbstractContainer<IWidget> {
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
-    public void addOption(boolean value, BooleanConsumer setter, String translationKey) {
+    public Checkbox addOption(boolean value, BooleanConsumer setter, String translationKey) {
         Checkbox checkbox = new Checkbox(0, 0, 8, 8);
         checkbox.setChecked(value);
         checkbox.translateLabel(translationKey);
         checkbox.onStateChange = setter;
         children.add(checkbox);
         reflow();
+        return checkbox;
+    }
+
+    public NumberField<Integer> addIntegerInput(int value, int lowerBound, int upperBound) {
+        NumberField<Integer> field = NumberField.integerFieldRanged(33, 12, value, lowerBound, upperBound);
+        reflow();
+        return field;
+    }
+
+    public void addLine(IWidget widget) {
+        children.add(widget);
     }
 
     @Override

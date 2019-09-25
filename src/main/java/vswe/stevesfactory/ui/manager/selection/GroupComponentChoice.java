@@ -1,16 +1,18 @@
 package vswe.stevesfactory.ui.manager.selection;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.logic.IProcedureType;
-import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
+import vswe.stevesfactory.library.gui.contextmenu.DefaultEntry;
 import vswe.stevesfactory.library.gui.contextmenu.IEntry;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -36,11 +38,19 @@ public class GroupComponentChoice extends AbstractWidget implements IComponentCh
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        List<IEntry> entries = new ArrayList<>();
-        for (IProcedureType<?> type : group.getMembers()) {
-            entries.add(new CallbackEntry(type.getIcon(), type.getLocalizedName(), b -> createFlowComponent(type)));
+        ContextMenu contextMenu;
+        if (group.getMembers().isEmpty()) {
+            contextMenu = ContextMenu.atCursor(
+                    getAbsoluteXRight() + 2, getAbsoluteY(),
+                    ImmutableList.of(new DefaultEntry(null, "gui.sfm.ActionMenu.NoComponentGroupsPresent")));
+            WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+        } else {
+            List<IEntry> entries = new ArrayList<>();
+            for (IProcedureType<?> type : group.getMembers()) {
+                entries.add(new CallbackEntry(type.getIcon(), type.getLocalizedName(), b -> createFlowComponent(type)));
+            }
+            contextMenu = ContextMenu.atCursor(getAbsoluteXRight() + 2, getAbsoluteY(), entries);
         }
-        ContextMenu contextMenu = ContextMenu.atCursor(getAbsoluteXRight() + 2, getAbsoluteY(), entries);
         WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
         return true;
     }

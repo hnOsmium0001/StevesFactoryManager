@@ -21,7 +21,10 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends MultiLayerMenu<P> {
 
@@ -31,6 +34,7 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
     private final RadioButton whitelist, blacklist;
     private final LinearList<Entry> fields;
     private SettingsEditor settings;
+    private NumberField<Integer> stackLimitInput;
 
     public ItemTagFilterMenu(int id) {
         this(id, I18n.format("gui.sfm.Menu.ItemFilter.Tag"));
@@ -51,6 +55,7 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
 
         int contentY = whitelist.getYBottom() + 4;
 
+        OpenSettingsButton openSettings = new OpenSettingsButton(getWidth() - 2 - 12, getHeight() + getContentHeight() - 2 - 12);
         AbstractIconButton addEntryButton = new AbstractIconButton(getWidth() - 4 - 8, contentY, 8, 8) {
             @Override
             public TextureWrapper getTextureNormal() {
@@ -78,8 +83,6 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
             }
         };
 
-        OpenSettingsButton openSettings = new OpenSettingsButton(getWidth() - 2 - 12, getHeight() + getContentHeight() - 2 - 12);
-
         fields = new LinearList<>(addEntryButton.getX() - 4 * 2, getContentHeight() - whitelist.getHeight() - 4 * 2);
         fields.setLocation(4, contentY);
 
@@ -88,15 +91,15 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
         addChildren(fields);
         addChildren(addEntryButton);
         addChildren(openSettings);
+
+        settings = new SettingsEditor(this);
+        ItemTagFilter filter = getLinkedFilter();
+        settings.addOption(filter.isMatchingAmount(), filter::setMatchingAmount, "gui.sfm.Menu.MatchAmount");
+        stackLimitInput = settings.addIntegerInput(filter.stackLimit, 0, Integer.MAX_VALUE);
     }
 
     @Override
     public SettingsEditor getEditor() {
-        if (settings == null) {
-            settings = new SettingsEditor(this);
-            ItemTagFilter filter = getLinkedFilter();
-            settings.addOption(filter.isMatchingAmount(), filter::setMatchingAmount, "gui.sfm.Menu.MatchAmount");
-        }
         return settings;
     }
 
@@ -126,6 +129,8 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
                 blacklist.check(true);
                 break;
         }
+
+        stackLimitInput.setValue(filter.stackLimit);
     }
 
     @Override
@@ -145,6 +150,8 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
         } else {
             filter.type = FilterType.BLACKLIST;
         }
+
+        filter.stackLimit = stackLimitInput.getValue();
     }
 
     public ItemTagFilter getLinkedFilter() {

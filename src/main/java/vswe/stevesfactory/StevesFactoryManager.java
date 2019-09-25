@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -12,13 +12,16 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.*;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.network.NetworkHandler;
+import vswe.stevesfactory.network.PacketInspectionsSetting;
+import vswe.stevesfactory.network.PacketReloadComponentGroups;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.setup.ModItems;
 import vswe.stevesfactory.ui.manager.selection.ComponentGroup;
@@ -56,7 +59,7 @@ public class StevesFactoryManager {
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
-        ComponentGroup.setup();
+        ComponentGroup.reload();
     }
 
     private void loadComplete(final FMLLoadCompleteEvent event) {
@@ -65,33 +68,53 @@ public class StevesFactoryManager {
     }
 
     private void serverStarting(final FMLServerStartingEvent event) {
-        event.getCommandDispatcher().register(Commands.literal(MODID)
-                .then(settingsCommand()));
+        LiteralArgumentBuilder<CommandSource> builder = Commands.literal(MODID)
+                .then(settingsCommand())
+                .then(reloadCommand());
+        event.getCommandDispatcher().register(builder);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Commands
     ///////////////////////////////////////////////////////////////////////////
 
-    private static LiteralArgumentBuilder<CommandSource> settingsCommand() {
-        return Commands.literal("settings")
-                .then(inspectionBoxHighlighting());
+    private static LiteralArgumentBuilder<CommandSource> reloadCommand() {
+        return Commands.literal("reload")
+                .then(componentGroups());
     }
 
-    private static LiteralArgumentBuilder<CommandSource> inspectionBoxHighlighting() {
+    private static LiteralArgumentBuilder<CommandSource> componentGroups() {
         return Commands
-                .literal("InspectionBoxHighlighting")
+                .literal("componentGroups")
+                .requires(source -> source.getEntity() instanceof ServerPlayerEntity)
+                .executes(context -> {
+                    ServerPlayerEntity client = context.getSource().asPlayer();
+                    PacketReloadComponentGroups.reload(client);
+                    return 0;
+                });
+    }
+
+    private static LiteralArgumentBuilder<CommandSource> settingsCommand() {
+        return Commands.literal("settings")
+                .then(inspectionsOverlay());
+    }
+
+    private static LiteralArgumentBuilder<CommandSource> inspectionsOverlay() {
+        return Commands
+                .literal("inspectionsOverlay")
                 // Query setting
                 .executes(context -> {
-                    context.getSource().sendFeedback(new StringTextComponent("Entry InspectionBoxHighlighting is currently set to: " + Inspections.enabled), true);
+                    ServerPlayerEntity client = context.getSource().asPlayer();
+                    PacketInspectionsSetting.query(client);
                     return 0;
                 })
                 .then(Commands
                         .argument("value", BoolArgumentType.bool())
                         // Set setting
                         .executes(context -> {
-                            Inspections.enabled = BoolArgumentType.getBool(context, "value");
-                            context.getSource().sendFeedback(new StringTextComponent("Entry InspectionBoxHighlighting is now set to " + Inspections.enabled), true);
+                            ServerPlayerEntity client = context.getSource().asPlayer();
+                            boolean value = BoolArgumentType.getBool(context, "value");
+                            PacketInspectionsSetting.set(client, value);
                             return 0;
                         }));
     }

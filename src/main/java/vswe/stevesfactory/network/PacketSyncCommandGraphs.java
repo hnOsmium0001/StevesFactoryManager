@@ -16,7 +16,7 @@ import vswe.stevesfactory.utils.Utils;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class PacketSyncCommandGraphs {
+public final class PacketSyncCommandGraphs {
 
     public static void encode(PacketSyncCommandGraphs msg, PacketBuffer buf) {
         buf.writeInt(msg.commandGraphs.size());

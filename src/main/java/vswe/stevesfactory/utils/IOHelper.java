@@ -1,19 +1,25 @@
 package vswe.stevesfactory.utils;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.*;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
-import vswe.stevesfactory.logic.item.*;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.IItemFilter.ItemFilters;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 
 public final class IOHelper {
@@ -84,33 +90,18 @@ public final class IOHelper {
         return writeTags(tags, new ListNBT());
     }
 
-    private static int getItemFilterTypeID(IItemFilter filter) {
-        if (filter instanceof ItemTraitsFilter) {
-            return 0;
-        } else if (filter instanceof ItemTagFilter) {
-            return 1;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    private static IItemFilter getItemFilterByID(int id, CompoundNBT tag) {
-        switch (id) {
-            case 0: return ItemTraitsFilter.recover(tag);
-            case 1: return ItemTagFilter.recover(tag);
-        }
-        throw new IllegalArgumentException();
-    }
-
     public static CompoundNBT writeItemFilter(IItemFilter filter) {
         CompoundNBT tag = new CompoundNBT();
-        tag.putInt("TypeID", getItemFilterTypeID(filter));
+        tag.putInt("TypeID", filter.getTypeID());
         filter.write(tag);
         return tag;
     }
 
     public static IItemFilter readItemFilter(CompoundNBT tag) {
         int typeID = tag.getInt("TypeID");
-        return getItemFilterByID(typeID, tag);
+        Function<CompoundNBT, IItemFilter> deserializer = ItemFilters.getDeserializerFor(typeID);
+        Preconditions.checkArgument(deserializer != null);
+        return deserializer.apply(tag);
     }
 
     public static <T extends Collection<BlockPos>> T readBlockPoses(PacketBuffer buf, T target) {

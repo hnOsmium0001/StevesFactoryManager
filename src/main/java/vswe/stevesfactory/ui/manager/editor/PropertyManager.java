@@ -99,7 +99,7 @@ public final class PropertyManager<T, P extends IProcedure & IProcedureClientDat
     }
 
     public void actionCycling() {
-        action(() -> new AbstractEntry(null, "gui.sfm.ActionMenu.Menus.CycleProperty") {
+        action(() -> new DefaultEntry(null, "gui.sfm.ActionMenu.Menus.CycleProperty") {
             private int cachedIndex = -1;
             private String cachedText;
 

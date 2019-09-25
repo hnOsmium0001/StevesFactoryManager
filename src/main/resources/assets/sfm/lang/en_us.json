@@ -4,6 +4,10 @@
   "block.sfm.factory_manager": "Factory Manager",
   "block.sfm.cable": "Inventory Cable",
 
+  "message.sfm.reload.componentGroups.success": "Successfully reloaded component groups",
+  "message.sfm.settings.query": "Entry %s is currently set to %b",
+  "message.sfm.settings.set": "Entry %s is now set to %b",
+
   "logic.sfm.interval_trigger": "Interval Trigger",
   "logic.sfm.item_transfer": "Item Transfer",
   "logic.sfm.item_import": "Input",
@@ -62,6 +66,7 @@
   "gui.sfm.ActionMenu.Menus.CycleProperty": "Cycle to next property",
   "gui.sfm.ActionMenu.Menus.CycleProperty.Named": "Change to %s",
   "gui.sfm.ActionMenu.BlockTarget.Highlight": "Highlight in world",
+  "gui.sfm.ActionMenu.NoComponentGroupsPresent": "No members specified",
 
   "gui.sfm.Menu.Interval": "Interval",
   "gui.sfm.Menu.Interval.Info": "Time between this command is triggered",

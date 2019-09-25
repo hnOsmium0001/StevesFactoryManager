@@ -25,7 +25,9 @@ public final class ComponentGroup {
         return new File("./config/" + StevesFactoryManager.MODID + "/component_groups/");
     }
 
-    public static void setup() {
+    public static void reload() {
+        preSetup();
+
         File directory = getConfigDirectory();
         String[] list = directory.list();
         JsonParser parser = new JsonParser();
@@ -40,6 +42,12 @@ public final class ComponentGroup {
         }
 
         categorizeTypes();
+    }
+
+    private static void preSetup() {
+        groups.clear();
+        groupedType.clear();
+        ungroupedTypes.clear();
     }
 
     private static void copySettings(JsonParser parser, File configDir) {

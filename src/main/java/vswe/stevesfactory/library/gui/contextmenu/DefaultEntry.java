@@ -10,7 +10,7 @@ import vswe.stevesfactory.library.gui.RenderingHelper;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public abstract class AbstractEntry extends AbstractWidget implements IEntry, LeafWidgetMixin {
+public class DefaultEntry extends AbstractWidget implements IEntry, LeafWidgetMixin {
 
     public static final int MARGIN_SIDES = 2;
     public static final int HALF_MARGIN_SIDES = MARGIN_SIDES / 2;
@@ -20,7 +20,7 @@ public abstract class AbstractEntry extends AbstractWidget implements IEntry, Le
     private final ResourceLocation icon;
     private final String translationKey;
 
-    public AbstractEntry(@Nullable ResourceLocation icon, String translationKey) {
+    public DefaultEntry(@Nullable ResourceLocation icon, String translationKey) {
         super();
         this.icon = icon;
         this.translationKey = translationKey;
@@ -51,6 +51,12 @@ public abstract class AbstractEntry extends AbstractWidget implements IEntry, Le
         int textX = x + MARGIN_SIDES + RENDERED_ICON_WIDTH + 2;
         RenderingHelper.drawTextCenteredVertically(getText(), textX, y, y2, 0xffffffff);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        getWindow().alive = false;
+        return true;
     }
 
     @Nullable

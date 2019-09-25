@@ -24,6 +24,8 @@ public final class NetworkHandler {
     public static void register() {
         registerMessage(PacketOpenManagerGUI.class, PacketOpenManagerGUI::encode, PacketOpenManagerGUI::decode, PacketOpenManagerGUI::handle);
         registerMessage(PacketSyncCommandGraphs.class, PacketSyncCommandGraphs::encode, PacketSyncCommandGraphs::decode, PacketSyncCommandGraphs::handle);
+        registerMessage(PacketReloadComponentGroups.class, PacketReloadComponentGroups::encode, PacketReloadComponentGroups::decode, PacketReloadComponentGroups::handle);
+        registerMessage(PacketInspectionsSetting.class, PacketInspectionsSetting::encode, PacketInspectionsSetting::decode, PacketInspectionsSetting::handle);
     }
 
     public static void sendTo(ServerPlayerEntity player, Object msg) {
