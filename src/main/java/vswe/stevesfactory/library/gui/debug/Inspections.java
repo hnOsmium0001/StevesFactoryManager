@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
+import vswe.stevesfactory.Config;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.IWindow;
 import vswe.stevesfactory.library.gui.RenderingHelper;
@@ -79,7 +80,7 @@ public abstract class Inspections implements IRenderEventListener {
     /**
      * Master switch for enabling/disabling inspection. Used for SFM setting 'InspectionBoxHighlighting'.
      */
-    public static boolean enabled;
+    public static boolean enabled = Config.CLIENT.enableInspections.get();
 
     public static final int CONTENTS = 0x662696ff;
     public static final int BORDER = 0x88e38a42;

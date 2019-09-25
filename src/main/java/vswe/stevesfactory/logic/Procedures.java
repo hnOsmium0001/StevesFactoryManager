@@ -20,8 +20,8 @@ import java.util.function.Function;
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
 public final class Procedures<P extends IProcedure> {
 
-    public static final Procedures<TimedTriggerProcedure> INTERVAL_TRIGGER = new Procedures<>("interval_trigger", TimedTriggerProcedure::new, TimedTriggerProcedure::new, Config.COMMON.enableIntervalTrigger);
-    public static final Procedures<BatchedItemTransferProcedure> ITEM_TRANSFER = new Procedures<>("item_transfer", BatchedItemTransferProcedure::new, BatchedItemTransferProcedure::new, Config.COMMON.enableItemTransfer);
+    public static final Procedures<IntervalTriggerProcedure> INTERVAL_TRIGGER = new Procedures<>("interval_trigger", IntervalTriggerProcedure::new, IntervalTriggerProcedure::new, Config.COMMON.enableIntervalTrigger);
+    public static final Procedures<ItemTransferProcedure> ITEM_TRANSFER = new Procedures<>("item_transfer", ItemTransferProcedure::new, ItemTransferProcedure::new, Config.COMMON.enableItemTransfer);
     public static final Procedures<ItemImportProcedure> ITEM_IMPORT = new Procedures<>("item_import", ItemImportProcedure::new, ItemImportProcedure::new, Config.COMMON.enableItemImport);
     public static final Procedures<ItemExportProcedure> ITEM_EXPORT = new Procedures<>("item_export", ItemExportProcedure::new, ItemExportProcedure::new, Config.COMMON.enableItemExport);
 

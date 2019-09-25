@@ -20,8 +20,12 @@ public class UserPreferencesPanel extends AbstractContainer<IWidget> {
     public void reflow() {
     }
 
+<<<<<<< Updated upstream
     // "AM" stands for Action Menu
     public static class OpenerEntry extends DefaultEntry {
+=======
+    public static class OpenerEntry extends AbstractEntry {
+>>>>>>> Stashed changes
 
         public static final ResourceLocation ICON = RenderingHelper.linkTexture("gui/actions/preferences.png");
 

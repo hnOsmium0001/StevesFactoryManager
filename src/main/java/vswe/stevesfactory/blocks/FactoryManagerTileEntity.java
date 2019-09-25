@@ -18,6 +18,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
+import vswe.stevesfactory.Config;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.CommandGraph;
@@ -95,10 +96,13 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         linkedInventories.clear();
 
         addCableToNetwork(this, pos);
-        search(pos);
+        search(pos, 0);
     }
 
-    private void search(BlockPos center) {
+    private void search(BlockPos center, int depth) {
+        if (depth > Config.COMMON.maxSearchDepth.get()) {
+            return;
+        }
         assert world != null;
         StevesFactoryManager.logger.trace("Searching at cable {}", center);
         for (Direction direction : VectorHelper.DIRECTIONS) {
@@ -107,7 +111,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
             if (tile instanceof ICable && !connectedCables.contains(neighbor)) {
                 addCableToNetwork((ICable) tile, neighbor);
                 // Recursive search (DFS)
-                search(neighbor);
+                search(neighbor, depth + 1);
             }
         }
     }
@@ -311,6 +315,20 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         lockedGraphs = false;
     }
 
+    private static final Map<String, Capability<?>> caps;
+
+    static {
+        // TODO use proper private field accessing via accesstransformer.cfg
+        try {
+            Field field = CapabilityManager.class.getDeclaredField("providers");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked") Map<String, Capability<?>> map = (Map<String, Capability<?>>) field.get(CapabilityManager.INSTANCE);
+            caps = map;
+        } catch (NoSuchFieldException | IllegalAccessException | ClassCastException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void read(CompoundNBT compound) {
         StevesFactoryManager.logger.trace("Restoring data from NBT {}", compound);
@@ -328,17 +346,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
             String capName = element.getString("Name").intern();
 
 //            Capability<?> cap = CapabilityManager.INSTANCE.providers.get(capName);
-            // TODO de-crime-lize this reflection black magic
-            Capability<?> cap;
-            try {
-                Field field = CapabilityManager.class.getDeclaredField("providers");
-                field.setAccessible(true);
-                @SuppressWarnings("unchecked") Map<String, Capability<?>> caps = (Map<String, Capability<?>>) field.get(CapabilityManager.INSTANCE);
-                cap = caps.get(capName);
-            } catch (NoSuchFieldException | IllegalAccessException | ClassCastException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
+            Capability<?> cap = caps.get(capName);
 
             ListNBT serializedPoses = element.getList("Positions", Constants.NBT.TAG_COMPOUND);
             Multiset<BlockPos> set = HashMultiset.create();

@@ -61,6 +61,7 @@
   "gui.sfm.ActionMenu.Paste.Procedure.Fail": "Failed to paste procedure: invalid syntax. Please check your clipboard string again to make sure that it is from copying/cutting another procedure",
   "gui.sfm.ActionMenu.UserPreferences": "User Preferences",
   "gui.sfm.ActionMenu.ToggleFullscreen": "Toggle Fullscreen",
+  "gui.sfm.ActionMenu.Reset0": "Set to 0",
   "gui.sfm.ActionMenu.Menus.CollapseAll": "Collapse All",
   "gui.sfm.ActionMenu.Menus.ExpandAll": "Expand All",
   "gui.sfm.ActionMenu.Menus.CycleProperty": "Cycle to next property",

@@ -43,6 +43,9 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
     @Override
     public void execute(IExecutionContext context) {
         pushFrame(context, 0);
+        if (hasError()) {
+            return;
+        }
 
         Map<Item, ItemBufferElement> buffers = context.getItemBufferElements();
         IWorld world = context.getControllerWorld();
@@ -70,6 +73,10 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
                 }
             }
         }
+    }
+
+    public boolean hasError() {
+        return inventories.isEmpty() || directions.isEmpty();
     }
 
     @Override

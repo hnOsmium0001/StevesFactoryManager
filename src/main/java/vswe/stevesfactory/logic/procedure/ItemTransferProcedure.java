@@ -22,7 +22,7 @@ import vswe.stevesfactory.utils.IOHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BatchedItemTransferProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
+public class ItemTransferProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
     public static final int SOURCE_INVENTORIES = 0;
     public static final int DESTINATION_INVENTORIES = 1;
@@ -34,18 +34,17 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     private List<Direction> targetDirections = new ArrayList<>();
     private IItemFilter filter = new ItemTraitsFilter();
 
-    public BatchedItemTransferProcedure(INetworkController controller) {
+    public ItemTransferProcedure(INetworkController controller) {
         super(Procedures.ITEM_TRANSFER.getFactory(), controller);
     }
 
-    public BatchedItemTransferProcedure(CommandGraph graph) {
+    public ItemTransferProcedure(CommandGraph graph) {
         super(Procedures.ITEM_TRANSFER.getFactory(), graph);
     }
 
     @Override
     public void execute(IExecutionContext context) {
         pushFrame(context, 0);
-
         if (hasError()) {
             return;
         }
@@ -125,14 +124,14 @@ public class BatchedItemTransferProcedure extends AbstractProcedure implements I
     }
 
     @Override
-    public FlowComponent<BatchedItemTransferProcedure> createFlowComponent() {
-        FlowComponent<BatchedItemTransferProcedure> f = FlowComponent.of(this);
+    public FlowComponent<ItemTransferProcedure> createFlowComponent() {
+        FlowComponent<ItemTransferProcedure> f = FlowComponent.of(this);
         f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Source")));
         f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Destination")));
         f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Source")));
         f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Destination")));
 
-        PropertyManager<IItemFilter, BatchedItemTransferProcedure> pm = new PropertyManager<>(f, this::getFilter, this::setFilter);
+        PropertyManager<IItemFilter, ItemTransferProcedure> pm = new PropertyManager<>(f, this::getFilter, this::setFilter);
         pm.on(filter -> filter instanceof ItemTraitsFilter)
                 .name(I18n.format("gui.sfm.Menu.ItemFilter.Traits"))
                 .prop(ItemTraitsFilter::new)

@@ -20,12 +20,17 @@ public final class Config {
         public final BooleanValue enableItemImport;
         public final BooleanValue enableItemExport;
 
+        public final IntValue maxSearchDepth;
+
         private CommonCategory(Builder builder) {
             builder.comment("General category").push("common");
             enableIntervalTrigger = builder.define("EnableIntervalTrigger", true);
             enableItemTransfer = builder.define("EnableItemTransfer", true);
             enableItemImport = builder.define("EnableItemImport", true);
             enableItemExport = builder.define("EnableItemExport", true);
+            maxSearchDepth = builder
+                    .comment("Maximum depth that the Factory Manager DFS algorithm should go")
+                    .defineInRange("MaxSearchDepth", 64, 0, Integer.MAX_VALUE);
             builder.pop();
         }
     }
@@ -35,10 +40,11 @@ public final class Config {
     public static final class ClientCategory {
 
         public final IntValue scrollSpeed;
+        public final BooleanValue enableInspections;
 
+        public final BooleanValue useBackgroundOnFullscreen;
         public final IntValue defaultEditorMoveSpeed;
         public final IntValue acceleratedEditorMoveSpeed;
-        public final BooleanValue useBackgroundOnFullscreen;
 
         public final IntValue textButtonBackgroundColor;
         public final IntValue textButtonBorderColor;
@@ -50,6 +56,9 @@ public final class Config {
             scrollSpeed = builder
                     .comment("How long one move wheel movement for scrolling lists")
                     .defineInRange("ScrollSpeed", 20, 1, 256);
+            enableInspections = builder
+                    .comment("Default value for InspectionBoxHighlighting (modifiable in-game via command /sfm settings, but does not persist)")
+                    .define("EnableInspections", false);
             useBackgroundOnFullscreen = builder
                     .comment("Enable to use vanilla background instead of a plain rectangle")
                     .define("UseBackgroundOnFullscreen", false);
@@ -59,10 +68,10 @@ public final class Config {
             acceleratedEditorMoveSpeed = builder
                     .comment("Determines how fast arrow keys moving is, while Shift is pressed")
                     .defineInRange("AcceleratedEditorMoveSpeed", 20, 0, Integer.MAX_VALUE);
-            textButtonBackgroundColor = builder.defineInRange("TBBackgroundColor", 0xff8c8c8c, 0, Integer.MAX_VALUE);
-            textButtonBorderColor = builder.defineInRange("TBBorderColor", 0xff8c8c8c, 0, Integer.MAX_VALUE);
-            textButtonBackgroundColorHovered = builder.defineInRange("TBBackgroundColorHovered", 0xff737373, 0, Integer.MAX_VALUE);
-            textButtonBorderColorHovered = builder.defineInRange("TBBorderColorHovered", 0xffc9c9c9, 0, Integer.MAX_VALUE);
+            textButtonBackgroundColor = builder.defineInRange("TBBackgroundColor", 0xff8c8c8c, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            textButtonBorderColor = builder.defineInRange("TBBorderColor", 0xff8c8c8c, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            textButtonBackgroundColorHovered = builder.defineInRange("TBBackgroundColorHovered", 0xff737373, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            textButtonBorderColorHovered = builder.defineInRange("TBBorderColorHovered", 0xffc9c9c9, Integer.MIN_VALUE, Integer.MAX_VALUE);
             builder.pop();
         }
     }

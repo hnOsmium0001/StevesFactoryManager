@@ -1,10 +1,17 @@
 package vswe.stevesfactory.ui.manager.editor;
 
+import com.google.common.collect.ImmutableList;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
+
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 class OffsetText extends AbstractWidget implements LeafWidgetMixin {
 
@@ -58,18 +65,21 @@ class OffsetText extends AbstractWidget implements LeafWidgetMixin {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT) {
             Dialog.createPrompt("gui.sfm.Editor.EditOffset", (b, s) -> {
-                int i;
                 try {
-                    i = Integer.parseInt(s);
+                    set(Integer.parseInt(s));
                 } catch (NumberFormatException e) {
                     Dialog.createDialog("gui.sfm.Editor.InvalidNumberFormat").tryAddSelfToActiveGUI();
-                    return;
                 }
-
-                set(i);
             }).tryAddSelfToActiveGUI();
+            return true;
+        }
+        if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+            ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
+                    new CallbackEntry(null, "gui.sfm.ActionMenu.Reset0", b -> set(0))
+            ));
+            WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
             return true;
         }
         return false;

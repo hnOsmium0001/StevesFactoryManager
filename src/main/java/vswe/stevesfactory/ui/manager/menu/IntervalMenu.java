@@ -3,13 +3,13 @@ package vswe.stevesfactory.ui.manager.menu;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.widget.*;
-import vswe.stevesfactory.logic.procedure.TimedTriggerProcedure;
+import vswe.stevesfactory.logic.procedure.IntervalTriggerProcedure;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import java.util.ArrayList;
 
-public class IntervalMenu extends Menu<TimedTriggerProcedure> {
+public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
 
     public static final int MARGIN_MIDDLE_UNIT_TEXT = 10;
 
@@ -33,7 +33,7 @@ public class IntervalMenu extends Menu<TimedTriggerProcedure> {
     }
 
     @Override
-    public void onLinkFlowComponent(FlowComponent<TimedTriggerProcedure> flowComponent) {
+    public void onLinkFlowComponent(FlowComponent<IntervalTriggerProcedure> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
         interval.setValue(getLinkedProcedure().interval / 20);
     }
@@ -58,7 +58,7 @@ public class IntervalMenu extends Menu<TimedTriggerProcedure> {
                 0x000000);
     }
 
-    private String getUnitText() {
+    public String getUnitText() {
         return I18n.format("gui.sfm.seconds");
     }
 

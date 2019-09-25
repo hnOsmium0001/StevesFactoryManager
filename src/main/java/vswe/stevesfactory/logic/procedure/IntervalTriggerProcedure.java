@@ -10,16 +10,16 @@ import vswe.stevesfactory.logic.execution.ITickable;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.IntervalMenu;
 
-public class TimedTriggerProcedure extends AbstractProcedure implements ITickable {
+public class IntervalTriggerProcedure extends AbstractProcedure implements ITickable {
 
     private int tickCounter = 0;
     public int interval = 20;
 
-    public TimedTriggerProcedure(INetworkController controller) {
+    public IntervalTriggerProcedure(INetworkController controller) {
         super(Procedures.INTERVAL_TRIGGER.getFactory(), controller, 0, 1);
     }
 
-    public TimedTriggerProcedure(CommandGraph graph) {
+    public IntervalTriggerProcedure(CommandGraph graph) {
         super(Procedures.INTERVAL_TRIGGER.getFactory(), graph, 0, 1);
     }
 
@@ -60,8 +60,8 @@ public class TimedTriggerProcedure extends AbstractProcedure implements ITickabl
     }
 
     @Override
-    public FlowComponent<TimedTriggerProcedure> createFlowComponent() {
-        FlowComponent<TimedTriggerProcedure> f = FlowComponent.of(this, 0, 1);
+    public FlowComponent<IntervalTriggerProcedure> createFlowComponent() {
+        FlowComponent<IntervalTriggerProcedure> f = FlowComponent.of(this, 0, 1);
         f.addMenu(new IntervalMenu());
         return f;
     }

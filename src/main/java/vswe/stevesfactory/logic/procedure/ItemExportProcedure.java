@@ -9,25 +9,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
-import vswe.stevesfactory.logic.item.IItemFilter;
-import vswe.stevesfactory.logic.item.ItemBufferElement;
-import vswe.stevesfactory.logic.item.ItemTraitsFilter;
+import vswe.stevesfactory.logic.*;
+import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemExportProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
@@ -40,15 +33,20 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
 
     public ItemExportProcedure(CommandGraph graph) {
         super(Procedures.ITEM_EXPORT.getFactory(), graph);
+        filter.setType(FilterType.BLACKLIST);
     }
 
     public ItemExportProcedure(INetworkController controller) {
         super(Procedures.ITEM_EXPORT.getFactory(), controller);
+        filter.setType(FilterType.BLACKLIST);
     }
 
     @Override
     public void execute(IExecutionContext context) {
         pushFrame(context, 0);
+        if (hasError()) {
+            return;
+        }
 
         Map<Item, ItemBufferElement> buffers = context.getItemBufferElements();
         IWorld world = context.getControllerWorld();
@@ -104,6 +102,10 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
             }
         }
         return filter.limitFlowRate(source, totalCount);
+    }
+
+    public boolean hasError() {
+        return inventories.isEmpty() || directions.isEmpty();
     }
 
     @Override
