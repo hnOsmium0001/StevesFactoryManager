@@ -3,6 +3,7 @@ package vswe.stevesfactory.logic.item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
+import vswe.stevesfactory.api.item.IItemBufferElement;
 
 import java.util.HashSet;
 import java.util.Set;

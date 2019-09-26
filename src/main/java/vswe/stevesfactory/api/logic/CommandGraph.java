@@ -156,7 +156,13 @@ public class CommandGraph implements Iterable<IProcedure> {
     public void deserialize(CompoundNBT tag) {
         DimensionType dimension = Objects.requireNonNull(DimensionType.byName(new ResourceLocation(tag.getString("Dimension"))));
         BlockPos pos = NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
-        controller = (INetworkController) Utils.getWorldForSide(dimension).getTileEntity(pos);
+        deserialize(tag, (INetworkController) Utils.getWorldForSide(dimension).getTileEntity(pos));
+    }
+
+    public void deserialize(CompoundNBT tag, INetworkController controller) {
+        DimensionType dimension = Objects.requireNonNull(DimensionType.byName(new ResourceLocation(tag.getString("Dimension"))));
+        BlockPos pos = NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
+        this.controller = controller;
 
         ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
         Int2ObjectMap<IProcedure> nodes = new Int2ObjectOpenHashMap<>();
@@ -186,8 +192,14 @@ public class CommandGraph implements Iterable<IProcedure> {
     }
 
     public static CommandGraph deserializeFrom(CompoundNBT tag) {
-        CommandGraph tree = new CommandGraph();
-        tree.deserialize(tag);
-        return tree;
+        CommandGraph graph = new CommandGraph();
+        graph.deserialize(tag);
+        return graph;
+    }
+
+    public static CommandGraph deserializeFrom(CompoundNBT tag, INetworkController controller) {
+        CommandGraph graph = new CommandGraph();
+        graph.deserialize(tag, controller);
+        return graph;
     }
 }

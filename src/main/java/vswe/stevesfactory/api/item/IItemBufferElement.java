@@ -1,4 +1,4 @@
-package vswe.stevesfactory.logic.item;
+package vswe.stevesfactory.api.item;
 
 import net.minecraft.item.ItemStack;
 

@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
@@ -16,7 +17,6 @@ import vswe.stevesfactory.library.gui.window.PlayerInventoryWindow;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.Menu;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -206,12 +206,12 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
             int height = 12;
             int x = getWidth() - width - 4;
             count = NumberField.integerFieldRanged(width, height, 1, 1, Integer.MAX_VALUE)
-                    .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
                     .setValue(slot.stack.getCount());
+            count.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
             count.setLocation(x, 24);
             damage = NumberField.integerField(width, height)
-                    .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
                     .setValue(slot.stack.getDamage());
+            damage.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
             damage.setLocation(x, count.getY() + count.getHeight() + 4);
 
             children = ImmutableList.of(close, delete, count, damage);

@@ -6,12 +6,13 @@ package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.utils.Utils;
 
 import java.awt.*;
@@ -111,6 +112,8 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
     private int textColorUneditable = 0xff333333;
     private int fontHeight = fontRenderer().FONT_HEIGHT;
     private float scaleFactor = 1.0F;
+
+    private String label = "";
 
     public TextField(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -469,6 +472,9 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
             drawString(renderedText, textX, textY, 0xffa0a0a0);
         }
 
+        if (!label.isEmpty()) {
+            RenderingHelper.drawTextCenteredVertically(label, getAbsoluteXRight() + 2, getAbsoluteY(), getAbsoluteYBottom(), 0xff404040);
+        }
         if (isFocused()) {
             int w = (int) (fontRenderer().getStringWidth(text.substring(startOffset, cursor)) * scaleFactor);
             int cx = x + 2 + w;
@@ -524,6 +530,18 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
             return getSelectedText();
         }
         return "";
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void translateLabel(String translationKey) {
+        label = I18n.format(translationKey);
     }
 
     @Override

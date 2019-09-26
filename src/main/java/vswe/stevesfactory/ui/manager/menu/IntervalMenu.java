@@ -13,13 +13,14 @@ public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
 
     public static final int MARGIN_MIDDLE_UNIT_TEXT = 10;
 
-    private final NumberField<Integer> interval = NumberField.integerFieldRanged(38, 14, 1, 1, 999)
-            .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
-            .setValue(1);
+    private final NumberField<Integer> interval;
 
     public IntervalMenu() {
+        interval = NumberField.integerFieldRanged(38, 14, 1, 1, 999);
         int x = RenderingHelper.getXForAlignedCenter(0, getWidth(), interval.getWidth() + MARGIN_MIDDLE_UNIT_TEXT + fontRenderer().getStringWidth(getUnitText()));
-        interval.setLocation(x, 50);
+        interval.setValue(1)
+                .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
+                .setLocation(x, 50);
 
         int desX = interval.getX();
         TextList description = new TextList(getWidth() - x * 2, 0, new ArrayList<>());

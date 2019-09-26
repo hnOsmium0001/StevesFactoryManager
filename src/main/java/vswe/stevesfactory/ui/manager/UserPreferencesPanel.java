@@ -20,12 +20,7 @@ public class UserPreferencesPanel extends AbstractContainer<IWidget> {
     public void reflow() {
     }
 
-<<<<<<< Updated upstream
-    // "AM" stands for Action Menu
     public static class OpenerEntry extends DefaultEntry {
-=======
-    public static class OpenerEntry extends AbstractEntry {
->>>>>>> Stashed changes
 
         public static final ResourceLocation ICON = RenderingHelper.linkTexture("gui/actions/preferences.png");
 
@@ -36,8 +31,7 @@ public class UserPreferencesPanel extends AbstractContainer<IWidget> {
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             // TODO open user preferences panel
-            getWindow().alive = false;
-            return true;
+            return super.mouseClicked(mouseX, mouseY, button);
         }
     }
 }

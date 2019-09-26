@@ -12,6 +12,7 @@ import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
+import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.logic.FilterType;
 import vswe.stevesfactory.logic.item.ItemTagFilter;
@@ -21,10 +22,7 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends MultiLayerMenu<P> {
 
@@ -91,11 +89,6 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
         addChildren(fields);
         addChildren(addEntryButton);
         addChildren(openSettings);
-
-        settings = new SettingsEditor(this);
-        ItemTagFilter filter = getLinkedFilter();
-        settings.addOption(filter.isMatchingAmount(), filter::setMatchingAmount, "gui.sfm.Menu.MatchAmount");
-        stackLimitInput = settings.addIntegerInput(filter.stackLimit, 0, Integer.MAX_VALUE);
     }
 
     @Override
@@ -130,7 +123,15 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
                 break;
         }
 
-        stackLimitInput.setValue(filter.stackLimit);
+        settings = new SettingsEditor(this);
+        stackLimitInput = settings.addIntegerInput(1, 0, Integer.MAX_VALUE);
+        stackLimitInput.setValue(filter.stackLimit)
+                .setBackgroundStyle(BackgroundStyle.RED_OUTLINE)
+                .translateLabel("gui.sfm.Menu.FilterAmount");
+        settings.addOption(filter.isMatchingAmount(), b -> {
+            filter.setMatchingAmount(b);
+            stackLimitInput.setEnabled(b);
+        }, "gui.sfm.Menu.MatchAmount");
     }
 
     @Override
@@ -150,8 +151,9 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
         } else {
             filter.type = FilterType.BLACKLIST;
         }
-
-        filter.stackLimit = stackLimitInput.getValue();
+        if (stackLimitInput != null) {
+            filter.stackLimit = stackLimitInput.getValue();
+        }
     }
 
     public ItemTagFilter getLinkedFilter() {

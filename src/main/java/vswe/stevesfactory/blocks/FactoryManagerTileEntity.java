@@ -363,7 +363,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
             // Creating Connection objects will write into controller command graphs storage,
             // but at the same time we are putting graphs in too, which causes duplicates
             lockGraphs();
-            CommandGraph graph = CommandGraph.deserializeFrom(commandGraphs.getCompound(i));
+            CommandGraph graph = CommandGraph.deserializeFrom(commandGraphs.getCompound(i), this);
             unlockGraphs();
             graphs.add(graph);
         }

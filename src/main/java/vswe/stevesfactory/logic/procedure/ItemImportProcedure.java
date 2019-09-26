@@ -1,5 +1,6 @@
 package vswe.stevesfactory.logic.procedure;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -10,6 +11,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import vswe.stevesfactory.api.item.IItemBufferElement;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -47,7 +49,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
             return;
         }
 
-        Map<Item, ItemBufferElement> buffers = context.getItemBufferElements();
+        Map<Item, IItemBufferElement> buffers = context.getItemBufferElements();
         IWorld world = context.getControllerWorld();
         for (BlockPos pos : inventories) {
             TileEntity tile = world.getTileEntity(pos);
@@ -61,12 +63,13 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
                     filter.extractFromInventory((stack, slot) -> {
                         Item item = stack.getItem();
+                        IItemBufferElement element = buffers.get(item);
                         if (buffers.containsKey(item)) {
-                            ItemBufferElement buffer = buffers.get(item);
+                            ItemBufferElement buffer = (ItemBufferElement) element;
                             buffer.stack.grow(stack.getCount());
                             buffer.addInventory(handler, slot);
                         } else {
-                            ItemBufferElement buffer = new ItemBufferElement(stack).addInventory(handler, slot);
+                            IItemBufferElement buffer = new ItemBufferElement(stack).addInventory(handler, slot);
                             buffers.put(item, buffer);
                         }
                     }, handler);

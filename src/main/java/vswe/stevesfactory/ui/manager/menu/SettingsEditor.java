@@ -60,16 +60,17 @@ public final class SettingsEditor extends AbstractContainer<IWidget> {
 
     public Checkbox addOption(boolean value, BooleanConsumer setter, String translationKey) {
         Checkbox checkbox = new Checkbox(0, 0, 8, 8);
+        checkbox.onStateChange = setter;
         checkbox.setChecked(value);
         checkbox.translateLabel(translationKey);
-        checkbox.onStateChange = setter;
         children.add(checkbox);
         reflow();
         return checkbox;
     }
 
-    public NumberField<Integer> addIntegerInput(int value, int lowerBound, int upperBound) {
-        NumberField<Integer> field = NumberField.integerFieldRanged(33, 12, value, lowerBound, upperBound);
+    public NumberField<Integer> addIntegerInput(int defaultValue, int lowerBound, int upperBound) {
+        NumberField<Integer> field = NumberField.integerFieldRanged(33, 12, defaultValue, lowerBound, upperBound);
+        children.add(field);
         reflow();
         return field;
     }
@@ -87,8 +88,7 @@ public final class SettingsEditor extends AbstractContainer<IWidget> {
     public void reflow() {
         int y = 4;
         // Exclude the close button
-        for (int i = 1; i < children.size(); i++) {
-            IWidget widget = children.get(i);
+        for (IWidget widget : children) {
             if (BoxSizing.shouldIncludeWidget(widget)) {
                 widget.setLocation(4, y);
                 y += widget.getHeight() + 4;

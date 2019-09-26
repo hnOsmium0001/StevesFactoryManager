@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.api.item.IItemBufferElement;
 import vswe.stevesfactory.logic.item.ItemBufferElement;
 
 import javax.annotation.Nullable;
@@ -24,7 +25,7 @@ public class ProcedureExecutor implements IExecutionContext {
     private final IWorld world;
 
     private Deque<IProcedure> executionStack = new ArrayDeque<>();
-    private Map<Item, ItemBufferElement> itemBufferElements = new HashMap<>();
+    private Map<Item, IItemBufferElement> itemBufferElements = new IdentityHashMap<>();
 
     public ProcedureExecutor(INetworkController controller, IWorld world) {
         this.controller = controller;
@@ -57,7 +58,7 @@ public class ProcedureExecutor implements IExecutionContext {
     }
 
     @Override
-    public Map<Item, ItemBufferElement> getItemBufferElements() {
+    public Map<Item, IItemBufferElement> getItemBufferElements() {
         return itemBufferElements;
     }
 
@@ -66,14 +67,17 @@ public class ProcedureExecutor implements IExecutionContext {
     }
 
     private void handleExtractedItems() {
-        for (Map.Entry<Item, ItemBufferElement> entry : itemBufferElements.entrySet()) {
-            ItemBufferElement buffer = entry.getValue();
-            if (buffer.used > 0) {
-                for (Pair<IItemHandler, Integer> pair : buffer.inventories) {
-                    IItemHandler handler = pair.getLeft();
-                    int slot = pair.getRight();
-                    ItemStack extracted = handler.extractItem(slot, buffer.used, false);
-                    buffer.used -= extracted.getCount();
+        for (Map.Entry<Item, IItemBufferElement> entry : itemBufferElements.entrySet()) {
+            IItemBufferElement element = entry.getValue();
+            if (element instanceof ItemBufferElement) {
+                ItemBufferElement buffer = (ItemBufferElement) element;
+                if (buffer.used > 0) {
+                    for (Pair<IItemHandler, Integer> pair : buffer.inventories) {
+                        IItemHandler handler = pair.getLeft();
+                        int slot = pair.getRight();
+                        ItemStack extracted = handler.extractItem(slot, buffer.used, false);
+                        buffer.used -= extracted.getCount();
+                    }
                 }
             }
         }

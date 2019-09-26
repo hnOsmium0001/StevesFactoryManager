@@ -90,6 +90,11 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
                 blacklist.check(true);
                 break;
         }
+
+        settings = new SettingsEditor(this);
+        settings.addOption(filter.isMatchingAmount(), filter::setMatchingAmount, "gui.sfm.Menu.MatchAmount");
+        settings.addOption(filter.isMatchingDamage(), filter::setMatchingDamage, "gui.sfm.Menu.MatchAmount");
+        settings.addOption(filter.isMatchingTag(), filter::setMatchingTag, "gui.sfm.Menu.MatchTag");
     }
 
     @Override
@@ -110,13 +115,6 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
 
     @Override
     public SettingsEditor getEditor() {
-        if (settings == null) {
-            settings = new SettingsEditor(this);
-            ItemTraitsFilter filter = getLinkedFilter();
-            settings.addOption(filter.isMatchingAmount(), filter::setMatchingAmount, "gui.sfm.Menu.MatchAmount");
-            settings.addOption(filter.isMatchingDamage(), filter::setMatchingDamage, "gui.sfm.Menu.MatchAmount");
-            settings.addOption(filter.isMatchingTag(), filter::setMatchingTag, "gui.sfm.Menu.MatchTag");
-        }
         return settings;
     }
 
