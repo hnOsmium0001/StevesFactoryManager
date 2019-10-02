@@ -56,9 +56,10 @@ public final class PacketSyncCommandGraphs {
         TileEntity tile = world.getTileEntity(msg.pos);
         if (tile instanceof INetworkController) {
             INetworkController controller = (INetworkController) tile;
-            Collection<CommandGraph> graphs = msg.getCommandGraphs();
-            controller.removeAllCommandGraphs();
-            controller.addCommandGraphs(graphs);
+            for (CompoundNBT tag : msg.data) {
+                CommandGraph graph = CommandGraph.deserializeFrom(tag, controller);
+                controller.addCommandGraph(graph);
+            }
         } else {
             StevesFactoryManager.logger.warn("Received packet with invalid controller position! {}", msg);
         }
@@ -80,16 +81,6 @@ public final class PacketSyncCommandGraphs {
         this.data = data;
         this.dimension = dimension;
         this.pos = pos;
-    }
-
-    public Collection<CommandGraph> getCommandGraphs() {
-        if (commandGraphs == null) {
-            commandGraphs = new ArrayList<>();
-            for (CompoundNBT tag : data) {
-                commandGraphs.add(CommandGraph.deserializeFrom(tag));
-            }
-        }
-        return commandGraphs;
     }
 
     @Override

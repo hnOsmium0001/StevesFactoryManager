@@ -1,11 +1,10 @@
 package vswe.stevesfactory.library.gui.widget;
 
-import net.minecraft.client.gui.IRenderable;
 import vswe.stevesfactory.library.gui.window.IWindow;
 
 import java.awt.*;
 
-public interface IWidget extends IRenderable {
+public interface IWidget {
 
     /**
      * Local coordinate relative to the parent component
@@ -59,7 +58,6 @@ public interface IWidget extends IRenderable {
 
     int getHeight();
 
-    @Override
     void render(int mouseX, int mouseY, float particleTicks);
 
     IWidget getParentWidget();

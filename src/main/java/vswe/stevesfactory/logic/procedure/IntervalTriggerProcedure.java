@@ -1,6 +1,8 @@
 package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -15,12 +17,8 @@ public class IntervalTriggerProcedure extends AbstractProcedure implements ITick
     private int tickCounter = 0;
     public int interval = 20;
 
-    public IntervalTriggerProcedure(INetworkController controller) {
-        super(Procedures.INTERVAL_TRIGGER.getFactory(), controller, 0, 1);
-    }
-
-    public IntervalTriggerProcedure(CommandGraph graph) {
-        super(Procedures.INTERVAL_TRIGGER.getFactory(), graph, 0, 1);
+    public IntervalTriggerProcedure() {
+        super(Procedures.INTERVAL_TRIGGER.getFactory(), 0, 1);
     }
 
     @Override
@@ -59,6 +57,7 @@ public class IntervalTriggerProcedure extends AbstractProcedure implements ITick
         interval = tag.getInt("Interval");
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public FlowComponent<IntervalTriggerProcedure> createFlowComponent() {
         FlowComponent<IntervalTriggerProcedure> f = FlowComponent.of(this, 0, 1);

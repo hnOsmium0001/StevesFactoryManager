@@ -1,25 +1,27 @@
 package vswe.stevesfactory.api.logic;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.nbt.*;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraftforge.common.util.Constants;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.utils.NetworkHelper;
-import vswe.stevesfactory.utils.Utils;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
 
 public class CommandGraph implements Iterable<IProcedure> {
 
-    private INetworkController controller;
+    private final INetworkController controller;
     private IProcedure root;
 
     public CommandGraph(INetworkController controller, IProcedure root) {
@@ -31,11 +33,8 @@ public class CommandGraph implements Iterable<IProcedure> {
         this.controller = controller;
     }
 
-    public CommandGraph(IProcedure root) {
-        this.root = root;
-    }
-
-    public CommandGraph() {
+    public boolean isValid() {
+        return controller != null && root != null;
     }
 
     public IProcedure getRoot() {
@@ -51,6 +50,7 @@ public class CommandGraph implements Iterable<IProcedure> {
     }
 
     public void execute() {
+        Preconditions.checkState(isValid());
         new ProcedureExecutor(controller, controller.getWorld()).start(root);
     }
 
@@ -61,6 +61,7 @@ public class CommandGraph implements Iterable<IProcedure> {
     }
 
     public Set<IProcedure> collect() {
+        Preconditions.checkState(isValid());
         Set<IProcedure> result = new HashSet<>();
         if (root != null) {
             result.add(root);
@@ -92,10 +93,12 @@ public class CommandGraph implements Iterable<IProcedure> {
     }
 
     public CommandGraph inducedSubgraph(IProcedure node) {
+        Preconditions.checkState(isValid());
         return new CommandGraph(controller, node);
     }
 
     public CompoundNBT serialize() {
+        Preconditions.checkState(isValid());
         CompoundNBT tag = new CompoundNBT();
 
         tag.putString("Dimension", Objects.requireNonNull(controller.getDimension().getRegistryName()).toString());
@@ -154,16 +157,6 @@ public class CommandGraph implements Iterable<IProcedure> {
     }
 
     public void deserialize(CompoundNBT tag) {
-        DimensionType dimension = Objects.requireNonNull(DimensionType.byName(new ResourceLocation(tag.getString("Dimension"))));
-        BlockPos pos = NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
-        deserialize(tag, (INetworkController) Utils.getWorldForSide(dimension).getTileEntity(pos));
-    }
-
-    public void deserialize(CompoundNBT tag, INetworkController controller) {
-        DimensionType dimension = Objects.requireNonNull(DimensionType.byName(new ResourceLocation(tag.getString("Dimension"))));
-        BlockPos pos = NBTUtil.readBlockPos(tag.getCompound("ControllerPos"));
-        this.controller = controller;
-
         ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
         Int2ObjectMap<IProcedure> nodes = new Int2ObjectOpenHashMap<>();
         for (int i = 0; i < nodesNBT.size(); i++) {
@@ -191,15 +184,16 @@ public class CommandGraph implements Iterable<IProcedure> {
         return NetworkHelper.retrieveProcedure(this, nodeNBT.getCompound("NodeData"));
     }
 
-    public static CommandGraph deserializeFrom(CompoundNBT tag) {
-        CommandGraph graph = new CommandGraph();
-        graph.deserialize(tag);
-        return graph;
-    }
-
+    /**
+     * Deserialize the whole command graph from the given compound.
+     *
+     * @param tag        Serialized data produced by {@link #deserialize(CompoundNBT)}
+     * @param controller Target controller object to reference to
+     * @return A valid command graph that should produce the same compound if {@link #serialize()} is called.
+     */
     public static CommandGraph deserializeFrom(CompoundNBT tag, INetworkController controller) {
-        CommandGraph graph = new CommandGraph();
-        graph.deserialize(tag, controller);
+        CommandGraph graph = new CommandGraph(controller);
+        graph.deserialize(tag);
         return graph;
     }
 }

@@ -15,9 +15,12 @@ import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
+import vswe.stevesfactory.ui.manager.selection.ComponentGroup;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class NetworkHelper {
 
@@ -31,22 +34,21 @@ public final class NetworkHelper {
         return LinkType.DEFAULT;
     }
 
-    public static IProcedure recreateProcedureAndAdd(INetworkController controller, CompoundNBT tag) {
-        IProcedureType<?> p = findTypeFor(tag);
-        return p.retrieveInstance(controller, tag);
-    }
-
-    public static IProcedure retrieveProcedure(INetworkController controller, CompoundNBT tag) {
-        // Note that this graph is invalid before we set its root
-        CommandGraph graph = new CommandGraph(controller);
-        IProcedure procedure = retrieveProcedure(graph, tag);
-        graph.setRoot(procedure);
+    public static <P extends IProcedure> P fabricateInstance(IProcedureType<P> type, INetworkController controller) {
+        P procedure = type.createInstance(controller);
+        CommandGraph graph = procedure.getGraph();
+        controller.addCommandGraph(graph);
         return procedure;
     }
 
+    public static IProcedure recreateProcedureAndAdd(INetworkController controller, CompoundNBT tag) {
+        IProcedure p = retrieveProcedure(new CommandGraph(controller), tag);
+        controller.addCommandGraph(p.getGraph());
+        return p;
+    }
+
     public static IProcedure retrieveProcedure(CommandGraph graph, CompoundNBT tag) {
-        IProcedureType<?> p = findTypeFor(tag);
-        IProcedure procedure = p.retrieveInstance(graph, tag);
+        IProcedure procedure = findTypeFor(tag).retrieveInstance(tag);
         procedure.setGraph(graph);
         return procedure;
     }
@@ -58,8 +60,16 @@ public final class NetworkHelper {
 
     public static IProcedureType<?> findTypeFor(ResourceLocation id) {
         IProcedureType<?> p = StevesFactoryManagerAPI.getProceduresRegistry().getValue(id);
-        // Not using checkNotNull here because technically the above method returns null is a registry problem
+        // Not using checkNotNull here because technically the above method returns null is a registry (game state) problem
         Preconditions.checkArgument(p != null, "Unable to find a procedure registered as " + id + "!");
         return p;
+    }
+
+    public static <P extends IProcedure> Function<INetworkController, P> wrapConstructor(Supplier<P> constructor) {
+        return controller -> {
+            P procedure = constructor.get();
+            procedure.setGraph(new CommandGraph(controller, procedure));
+            return procedure;
+        };
     }
 }

@@ -8,22 +8,29 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import vswe.stevesfactory.Config;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.*;
+import vswe.stevesfactory.api.logic.CommandGraph;
+import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.RenderingHelper;
-import vswe.stevesfactory.logic.procedure.*;
+import vswe.stevesfactory.logic.procedure.IntervalTriggerProcedure;
+import vswe.stevesfactory.logic.procedure.ItemExportProcedure;
+import vswe.stevesfactory.logic.procedure.ItemImportProcedure;
+import vswe.stevesfactory.logic.procedure.ItemTransferProcedure;
+import vswe.stevesfactory.utils.NetworkHelper;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
 public final class Procedures<P extends IProcedure> {
 
-    public static final Procedures<IntervalTriggerProcedure> INTERVAL_TRIGGER = new Procedures<>("interval_trigger", IntervalTriggerProcedure::new, IntervalTriggerProcedure::new, Config.COMMON.enableIntervalTrigger);
-    public static final Procedures<ItemTransferProcedure> ITEM_TRANSFER = new Procedures<>("item_transfer", ItemTransferProcedure::new, ItemTransferProcedure::new, Config.COMMON.enableItemTransfer);
-    public static final Procedures<ItemImportProcedure> ITEM_IMPORT = new Procedures<>("item_import", ItemImportProcedure::new, ItemImportProcedure::new, Config.COMMON.enableItemImport);
-    public static final Procedures<ItemExportProcedure> ITEM_EXPORT = new Procedures<>("item_export", ItemExportProcedure::new, ItemExportProcedure::new, Config.COMMON.enableItemExport);
+    public static final Procedures<IntervalTriggerProcedure> INTERVAL_TRIGGER = new Procedures<>("interval_trigger", IntervalTriggerProcedure::new, Config.COMMON.enableIntervalTrigger);
+    public static final Procedures<ItemTransferProcedure> ITEM_TRANSFER = new Procedures<>("item_transfer", ItemTransferProcedure::new, Config.COMMON.enableItemTransfer);
+    public static final Procedures<ItemImportProcedure> ITEM_IMPORT = new Procedures<>("item_import", ItemImportProcedure::new, Config.COMMON.enableItemImport);
+    public static final Procedures<ItemExportProcedure> ITEM_EXPORT = new Procedures<>("item_export", ItemExportProcedure::new, Config.COMMON.enableItemExport);
 
 //    ITEM_CONDITION("item_condition", DummyProcedure::new),
 //    FLOW_CONTROL("flow_control", DummyProcedure::new),
@@ -53,9 +60,9 @@ public final class Procedures<P extends IProcedure> {
     public final SimpleProcedureType<P> factory;
     public final ForgeConfigSpec.BooleanValue enabled;
 
-    private Procedures(String id, Function<INetworkController, P> constructor, Function<CommandGraph, P> retriever, ForgeConfigSpec.BooleanValue enabled) {
+    private Procedures(String id, Supplier<P> rawConstructor, ForgeConfigSpec.BooleanValue enabled) {
         this.id = id;
-        this.factory = new SimpleProcedureType<>(constructor, retriever, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
+        this.factory = new SimpleProcedureType<>(NetworkHelper.wrapConstructor(rawConstructor), rawConstructor, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
         this.factory.setRegistryName(new ResourceLocation(StevesFactoryManager.MODID, id));
         this.enabled = enabled;
     }

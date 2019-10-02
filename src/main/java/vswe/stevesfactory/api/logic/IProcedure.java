@@ -32,8 +32,7 @@ public interface IProcedure {
 
     /**
      * Serialize the procedure into a retrievable NBT format. This NBT compound should be able to be put into any factory with the same
-     * registry name as this, and results in an equivalent procedure object using {@link IProcedureType#retrieveInstance(CommandGraph,
-     * CompoundNBT)}.
+     * registry name as this, and results in an equivalent procedure object using {@link IProcedureType#retrieveInstance(CompoundNBT)}.
      * <p>
      * The resulting NBT should not contain connection information that are only valid based on its context ({@link CommandGraph}).
      *
@@ -45,6 +44,8 @@ public interface IProcedure {
 
     @OnlyIn(Dist.CLIENT)
     FlowComponent<?> createFlowComponent();
+
+    boolean isValid();
 
     CommandGraph getGraph();
 

@@ -7,6 +7,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -34,12 +36,8 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
     private List<Direction> directions = new ArrayList<>();
     private IItemFilter filter = new ItemTraitsFilter();
 
-    public ItemImportProcedure(CommandGraph graph) {
-        super(Procedures.ITEM_IMPORT.getFactory(), graph);
-    }
-
-    public ItemImportProcedure(INetworkController controller) {
-        super(Procedures.ITEM_IMPORT.getFactory(), controller);
+    public ItemImportProcedure() {
+        super(Procedures.ITEM_IMPORT.getFactory());
     }
 
     @Override
@@ -82,6 +80,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         return inventories.isEmpty() || directions.isEmpty();
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public FlowComponent<ItemImportProcedure> createFlowComponent() {
         FlowComponent<ItemImportProcedure> f = FlowComponent.of(this);

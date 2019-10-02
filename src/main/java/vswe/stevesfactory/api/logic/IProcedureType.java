@@ -9,23 +9,20 @@ import vswe.stevesfactory.api.network.INetworkController;
 public interface IProcedureType<P extends IProcedure> extends IForgeRegistryEntry<IProcedureType<?>> {
 
     /**
-     * Create a blank procedure object.
+     * Create a blank procedure and a command graph with its root set as the returned procedure.
+     * This should <b>not</b> modify anything in the controller, such as adding a command graph.
      *
      * @implSpec Created instances must return the same registry name ({@link #getRegistryName()}) as this factory object.
      */
     P createInstance(INetworkController controller);
 
     /**
-     * Retrieve a procedure object from the given compound tag. This should automatically assign the this retrieved procedure to the given
-     * controller and to a newly created {@link CommandGraph}.
+     * Retrieve an invalid procedure object (that can be turned to valid later by connecting it to a command graph) from
+     * the given tag.
+     *
+     * @return A new, invalid procedure object corresponding to the data
      */
-    P retrieveInstance(INetworkController controller, CompoundNBT tag);
-
-    /**
-     * Retrieve procedure object from the given tag, and bind itself to the graph. It is very important to check the parameter graph's state
-     * beforehand, since this could create invalid connection state and invalid command graphs.
-     */
-    P retrieveInstance(CommandGraph graph, CompoundNBT tag);
+    P retrieveInstance(CompoundNBT tag);
 
     /**
      * Get the icon used for component selection panel

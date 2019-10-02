@@ -6,6 +6,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.*;
@@ -34,12 +36,8 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     private List<Direction> targetDirections = new ArrayList<>();
     private IItemFilter filter = new ItemTraitsFilter();
 
-    public ItemTransferProcedure(INetworkController controller) {
-        super(Procedures.ITEM_TRANSFER.getFactory(), controller);
-    }
-
-    public ItemTransferProcedure(CommandGraph graph) {
-        super(Procedures.ITEM_TRANSFER.getFactory(), graph);
+    public ItemTransferProcedure() {
+        super(Procedures.ITEM_TRANSFER.getFactory());
     }
 
     @Override
@@ -123,6 +121,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
         filter = IOHelper.readItemFilter(tag.getCompound("Filter"));
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public FlowComponent<ItemTransferProcedure> createFlowComponent() {
         FlowComponent<ItemTransferProcedure> f = FlowComponent.of(this);
