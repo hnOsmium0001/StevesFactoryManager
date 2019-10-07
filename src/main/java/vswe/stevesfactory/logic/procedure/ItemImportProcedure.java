@@ -12,7 +12,8 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import vswe.stevesfactory.api.item.IItemBufferElement;
+import vswe.stevesfactory.api.item.ItemBuffers;
+import vswe.stevesfactory.logic.item.DirectBufferElement;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
@@ -45,7 +46,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         }
 
         Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        Map<Item, IItemBufferElement> buffers = context.getItemBufferElements();
+        Map<Item, ItemBuffers> buffers = context.getItemBuffers();
         IWorld world = context.getControllerWorld();
         for (BlockPos pos : inventories) {
             if (!linkedInventories.contains(pos)) {
@@ -62,15 +63,15 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
                     filter.extractFromInventory((stack, slot) -> {
                         Item item = stack.getItem();
-                        IItemBufferElement element = buffers.get(item);
-                        if (buffers.containsKey(item)) {
-                            ItemBufferElement buffer = (ItemBufferElement) element;
-                            buffer.stack.grow(stack.getCount());
-                            buffer.addInventory(handler, slot);
-                        } else {
-                            IItemBufferElement buffer = new ItemBufferElement(stack).addInventory(handler, slot);
-                            buffers.put(item, buffer);
+                        ItemBuffers container = buffers.get(item);
+                        if (container == null) {
+                            container = new ItemBuffers();
+                            buffers.put(item, container);
                         }
+
+                        DirectBufferElement element = container.getBuffer(DirectBufferElement.class, () -> new DirectBufferElement(stack).addInventory(handler, slot));
+                        element.stack.grow(stack.getCount());
+                        element.addInventory(handler, slot);
                     }, handler);
                 }
             }

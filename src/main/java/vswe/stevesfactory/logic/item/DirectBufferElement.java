@@ -8,19 +8,19 @@ import vswe.stevesfactory.api.item.IItemBufferElement;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ItemBufferElement implements IItemBufferElement {
+public class DirectBufferElement implements IItemBufferElement {
 
     public final Set<Pair<IItemHandler, Integer>> inventories = new HashSet<>();
 
     public ItemStack stack;
     public int used = 0;
 
-    public ItemBufferElement(ItemStack stack) {
+    public DirectBufferElement(ItemStack stack) {
         this.stack = stack;
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public ItemBufferElement addInventory(IItemHandler handler, int slot) {
+    public DirectBufferElement addInventory(IItemHandler handler, int slot) {
         inventories.add(Pair.of(handler, slot));
         return this;
     }
@@ -56,7 +56,14 @@ public class ItemBufferElement implements IItemBufferElement {
     }
 
     @Override
-    public int getEvaluationPriority() {
-        return 0;
+    public void cleanup() {
+        if (used > 0) {
+            for (Pair<IItemHandler, Integer> pair : inventories) {
+                IItemHandler handler = pair.getLeft();
+                int slot = pair.getRight();
+                ItemStack extracted = handler.extractItem(slot, used, false);
+                used -= extracted.getCount();
+            }
+        }
     }
 }

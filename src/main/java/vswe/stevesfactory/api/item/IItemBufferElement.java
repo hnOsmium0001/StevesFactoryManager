@@ -2,7 +2,7 @@ package vswe.stevesfactory.api.item;
 
 import net.minecraft.item.ItemStack;
 
-public interface IItemBufferElement extends Comparable<IItemBufferElement> {
+public interface IItemBufferElement {
 
     ItemStack getStack();
 
@@ -12,14 +12,12 @@ public interface IItemBufferElement extends Comparable<IItemBufferElement> {
 
     void setUsed(int used);
 
+    /**
+     * Implementation may assume the parameter is always less than or equal to the stack size of {@link #getStack()}.
+     */
     void use(int amount);
 
     void put(int amount);
 
-    int getEvaluationPriority();
-
-    @Override
-    default int compareTo(IItemBufferElement other) {
-        return this.getEvaluationPriority() - other.getEvaluationPriority();
-    }
+    void cleanup();
 }

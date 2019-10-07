@@ -1,16 +1,20 @@
 package vswe.stevesfactory.utils;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.StevesFactoryManagerAPI;
+import vswe.stevesfactory.api.item.ItemBuffers;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.IConnectable;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.logic.item.DirectBufferElement;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -63,5 +67,14 @@ public final class NetworkHelper {
             procedure.setGraph(new CommandGraph(controller, procedure));
             return procedure;
         };
+    }
+
+    @Nullable
+    public static DirectBufferElement getDirectBuffer(Map<Item, ItemBuffers> buffers, Item item) {
+        ItemBuffers container = buffers.get(item);
+        if (container == null) {
+            return null;
+        }
+        return container.getBuffer(DirectBufferElement.class);
     }
 }
