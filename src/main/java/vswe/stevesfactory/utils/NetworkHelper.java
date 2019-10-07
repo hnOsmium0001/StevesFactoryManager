@@ -3,22 +3,14 @@ package vswe.stevesfactory.utils;
 import com.google.common.base.Preconditions;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.*;
-import vswe.stevesfactory.api.network.*;
+import vswe.stevesfactory.api.network.IConnectable;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
-import vswe.stevesfactory.ui.manager.selection.ComponentGroup;
+import vswe.stevesfactory.api.network.INetworkController;
 
 import javax.annotation.Nullable;
-import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -41,7 +33,7 @@ public final class NetworkHelper {
         return procedure;
     }
 
-    public static IProcedure recreateProcedureAndAdd(INetworkController controller, CompoundNBT tag) {
+    public static IProcedure retrieveProcedureAndAdd(INetworkController controller, CompoundNBT tag) {
         IProcedure p = retrieveProcedure(new CommandGraph(controller), tag);
         controller.addCommandGraph(p.getGraph());
         return p;

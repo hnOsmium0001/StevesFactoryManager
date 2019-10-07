@@ -13,7 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
-public class ModItems {
+public final class ModItems {
+
+    private ModItems() {
+    }
 
     public static final ItemGroup creativeTab = new ItemGroup(StevesFactoryManager.MODID) {
         @Override

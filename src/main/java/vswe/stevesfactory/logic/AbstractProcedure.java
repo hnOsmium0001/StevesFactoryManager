@@ -25,18 +25,6 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     private int componentY;
     private String name;
 
-//    public AbstractProcedure(IProcedureType<?> type, CommandGraph graph) {
-//        this(type, graph, 1, 1);
-//    }
-//
-//    public AbstractProcedure(IProcedureType<?> type, CommandGraph graph, int possibleParents, int possibleChildren) {
-//        Preconditions.checkArgument(graph.getController().isValid(), "The controller object is invalid!");
-//        this.type = type;
-//        this.graph = graph;
-//        this.successors = new Connection[possibleChildren];
-//        this.predecessors = new Connection[possibleParents];
-//    }
-
     public AbstractProcedure(IProcedureType<?> type) {
         this(type, 1, 1);
     }
@@ -57,20 +45,6 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     @Override
     public boolean isValid() {
         return graph != null && graph.getController().isValid();
-    }
-
-    public void setController(INetworkController controller) {
-        Preconditions.checkArgument(controller.isValid(), "The controller object is invalid!");
-
-        if (graph != null) {
-            INetworkController oldController = graph.getController();
-            if (oldController != null) {
-                oldController.removeCommandGraph(graph);
-            }
-        }
-
-        this.graph = new CommandGraph(controller, this);
-        controller.addCommandGraph(graph);
     }
 
     @Override

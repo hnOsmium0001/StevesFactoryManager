@@ -43,7 +43,6 @@ public class StevesFactoryManagerAPI {
         makeRegistry(new ResourceLocation(StevesFactoryManager.MODID, "procedures"), IProcedureType.class).create();
     }
 
-    // Somehow inlining this method would create an compile error
     private static <T extends IForgeRegistryEntry<T>> RegistryBuilder<T> makeRegistry(ResourceLocation name, Class<T> type) {
         return new RegistryBuilder<T>().setName(name).setType(type);
     }

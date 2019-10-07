@@ -23,7 +23,10 @@ import java.util.List;
 import static vswe.stevesfactory.setup.ModItems.defaultItemProperties;
 
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
-public class ModBlocks {
+public final class ModBlocks {
+
+    private ModBlocks() {
+    }
 
     private static List<BlockBuilder> pendingBlocks = new ArrayList<>();
 
@@ -39,14 +42,14 @@ public class ModBlocks {
 
     public static void init() {
         pendingBlocks.add(new BlockBuilder<FactoryManagerTileEntity>("factory_manager")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2f, 10f))
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(4F, 10F))
                 .constructor(FactoryManagerBlock::new)
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(FactoryManagerTileEntity::new, block))
                 .noRenderer());
 
         pendingBlocks.add(new BlockBuilder<CableTileEntity>("cable")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(0.4f, 10f))
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
                 .constructor(CableBlock::new)
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(CableTileEntity::new, block))

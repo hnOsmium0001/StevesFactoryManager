@@ -5,21 +5,16 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.*;
 import net.minecraftforge.common.util.Constants;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-public class CommandGraph implements Iterable<IProcedure> {
+public final class CommandGraph implements Iterable<IProcedure> {
 
     private final INetworkController controller;
     private IProcedure root;
@@ -63,10 +58,8 @@ public class CommandGraph implements Iterable<IProcedure> {
     public Set<IProcedure> collect() {
         Preconditions.checkState(isValid());
         Set<IProcedure> result = new HashSet<>();
-        if (root != null) {
-            result.add(root);
-            dfs(result, root);
-        }
+        result.add(root);
+        dfs(result, root);
         return result;
     }
 

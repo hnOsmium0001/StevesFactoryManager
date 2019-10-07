@@ -1,6 +1,5 @@
 package vswe.stevesfactory.logic.procedure;
 
-import com.google.common.base.Preconditions;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -14,9 +13,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.item.IItemBufferElement;
-import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.item.*;
@@ -47,9 +44,13 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
             return;
         }
 
+        Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         Map<Item, IItemBufferElement> buffers = context.getItemBufferElements();
         IWorld world = context.getControllerWorld();
         for (BlockPos pos : inventories) {
+            if (!linkedInventories.contains(pos)) {
+                continue;
+            }
             TileEntity tile = world.getTileEntity(pos);
             if (tile == null) {
                 continue;

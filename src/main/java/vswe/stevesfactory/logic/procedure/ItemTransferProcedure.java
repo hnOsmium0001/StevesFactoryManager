@@ -11,18 +11,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.*;
-import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.*;
+import vswe.stevesfactory.logic.AbstractProcedure;
+import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.PropertyManager;
 import vswe.stevesfactory.ui.manager.menu.*;
 import vswe.stevesfactory.utils.IOHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ItemTransferProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
@@ -47,8 +45,15 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             return;
         }
 
+        Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         List<SingleItemBufferElement> items = new ArrayList<>();
         for (BlockPos pos : sourceInventories) {
+            // Don't force remove non-existing connections as a more user friendly design
+            // so that in case player accidentally break a cable, the settings are still preserved
+            // the player can just place the cable back and everything will function properly as before
+            if (!linkedInventories.contains(pos)) {
+                continue;
+            }
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
             if (tile == null) {
                 continue;
@@ -63,6 +68,9 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
         }
 
         for (BlockPos pos : targetInventories) {
+            if (!linkedInventories.contains(pos)) {
+                continue;
+            }
             TileEntity tile = context.getControllerWorld().getTileEntity(pos);
             if (tile == null) {
                 continue;

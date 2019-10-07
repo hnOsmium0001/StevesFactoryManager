@@ -277,7 +277,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         }
 
         INetworkController controller = FactoryManagerGUI.getActiveGUI().getController();
-        IProcedure procedure = NetworkHelper.recreateProcedureAndAdd(controller, tag);
+        IProcedure procedure = NetworkHelper.retrieveProcedureAndAdd(controller, tag);
 
         addChildren(procedure.createFlowComponent());
     }

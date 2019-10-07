@@ -40,9 +40,8 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     private Map<Capability<?>, Multiset<BlockPos>> linkedInventories = new IdentityHashMap<>();
 
     private Set<CommandGraph> graphs = new HashSet<>();
-    private boolean lockedGraphs = false;
 
-    private boolean firstTick;
+    private int ticks;
 
     public FactoryManagerTileEntity() {
         super(ModBlocks.factoryManagerTileEntity);
@@ -51,7 +50,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     @Override
     public void onLoad() {
         super.onLoad();
-        firstTick = true;
+        ticks = 0;
     }
 
     @Override
@@ -65,9 +64,11 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
                 }
             }
 
-            if (firstTick) {
+            if (ticks == 0) {
                 reload();
-                firstTick = false;
+                ticks = Config.COMMON.rescanInterval.get();
+            } else {
+                ticks--;
             }
         }
     }
@@ -206,33 +207,22 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public boolean addCommandGraph(CommandGraph graph) {
-        if (!lockedGraphs) {
-            return graphs.add(graph);
-        }
-        return false;
+        return graphs.add(graph);
     }
 
     @Override
     public boolean addCommandGraphs(Collection<CommandGraph> graphs) {
-        if (!lockedGraphs) {
-            return this.graphs.addAll(graphs);
-        }
-        return false;
+        return this.graphs.addAll(graphs);
     }
 
     @Override
     public boolean removeCommandGraph(CommandGraph graph) {
-        if (!lockedGraphs) {
-            return graphs.remove(graph);
-        }
-        return false;
+        return graphs.remove(graph);
     }
 
     @Override
     public void removeAllCommandGraphs() {
-        if (!lockedGraphs) {
-            graphs.clear();
-        }
+        graphs.clear();
     }
 
     /**
@@ -263,9 +253,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
             }
         }
     }
-
-    // Even though these methods are implemented in TileEntity, after reobfuscation the names would be different from the ones in INetworkController
-    // which will cause AbstractMethodError at run time
 
     @Override
     public boolean isValid() {
@@ -307,14 +294,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         read(pkt.getNbtCompound());
     }
 
-    public void lockGraphs() {
-        lockedGraphs = true;
-    }
-
-    public void unlockGraphs() {
-        lockedGraphs = false;
-    }
-
     private static final Map<String, Capability<?>> caps;
 
     static {
@@ -335,8 +314,10 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
         super.read(compound);
 
-        connectedCables = IOHelper.readBlockPoses(compound.getList("ConnectedCables", Constants.NBT.TAG_COMPOUND), new HashSet<>());
+        connectedCables.clear();
+        IOHelper.readBlockPoses(compound.getList("ConnectedCables", Constants.NBT.TAG_COMPOUND), connectedCables);
 
+        linkedInventories.clear();
         ListNBT serializedInventories = compound.getList("LinkedInventories", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < serializedInventories.size(); i++) {
             CompoundNBT element = serializedInventories.getCompound(i);
@@ -344,7 +325,6 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
             // Constructed (heap) string and interned string behave differently in an IdentityHashMap
             // (CapabilityManager interns the capability name before putting them in the map)
             String capName = element.getString("Name").intern();
-
 //            Capability<?> cap = CapabilityManager.INSTANCE.providers.get(capName);
             Capability<?> cap = caps.get(capName);
 
@@ -360,11 +340,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         ListNBT commandGraphs = compound.getList("CommandGraphs", Constants.NBT.TAG_COMPOUND);
         graphs.clear();
         for (int i = 0; i < commandGraphs.size(); i++) {
-            // Creating Connection objects will write into controller command graphs storage,
-            // but at the same time we are putting graphs in too, which causes duplicates
-            lockGraphs();
             CommandGraph graph = CommandGraph.deserializeFrom(commandGraphs.getCompound(i), this);
-            unlockGraphs();
             graphs.add(graph);
         }
     }

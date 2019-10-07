@@ -2,8 +2,8 @@ package vswe.stevesfactory.api.logic;
 
 import net.minecraft.item.Item;
 import net.minecraft.world.IWorld;
-import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.api.item.IItemBufferElement;
+import vswe.stevesfactory.api.network.INetworkController;
 
 import javax.annotation.Nullable;
 import java.util.Map;

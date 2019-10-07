@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "sfm:factory_manager"
+    }
+  ],
+  "result": {
+    "item": "sfm:factory_manager"
+  }
+}

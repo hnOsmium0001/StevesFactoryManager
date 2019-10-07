@@ -13,11 +13,10 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.item.IItemBufferElement;
-import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.*;
-import vswe.stevesfactory.logic.item.*;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
@@ -46,9 +45,13 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
             return;
         }
 
+        Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         Map<Item, IItemBufferElement> buffers = context.getItemBufferElements();
         IWorld world = context.getControllerWorld();
         for (BlockPos pos : inventories) {
+            if (!linkedInventories.contains(pos)) {
+                continue;
+            }
             TileEntity tile = world.getTileEntity(pos);
             if (tile == null) {
                 continue;

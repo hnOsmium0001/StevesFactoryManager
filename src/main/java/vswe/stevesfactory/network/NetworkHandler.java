@@ -22,8 +22,13 @@ public final class NetworkHandler {
             .simpleChannel();
 
     public static void register() {
-        registerMessage(PacketOpenManagerGUI.class, PacketOpenManagerGUI::encode, PacketOpenManagerGUI::decode, PacketOpenManagerGUI::handle);
+        // Both
         registerMessage(PacketSyncCommandGraphs.class, PacketSyncCommandGraphs::encode, PacketSyncCommandGraphs::decode, PacketSyncCommandGraphs::handle);
+
+        // Client to server
+
+        // Server to client
+        registerMessage(PacketOpenManagerGUI.class, PacketOpenManagerGUI::encode, PacketOpenManagerGUI::decode, PacketOpenManagerGUI::handle);
         registerMessage(PacketReloadComponentGroups.class, PacketReloadComponentGroups::encode, PacketReloadComponentGroups::decode, PacketReloadComponentGroups::handle);
         registerMessage(PacketInspectionsSetting.class, PacketInspectionsSetting::encode, PacketInspectionsSetting::decode, PacketInspectionsSetting::handle);
     }

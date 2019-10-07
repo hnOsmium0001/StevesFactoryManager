@@ -1,18 +1,21 @@
 package vswe.stevesfactory.network;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 import vswe.stevesfactory.library.gui.debug.Inspections;
-import vswe.stevesfactory.ui.manager.selection.ComponentGroup;
 
 import java.util.function.Supplier;
 
-public class PacketInspectionsSetting {
+public final class PacketInspectionsSetting {
 
     public static final String NAME = "inspectionsOverlay";
 
@@ -42,6 +45,12 @@ public class PacketInspectionsSetting {
     }
 
     public static void handle(PacketInspectionsSetting msg, Supplier<NetworkEvent.Context> ctx) {
+        Preconditions.checkState(ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> handleClient(msg, ctx));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void handleClient(PacketInspectionsSetting msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             switch (msg.mode) {
                 case QUERY:

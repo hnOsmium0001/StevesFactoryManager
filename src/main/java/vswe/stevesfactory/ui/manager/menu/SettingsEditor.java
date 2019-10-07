@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
@@ -46,6 +47,11 @@ public final class SettingsEditor extends AbstractContainer<IWidget> {
                 menu.openEditor(null);
                 return super.mouseClicked(mouseX, mouseY, button);
             }
+
+            @Override
+            public BoxSizing getBoxSizing() {
+                return BoxSizing.PHANTOM;
+            }
         };
         close.setParentWidget(this);
         children.add(close);
@@ -86,14 +92,7 @@ public final class SettingsEditor extends AbstractContainer<IWidget> {
 
     @Override
     public void reflow() {
-        int y = 4;
-        // Exclude the close button
-        for (IWidget widget : children) {
-            if (BoxSizing.shouldIncludeWidget(widget)) {
-                widget.setLocation(4, y);
-                y += widget.getHeight() + 4;
-            }
-        }
+        FlowLayout.vertical(children, 4, 4, 4);
     }
 
     @Nonnull

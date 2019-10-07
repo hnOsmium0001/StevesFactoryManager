@@ -9,16 +9,15 @@ import vswe.stevesfactory.api.network.INetworkController;
 public interface IProcedureType<P extends IProcedure> extends IForgeRegistryEntry<IProcedureType<?>> {
 
     /**
-     * Create a blank procedure and a command graph with its root set as the returned procedure.
-     * This should <b>not</b> modify anything in the controller, such as adding a command graph.
+     * Create a blank procedure and a command graph with its root set as the returned procedure. This should <b>not</b> modify anything in
+     * the controller, such as adding a command graph.
      *
      * @implSpec Created instances must return the same registry name ({@link #getRegistryName()}) as this factory object.
      */
     P createInstance(INetworkController controller);
 
     /**
-     * Retrieve an invalid procedure object (that can be turned to valid later by connecting it to a command graph) from
-     * the given tag.
+     * Retrieve an invalid procedure object (that can be turned to valid later by connecting it to a command graph) from the given tag.
      *
      * @return A new, invalid procedure object corresponding to the data
      */

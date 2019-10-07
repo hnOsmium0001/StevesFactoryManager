@@ -13,6 +13,9 @@ public final class Config {
 
     public static final class CommonCategory {
 
+        public final IntValue maxSearchDepth;
+        public final IntValue rescanInterval;
+
         // Due to Forge config limitations (and laziness of not wanting to write a custom config)
         // disabled procedures will only be excluded in the selection menu; but kept registered
         public final BooleanValue enableIntervalTrigger;
@@ -20,17 +23,21 @@ public final class Config {
         public final BooleanValue enableItemImport;
         public final BooleanValue enableItemExport;
 
-        public final IntValue maxSearchDepth;
-
         private CommonCategory(Builder builder) {
-            builder.comment("General category").push("common");
+            builder.comment("Factory manager config options").push("factoryManager");
+            maxSearchDepth = builder
+                    .comment("Maximum depth that the Factory Manager DFS algorithm should go")
+                    .defineInRange("MaxSearchDepth", 64, 0, Integer.MAX_VALUE);
+            rescanInterval = builder
+                    .comment("Number of ticks for the Factory Manager to rescan the network. Set to -1 to make it never rescan passively")
+                    .defineInRange("RescanInterval", 100, -1, Integer.MAX_VALUE);
+            builder.pop();
+
+            builder.comment("Procedures config options").push("procedures");
             enableIntervalTrigger = builder.define("EnableIntervalTrigger", true);
             enableItemTransfer = builder.define("EnableItemTransfer", true);
             enableItemImport = builder.define("EnableItemImport", true);
             enableItemExport = builder.define("EnableItemExport", true);
-            maxSearchDepth = builder
-                    .comment("Maximum depth that the Factory Manager DFS algorithm should go")
-                    .defineInRange("MaxSearchDepth", 64, 0, Integer.MAX_VALUE);
             builder.pop();
         }
     }

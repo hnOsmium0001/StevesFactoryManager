@@ -1,6 +1,6 @@
 package vswe.stevesfactory.network;
 
-import com.google.common.base.MoreObjects;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -11,7 +11,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -39,30 +38,27 @@ public final class PacketSyncCommandGraphs {
         return new PacketSyncCommandGraphs(graphs, dimension, pos);
     }
 
-    public static void handle(PacketSyncCommandGraphs msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
-        ctx.enqueueWork(() -> {
-            handle(msg);
-            ctx.setPacketHandled(true);
-        });
-    }
-
-    /**
-     * Main packet handling logic. Must be run on main (Server/Client Thread) thread.
-     */
-    static void handle(PacketSyncCommandGraphs msg) {
-        World world = Utils.getWorldForSide(msg.dimension);
-
-        TileEntity tile = world.getTileEntity(msg.pos);
-        if (tile instanceof INetworkController) {
-            INetworkController controller = (INetworkController) tile;
-            for (CompoundNBT tag : msg.data) {
-                CommandGraph graph = CommandGraph.deserializeFrom(tag, controller);
-                controller.addCommandGraph(graph);
+    public static void handle(PacketSyncCommandGraphs msg, Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity sender = ctx.get().getSender();
+            if (sender == null) {
+                return;
             }
-        } else {
-            StevesFactoryManager.logger.warn("Received packet with invalid controller position! {}", msg);
-        }
+
+            World world = sender.world;
+            TileEntity tile = world.getTileEntity(msg.pos);
+            if (tile instanceof INetworkController) {
+                INetworkController controller = (INetworkController) tile;
+                controller.removeAllCommandGraphs();
+                for (CompoundNBT tag : msg.data) {
+                    CommandGraph graph = CommandGraph.deserializeFrom(tag, controller);
+                    controller.addCommandGraph(graph);
+                }
+            } else {
+                StevesFactoryManager.logger.warn("Received packet with invalid controller position! {}", msg);
+            }
+            ctx.get().setPacketHandled(true);
+        });
     }
 
     private List<CompoundNBT> data;
@@ -81,14 +77,5 @@ public final class PacketSyncCommandGraphs {
         this.data = data;
         this.dimension = dimension;
         this.pos = pos;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("commandGraphs", commandGraphs)
-                .add("dimension", dimension)
-                .add("pos", pos)
-                .toString();
     }
 }
