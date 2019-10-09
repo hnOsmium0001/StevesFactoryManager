@@ -8,8 +8,8 @@ import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
@@ -28,7 +28,7 @@ import java.util.*;
 
 import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.*;
 
-public class FlowComponent<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements Comparable<IZIndexProvider>, IZIndexProvider {
+public class FlowComponent<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements Comparable<FlowComponent<?>> {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
@@ -688,18 +688,16 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         return id;
     }
 
-    @Override
     public int getZIndex() {
         return zIndex;
     }
 
-    @Override
     public void setZIndex(int z) {
         this.zIndex = z;
     }
 
     @Override
-    public int compareTo(IZIndexProvider that) {
+    public int compareTo(FlowComponent<?> that) {
         return this.getZIndex() - that.getZIndex();
     }
 

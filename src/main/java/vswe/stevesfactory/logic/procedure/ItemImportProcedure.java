@@ -22,6 +22,7 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.NetworkHelper;
 
 import java.util.*;
 
@@ -62,15 +63,13 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
                 if (cap.isPresent()) {
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
                     filter.extractFromInventory((stack, slot) -> {
-                        Item item = stack.getItem();
-                        ItemBuffers container = buffers.get(item);
-                        if (container == null) {
-                            container = new ItemBuffers();
-                            buffers.put(item, container);
-                        }
-
+                        ItemBuffers container = NetworkHelper.getOrCreateBufferContainer(buffers, stack.getItem());
+                        // If this stack is used to create the buffer, we want it to start completely empty
+                        // If this stack is not used at all, this is fine too because the callback always receives a new item stack
+                        int count = stack.getCount();
+                        stack.setCount(0);
                         DirectBufferElement element = container.getBuffer(DirectBufferElement.class, () -> new DirectBufferElement(stack).addInventory(handler, slot));
-                        element.stack.grow(stack.getCount());
+                        element.stack.grow(count);
                         element.addInventory(handler, slot);
                     }, handler);
                 }

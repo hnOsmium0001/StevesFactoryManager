@@ -1,7 +1,7 @@
 package vswe.stevesfactory.logic.execution;
 
 import net.minecraft.item.Item;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import vswe.stevesfactory.api.item.IItemBufferElement;
 import vswe.stevesfactory.api.item.ItemBuffers;
 import vswe.stevesfactory.api.logic.IExecutionContext;
@@ -9,10 +9,7 @@ import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 
 import javax.annotation.Nullable;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A common execution context implementation for procedures.
@@ -22,12 +19,12 @@ import java.util.Map;
 public class ProcedureExecutor implements IExecutionContext {
 
     private final INetworkController controller;
-    private final IWorld world;
+    private final World world;
 
     private Deque<IProcedure> executionStack = new ArrayDeque<>();
     private Map<Item, ItemBuffers> itemBufferElements = new IdentityHashMap<>();
 
-    public ProcedureExecutor(INetworkController controller, IWorld world) {
+    public ProcedureExecutor(INetworkController controller, World world) {
         this.controller = controller;
         this.world = world;
     }
@@ -38,7 +35,7 @@ public class ProcedureExecutor implements IExecutionContext {
     }
 
     @Override
-    public IWorld getControllerWorld() {
+    public World getControllerWorld() {
         return world;
     }
 

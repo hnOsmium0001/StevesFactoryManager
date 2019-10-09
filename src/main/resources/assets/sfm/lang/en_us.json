@@ -19,7 +19,7 @@
   "logic.sfm.fluid_condition": "Condition (F)",
   "logic.sfm.redstone_emitter": "Emitter",
   "logic.sfm.redstone_condition": "Condition (R)",
-  "logic.sfm.craft_item": "Crafter",
+  "logic.sfm.crafting": "Crafter",
   "logic.sfm.for_each": "For Each",
   "logic.sfm.group": "Group",
   "logic.sfm.group_io": "Node",
@@ -91,5 +91,6 @@
   "gui.sfm.Menu.Deactivate": "Deactivate",
   "gui.sfm.Menu.Delete": "Delete",
   "gui.sfm.Menu.Delete.Info": "Remove this item filter",
-  "gui.sfm.Menu.CloseEditor.Info": "Return to last menu"
+  "gui.sfm.Menu.CloseEditor.Info": "Return to last menu",
+  "gui.sfm.Menus.RecipeConfiguration": "Crafting"
 }

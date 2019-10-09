@@ -42,6 +42,7 @@ public interface IProcedure {
 
     void deserialize(CompoundNBT tag);
 
+    // TODO make this not implementation-dependent
     @OnlyIn(Dist.CLIENT)
     FlowComponent<?> createFlowComponent();
 

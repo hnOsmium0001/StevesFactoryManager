@@ -75,6 +75,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     private void reload() {
         search();
+        markDirty();
     }
 
     public void activate(PlayerEntity player) {
@@ -83,6 +84,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         StevesFactoryManager.logger.trace("Player {} activated a factory manager at {}", player, pos);
 
         search();
+        markDirty();
 
         ServerPlayerEntity client = (ServerPlayerEntity) player;
         PacketOpenManagerGUI.openFactoryManager(client, getDimension(), getPosition(), write(new CompoundNBT()));
@@ -161,6 +163,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public void removeCable(BlockPos cable) {
+        markDirty();
         assert world != null;
         connectedCables.remove(cable);
     }
@@ -185,18 +188,21 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
      */
     @Override
     public <T> boolean addLink(Capability<T> cap, BlockPos pos) {
+        markDirty();
         StevesFactoryManager.logger.trace("Added link");
         return getInventoryMultiset(cap).add(pos);
     }
 
     @Override
     public <T> boolean addLinks(Capability<T> cap, Collection<BlockPos> poses) {
+        markDirty();
         StevesFactoryManager.logger.trace("Added {} links", poses.size());
         return getInventoryMultiset(cap).addAll(poses);
     }
 
     @Override
     public void removeAllLinks() {
+        markDirty();
         linkedInventories.clear();
     }
 
@@ -207,21 +213,25 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Override
     public boolean addCommandGraph(CommandGraph graph) {
+        markDirty();
         return graphs.add(graph);
     }
 
     @Override
     public boolean addCommandGraphs(Collection<CommandGraph> graphs) {
+        markDirty();
         return this.graphs.addAll(graphs);
     }
 
     @Override
     public boolean removeCommandGraph(CommandGraph graph) {
+        markDirty();
         return graphs.remove(graph);
     }
 
     @Override
     public void removeAllCommandGraphs() {
+        markDirty();
         graphs.clear();
     }
 
@@ -230,12 +240,14 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
      */
     @Override
     public <T> boolean removeLink(Capability<T> cap, BlockPos pos) {
+        markDirty();
         StevesFactoryManager.logger.trace("Removed link");
         return getInventoryMultiset(cap).remove(pos);
     }
 
     @Override
     public void addLinksFor(INetworkController controller) {
+        markDirty();
         for (Capability<?> cap : StevesFactoryManagerAPI.getRecognizableCapabilities()) {
             updateLinks(controller, cap);
         }

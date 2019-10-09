@@ -11,15 +11,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.item.IItemBufferElement;
 import vswe.stevesfactory.api.item.ItemBuffers;
 import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.FilterType;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.*;
 import vswe.stevesfactory.logic.item.IItemFilter;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
@@ -27,10 +23,7 @@ import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ItemExportProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
@@ -80,25 +73,24 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
                             }
 
                             // Simulate limit input stack size
-                            int need = calculateNeededAmount(handler, bufferedStack);
+                            int sourceCount = bufferedStack.getCount();
+                            int need = Math.min(calculateNeededAmount(handler, bufferedStack), sourceCount);
                             if (need == 0) {
                                 continue;
                             }
-                            int sourceCount = bufferedStack.getCount();
                             bufferedStack.setCount(need);
 
                             ItemStack untaken = ItemHandlerHelper.insertItem(handler, bufferedStack, false);
-                            int untakenCount = untaken.getCount();
-                            int takenCount = need - untakenCount;
+                            int takenCount = need - untaken.getCount();
+                            int untakenCount = sourceCount - takenCount;
 
                             buffer.use(takenCount);
                             // Reuse stack object
-                            untaken.setCount(sourceCount - takenCount);
+                            untaken.setCount(untakenCount);
                             buffer.setStack(untaken);
                         }
                     }
                 }
-
             }
         }
     }

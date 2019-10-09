@@ -69,6 +69,15 @@ public final class NetworkHelper {
         };
     }
 
+    public static ItemBuffers getOrCreateBufferContainer(Map<Item, ItemBuffers> buffers, Item item) {
+        ItemBuffers container = buffers.get(item);
+        if (container == null) {
+            container = new ItemBuffers();
+            buffers.put(item, container);
+        }
+        return container;
+    }
+
     @Nullable
     public static DirectBufferElement getDirectBuffer(Map<Item, ItemBuffers> buffers, Item item) {
         ItemBuffers container = buffers.get(item);

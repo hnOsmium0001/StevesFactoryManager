@@ -2,9 +2,7 @@ package vswe.stevesfactory.api.item;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**

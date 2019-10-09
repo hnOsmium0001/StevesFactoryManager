@@ -9,14 +9,15 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.*;
-import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedureType;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
+@EventBusSubscriber(modid = StevesFactoryManagerAPI.MODID, bus = Bus.MOD)
 public class StevesFactoryManagerAPI {
+
+    public static final String MODID = "sfm";
 
     private static IForgeRegistry<IProcedureType<?>> procedures;
     private static Set<Capability<?>> recognizableCapabilities;
@@ -40,7 +41,7 @@ public class StevesFactoryManagerAPI {
     @SubscribeEvent
     @SuppressWarnings("unchecked")
     public static void onRegistryCreation(RegistryEvent.NewRegistry event) {
-        makeRegistry(new ResourceLocation(StevesFactoryManager.MODID, "procedures"), IProcedureType.class).create();
+        makeRegistry(new ResourceLocation(MODID, "procedures"), IProcedureType.class).create();
     }
 
     private static <T extends IForgeRegistryEntry<T>> RegistryBuilder<T> makeRegistry(ResourceLocation name, Class<T> type) {

@@ -1,7 +1,7 @@
 package vswe.stevesfactory.api.logic;
 
 import net.minecraft.item.Item;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import vswe.stevesfactory.api.item.ItemBuffers;
 import vswe.stevesfactory.api.network.INetworkController;
 
@@ -16,7 +16,7 @@ public interface IExecutionContext {
 
     INetworkController getController();
 
-    IWorld getControllerWorld();
+    World getControllerWorld();
 
     void push(@Nullable IProcedure frame);
 

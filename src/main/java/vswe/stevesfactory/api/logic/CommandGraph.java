@@ -6,10 +6,10 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.nbt.*;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
+import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.execution.ProcedureExecutor;
-import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -42,11 +42,6 @@ public final class CommandGraph implements Iterable<IProcedure> {
 
     public INetworkController getController() {
         return controller;
-    }
-
-    public void execute() {
-        Preconditions.checkState(isValid());
-        new ProcedureExecutor(controller, controller.getWorld()).start(root);
     }
 
     @Nonnull
@@ -155,7 +150,7 @@ public final class CommandGraph implements Iterable<IProcedure> {
         for (int i = 0; i < nodesNBT.size(); i++) {
             CompoundNBT nodeNBT = nodesNBT.getCompound(i);
             int id = nodeNBT.getInt("ID");
-            IProcedure node = deserializeNode(nodeNBT);
+            IProcedure node = deserializeNode(nodeNBT.getCompound("NodeData"));
             nodes.put(id, node);
         }
 
@@ -173,8 +168,16 @@ public final class CommandGraph implements Iterable<IProcedure> {
         this.root = nodes.get(rootID);
     }
 
-    private IProcedure deserializeNode(CompoundNBT nodeNBT) {
-        return NetworkHelper.retrieveProcedure(this, nodeNBT.getCompound("NodeData"));
+    private IProcedure deserializeNode(CompoundNBT tag) {
+        ResourceLocation id = new ResourceLocation(tag.getString("ID"));
+
+        IProcedureType<?> p = StevesFactoryManagerAPI.getProceduresRegistry().getValue(id);
+        // Not using checkNotNull here because technically the above method returns null is a registry (game state) problem
+        Preconditions.checkArgument(p != null, "Unable to find a procedure registered as " + id + "!");
+
+        IProcedure procedure = p.retrieveInstance(tag);
+        procedure.setGraph(this);
+        return procedure;
     }
 
     /**

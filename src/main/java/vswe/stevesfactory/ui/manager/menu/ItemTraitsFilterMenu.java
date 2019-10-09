@@ -1,15 +1,20 @@
 package vswe.stevesfactory.ui.manager.menu;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.layout.properties.Side;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.RadioButton;
 import vswe.stevesfactory.library.gui.widget.RadioController;
 import vswe.stevesfactory.library.gui.widget.box.ScrollArrow;
 import vswe.stevesfactory.library.gui.widget.box.WrappingList;
+import vswe.stevesfactory.library.gui.widget.slot.AbstractItemSlot;
+import vswe.stevesfactory.library.gui.window.PlayerInventoryWindow;
 import vswe.stevesfactory.logic.FilterType;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.logic.procedure.IItemFilterTarget;
@@ -78,7 +83,54 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
                 stack = ItemStack.EMPTY;
                 filter.getItems().add(ItemStack.EMPTY);
             }
-            FilterSlot slot = new FilterSlot(stack);
+            FilterSlot slot = new FilterSlot(filter, stack);
+            slot.onClick = () -> {
+                AbstractItemSlot[] selected = new AbstractItemSlot[1];
+                PlayerInventoryWindow popup = PlayerInventoryWindow.atCursor(in -> new AbstractItemSlot() {
+                    private ItemStack representative;
+
+                    @Override
+                    public ItemStack getRenderedStack() {
+                        return in;
+                    }
+
+                    @Override
+                    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                        if (isSelected() || in.isEmpty()) {
+                            selected[0] = null;
+                            slot.stack = ItemStack.EMPTY;
+                        } else {
+                            selected[0] = this;
+                            slot.stack = getRepresentative();
+                        }
+                        return super.mouseClicked(mouseX, mouseY, button);
+                    }
+
+                    @Override
+                    protected void renderBase() {
+                        super.renderBase();
+                        if (isSelected() && !in.isEmpty()) {
+                            RenderingHelper.useBlendingGLStates();
+                            RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), 0x66ffff00);
+                            GlStateManager.disableBlend();
+                            GlStateManager.enableTexture();
+                        }
+                    }
+
+                    private boolean isSelected() {
+                        return selected[0] == this;
+                    }
+
+                    private ItemStack getRepresentative() {
+                        if (representative == null) {
+                            representative = in.copy();
+                            representative.setCount(1);
+                        }
+                        return representative;
+                    }
+                });
+                WidgetScreen.getCurrentScreen().addPopupWindow(popup);
+            };
             slots.addElement(slot);
         }
 
@@ -93,7 +145,7 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
 
         settings = new SettingsEditor(this);
         settings.addOption(filter.isMatchingAmount(), filter::setMatchingAmount, "gui.sfm.Menu.MatchAmount");
-        settings.addOption(filter.isMatchingDamage(), filter::setMatchingDamage, "gui.sfm.Menu.MatchAmount");
+        settings.addOption(filter.isMatchingDamage(), filter::setMatchingDamage, "gui.sfm.Menu.MatchDamage");
         settings.addOption(filter.isMatchingTag(), filter::setMatchingTag, "gui.sfm.Menu.MatchTag");
     }
 

@@ -88,12 +88,22 @@ public class CraftingBufferElement implements IItemBufferElement {
         int maxAvailable = 0;
         for (Map.Entry<Item, ItemStack> entry : getMatchingStacks(recipe).entrySet()) {
             ItemStack matchable = entry.getValue();
+
+            // The total number of the ingredients needed in this recipe
+            int needed = matchable.getCount();
+
             DirectBufferElement buffer = NetworkHelper.getDirectBuffer(buffers, matchable.getItem());
             if (buffer == null) {
                 continue;
             }
-            int found = buffer.stack.getCount() / matchable.getCount();
-            maxAvailable = Math.max(maxAvailable, found);
+
+            ItemStack source = buffer.getStack();
+            // Number of available resource
+            int available = source.getCount();
+            // Number of crafting set performable, just looking at this ingredient
+            int availableSets = available / needed;
+
+            maxAvailable = Math.max(maxAvailable, availableSets);
         }
         result.setCount(outputBase * maxAvailable);
     }

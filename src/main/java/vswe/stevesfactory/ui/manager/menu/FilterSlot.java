@@ -6,14 +6,13 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.layout.FlowLayout;
+import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.slot.AbstractItemSlot;
-import vswe.stevesfactory.library.gui.window.PlayerInventoryWindow;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.Menu;
@@ -29,11 +28,14 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
     private static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(36, 20, 16, 16);
     private static final TextureWrapper HOVERED = NORMAL.toDown(1);
 
+    public Runnable onClick = () -> {};
     public ItemStack stack;
 
+    private final ItemTraitsFilter filter;
     private Editor editor;
 
-    public FilterSlot(ItemStack stack) {
+    public FilterSlot(ItemTraitsFilter filter, ItemStack stack) {
+        this.filter = filter;
         this.stack = stack;
         this.setDimensions(16, 16);
     }
@@ -67,7 +69,7 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
-            openInventorySelection();
+            onClick.run();
             return true;
         }
         if (button == GLFW_MOUSE_BUTTON_RIGHT && !stack.isEmpty()) {
@@ -77,63 +79,17 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
         return false;
     }
 
-    private void openInventorySelection() {
-        AbstractItemSlot[] selected = new AbstractItemSlot[1];
-        PlayerInventoryWindow popup = PlayerInventoryWindow.atCursor(stack -> new AbstractItemSlot() {
-            private ItemStack representative;
-
-            @Override
-            public ItemStack getRenderedStack() {
-                return stack;
-            }
-
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (isSelected() || stack.isEmpty()) {
-                    selected[0] = null;
-                    FilterSlot.this.stack = ItemStack.EMPTY;
-                } else {
-                    selected[0] = this;
-                    FilterSlot.this.stack = getRepresentative();
-                }
-                return super.mouseClicked(mouseX, mouseY, button);
-            }
-
-            @Override
-            protected void renderBase() {
-                super.renderBase();
-                if (isSelected() && !stack.isEmpty()) {
-                    RenderingHelper.useBlendingGLStates();
-                    RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), 0x66ffff00);
-                    GlStateManager.disableBlend();
-                    GlStateManager.enableTexture();
-                }
-            }
-
-            private boolean isSelected() {
-                return selected[0] == this;
-            }
-
-            private ItemStack getRepresentative() {
-                if (representative == null) {
-                    representative = stack.copy();
-                    representative.setCount(1);
-                }
-                return representative;
-            }
-        });
-        WidgetScreen.getCurrentScreen().addPopupWindow(popup);
-    }
-
     private Editor getDedicatedEditor() {
         if (editor == null) {
-            editor = new Editor(this);
+            editor = new Editor();
         }
         return editor;
     }
 
     private void openEditor() {
-        getMenu().openEditor(getDedicatedEditor());
+        Editor editor = getDedicatedEditor();
+        getMenu().openEditor(editor);
+        editor.update();
     }
 
     private void closeEditor() {
@@ -141,13 +97,9 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
     }
 
     @Nonnull
-    public ItemTraitsFilterMenu<?> getMenu() {
+    public MultiLayerMenu<?> getMenu() {
         IWidget parentWidget = Objects.requireNonNull(super.getParentWidget());
-        return (ItemTraitsFilterMenu<?>) Objects.requireNonNull(parentWidget.getParentWidget());
-    }
-
-    public ItemTraitsFilter getLinkedFiler() {
-        return getMenu().getLinkedFilter();
+        return (MultiLayerMenu<?>) Objects.requireNonNull(parentWidget.getParentWidget());
     }
 
     @Override
@@ -155,26 +107,23 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
         return I18n.format(stack.getTranslationKey());
     }
 
-    public static class Editor extends AbstractContainer<IWidget> {
-
-        private FilterSlot slot;
+    public class Editor extends AbstractContainer<IWidget> {
 
         private final NumberField<Integer> count;
         private final NumberField<Integer> damage;
         private final List<IWidget> children;
 
-        public Editor(FilterSlot slot) {
-            this.slot = slot;
-            ItemTraitsFilterMenu<?> menu = slot.getMenu();
-            setDimensions(menu.getWidth(), menu.getHeight() - Menu.HEADING_BOX.getPortionHeight());
+        public Editor() {
+            MultiLayerMenu<?> menu = getMenu();
+            setDimensions(menu.getWidth(), menu.getContentHeight());
 
             TextButton delete = new DeleteFilterButton();
             delete.translate("gui.sfm.Menu.Delete");
             delete.setDimensions(32, 11);
             delete.setLocation(getWidth() - delete.getWidth() - 2, 2);
             delete.onClick = b -> {
-                slot.closeEditor();
-                slot.stack = ItemStack.EMPTY;
+                closeEditor();
+                stack = ItemStack.EMPTY;
             };
             AbstractIconButton close = new AbstractIconButton(getWidth() - 8 - 1, getHeight() - 8 - 1, 8, 8) {
                 @Override
@@ -197,24 +146,27 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
 
                 @Override
                 public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                    slot.closeEditor();
+                    closeEditor();
                     return super.mouseClicked(mouseX, mouseY, button);
+                }
+
+                @Override
+                public BoxSizing getBoxSizing() {
+                    return BoxSizing.PHANTOM;
                 }
             };
 
-            int width = 33;
-            int height = 12;
-            int x = getWidth() - width - 4;
-            count = NumberField.integerFieldRanged(width, height, 1, 1, Integer.MAX_VALUE)
-                    .setValue(slot.stack.getCount());
+            count = NumberField.integerFieldRanged(33, 12, 1, 1, Integer.MAX_VALUE)
+                    .setValue(stack.getCount());
             count.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
-            count.setLocation(x, 24);
-            damage = NumberField.integerField(width, height)
-                    .setValue(slot.stack.getDamage());
+            count.setLabel(I18n.format("gui.sfm.Menu.FilterAmount"));
+            damage = NumberField.integerField(33, 12)
+                    .setValue(stack.getDamage());
             damage.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
-            damage.setLocation(x, count.getY() + count.getHeight() + 4);
+            damage.setLabel(I18n.format("gui.sfm.Menu.FilterDamage"));
 
             children = ImmutableList.of(close, delete, count, damage);
+            reflow();
         }
 
         @Override
@@ -226,9 +178,6 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
         public void render(int mouseX, int mouseY, float particleTicks) {
             RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
             super.render(mouseX, mouseY, particleTicks);
-            int x = getAbsoluteX() + 2;
-            fontRenderer().drawString(I18n.format("gui.sfm.Menu.FilterAmount"), x, count.getAbsoluteY() + 2, 0xff000000);
-            fontRenderer().drawString(I18n.format("gui.sfm.Menu.FilterDamage"), x, damage.getAbsoluteY() + 2, 0xff000000);
             renderItem();
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
@@ -240,28 +189,26 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
             ItemRenderer ir = minecraft().getItemRenderer();
             int x = getAbsoluteX() + 4;
             int y = getAbsoluteY() + 4;
-            ir.renderItemAndEffectIntoGUI(slot.stack, x, y);
-            ir.renderItemOverlayIntoGUI(fontRenderer(), slot.stack, x, y, "");
+            ir.renderItemAndEffectIntoGUI(stack, x, y);
+            ir.renderItemOverlayIntoGUI(fontRenderer(), stack, x, y, "");
             RenderHelper.disableStandardItemLighting();
             GlStateManager.color3f(1F, 1F, 1F);
         }
 
         @Override
         public void onRemoved() {
-            slot.stack.setCount(count.getValue());
-            slot.stack.setDamage(damage.getValue());
+            stack.setCount(count.getValue());
+            stack.setDamage(damage.getValue());
         }
 
         @Override
         public void reflow() {
+            FlowLayout.vertical(children, 4, 24, 4);
         }
 
-        @Override
-        public void setParentWidget(IWidget newParent) {
-            super.setParentWidget(newParent);
-            ItemTraitsFilter filter = slot.getLinkedFiler();
+        public void update() {
             count.setEnabled(filter.isMatchingAmount());
-            damage.setEnabled(slot.stack.isDamageable() && filter.isMatchingDamage());
+            damage.setEnabled(stack.isDamageable() && filter.isMatchingDamage());
         }
     }
 
@@ -298,6 +245,11 @@ public class FilterSlot extends AbstractWidget implements INamedElement, LeafWid
         @Override
         public int getHoveredBorderColor() {
             return 0xff963737;
+        }
+
+        @Override
+        public BoxSizing getBoxSizing() {
+            return BoxSizing.PHANTOM;
         }
     }
 }

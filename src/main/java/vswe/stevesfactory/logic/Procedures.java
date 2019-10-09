@@ -30,7 +30,6 @@ public final class Procedures<P extends IProcedure> {
     public static final Procedures<ItemExportProcedure> ITEM_EXPORT = new Procedures<>("item_export", ItemExportProcedure::new, Config.COMMON.enableItemExport);
     public static final Procedures<CraftingProcedure> CRAFTING = new Procedures<>("crafting", CraftingProcedure::new, Config.COMMON.enableItemExport);
 
-
 //    ITEM_CONDITION("item_condition", DummyProcedure::new),
 //    FLOW_CONTROL("flow_control", DummyProcedure::new),
 //    FLUID_IMPORT("fluid_import", DummyProcedure::new),
@@ -53,6 +52,7 @@ public final class Procedures<P extends IProcedure> {
         map.put(ITEM_TRANSFER.getRegistryName(), ITEM_TRANSFER);
         map.put(ITEM_IMPORT.getRegistryName(), ITEM_IMPORT);
         map.put(ITEM_EXPORT.getRegistryName(), ITEM_EXPORT);
+        map.put(CRAFTING.getRegistryName(), CRAFTING);
     }
 
     public final String id;
