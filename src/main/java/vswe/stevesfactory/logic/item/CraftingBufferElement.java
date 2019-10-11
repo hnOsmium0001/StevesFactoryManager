@@ -68,9 +68,8 @@ public class CraftingBufferElement implements IItemBufferElement {
 
     @Override
     public void setStack(ItemStack stack) {
-        Preconditions.checkArgument(result.isItemEqual(stack));
+        Preconditions.checkArgument(result.isItemEqual(stack) || stack.isEmpty());
         this.result = stack;
-        refresh();
     }
 
     @Override
@@ -111,6 +110,7 @@ public class CraftingBufferElement implements IItemBufferElement {
     @Override
     public void use(int amount) {
         refresh();
+        int actualSize = amount / outputBase;
         Map<Item, ItemBuffers> buffers = context.getItemBuffers();
         for (Map.Entry<Item, ItemStack> entry : getMatchingStacks(recipe).entrySet()) {
             ItemStack matchable = entry.getValue();
@@ -118,7 +118,9 @@ public class CraftingBufferElement implements IItemBufferElement {
             if (buffer == null) {
                 continue;
             }
-            buffer.use(matchable.getCount());
+            int consumption = actualSize * matchable.getCount();
+            buffer.use(consumption);
+            buffer.stack.shrink(consumption);
         }
     }
 
