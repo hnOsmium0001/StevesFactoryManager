@@ -77,16 +77,8 @@ public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData
         return I18n.format("gui.sfm.Menus.RecipeConfiguration");
     }
 
-    private CraftingInventory asCraftingInventory() {
-        CraftingInventory inventory = new MyCraftingInventory();
-        for (IngredientSlot slot : ingredientSlots) {
-            inventory.setInventorySlotContents(slot.slot, slot.stack);
-        }
-        return inventory;
-    }
-
     private ItemStack evalCraftingProduct() {
-        CraftingInventory inv = asCraftingInventory();
+        CraftingInventory inv = getLinkedProcedure().getInventory();
         ClientWorld world = Minecraft.getInstance().world;
         Optional<ICraftingRecipe> recipe = world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, inv, world);
         productSlot.stack = recipe.map(r -> r.getCraftingResult(inv)).orElse(ItemStack.EMPTY);

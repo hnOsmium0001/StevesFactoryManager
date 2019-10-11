@@ -9,7 +9,7 @@ import net.minecraft.util.NonNullList;
 // TODO use accesstransformer
 public class MyCraftingInventory extends CraftingInventory {
 
-    private final NonNullList<ItemStack> handle = NonNullList.withSize(3 * 3, ItemStack.EMPTY);
+    public final NonNullList<ItemStack> handle = NonNullList.withSize(3 * 3, ItemStack.EMPTY);
 
     public MyCraftingInventory() {
         super(null, 3, 3);

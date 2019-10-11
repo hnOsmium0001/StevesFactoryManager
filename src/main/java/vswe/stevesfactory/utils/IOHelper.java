@@ -1,6 +1,7 @@
 package vswe.stevesfactory.utils;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -50,6 +51,15 @@ public final class IOHelper {
         for (BlockPos linkable : poses) {
             buf.writeBlockPos(linkable);
         }
+    }
+
+    public static <T extends IInventory> T readInventory(ListNBT serializedStacks, T target) {
+        Preconditions.checkArgument(serializedStacks.size() == target.getSizeInventory());
+        for (int i = 0; i < serializedStacks.size(); i++) {
+            CompoundNBT tag = serializedStacks.getCompound(i);
+            target.setInventorySlotContents(i, ItemStack.read(tag));
+        }
+        return target;
     }
 
     public static <T extends Collection<ItemStack>> T readItemStacks(ListNBT serializedFilters, T target) {
