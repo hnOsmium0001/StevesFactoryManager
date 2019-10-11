@@ -12,99 +12,38 @@ import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.*;
-import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
-
-public class FilterSlot extends AbstractWidget implements INamedElement, LeafWidgetMixin {
-
-    private static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(36, 20, 16, 16);
-    private static final TextureWrapper HOVERED = NORMAL.toDown(1);
-
-    public Runnable onClick = () -> {};
-    public ItemStack stack;
+public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
 
     private final ItemTraitsFilter filter;
-    private Editor editor;
 
     public FilterSlot(ItemTraitsFilter filter, ItemStack stack) {
+        super(stack);
         this.filter = filter;
-        this.stack = stack;
         this.setDimensions(16, 16);
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float particleTicks) {
-        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        GlStateManager.color3f(1F, 1F, 1F);
-        int x = getAbsoluteX();
-        int y = getAbsoluteY();
-        if (isInside(mouseX, mouseY)) {
-            HOVERED.draw(x, y);
-            if (!stack.isEmpty()) {
-                WidgetScreen.getCurrentScreen().setHoveringText(stack, mouseX, mouseY);
-            }
-        } else {
-            NORMAL.draw(x, y);
-        }
-
-        GlStateManager.disableDepthTest();
-        GlStateManager.enableTexture();
-        RenderHelper.enableGUIStandardItemLighting();
-        ItemRenderer ir = minecraft().getItemRenderer();
-        ir.renderItemAndEffectIntoGUI(stack, x, y);
-        ir.renderItemOverlayIntoGUI(fontRenderer(), stack, x, y, "");
-        RenderHelper.disableStandardItemLighting();
-
-        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == GLFW_MOUSE_BUTTON_LEFT) {
-            onClick.run();
-            return true;
-        }
-        if (button == GLFW_MOUSE_BUTTON_RIGHT && !stack.isEmpty()) {
-            openEditor();
-            return true;
-        }
-        return false;
-    }
-
-    private Editor getDedicatedEditor() {
-        if (editor == null) {
-            editor = new Editor();
-        }
-        return editor;
-    }
-
-    private void openEditor() {
-        Editor editor = getDedicatedEditor();
-        getMenu().openEditor(editor);
-        editor.update();
-    }
-
-    private void closeEditor() {
-        getMenu().openEditor(null);
+    protected boolean hasEditor() {
+        return true;
     }
 
     @Nonnull
-    public MultiLayerMenu<?> getMenu() {
-        IWidget parentWidget = Objects.requireNonNull(super.getParentWidget());
-        return (MultiLayerMenu<?>) Objects.requireNonNull(parentWidget.getParentWidget());
+    @Override
+    protected Editor createEditor() {
+        return new Editor();
     }
 
     @Override
-    public String getName() {
-        return I18n.format(stack.getTranslationKey());
+    public void openEditor() {
+        super.openEditor();
+        editor.update();
     }
 
     public class Editor extends AbstractContainer<IWidget> {
