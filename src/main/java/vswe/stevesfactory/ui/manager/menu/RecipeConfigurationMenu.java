@@ -70,11 +70,12 @@ public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData
 
     @Override
     protected void updateData() {
+        // Data is being written immediately upon interaction
     }
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menus.RecipeConfiguration");
+        return I18n.format("gui.sfm.Menu.RecipeConfiguration");
     }
 
     private ItemStack evalCraftingProduct() {
@@ -132,6 +133,7 @@ public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData
 
         @Override
         protected void onRightClick() {
+            // No inventory selection dialog for the product slot
         }
     }
 }

@@ -1,5 +1,7 @@
 package vswe.stevesfactory.library.gui.window;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+
 public abstract class AbstractPopupWindow extends AbstractWindow implements IPopupWindow {
 
     private int initialDragLocalX = -1, initialDragLocalY = -1;
@@ -41,6 +43,18 @@ public abstract class AbstractPopupWindow extends AbstractWindow implements IPop
             int x = (int) mouseX - initialDragLocalX;
             int y = (int) mouseY - initialDragLocalY;
             setPosition(x, y);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (keyCode == GLFW_KEY_ESCAPE) {
+            alive = false;
             return true;
         }
         return false;

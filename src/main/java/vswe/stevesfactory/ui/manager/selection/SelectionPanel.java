@@ -2,20 +2,17 @@ package vswe.stevesfactory.ui.manager.selection;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.ui.manager.FactoryManagerGUI.TopLevelWidget;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI.TopLevelWidget;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.DOWN_RIGHT_4_STRICT_TABLE;
 
 public final class SelectionPanel extends DynamicWidthWidget<IComponentChoice> {
@@ -79,7 +76,7 @@ public final class SelectionPanel extends DynamicWidthWidget<IComponentChoice> {
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        if (isInside(mouseX, mouseY) && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (isInside(mouseX, mouseY) && button == GLFW_MOUSE_BUTTON_LEFT) {
             getWindow().setFocusedWidget(this);
             return true;
         }

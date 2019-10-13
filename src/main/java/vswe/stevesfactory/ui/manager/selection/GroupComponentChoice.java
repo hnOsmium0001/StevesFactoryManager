@@ -52,6 +52,7 @@ public class GroupComponentChoice extends AbstractWidget implements IComponentCh
             contextMenu = ContextMenu.atCursor(getAbsoluteXRight() + 2, getAbsoluteY(), entries);
         }
         WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+        getWindow().setFocusedWidget(this);
         return true;
     }
 

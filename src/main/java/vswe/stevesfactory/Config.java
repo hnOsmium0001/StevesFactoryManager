@@ -55,11 +55,6 @@ public final class Config {
         public final IntValue defaultEditorMoveSpeed;
         public final IntValue acceleratedEditorMoveSpeed;
 
-        public final IntValue textButtonBackgroundColor;
-        public final IntValue textButtonBorderColor;
-        public final IntValue textButtonBackgroundColorHovered;
-        public final IntValue textButtonBorderColorHovered;
-
         private ClientCategory(Builder builder) {
             builder.comment("Client config options").push("client");
             scrollSpeed = builder
@@ -77,10 +72,6 @@ public final class Config {
             acceleratedEditorMoveSpeed = builder
                     .comment("Determines how fast arrow keys moving is, while Shift is pressed")
                     .defineInRange("AcceleratedEditorMoveSpeed", 20, 0, Integer.MAX_VALUE);
-            textButtonBackgroundColor = builder.defineInRange("TBBackgroundColor", 0xff8c8c8c, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            textButtonBorderColor = builder.defineInRange("TBBorderColor", 0xff8c8c8c, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            textButtonBackgroundColorHovered = builder.defineInRange("TBBackgroundColorHovered", 0xff737373, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            textButtonBorderColorHovered = builder.defineInRange("TBBorderColorHovered", 0xffc9c9c9, Integer.MIN_VALUE, Integer.MAX_VALUE);
             builder.pop();
         }
     }

@@ -87,19 +87,19 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
     }
 
     public int getNormalBorderColor() {
-        return Config.CLIENT.textButtonBackgroundColor.get();
+        return 0xff8c8c8c;
     }
 
     public int getHoveredBorderColor() {
-        return Config.CLIENT.textButtonBorderColor.get();
+        return 0xff8c8c8c;
     }
 
     public int getNormalBackgroundColor() {
-        return Config.CLIENT.textButtonBackgroundColorHovered.get();
+        return 0xff737373;
     }
 
     public int getHoveredBackgroundColor() {
-        return Config.CLIENT.textButtonBorderColorHovered.get();
+        return 0xffc9c9c9;
     }
 
     @Override

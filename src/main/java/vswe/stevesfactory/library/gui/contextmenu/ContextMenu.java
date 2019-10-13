@@ -3,16 +3,21 @@ package vswe.stevesfactory.library.gui.contextmenu;
 import com.google.common.base.Preconditions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
-import vswe.stevesfactory.library.gui.widget.IWidget;
-import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.window.AbstractPopupWindow;
 import vswe.stevesfactory.library.gui.RenderingHelper;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.widget.IWidget;
+import vswe.stevesfactory.library.gui.window.AbstractPopupWindow;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 
+import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledHeight;
+import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
+
 public class ContextMenu extends AbstractPopupWindow {
+
+    public static final int MIN_DISTANCE = 4;
 
     public static ContextMenu atCursor(List<? extends IEntry> entries) {
         MouseHelper m = Minecraft.getInstance().mouseHelper;
@@ -57,6 +62,28 @@ public class ContextMenu extends AbstractPopupWindow {
             e.setWidth(contents.width);
             ey += e.getHeight();
         }
+
+        int xOff = 0, yOff = 0;
+        // Prefer to have the top left corner inside (if the context menu is too large to fit in the whole screen)
+        int left = getX() - MIN_DISTANCE;
+        if (left < 0) {
+            xOff = left;
+        } else {
+            int right = getX() + getWidth() + MIN_DISTANCE;
+            if (right > scaledWidth()) {
+                xOff = right - scaledWidth();
+            }
+        }
+        int top = getY() - MIN_DISTANCE;
+        if (top < 0) {
+            yOff = top;
+        } else {
+            int bottom = getY() + getHeight() + MIN_DISTANCE;
+            if (bottom > scaledHeight()) {
+                yOff = bottom - scaledHeight();
+            }
+        }
+        move(-xOff, -yOff);
     }
 
     @Override

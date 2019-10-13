@@ -31,6 +31,7 @@ public class SingularComponentChoice extends AbstractWidget implements IComponen
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         createFlowComponent(type);
+        getWindow().setFocusedWidget(this);
         return true;
     }
 

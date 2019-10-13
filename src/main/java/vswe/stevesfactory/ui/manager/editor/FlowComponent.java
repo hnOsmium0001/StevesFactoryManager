@@ -26,6 +26,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.*;
 
 public class FlowComponent<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements Comparable<FlowComponent<?>> {
@@ -117,7 +119,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            if (button == GLFW_MOUSE_BUTTON_LEFT) {
                 getParentWidget().toggleState();
                 return true;
             }
@@ -152,7 +154,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            if (isEnabled() && button == GLFW_MOUSE_BUTTON_LEFT) {
                 setEnabled(false);
                 FlowComponent parent = getParentWidget();
                 parent.submitButton.setEnabled(true);
@@ -203,7 +205,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            if (isEnabled() && button == GLFW_MOUSE_BUTTON_LEFT) {
                 submit();
                 return true;
             }
@@ -263,7 +265,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            if (isEnabled() && button == GLFW_MOUSE_BUTTON_LEFT) {
                 cancel();
                 return true;
             }
@@ -528,13 +530,13 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         }
 
         getWindow().setFocusedWidget(this);
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT) {
             initialDragLocalX = (int) mouseX - getAbsoluteX();
             initialDragLocalY = (int) mouseY - getAbsoluteY();
         } else {
             clearDrag();
         }
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+        if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             openContextMenu();
         }
         return true;

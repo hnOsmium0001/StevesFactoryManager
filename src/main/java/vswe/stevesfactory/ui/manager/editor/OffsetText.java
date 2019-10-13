@@ -1,6 +1,7 @@
 package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
@@ -66,20 +67,17 @@ class OffsetText extends AbstractWidget implements LeafWidgetMixin {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
-            Dialog.createPrompt("gui.sfm.Editor.EditOffset", (b, s) -> {
-                try {
-                    set(Integer.parseInt(s));
-                } catch (NumberFormatException e) {
-                    Dialog.createDialog("gui.sfm.Editor.InvalidNumberFormat").tryAddSelfToActiveGUI();
-                }
-            }).tryAddSelfToActiveGUI();
-            return true;
-        }
-        if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-            ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                    new CallbackEntry(null, "gui.sfm.ActionMenu.Reset0", b -> set(0))
-            ));
-            WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+            if (Screen.hasControlDown()) {
+                set(0);
+            } else {
+                Dialog.createPrompt("gui.sfm.Editor.EditOffset", (b, s) -> {
+                    try {
+                        set(Integer.parseInt(s));
+                    } catch (NumberFormatException e) {
+                        Dialog.createDialog("gui.sfm.Editor.InvalidNumberFormat").tryAddSelfToActiveGUI();
+                    }
+                }).tryAddSelfToActiveGUI();
+            }
             return true;
         }
         return false;
