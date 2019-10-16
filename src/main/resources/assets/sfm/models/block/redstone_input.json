@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "sfm:block/cable"
+    "all": "sfm:block/redstone_input"
   }
 }

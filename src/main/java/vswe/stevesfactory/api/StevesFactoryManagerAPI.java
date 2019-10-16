@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.*;
+import vswe.stevesfactory.api.capability.CapabilityRedstone;
 import vswe.stevesfactory.api.logic.IProcedureType;
 
 import java.util.HashSet;
@@ -34,6 +35,7 @@ public class StevesFactoryManagerAPI {
             recognizableCapabilities = new HashSet<>();
             recognizableCapabilities.add(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
             recognizableCapabilities.add(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+            recognizableCapabilities.add(CapabilityRedstone.REDSTONE_CAPABILITY);
         }
         return recognizableCapabilities;
     }

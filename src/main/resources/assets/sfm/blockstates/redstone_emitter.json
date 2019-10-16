@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north,type=weak": { "model": "sfm:block/redstone_emitter_weak" },
+    "facing=south,type=weak": { "model": "sfm:block/redstone_emitter_weak", "y": 180 },
+    "facing=west,type=weak": { "model": "sfm:block/redstone_emitter_weak", "y": 270 },
+    "facing=east,type=weak": { "model": "sfm:block/redstone_emitter_weak", "y": 90 },
+    "facing=up,type=weak": { "model": "sfm:block/redstone_emitter_weak", "x": 90 },
+    "facing=down,type=weak": { "model": "sfm:block/redstone_emitter_weak", "x": 180 },
+    "facing=north,type=strong": { "model": "sfm:block/redstone_emitter_strong" },
+    "facing=south,type=strong": { "model": "sfm:block/redstone_emitter_strong", "y": 180 },
+    "facing=west,type=strong": { "model": "sfm:block/redstone_emitter_strong", "y": 270 },
+    "facing=east,type=strong": { "model": "sfm:block/redstone_emitter_strong", "y": 90 },
+    "facing=up,type=strong": { "model": "sfm:block/redstone_emitter_strong", "x": 90 },
+    "facing=down,type=strong": { "model": "sfm:block/redstone_emitter_strong", "x": 180 }
+  }
+}
