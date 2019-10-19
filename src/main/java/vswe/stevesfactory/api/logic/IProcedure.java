@@ -69,4 +69,7 @@ public interface IProcedure {
 
     @SuppressWarnings("UnusedReturnValue")
     Connection removeOutputConnection(int index);
+
+    default void tick() {
+    }
 }

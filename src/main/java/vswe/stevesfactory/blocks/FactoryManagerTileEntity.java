@@ -22,10 +22,8 @@ import vswe.stevesfactory.Config;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.CommandGraph;
-import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.logic.execution.ITickable;
 import vswe.stevesfactory.network.*;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.*;
@@ -58,10 +56,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         assert world != null;
         if (!world.isRemote) {
             for (CommandGraph graph : graphs) {
-                IProcedure hat = graph.getRoot();
-                if (hat instanceof ITickable) {
-                    ((ITickable) hat).tick();
-                }
+                graph.getRoot().tick();
             }
 
             if (ticks == 0) {

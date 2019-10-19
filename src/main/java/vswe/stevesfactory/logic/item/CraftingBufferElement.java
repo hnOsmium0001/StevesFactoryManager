@@ -6,9 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import vswe.stevesfactory.api.item.IItemBufferElement;
-import vswe.stevesfactory.api.item.ItemBuffers;
 import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.utils.NetworkHelper;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -59,7 +57,6 @@ public class CraftingBufferElement implements IItemBufferElement {
         outputBase = result.getCount();
     }
 
-    // TODO optimize (reduce the number of refresh() calls)
     @Override
     public ItemStack getStack() {
         refresh();
@@ -83,17 +80,17 @@ public class CraftingBufferElement implements IItemBufferElement {
     }
 
     public void refresh() {
-        Map<Item, ItemBuffers> buffers = context.getItemBuffers();
-        int maxAvailable = 0;
+        Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
+        int maxAvailable = Integer.MAX_VALUE;
         for (Map.Entry<Item, ItemStack> entry : getMatchingStacks(recipe).entrySet()) {
             ItemStack matchable = entry.getValue();
-
             // The total number of the ingredients needed in this recipe
             int needed = matchable.getCount();
 
-            DirectBufferElement buffer = NetworkHelper.getDirectBuffer(buffers, matchable.getItem());
+            DirectBufferElement buffer = buffers.get(matchable.getItem());
             if (buffer == null) {
-                continue;
+                maxAvailable = 0;
+                break;
             }
 
             ItemStack source = buffer.getStack();
@@ -102,19 +99,18 @@ public class CraftingBufferElement implements IItemBufferElement {
             // Number of crafting set performable, just looking at this ingredient
             int availableSets = available / needed;
 
-            maxAvailable = Math.max(maxAvailable, availableSets);
+            maxAvailable = Math.min(maxAvailable, availableSets);
         }
         result.setCount(outputBase * maxAvailable);
     }
 
     @Override
     public void use(int amount) {
-        refresh();
         int actualSize = amount / outputBase;
-        Map<Item, ItemBuffers> buffers = context.getItemBuffers();
+        Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
         for (Map.Entry<Item, ItemStack> entry : getMatchingStacks(recipe).entrySet()) {
             ItemStack matchable = entry.getValue();
-            DirectBufferElement buffer = NetworkHelper.getDirectBuffer(buffers, matchable.getItem());
+            DirectBufferElement buffer = buffers.get(matchable.getItem());
             if (buffer == null) {
                 continue;
             }

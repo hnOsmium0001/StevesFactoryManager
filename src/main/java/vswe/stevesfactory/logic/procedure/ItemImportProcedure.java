@@ -12,7 +12,6 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import vswe.stevesfactory.api.item.ItemBuffers;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
@@ -21,7 +20,6 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
-import vswe.stevesfactory.utils.NetworkHelper;
 
 import java.util.*;
 
@@ -46,7 +44,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         }
 
         Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        Map<Item, ItemBuffers> buffers = context.getItemBuffers();
+        Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
         IWorld world = context.getControllerWorld();
         for (BlockPos pos : inventories) {
             if (!linkedInventories.contains(pos)) {
@@ -62,12 +60,12 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
                 if (cap.isPresent()) {
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
                     filter.extractFromInventory((stack, slot) -> {
-                        ItemBuffers container = NetworkHelper.getOrCreateBufferContainer(buffers, stack.getItem());
-                        // If this stack is used to create the buffer, we want it to start completely empty
-                        // If this stack is not used at all, this is fine too because the callback always receives a new item stack
+                        // If this stack is used to create the buffer, the stack count will be reset and we will lose necessary information
                         int count = stack.getCount();
-                        stack.setCount(0);
-                        DirectBufferElement element = container.getBuffer(DirectBufferElement.class, () -> new DirectBufferElement(stack).addInventory(handler, slot));
+                        DirectBufferElement element = buffers.computeIfAbsent(stack.getItem(), key -> {
+                            stack.setCount(0);
+                            return new DirectBufferElement(stack);
+                        });
                         element.stack.grow(count);
                         element.addInventory(handler, slot);
                     }, handler);

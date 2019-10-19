@@ -11,14 +11,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import vswe.stevesfactory.api.item.ItemBuffers;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.item.CraftingBufferElement;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.RecipeConfigurationMenu;
-import vswe.stevesfactory.utils.*;
+import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.MyCraftingInventory;
 
 import java.util.Optional;
 
@@ -41,8 +41,8 @@ public class CraftingProcedure extends AbstractProcedure implements IRecipeTarge
 
         CraftingBufferElement buffer = new CraftingBufferElement(context);
         buffer.setRecipe(recipe);
-        ItemBuffers container = NetworkHelper.getOrCreateBufferContainer(context.getItemBuffers(), buffer.getStack().getItem());
-        container.putBuffer(CraftingBufferElement.class, buffer);
+        context.getItemBuffers(CraftingBufferElement.class)
+                .put(buffer.getStack().getItem(), buffer);
     }
 
     private void updateRecipe(IExecutionContext context) {

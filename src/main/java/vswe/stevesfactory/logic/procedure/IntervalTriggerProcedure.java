@@ -8,12 +8,11 @@ import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
-import vswe.stevesfactory.logic.execution.ITickable;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.IntervalMenu;
 
-public class IntervalTriggerProcedure extends AbstractProcedure implements ITickable {
+public class IntervalTriggerProcedure extends AbstractProcedure {
 
     private int tickCounter = 0;
     public int interval = 20;
