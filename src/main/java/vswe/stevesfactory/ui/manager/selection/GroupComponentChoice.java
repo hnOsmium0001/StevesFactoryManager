@@ -42,7 +42,7 @@ public class GroupComponentChoice extends AbstractWidget implements IComponentCh
         if (group.getMembers().isEmpty()) {
             contextMenu = ContextMenu.atCursor(
                     getAbsoluteXRight() + 2, getAbsoluteY(),
-                    ImmutableList.of(new DefaultEntry(null, "gui.sfm.ActionMenu.NoComponentGroupsPresent")));
+                    ImmutableList.of(new DefaultEntry(null, "gui.sfm.Selection.NoComponentGroupsPresent")));
             WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
         } else {
             List<IEntry> entries = new ArrayList<>();

@@ -8,6 +8,7 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
 
@@ -74,5 +75,10 @@ public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
     @Override
     protected void updateData() {
         getLinkedProcedure().interval = getIntervalTicks();
+    }
+
+    @Override
+    public List<String> populateErrors(List<String> errors) {
+        return errors;
     }
 }

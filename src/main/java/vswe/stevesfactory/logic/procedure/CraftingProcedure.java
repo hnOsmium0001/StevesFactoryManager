@@ -1,12 +1,7 @@
 package vswe.stevesfactory.logic.procedure;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipeType;
@@ -16,8 +11,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import vswe.stevesfactory.api.item.ItemBuffers;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
@@ -25,11 +18,8 @@ import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.item.CraftingBufferElement;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.RecipeConfigurationMenu;
-import vswe.stevesfactory.utils.IOHelper;
-import vswe.stevesfactory.utils.MyCraftingInventory;
-import vswe.stevesfactory.utils.NetworkHelper;
+import vswe.stevesfactory.utils.*;
 
-import java.util.List;
 import java.util.Optional;
 
 public class CraftingProcedure extends AbstractProcedure implements IRecipeTarget {
@@ -68,23 +58,6 @@ public class CraftingProcedure extends AbstractProcedure implements IRecipeTarge
     public boolean hasError() {
         // Error for execution (server side)
         return recipe == null;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public List<String> populateErrors(List<String> errors) {
-        if (getCraftResultForDisplay().isEmpty()) {
-            errors.add(I18n.format("error.sfm.CraftingProcedure.NoRecipe"));
-        }
-        return errors;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public ItemStack getCraftResultForDisplay() {
-        ClientWorld world = Minecraft.getInstance().world;
-        Optional<ICraftingRecipe> recipe = world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, inventory, world);
-        return recipe.map(r -> r.getCraftingResult(inventory)).orElse(ItemStack.EMPTY);
     }
 
     @Override

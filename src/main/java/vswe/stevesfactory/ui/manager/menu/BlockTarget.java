@@ -17,9 +17,6 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.utils.BlockHighlight;
 
-import javax.annotation.Nonnull;
-import java.util.Objects;
-
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public class BlockTarget extends AbstractWidget implements IButton, INamedElement, LeafWidgetMixin {
@@ -47,7 +44,7 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                    new CallbackEntry(null, "gui.sfm.ActionMenu.BlockTarget.Highlight", b -> BlockHighlight.createHighlight(pos, 80))
+                    new CallbackEntry(null, "gui.sfm.ContextMenu.BlockTarget.Highlight", b -> BlockHighlight.createHighlight(pos, 80))
             ));
             WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
             return true;
@@ -85,8 +82,6 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
 
     public void setSelected(boolean selected) {
         this.selected = selected;
-        InventorySelectionMenu<?> menu = (InventorySelectionMenu<?>) getParentWidget().getParentWidget();
-        menu.updateData();
     }
 
     public BlockState getBlockState() {

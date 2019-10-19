@@ -35,7 +35,6 @@ class ActivationButton extends TextButton {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             target.selected = !target.selected;
-            target.getParentWidget().updateData();
             updateText();
             return super.mouseClicked(mouseX, mouseY, button);
         }

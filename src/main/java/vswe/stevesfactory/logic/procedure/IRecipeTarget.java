@@ -16,7 +16,4 @@ public interface IRecipeTarget {
     ItemStack getIngredient(int slot);
 
     void setIngredient(int slot, ItemStack ingredient);
-
-    @OnlyIn(Dist.CLIENT)
-    ItemStack getCraftResultForDisplay();
 }

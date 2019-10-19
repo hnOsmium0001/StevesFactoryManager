@@ -278,7 +278,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
 
     @Nullable
     @Override
-    public World getWorld() {
+    public World getControllerWorld() {
         return world;
     }
 

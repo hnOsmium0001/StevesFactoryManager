@@ -258,9 +258,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
     private void openActionMenu() {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.ActionMenu.Paste", b -> actionPaste()),
-                new CallbackEntry(null, "gui.sfm.ActionMenu.CleanupProcedures", b -> actionCleanup()),
-                new CallbackEntry(null, "gui.sfm.ActionMenu.ToggleFullscreen", b -> actionToggleFullscreen()),
+                new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.ContextMenu.Paste", b -> actionPaste()),
+                new CallbackEntry(null, "gui.sfm.ContextMenu.CleanupProcedures", b -> actionCleanup()),
+                new CallbackEntry(null, "gui.sfm.ContextMenu.ToggleFullscreen", b -> actionToggleFullscreen()),
                 new UserPreferencesPanel.OpenerEntry()
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
@@ -272,7 +272,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         try {
             tag = JsonToNBT.getTagFromJson(json);
         } catch (CommandSyntaxException e) {
-            Dialog.createDialog("gui.sfm.ActionMenu.Paste.Procedure.Fail").tryAddSelfToActiveGUI();
+            Dialog.createDialog("gui.sfm.ContextMenu.Paste.Procedure.Fail").tryAddSelfToActiveGUI();
             return;
         }
 

@@ -1,5 +1,7 @@
 package vswe.stevesfactory.ui.manager.editor;
 
+import net.minecraft.client.resources.I18n;
+import vswe.stevesfactory.api.logic.IErrorPopulator;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -13,11 +15,11 @@ import java.util.List;
 public class ErrorIndicator extends AbstractWidget implements LeafWidgetMixin {
 
     public static ErrorIndicator error() {
-        return new ErrorIndicator(ERROR, ERROR_HOVERED);
+        return new ErrorIndicator(I18n.format("error.sfm.Error"), ERROR, ERROR_HOVERED);
     }
 
     public static ErrorIndicator warning() {
-        return new ErrorIndicator(WARNING, WARNING_HOVERED);
+        return new ErrorIndicator(I18n.format("error.sfm.Warning"), WARNING, WARNING_HOVERED);
     }
 
     public static final TextureWrapper ERROR = TextureWrapper.ofFlowComponent(40, 52, 2, 10);
@@ -28,8 +30,10 @@ public class ErrorIndicator extends AbstractWidget implements LeafWidgetMixin {
     private TextureWrapper background;
     private TextureWrapper backgroundHovered;
     private final List<String> errors = new ArrayList<>();
+    private final String heading;
 
-    private ErrorIndicator(TextureWrapper background, TextureWrapper backgroundHovered) {
+    private ErrorIndicator(String heading, TextureWrapper background, TextureWrapper backgroundHovered) {
+        this.heading = heading;
         this.background = background;
         this.backgroundHovered = backgroundHovered;
         this.setDimensions(background.getPortionWidth(), background.getPortionHeight());
@@ -37,21 +41,23 @@ public class ErrorIndicator extends AbstractWidget implements LeafWidgetMixin {
 
     public void clearErrors() {
         errors.clear();
+        errors.add(heading);
     }
 
-    public void populateErrors(IProcedure procedure) {
-        procedure.populateErrors(errors);
+    public void populateErrors(IErrorPopulator handler) {
+        handler.populateErrors(errors);
     }
 
-    public void repopulateErrors(IProcedure procedure) {
-        errors.clear();
-        procedure.populateErrors(errors);
+    public void repopulateErrors(IErrorPopulator handler) {
+        clearErrors();
+        handler.populateErrors(errors);
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        if (!errors.isEmpty()) {
+        // We will always have a heading in the list
+        if (errors.size() > 1) {
             if (isInside(mouseX, mouseY)) {
                 backgroundHovered.draw(getAbsoluteX(), getAbsoluteY());
                 WidgetScreen.getCurrentScreen().setHoveringText(errors, mouseX, mouseY);

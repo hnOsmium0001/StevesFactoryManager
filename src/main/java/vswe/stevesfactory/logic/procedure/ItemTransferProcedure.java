@@ -16,8 +16,8 @@ import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.editor.PropertyManager;
-import vswe.stevesfactory.ui.manager.menu.*;
+import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
+import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
 
 import java.util.*;
@@ -110,42 +110,13 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public List<String> populateErrors(List<String> errors) {
-        if (sourceInventories.isEmpty()) {
-            errors.add(I18n.format("error.sfm.ItemTransferProcedure.NoSrcInv"));
-        }
-        if (destinationInventories.isEmpty()) {
-            errors.add(I18n.format("error.sfm.ItemTransferProcedure.NoDestInv"));
-        }
-        if (sourceDirections.isEmpty()) {
-            errors.add(I18n.format("error.sfm.ItemTransferProcedure.NoSrcTarget"));
-        }
-        if (destinationDirections.isEmpty()) {
-            errors.add(I18n.format("error.sfm.ItemTransferProcedure.NoDestTarget"));
-        }
-        return errors;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
     public FlowComponent<ItemTransferProcedure> createFlowComponent() {
         FlowComponent<ItemTransferProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Source")));
-        f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Destination")));
-        f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Source")));
-        f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Destination")));
-
-        PropertyManager<IItemFilter, ItemTransferProcedure> pm = new PropertyManager<>(f, this::getFilter, this::setFilter);
-        pm.on(filter -> filter instanceof ItemTraitsFilter)
-                .name(I18n.format("gui.sfm.Menu.ItemFilter.Traits"))
-                .prop(ItemTraitsFilter::new)
-                .then(() -> new ItemTraitsFilterMenu<>(FILTER, I18n.format("gui.sfm.Menu.ItemFilter.Traits")));
-        pm.on(filter -> filter instanceof ItemTagFilter)
-                .name(I18n.format("gui.sfm.Menu.ItemFilter.Tags"))
-                .prop(ItemTagFilter::new)
-                .then(() -> new ItemTagFilterMenu<>(FILTER, I18n.format("gui.sfm.Menu.ItemFilter.Tags")));
-        pm.actionCycling();
-        pm.setProperty(filter);
+        f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Source"), I18n.format("error.sfm.ItemTransfer.NoSrcInv")));
+        f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Destination"), I18n.format("error.sfm.ItemTransfer.NoSrcTarget")));
+        f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Source"), I18n.format("error.sfm.ItemTransfer.NoDestInv")));
+        f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Destination"), I18n.format("error.sfm.ItemTransfer.NoDestTarget")));
+        IItemFilterTarget.createFilterMenu(this, f, FILTER);
         return f;
     }
 

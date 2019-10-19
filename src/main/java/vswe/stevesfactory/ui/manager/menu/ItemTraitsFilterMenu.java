@@ -15,6 +15,7 @@ import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.logic.procedure.IItemFilterTarget;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends MultiLayerMenu<P> {
@@ -110,5 +111,10 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
     @Override
     public String getHeadingText() {
         return name;
+    }
+
+    @Override
+    public List<String> populateErrors(List<String> errors) {
+        return errors;
     }
 }

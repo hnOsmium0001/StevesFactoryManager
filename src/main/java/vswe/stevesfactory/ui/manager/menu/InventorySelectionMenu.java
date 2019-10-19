@@ -20,16 +20,18 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
 
     private final int id;
     private final String name;
+    private final String errorMessage;
 
     private WrappingList<BlockTarget> list;
 
     public InventorySelectionMenu(int id) {
-        this(id, I18n.format("gui.sfm.Menu.InventorySelection"));
+        this(id, I18n.format("gui.sfm.Menu.InventorySelection"), I18n.format("error.sfm.ItemIO.NoInv"));
     }
 
-    public InventorySelectionMenu(int id, String name) {
+    public InventorySelectionMenu(int id, String name, String errorMessage) {
         this.id = id;
         this.name = name;
+        this.errorMessage = errorMessage;
 
         list = new WrappingList<>("");
         list.setLocation(4, HEADING_BOX.getPortionHeight() + 4);
@@ -79,5 +81,22 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
                 inventories.add(target.pos);
             }
         }
+    }
+
+    @Override
+    public List<String> populateErrors(List<String> errors) {
+        if (!hasAnythingSelected()) {
+            errors.add(errorMessage);
+        }
+        return errors;
+    }
+
+    private boolean hasAnythingSelected() {
+        for (BlockTarget target : list.getContents()) {
+            if (target.isSelected()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

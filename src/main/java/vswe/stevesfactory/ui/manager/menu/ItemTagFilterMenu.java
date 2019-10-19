@@ -162,6 +162,11 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
         return name;
     }
 
+    @Override
+    public List<String> populateErrors(List<String> errors) {
+        return errors;
+    }
+
     private static class Entry extends AbstractContainer<IWidget> {
 
         private final TextField tag;

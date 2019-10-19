@@ -612,7 +612,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         super.update(particleTicks);
         // TODO don't do it the brutal force way: use data modification events
         if (Minecraft.getInstance().world.getGameTime() % 10 == 0) {
-            errorIndicator.repopulateErrors(procedure);
+            repopulateErrors();
         }
     }
 
@@ -633,9 +633,9 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
 
     private void openContextMenu() {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                new CallbackEntry(DELETE_ICON, "gui.sfm.ActionMenu.Delete", b -> actionDelete()),
-                new CallbackEntry(CUT_ICON, "gui.sfm.ActionMenu.Cut", b -> actionCut()),
-                new CallbackEntry(COPY_ICON, "gui.sfm.ActionMenu.Copy", b -> actionCopy())
+                new CallbackEntry(DELETE_ICON, "gui.sfm.ContextMenu.Delete", b -> actionDelete()),
+                new CallbackEntry(CUT_ICON, "gui.sfm.ContextMenu.Cut", b -> actionCut()),
+                new CallbackEntry(COPY_ICON, "gui.sfm.ContextMenu.Copy", b -> actionCopy())
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
     }
@@ -643,7 +643,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     private void actionDelete() {
         if (Screen.hasShiftDown()) {
             Dialog.createBiSelectionDialog(
-                    "gui.sfm.ActionMenu.DeleteAll.ConfirmMsg",
+                    "gui.sfm.ContextMenu.DeleteAll.ConfirmMsg",
                     "gui.sfm.yes",
                     "gui.sfm.no",
                     b -> removeGraph(), b -> {}).tryAddSelfToActiveGUI();
@@ -735,7 +735,14 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         this.procedure = procedure;
         setName(procedure.getName());
         setLocation(procedure.getComponentX(), procedure.getComponentY());
-        errorIndicator.populateErrors(procedure);
+        repopulateErrors();
+    }
+
+    private void repopulateErrors() {
+        errorIndicator.clearErrors();
+        for (Menu<P> menu : menus.getChildren()) {
+            errorIndicator.populateErrors(menu);
+        }
     }
 
     void readConnections(Map<IProcedure, FlowComponent<?>> m) {

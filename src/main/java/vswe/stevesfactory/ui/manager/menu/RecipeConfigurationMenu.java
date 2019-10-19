@@ -10,6 +10,8 @@ import vswe.stevesfactory.logic.procedure.IRecipeTarget;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 
+import java.util.List;
+
 public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData & IRecipeTarget> extends Menu<P> {
 
     private IngredientSlot[] ingredientSlots = new IngredientSlot[9];
@@ -17,7 +19,7 @@ public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData
 
     public RecipeConfigurationMenu() {
         for (int i = 0; i < ingredientSlots.length; i++) {
-            ingredientSlots[i] = new IngredientSlot(ItemStack.EMPTY, i, () -> evalCraftingProduct());
+            ingredientSlots[i] = new IngredientSlot(ItemStack.EMPTY, i, () -> productSlot.evalCraftResult());
             addChildren(ingredientSlots[i]);
         }
         productSlot = new ProductSlot(ItemStack.EMPTY);
@@ -30,10 +32,11 @@ public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData
         super.onLinkFlowComponent(flowComponent);
         P procedure = getLinkedProcedure();
         for (IngredientSlot slot : ingredientSlots) {
-            slot.setStack(procedure.getIngredient(slot.slot));
             slot.setRecipeHandler(procedure);
+            slot.setStack(procedure.getIngredient(slot.slot));
         }
-        productSlot.setStack(evalCraftingProduct());
+        productSlot.setRecipeHandler(procedure);
+        productSlot.setStack(productSlot.evalCraftResult());
     }
 
     @Override
@@ -64,8 +67,11 @@ public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData
         return I18n.format("gui.sfm.Menu.RecipeConfiguration");
     }
 
-    private ItemStack evalCraftingProduct() {
-        productSlot.setStack(getLinkedProcedure().getCraftResultForDisplay());
-        return productSlot.getStack();
+    @Override
+    public List<String> populateErrors(List<String> errors) {
+        if (productSlot.getCraftResult().isEmpty()) {
+            errors.add(I18n.format("error.sfm.CraftingProcedure.NoRecipe"));
+        }
+        return errors;
     }
 }

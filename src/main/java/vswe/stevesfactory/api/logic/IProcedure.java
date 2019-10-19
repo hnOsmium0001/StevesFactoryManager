@@ -7,7 +7,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 public interface IProcedure {
 
@@ -46,19 +45,6 @@ public interface IProcedure {
     // TODO make this not implementation-dependent
     @OnlyIn(Dist.CLIENT)
     FlowComponent<?> createFlowComponent();
-
-    /**
-     * Populate the given list with (potential) errors. This method should directly return the parameter {@code list} with the errors added;
-     * no modification to previous existing errors should be done.
-     * <p>
-     * This will be used to present a list of errors to the player in the client, for example.
-     *
-     * @param errors The list to add errors to
-     * @return The parameter {@code list} with errors added
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @OnlyIn(Dist.CLIENT)
-    List<String> populateErrors(List<String> errors);
 
     boolean isValid();
 

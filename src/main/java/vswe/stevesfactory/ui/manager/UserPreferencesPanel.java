@@ -25,7 +25,7 @@ public class UserPreferencesPanel extends AbstractContainer<IWidget> {
         public static final ResourceLocation ICON = RenderingHelper.linkTexture("gui/actions/preferences.png");
 
         public OpenerEntry() {
-            super(ICON, "gui.sfm.ActionMenu.UserPreferences");
+            super(ICON, "gui.sfm.ContextMenu.UserPreferences");
         }
 
         @Override

@@ -4,8 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public abstract class Menu<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
+public abstract class Menu<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements IErrorPopulator, ResizableWidgetMixin {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 40, 9, 9),
@@ -250,8 +249,8 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
             getWindow().setFocusedWidget(this);
             if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                 ImmutableList.Builder<IEntry> list = ImmutableList.<IEntry>builder()
-                        .add(new CallbackEntry(null, "gui.sfm.ActionMenu.Menus.CollapseAll", b -> flowComponent.collapseAllMenus()))
-                        .add(new CallbackEntry(null, "gui.sfm.ActionMenu.Menus.ExpandAll", b -> flowComponent.expandAllMenus()));
+                        .add(new CallbackEntry(null, "gui.sfm.ContextMenu.Menus.CollapseAll", b -> flowComponent.collapseAllMenus()))
+                        .add(new CallbackEntry(null, "gui.sfm.ContextMenu.Menus.ExpandAll", b -> flowComponent.expandAllMenus()));
                 for (Supplier<IEntry> entry : actionMenuEntries) {
                     list.add(entry.get());
                 }

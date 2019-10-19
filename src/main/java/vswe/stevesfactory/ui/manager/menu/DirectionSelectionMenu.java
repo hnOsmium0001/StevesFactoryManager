@@ -16,17 +16,19 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IP
 
     private final int id;
     private final String name;
+    private final String errorMessage;
 
     private DirectionButton down, up, north, south, east, west;
     private ActivationButton activationButton;
 
     public DirectionSelectionMenu(int id) {
-        this(id, I18n.format("gui.sfm.Menu.TargetSides"));
+        this(id, I18n.format("gui.sfm.Menu.TargetSides"), I18n.format("error.sfm.ItemIO.NoTarget"));
     }
 
-    public DirectionSelectionMenu(int id, String name) {
+    public DirectionSelectionMenu(int id, String name, String errorMessage) {
         this.id = id;
         this.name = name;
+        this.errorMessage = errorMessage;
 
         down = new DirectionButton(Direction.DOWN);
         up = new DirectionButton(Direction.UP);
@@ -130,5 +132,22 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IP
     @Override
     public String getHeadingText() {
         return name;
+    }
+
+    @Override
+    public List<String> populateErrors(List<String> errors) {
+        if (!hasAnythingSelected()) {
+            errors.add(errorMessage);
+        }
+        return errors;
+    }
+
+    private boolean hasAnythingSelected() {
+        return down.selected
+                || up.selected
+                || north.selected
+                || south.selected
+                || east.selected
+                || west.selected;
     }
 }

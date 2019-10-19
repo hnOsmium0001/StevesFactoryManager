@@ -20,11 +20,11 @@ public interface IItemFilterTarget {
         pm.on(filter -> filter instanceof ItemTraitsFilter)
                 .name(I18n.format("gui.sfm.Menu.ItemFilter.Traits"))
                 .prop(ItemTraitsFilter::new)
-                .then(() -> new ItemTraitsFilterMenu<>(filterID, filterName));
+                .then(() -> new ItemTraitsFilterMenu<>(filterID, I18n.format("gui.sfm.Menu.ItemFilter.Traits")));
         pm.on(filter -> filter instanceof ItemTagFilter)
                 .name(I18n.format("gui.sfm.Menu.ItemFilter.Tags"))
                 .prop(ItemTagFilter::new)
-                .then(() -> new ItemTagFilterMenu<>(filterID, filterName));
+                .then(() -> new ItemTagFilterMenu<>(filterID, I18n.format("gui.sfm.Menu.ItemFilter.Tags")));
         pm.actionCycling();
         pm.setProperty(procedure.getFilter(filterID));
         return pm;

@@ -1,6 +1,5 @@
 package vswe.stevesfactory.logic.procedure;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -14,7 +13,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.item.ItemBuffers;
-import vswe.stevesfactory.logic.item.DirectBufferElement;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
@@ -80,18 +78,6 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
 
     public boolean hasError() {
         return inventories.isEmpty() || directions.isEmpty();
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public List<String> populateErrors(List<String> errors) {
-        if (inventories.isEmpty()) {
-            errors.add(I18n.format("error.sfm.ItemIO.NoInv"));
-        }
-        if (directions.isEmpty()) {
-            errors.add(I18n.format("error.sfm.ItemIO.NoTarget"));
-        }
-        return errors;
     }
 
     @Override

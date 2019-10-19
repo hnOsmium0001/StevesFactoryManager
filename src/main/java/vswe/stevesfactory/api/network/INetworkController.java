@@ -16,7 +16,7 @@ public interface INetworkController {
 
     BlockPos getPosition();
 
-    World getWorld();
+    World getControllerWorld();
 
     boolean isValid();
 

@@ -1,6 +1,5 @@
 package vswe.stevesfactory.logic.procedure;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -112,18 +111,6 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
 
     public boolean hasError() {
         return inventories.isEmpty() || directions.isEmpty();
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public List<String> populateErrors(List<String> errors) {
-        if (inventories.isEmpty()) {
-            errors.add(I18n.format("error.sfm.ItemIO.NoInv"));
-        }
-        if (directions.isEmpty()) {
-            errors.add(I18n.format("error.sfm.ItemIO.NoTarget"));
-        }
-        return errors;
     }
 
     @Override

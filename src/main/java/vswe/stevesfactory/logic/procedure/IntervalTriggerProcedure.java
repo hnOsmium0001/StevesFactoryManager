@@ -13,8 +13,6 @@ import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.IntervalMenu;
 
-import java.util.List;
-
 public class IntervalTriggerProcedure extends AbstractProcedure implements ITickable {
 
     private int tickCounter = 0;
@@ -34,7 +32,7 @@ public class IntervalTriggerProcedure extends AbstractProcedure implements ITick
         if (tickCounter >= interval) {
             CommandGraph graph = getGraph();
             INetworkController controller = graph.getController();
-            new ProcedureExecutor(controller, controller.getWorld()).start(graph.getRoot());
+            new ProcedureExecutor(controller, controller.getControllerWorld()).start(graph.getRoot());
             tickCounter = 0;
         } else {
             tickCounter++;
@@ -60,12 +58,6 @@ public class IntervalTriggerProcedure extends AbstractProcedure implements ITick
     public void deserialize(CompoundNBT tag) {
         super.deserialize(tag);
         interval = tag.getInt("Interval");
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public List<String> populateErrors(List<String> errors) {
-        return errors;
     }
 
     @Override
