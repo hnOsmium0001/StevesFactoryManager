@@ -30,8 +30,8 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
 
     private List<BlockPos> sourceInventories = new ArrayList<>();
     private List<Direction> sourceDirections = new ArrayList<>();
-    private List<BlockPos> targetInventories = new ArrayList<>();
-    private List<Direction> targetDirections = new ArrayList<>();
+    private List<BlockPos> destinationInventories = new ArrayList<>();
+    private List<Direction> destinationDirections = new ArrayList<>();
     private IItemFilter filter = new ItemTraitsFilter();
 
     public ItemTransferProcedure() {
@@ -67,7 +67,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             }
         }
 
-        for (BlockPos pos : targetInventories) {
+        for (BlockPos pos : destinationInventories) {
             if (!linkedInventories.contains(pos)) {
                 continue;
             }
@@ -75,7 +75,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             if (tile == null) {
                 continue;
             }
-            for (Direction direction : targetDirections) {
+            for (Direction direction : destinationDirections) {
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
                     IItemHandler handler = cap.orElseThrow(RuntimeException::new);
@@ -105,32 +105,29 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
 
     public boolean hasError() {
         return sourceInventories.isEmpty() || sourceDirections.isEmpty()
-                || targetInventories.isEmpty() || targetDirections.isEmpty();
+                || destinationInventories.isEmpty() || destinationDirections.isEmpty();
     }
 
     @Override
-    public CompoundNBT serialize() {
-        CompoundNBT tag = super.serialize();
-        tag.put("SourcePoses", IOHelper.writeBlockPoses(sourceInventories));
-        tag.putIntArray("SourceDirections", IOHelper.direction2Index(sourceDirections));
-        tag.put("TargetPoses", IOHelper.writeBlockPoses(targetInventories));
-        tag.putIntArray("TargetDirections", IOHelper.direction2Index(targetDirections));
-        tag.put("Filter", IOHelper.writeItemFilter(filter));
-        return tag;
-    }
-
-    @Override
-    public void deserialize(CompoundNBT tag) {
-        super.deserialize(tag);
-        sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
-        sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
-        targetInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
-        targetDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
-        filter = IOHelper.readItemFilter(tag.getCompound("Filter"));
-    }
-
     @OnlyIn(Dist.CLIENT)
+    public List<String> populateErrors(List<String> errors) {
+        if (sourceInventories.isEmpty()) {
+            errors.add(I18n.format("error.sfm.ItemTransferProcedure.NoSrcInv"));
+        }
+        if (destinationInventories.isEmpty()) {
+            errors.add(I18n.format("error.sfm.ItemTransferProcedure.NoDestInv"));
+        }
+        if (sourceDirections.isEmpty()) {
+            errors.add(I18n.format("error.sfm.ItemTransferProcedure.NoSrcTarget"));
+        }
+        if (destinationDirections.isEmpty()) {
+            errors.add(I18n.format("error.sfm.ItemTransferProcedure.NoDestTarget"));
+        }
+        return errors;
+    }
+
     @Override
+    @OnlyIn(Dist.CLIENT)
     public FlowComponent<ItemTransferProcedure> createFlowComponent() {
         FlowComponent<ItemTransferProcedure> f = FlowComponent.of(this);
         f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Source")));
@@ -153,6 +150,27 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     }
 
     @Override
+    public CompoundNBT serialize() {
+        CompoundNBT tag = super.serialize();
+        tag.put("SourcePoses", IOHelper.writeBlockPoses(sourceInventories));
+        tag.putIntArray("SourceDirections", IOHelper.direction2Index(sourceDirections));
+        tag.put("TargetPoses", IOHelper.writeBlockPoses(destinationInventories));
+        tag.putIntArray("TargetDirections", IOHelper.direction2Index(destinationDirections));
+        tag.put("Filter", IOHelper.writeItemFilter(filter));
+        return tag;
+    }
+
+    @Override
+    public void deserialize(CompoundNBT tag) {
+        super.deserialize(tag);
+        sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
+        destinationInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        destinationDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
+        filter = IOHelper.readItemFilter(tag.getCompound("Filter"));
+    }
+
+    @Override
     public IItemFilter getFilter() {
         return filter;
     }
@@ -167,7 +185,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             case SOURCE_INVENTORIES:
             default:
                 return sourceInventories;
-            case DESTINATION_INVENTORIES: return targetInventories;
+            case DESTINATION_INVENTORIES: return destinationInventories;
         }
     }
 
@@ -177,7 +195,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             case SOURCE_INVENTORIES:
             default:
                 return sourceDirections;
-            case DESTINATION_INVENTORIES: return targetDirections;
+            case DESTINATION_INVENTORIES: return destinationDirections;
         }
     }
 

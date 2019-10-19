@@ -1,5 +1,6 @@
 package vswe.stevesfactory.logic.procedure;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -81,8 +82,20 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         return inventories.isEmpty() || directions.isEmpty();
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
+    @OnlyIn(Dist.CLIENT)
+    public List<String> populateErrors(List<String> errors) {
+        if (inventories.isEmpty()) {
+            errors.add(I18n.format("error.sfm.ItemIO.NoInv"));
+        }
+        if (directions.isEmpty()) {
+            errors.add(I18n.format("error.sfm.ItemIO.NoTarget"));
+        }
+        return errors;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
     public FlowComponent<ItemImportProcedure> createFlowComponent() {
         FlowComponent<ItemImportProcedure> f = FlowComponent.of(this);
         f.addMenu(new InventorySelectionMenu<>(INVENTORIES));

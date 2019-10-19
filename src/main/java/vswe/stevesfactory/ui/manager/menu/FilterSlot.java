@@ -21,11 +21,13 @@ import java.util.List;
 
 public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
 
+    private final int index;
     private final ItemTraitsFilter filter;
 
-    public FilterSlot(ItemTraitsFilter filter, ItemStack stack) {
+    public FilterSlot(ItemTraitsFilter filter, int index, ItemStack stack) {
         super(stack);
         this.filter = filter;
+        this.index = index;
         this.setDimensions(16, 16);
     }
 
@@ -46,6 +48,11 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
         editor.update();
     }
 
+    @Override
+    protected void onSetStack() {
+        filter.getItems().set(index, stack);
+    }
+
     public class Editor extends AbstractContainer<IWidget> {
 
         private final NumberField<Integer> count;
@@ -63,6 +70,7 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
             delete.onClick = b -> {
                 closeEditor();
                 stack = ItemStack.EMPTY;
+                onSetStack();
             };
             AbstractIconButton close = new AbstractIconButton(getWidth() - 8 - 1, getHeight() - 8 - 1, 8, 8) {
                 @Override

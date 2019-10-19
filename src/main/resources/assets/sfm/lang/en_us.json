@@ -91,5 +91,14 @@
   "gui.sfm.Menu.Delete": "Delete",
   "gui.sfm.Menu.Delete.Info": "Remove this item filter",
   "gui.sfm.Menu.CloseEditor.Info": "Return to last menu",
-  "gui.sfm.Menu.RecipeConfiguration": "Crafting"
+  "gui.sfm.Menu.RecipeConfiguration": "Crafting",
+  "error.sfm.ItemTransferProcedure.NoSrcInv": "No source inventories specified",
+  "error.sfm.ItemTransferProcedure.NoDestInv": "No destination inventories specified",
+  "error.sfm.ItemTransferProcedure.NoSrcTarget": "No source targets specified",
+  "error.sfm.ItemTransferProcedure.NoDestTarget": "No destination targets specified",
+  "error.sfm.ItemIO.NoInv": "No inventories specified",
+  "error.sfm.ItemIO.NoTarget": "No targets specified",
+  "error.sfm.CraftingProcedure.NoRecipe": "No recipe specified",
+  "error.sfm.TraitsFilter.WhitelistEmpty": "Illegal filter: whitelist with no item filters specified",
+  "error.sfm.TagsFilter.WhitelistEmpty": "Illegal filter: whitelist with no tags specified"
 }

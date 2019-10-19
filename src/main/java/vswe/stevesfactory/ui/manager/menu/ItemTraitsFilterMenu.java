@@ -1,31 +1,20 @@
 package vswe.stevesfactory.ui.manager.menu;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
-import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.layout.FlowLayout;
-import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.layout.properties.Side;
-import vswe.stevesfactory.library.gui.screen.WidgetScreen;
-import vswe.stevesfactory.library.gui.widget.*;
+import vswe.stevesfactory.library.gui.widget.RadioButton;
+import vswe.stevesfactory.library.gui.widget.RadioController;
 import vswe.stevesfactory.library.gui.widget.box.ScrollArrow;
 import vswe.stevesfactory.library.gui.widget.box.WrappingList;
 import vswe.stevesfactory.logic.FilterType;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.logic.procedure.IItemFilterTarget;
-import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.function.Supplier;
 
 public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends MultiLayerMenu<P> {
@@ -81,7 +70,7 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
         ItemTraitsFilter filter = getLinkedFilter();
-        for (Integer i = 0; i < FILTER_SLOTS.get(); i++) {
+        for (int i = 0; i < FILTER_SLOTS.get(); i++) {
             ItemStack stack;
             if (i < filter.getItems().size()) {
                 stack = filter.getItems().get(i);
@@ -89,7 +78,7 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
                 stack = ItemStack.EMPTY;
                 filter.getItems().add(ItemStack.EMPTY);
             }
-            slots.addElement(new FilterSlot(filter, stack));
+            slots.addElement(new FilterSlot(filter, i, stack));
         }
 
         switch (filter.type) {
@@ -100,27 +89,13 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
                 blacklist.check(true);
                 break;
         }
+        whitelist.onChecked = () -> filter.type = FilterType.WHITELIST;
+        blacklist.onChecked = () -> filter.type = FilterType.BLACKLIST;
 
         settings = new SettingsEditor(this);
         settings.addOption(filter.isMatchingAmount(), filter::setMatchingAmount, "gui.sfm.Menu.MatchAmount");
         settings.addOption(filter.isMatchingDamage(), filter::setMatchingDamage, "gui.sfm.Menu.MatchDamage");
         settings.addOption(filter.isMatchingTag(), filter::setMatchingTag, "gui.sfm.Menu.MatchTag");
-    }
-
-    @Override
-    protected void updateData() {
-        ItemTraitsFilter filter = getLinkedFilter();
-        int i = 0;
-        for (FilterSlot slot : slots.getContents()) {
-            filter.getItems().set(i, slot.getStack());
-            i++;
-        }
-
-        if (whitelist.isChecked()) {
-            filter.type = FilterType.WHITELIST;
-        } else {
-            filter.type = FilterType.BLACKLIST;
-        }
     }
 
     @Override

@@ -13,6 +13,8 @@ import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.IntervalMenu;
 
+import java.util.List;
+
 public class IntervalTriggerProcedure extends AbstractProcedure implements ITickable {
 
     private int tickCounter = 0;
@@ -60,8 +62,14 @@ public class IntervalTriggerProcedure extends AbstractProcedure implements ITick
         interval = tag.getInt("Interval");
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
+    @OnlyIn(Dist.CLIENT)
+    public List<String> populateErrors(List<String> errors) {
+        return errors;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
     public FlowComponent<IntervalTriggerProcedure> createFlowComponent() {
         FlowComponent<IntervalTriggerProcedure> f = FlowComponent.of(this, 0, 1);
         f.addMenu(new IntervalMenu());

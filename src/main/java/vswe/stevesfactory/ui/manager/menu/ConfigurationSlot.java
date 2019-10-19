@@ -41,6 +41,10 @@ public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidge
         return stack;
     }
 
+    public void setStack(ItemStack stack) {
+        this.stack = stack;
+    }
+
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
@@ -70,22 +74,24 @@ public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidge
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
-            onRightClick();
+            onLeftClick();
             return true;
         }
-        if (button == GLFW_MOUSE_BUTTON_RIGHT && !stack.isEmpty()) {
-            onLeftClick();
+        if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+            onRightClick();
             return true;
         }
         return false;
     }
 
     protected void onLeftClick() {
-        openEditor();
+        openInventoryPopup();
     }
 
     protected void onRightClick() {
-        openInventoryPopup();
+        if (!stack.isEmpty()) {
+            openEditor();
+        }
     }
 
     protected abstract boolean hasEditor();

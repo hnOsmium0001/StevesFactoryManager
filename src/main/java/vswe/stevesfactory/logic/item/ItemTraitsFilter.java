@@ -66,7 +66,6 @@ public class ItemTraitsFilter implements IItemFilter {
         this.matchingAmount = matchingAmount;
     }
 
-    @Override
     public boolean test(ItemStack stack) {
         for (int i = 0; i < items.size(); i++) {
             boolean b = isEqual(i, stack);

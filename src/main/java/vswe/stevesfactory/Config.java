@@ -34,7 +34,7 @@ public final class Config {
                     .defineInRange("RescanInterval", 100, -1, Integer.MAX_VALUE);
             builder.pop();
 
-            builder.comment("Procedures config options").push("procedures");
+            builder.comment("Procedures config options", "Run '/sfm reload componentGroups' after updating config").push("procedures");
             enableIntervalTrigger = builder.define("EnableIntervalTrigger", true);
             enableItemTransfer = builder.define("EnableItemTransfer", true);
             enableItemImport = builder.define("EnableItemImport", true);

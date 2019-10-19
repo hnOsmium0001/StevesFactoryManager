@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.IntFunction;
 
 public interface IItemFilter {
 

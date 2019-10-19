@@ -2,9 +2,9 @@ package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.nbt.CompoundNBT;
-import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.library.gui.TextureWrapper;
@@ -14,8 +14,10 @@ import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
+import vswe.stevesfactory.library.gui.widget.AbstractContainer;
+import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.TextField;
-import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.box.MinimumLinearList;
 import vswe.stevesfactory.library.gui.window.Dialog;
@@ -337,6 +339,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     private final TextField nameBox;
     private final ControlFlow inputNodes;
     private final ControlFlow outputNodes;
+    private final ErrorIndicator errorIndicator;
     private final MinimumLinearList<Menu<P>> menus;
     // A list that refers to all the widgets above
     private final List<IWidget> children;
@@ -348,7 +351,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     private int initialDragLocalX;
     private int initialDragLocalY;
 
-    public FlowComponent(P procedure, int inputNodes, int outputNodes) {
+    public FlowComponent(P procedure, int amountInputs, int amountOutputs) {
         super(0, 0, 0, 0);
         String name = procedure.getName();
         this.toggleStateButton = new ToggleStateButton(this);
@@ -362,15 +365,17 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
                 .setTextColor(0xff303030, 0xff303030)
                 .setEditable(false)
                 .setFontHeight(6);
-        this.inputNodes = ControlFlow.inputNodes(inputNodes);
-        this.outputNodes = ControlFlow.outputNodes(outputNodes);
+        this.inputNodes = ControlFlow.inputNodes(amountInputs);
+        this.outputNodes = ControlFlow.outputNodes(amountOutputs);
+        this.errorIndicator = ErrorIndicator.error();
         this.menus = new MinimumLinearList<>(120, 130);
         this.menus.setLocation(2, 20);
-        this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, this.inputNodes, this.outputNodes, menus);
+        this.children = ImmutableList.of(toggleStateButton, renameButton, submitButton, cancelButton, nameBox, inputNodes, outputNodes, errorIndicator, menus);
         this.setLinkedProcedure(procedure);
-
         this.state = State.COLLAPSED;
-        this.reflow();
+
+        reflow();
+        errorIndicator.setLocation(2, 8);
     }
 
     @Override
@@ -397,6 +402,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         renameButton.setEnabled(true);
         updateMenusEnableState(true);
         reflow();
+        errorIndicator.setLocation(2, 8);
     }
 
     public void collapse() {
@@ -509,6 +515,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         nameBox.render(mouseX, mouseY, particleTicks);
         inputNodes.render(mouseX, mouseY, particleTicks);
         outputNodes.render(mouseX, mouseY, particleTicks);
+        errorIndicator.render(mouseX, mouseY, particleTicks);
         menus.render(mouseX, mouseY, particleTicks);
 
         if (nameBox.isInside(mouseX, mouseY)) {
@@ -598,6 +605,15 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
             return false;
         }
         return super.charTyped(charTyped, keyCode);
+    }
+
+    @Override
+    public void update(float particleTicks) {
+        super.update(particleTicks);
+        // TODO don't do it the brutal force way: use data modification events
+        if (Minecraft.getInstance().world.getGameTime() % 10 == 0) {
+            errorIndicator.repopulateErrors(procedure);
+        }
     }
 
     private void clearDrag() {
@@ -719,6 +735,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         this.procedure = procedure;
         setName(procedure.getName());
         setLocation(procedure.getComponentX(), procedure.getComponentY());
+        errorIndicator.populateErrors(procedure);
     }
 
     void readConnections(Map<IProcedure, FlowComponent<?>> m) {

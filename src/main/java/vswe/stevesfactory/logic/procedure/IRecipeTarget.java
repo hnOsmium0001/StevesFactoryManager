@@ -2,6 +2,8 @@ package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public interface IRecipeTarget {
 
@@ -14,4 +16,7 @@ public interface IRecipeTarget {
     ItemStack getIngredient(int slot);
 
     void setIngredient(int slot, ItemStack ingredient);
+
+    @OnlyIn(Dist.CLIENT)
+    ItemStack getCraftResultForDisplay();
 }

@@ -55,8 +55,6 @@ public class FactoryManagerGUI extends WidgetScreen {
     // GUI code
     ///////////////////////////////////////////////////////////////////////////
 
-    public static final int DATA_SYNC_INTERVAL = 6000;
-
     public static final float WIDTH_PROPORTION = 2F / 3F;
     public static final float HEIGHT_PROPORTION = 3F / 4F;
 
@@ -71,14 +69,6 @@ public class FactoryManagerGUI extends WidgetScreen {
     protected void init() {
         super.init();
         initializePrimaryWindow(new PrimaryWindow());
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-        if (Minecraft.getInstance().world.getGameTime() % DATA_SYNC_INTERVAL == 0) {
-            sync();
-        }
     }
 
     @Override

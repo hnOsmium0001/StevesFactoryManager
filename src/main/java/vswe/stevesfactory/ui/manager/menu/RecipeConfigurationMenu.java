@@ -1,23 +1,14 @@
 package vswe.stevesfactory.ui.manager.menu;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipeType;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.layout.properties.Side;
-import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.logic.procedure.IRecipeTarget;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
-import vswe.stevesfactory.utils.MyCraftingInventory;
-
-import java.util.Optional;
 
 public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData & IRecipeTarget> extends Menu<P> {
 
@@ -26,7 +17,7 @@ public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData
 
     public RecipeConfigurationMenu() {
         for (int i = 0; i < ingredientSlots.length; i++) {
-            ingredientSlots[i] = new IngredientSlot(ItemStack.EMPTY, i, this::evalCraftingProduct);
+            ingredientSlots[i] = new IngredientSlot(ItemStack.EMPTY, i, () -> evalCraftingProduct());
             addChildren(ingredientSlots[i]);
         }
         productSlot = new ProductSlot(ItemStack.EMPTY);
@@ -39,10 +30,10 @@ public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData
         super.onLinkFlowComponent(flowComponent);
         P procedure = getLinkedProcedure();
         for (IngredientSlot slot : ingredientSlots) {
-            slot.stack = procedure.getIngredient(slot.slot);
-            slot.recipeHandler = procedure;
+            slot.setStack(procedure.getIngredient(slot.slot));
+            slot.setRecipeHandler(procedure);
         }
-        productSlot.stack = evalCraftingProduct();
+        productSlot.setStack(evalCraftingProduct());
     }
 
     @Override
@@ -69,71 +60,12 @@ public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData
     }
 
     @Override
-    protected void updateData() {
-        // Data is being written immediately upon interaction
-    }
-
-    @Override
     public String getHeadingText() {
         return I18n.format("gui.sfm.Menu.RecipeConfiguration");
     }
 
     private ItemStack evalCraftingProduct() {
-        CraftingInventory inv = getLinkedProcedure().getInventory();
-        ClientWorld world = Minecraft.getInstance().world;
-        Optional<ICraftingRecipe> recipe = world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, inv, world);
-        productSlot.stack = recipe.map(r -> r.getCraftingResult(inv)).orElse(ItemStack.EMPTY);
-        return productSlot.stack;
-    }
-
-    public static class IngredientSlot extends ConfigurationSlot<IWidget> {
-
-        private final int slot;
-        private final Runnable evalProduct;
-        private IRecipeTarget recipeHandler;
-
-        public IngredientSlot(ItemStack stack, int slot, Runnable evalProduct) {
-            super(stack);
-            this.slot = slot;
-            this.evalProduct = evalProduct;
-        }
-
-        @Override
-        protected boolean hasEditor() {
-            return false;
-        }
-
-        @Override
-        protected IWidget createEditor() {
-            return null;
-        }
-
-        @Override
-        protected void onSetStack() {
-            recipeHandler.setIngredient(slot, stack);
-            evalProduct.run();
-        }
-    }
-
-    public static class ProductSlot extends ConfigurationSlot<IWidget> {
-
-        public ProductSlot(ItemStack stack) {
-            super(stack);
-        }
-
-        @Override
-        protected boolean hasEditor() {
-            return false;
-        }
-
-        @Override
-        protected IWidget createEditor() {
-            return null;
-        }
-
-        @Override
-        protected void onRightClick() {
-            // No inventory selection dialog for the product slot
-        }
+        productSlot.setStack(getLinkedProcedure().getCraftResultForDisplay());
+        return productSlot.getStack();
     }
 }

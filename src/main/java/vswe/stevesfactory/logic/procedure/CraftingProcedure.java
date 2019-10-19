@@ -1,6 +1,9 @@
 package vswe.stevesfactory.logic.procedure;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
@@ -26,6 +29,7 @@ import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.MyCraftingInventory;
 import vswe.stevesfactory.utils.NetworkHelper;
 
+import java.util.List;
 import java.util.Optional;
 
 public class CraftingProcedure extends AbstractProcedure implements IRecipeTarget {
@@ -62,11 +66,29 @@ public class CraftingProcedure extends AbstractProcedure implements IRecipeTarge
     }
 
     public boolean hasError() {
+        // Error for execution (server side)
         return recipe == null;
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
+    @OnlyIn(Dist.CLIENT)
+    public List<String> populateErrors(List<String> errors) {
+        if (getCraftResultForDisplay().isEmpty()) {
+            errors.add(I18n.format("error.sfm.CraftingProcedure.NoRecipe"));
+        }
+        return errors;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public ItemStack getCraftResultForDisplay() {
+        ClientWorld world = Minecraft.getInstance().world;
+        Optional<ICraftingRecipe> recipe = world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, inventory, world);
+        return recipe.map(r -> r.getCraftingResult(inventory)).orElse(ItemStack.EMPTY);
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
     public FlowComponent<CraftingProcedure> createFlowComponent() {
         FlowComponent<CraftingProcedure> f = FlowComponent.of(this);
         f.addMenu(new RecipeConfigurationMenu<>());

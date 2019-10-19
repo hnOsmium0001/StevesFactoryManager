@@ -25,12 +25,10 @@ class DirectionButton extends AbstractIconButton {
     public boolean selected = false;
     private boolean editing = false;
 
-    private final Direction direction;
     private final String name;
 
     public DirectionButton(Direction direction) {
         super(0, 0, 31, 12);
-        this.direction = direction;
         this.name = I18n.format("gui.sfm." + direction.getName());
     }
 

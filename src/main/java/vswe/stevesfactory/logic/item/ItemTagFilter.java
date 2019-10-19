@@ -134,8 +134,10 @@ public class ItemTagFilter implements IItemFilter {
 
     private boolean getTypeFlag() {
         switch (type) {
-            case WHITELIST: return false;
-            case BLACKLIST: return true;
+            case WHITELIST:
+                return false;
+            case BLACKLIST:
+                return true;
         }
         throw new IllegalStateException();
     }

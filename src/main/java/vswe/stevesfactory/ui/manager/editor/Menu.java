@@ -6,18 +6,25 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.contextmenu.*;
+import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
+import vswe.stevesfactory.library.gui.contextmenu.IEntry;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
-import vswe.stevesfactory.library.gui.widget.*;
+import vswe.stevesfactory.library.gui.widget.AbstractContainer;
+import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public abstract class Menu<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
@@ -160,9 +167,10 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
     }
 
     private void updateChildrenEnableState(boolean state) {
-        for (int i = 1; i < children.size(); i++) {
-            IWidget child = children.get(i);
-            child.setEnabled(state);
+        for (IWidget child : children) {
+            if (BoxSizing.shouldIncludeWidget(child)) {
+                child.setEnabled(state);
+            }
         }
     }
 

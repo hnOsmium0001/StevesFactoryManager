@@ -122,6 +122,8 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
                 blacklist.check(true);
                 break;
         }
+        whitelist.onChecked = () -> filter.type = FilterType.WHITELIST;
+        blacklist.onChecked = () -> filter.type = FilterType.BLACKLIST;
 
         settings = new SettingsEditor(this);
         stackLimitInput = settings.addIntegerInput(1, 0, Integer.MAX_VALUE);
@@ -146,11 +148,6 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
             }
         }
 
-        if (whitelist.isChecked()) {
-            filter.type = FilterType.WHITELIST;
-        } else {
-            filter.type = FilterType.BLACKLIST;
-        }
         if (stackLimitInput != null) {
             filter.stackLimit = stackLimitInput.getValue();
         }

@@ -1,6 +1,7 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
@@ -18,6 +19,7 @@ public class RadioButton extends AbstractWidget implements IButton, LeafWidgetMi
     private final RadioController controller;
     private final int index;
     private String label = "";
+    public Runnable onChecked = () -> {};
 
     private boolean hovered;
     private boolean checked;
@@ -109,6 +111,7 @@ public class RadioButton extends AbstractWidget implements IButton, LeafWidgetMi
         setChecked(checked);
         if (checked) {
             controller.checkRadioButton(index);
+            onChecked.run();
         }
     }
 
