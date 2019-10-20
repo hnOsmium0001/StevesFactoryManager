@@ -11,6 +11,7 @@
   "message.sfm.settings.set": "Entry %s is now set to %b",
 
   "logic.sfm.interval_trigger": "Interval Trigger",
+  "logic.sfm.redstone_trigger": "Redstone Trigger",
   "logic.sfm.item_transfer": "Item Transfer",
   "logic.sfm.item_import": "Input",
   "logic.sfm.item_export": "Output",
@@ -47,12 +48,12 @@
   "gui.sfm.no": "No",
 
   "gui.sfm.WrappingList.SearchStatus": "Found: %d",
-
   "gui.sfm.Editor.XOff": "X: ",
   "gui.sfm.Editor.YOff": "Y: ",
   "gui.sfm.Editor.EditOffset": "Enter a new offset: ",
   "gui.sfm.Editor.InvalidNumberFormat": "Invalid number format: %s!",
   "gui.sfm.Selection.NoComponentGroupsPresent": "No members specified",
+
   "gui.sfm.ContextMenu.Delete": "Delete",
   "gui.sfm.ContextMenu.DeleteAll": "Delete All",
   "gui.sfm.ContextMenu.DeleteAll.ConfirmMsg": "Are you sure you want to delete all connected procedures?",
@@ -60,7 +61,7 @@
   "gui.sfm.ContextMenu.Copy": "Copy",
   "gui.sfm.ContextMenu.Paste": "Paste",
   "gui.sfm.ContextMenu.CleanupProcedures": "Cleanup",
-  "gui.sfm.ContextMenu.Paste.Procedure.Fail": "Failed to paste procedure: invalid syntax. Please check your clipboard string again to make sure that it is from copying/cutting another procedure",
+  "gui.sfm.ContextMenu.PasteProcedure.Fail": "Failed to paste procedure: invalid syntax. Please check your clipboard string again to make sure that it is from copying/cutting another procedure",
   "gui.sfm.ContextMenu.UserPreferences": "User Preferences",
   "gui.sfm.ContextMenu.ToggleFullscreen": "Toggle Fullscreen",
   "gui.sfm.ContextMenu.Menus.CollapseAll": "Collapse All",
@@ -92,6 +93,10 @@
   "gui.sfm.Menu.Delete.Info": "Remove this item filter",
   "gui.sfm.Menu.CloseEditor.Info": "Return to last menu",
   "gui.sfm.Menu.RecipeConfiguration": "Crafting",
+  "gui.sfm.Menu.RedstoneTrigger.Watches": "Redstone Receivers",
+  "gui.sfm.Menu.RedstoneTrigger.Sides": "Redstone Sides",
+  "gui.sfm.Menu.RedstoneTrigger.Analog": "Analog Redstone",
+
   "error.sfm.Error": "§c§l§nError:",
   "error.sfm.Warning": "§e§l§nWarning:",
   "error.sfm.ItemIO.NoInv": "No inventories specified",
@@ -102,5 +107,6 @@
   "error.sfm.ItemTransfer.NoDestTarget": "No destination targets specified",
   "error.sfm.CraftingProcedure.NoRecipe": "No recipe specified",
   "error.sfm.TraitsFilter.WhitelistEmpty": "Illegal filter: whitelist with no item filters specified",
-  "error.sfm.TagsFilter.WhitelistEmpty": "Illegal filter: whitelist with no tags specified"
+  "error.sfm.TagsFilter.WhitelistEmpty": "Illegal filter: whitelist with no tags specified",
+  "error.sfm.RedstoneTrigger.NoWatches": "No watched redstone receivers specified"
 }

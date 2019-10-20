@@ -1,29 +1,33 @@
 package vswe.stevesfactory.api.capability;
 
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.*;
 
-import javax.annotation.Nullable;
+public final class CapabilityRedstone {
 
-public class CapabilityRedstone {
+    private CapabilityRedstone() {
+    }
 
     @CapabilityInject(IRedstoneHandler.class)
-    public static final Capability<IRedstoneHandler> REDSTONE_CAPABILITY = null;
+    public static Capability<IRedstoneHandler> REDSTONE_CAPABILITY;
 
     public static void register() {
         CapabilityManager.INSTANCE.register(IRedstoneHandler.class, new Capability.IStorage<IRedstoneHandler>() {
-            @Nullable
             @Override
             public INBT writeNBT(Capability<IRedstoneHandler> capability, IRedstoneHandler instance, Direction side) {
-                return null;
+                CompoundNBT tag = new CompoundNBT();
+                tag.putInt("Signal", instance.getSignal());
+                tag.putBoolean("IsStrong", instance.isStrong());
+                return tag;
             }
 
             @Override
             public void readNBT(Capability<IRedstoneHandler> capability, IRedstoneHandler instance, Direction side, INBT nbt) {
-
+                CompoundNBT tag = (CompoundNBT) nbt;
+                instance.setSignal(tag.getInt("Signal"));
+                instance.setType(IRedstoneHandler.Type.getByIndicator(tag.getBoolean("IsStrong")));
             }
         }, RedstoneSignalHandler::new);
     }

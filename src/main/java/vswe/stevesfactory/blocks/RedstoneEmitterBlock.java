@@ -4,28 +4,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IBlockReader;
+import vswe.stevesfactory.api.capability.IRedstoneHandler;
 
 public class RedstoneEmitterBlock extends BaseBlock {
 
-    public enum Type implements IStringSerializable {
-        WEAK("weak"),
-        STRONG("strong");
-
-        public final String name;
-
-        Type(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-    }
-
-    public static final EnumProperty<Type> TYPE_PROPERTY = EnumProperty.create("type", Type.class);
+    public static final EnumProperty<IRedstoneHandler.Type> TYPE_PROPERTY = EnumProperty.create("type", IRedstoneHandler.Type.class);
 
     public RedstoneEmitterBlock(Properties properties) {
         super(properties);
@@ -34,6 +19,16 @@ public class RedstoneEmitterBlock extends BaseBlock {
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> container) {
         // TODO each face has a separate type
-        container.add(BlockStateProperties.FACING, TYPE_PROPERTY);
+        container.add(TYPE_PROPERTY);
+    }
+
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return new RedstoneEmitterTileEntity();
     }
 }

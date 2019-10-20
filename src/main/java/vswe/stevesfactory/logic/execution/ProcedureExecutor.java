@@ -97,6 +97,9 @@ public class ProcedureExecutor implements IExecutionContext {
 
     private void cleanup() {
         for (Map<Item, IItemBufferElement> buffers : itemBufferElements) {
+            if (buffers == null) {
+                continue;
+            }
             for (Map.Entry<Item, IItemBufferElement> entry : buffers.entrySet()) {
                 IItemBufferElement element = entry.getValue();
                 element.cleanup();

@@ -3,6 +3,7 @@
   "translation_key": "component_groups.sfm.Trigger",
   "icon": "sfm:textures/gui/component_icon/trigger.png",
   "members": [
-    "sfm:interval_trigger"
+    "sfm:interval_trigger",
+    "sfm:redstone_trigger"
   ]
 }

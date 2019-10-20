@@ -7,9 +7,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.*;
 import vswe.stevesfactory.api.capability.CapabilityRedstone;
+import vswe.stevesfactory.api.capability.CapabilitySignalReactor;
 import vswe.stevesfactory.api.logic.IProcedureType;
 
 import java.util.HashSet;
@@ -36,8 +38,15 @@ public class StevesFactoryManagerAPI {
             recognizableCapabilities.add(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
             recognizableCapabilities.add(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
             recognizableCapabilities.add(CapabilityRedstone.REDSTONE_CAPABILITY);
+            recognizableCapabilities.add(CapabilitySignalReactor.SIGNAL_REACTOR_CAPABILITY);
         }
         return recognizableCapabilities;
+    }
+
+    @SubscribeEvent
+    public static void setup(FMLCommonSetupEvent event) {
+        CapabilityRedstone.register();
+        CapabilitySignalReactor.register();
     }
 
     @SubscribeEvent

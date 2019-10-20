@@ -111,7 +111,7 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
     @OnlyIn(Dist.CLIENT)
     public FlowComponent<ItemExportProcedure> createFlowComponent() {
         FlowComponent<ItemExportProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>(INVENTORIES));
+        f.addMenu(new InventorySelectionMenu<>(INVENTORIES, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY));
         f.addMenu(new DirectionSelectionMenu<>(INVENTORIES));
         IItemFilterTarget.createFilterMenu(this, f, FILTER);
         return f;

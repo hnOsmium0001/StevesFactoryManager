@@ -11,7 +11,17 @@ public class RedstoneSignalHandler implements IRedstoneHandler {
     }
 
     @Override
+    public void setSignal(int signal) {
+        this.signal = signal;
+    }
+
+    @Override
     public boolean isStrong() {
         return strong;
+    }
+
+    @Override
+    public void setType(Type type) {
+        strong = type.isStrong();
     }
 }

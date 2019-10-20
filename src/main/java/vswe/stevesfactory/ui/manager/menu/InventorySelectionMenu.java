@@ -3,7 +3,7 @@ package vswe.stevesfactory.ui.manager.menu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.Capability;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -24,11 +24,11 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
 
     private WrappingList<BlockTarget> list;
 
-    public InventorySelectionMenu(int id) {
-        this(id, I18n.format("gui.sfm.Menu.InventorySelection"), I18n.format("error.sfm.ItemIO.NoInv"));
+    public InventorySelectionMenu(int id, Capability<?> cap) {
+        this(id, I18n.format("gui.sfm.Menu.InventorySelection"), I18n.format("error.sfm.ItemIO.NoInv"), cap);
     }
 
-    public InventorySelectionMenu(int id, String name, String errorMessage) {
+    public InventorySelectionMenu(int id, String name, String errorMessage, Capability<?> cap) {
         this.id = id;
         this.name = name;
         this.errorMessage = errorMessage;
@@ -43,7 +43,7 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
         list.alignArrows();
         FactoryManagerGUI gui = (FactoryManagerGUI) WidgetScreen.getCurrentScreen();
         INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(gui.controllerPos));
-        for (BlockPos pos : controller.getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) {
+        for (BlockPos pos : controller.getLinkedInventories(cap)) {
             list.addElement(new BlockTarget(pos));
         }
 
