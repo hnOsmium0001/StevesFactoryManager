@@ -96,6 +96,8 @@
   "gui.sfm.Menu.RedstoneTrigger.Watches": "Redstone Receivers",
   "gui.sfm.Menu.RedstoneTrigger.Sides": "Redstone Sides",
   "gui.sfm.Menu.RedstoneTrigger.Analog": "Analog Redstone",
+  "gui.sfm.Menu.RequireAll": "Require all",
+  "gui.sfm.Menu.IfAny": "If any",
 
   "error.sfm.Error": "§c§l§nError:",
   "error.sfm.Warning": "§e§l§nWarning:",

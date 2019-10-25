@@ -11,6 +11,7 @@ import vswe.stevesfactory.ui.manager.editor.Menu;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import java.util.List;
+import java.util.Set;
 
 public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IProcedureClientData> extends Menu<P> {
 
@@ -18,6 +19,7 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IP
     private final String name;
     private final String errorMessage;
 
+    // TODO refactor with EnumMap
     private DirectionButton down, up, north, south, east, west;
     private ActivationButton activationButton;
 
@@ -91,7 +93,7 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IP
 
     @Override
     protected void updateData() {
-        List<Direction> directions = getLinkedProcedure().getDirections(id);
+        Set<Direction> directions = getLinkedProcedure().getDirections(id);
         directions.clear();
         if (down.selected) {
             directions.add(Direction.DOWN);

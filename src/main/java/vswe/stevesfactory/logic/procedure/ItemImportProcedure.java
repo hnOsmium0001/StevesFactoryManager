@@ -29,7 +29,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
     public static final int FILTER = 0;
 
     private List<BlockPos> inventories = new ArrayList<>();
-    private List<Direction> directions = new ArrayList<>();
+    private Set<Direction> directions = EnumSet.noneOf(Direction.class);
     private IItemFilter filter = new ItemTraitsFilter();
 
     public ItemImportProcedure() {
@@ -101,12 +101,12 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
     public void deserialize(CompoundNBT tag) {
         super.deserialize(tag);
         inventories = IOHelper.readBlockPoses(tag.getList("Inventories", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
-        directions = IOHelper.index2Direction(tag.getIntArray("Directions"));
+        directions = IOHelper.index2DirectionFill(tag.getIntArray("Directions"), EnumSet.noneOf(Direction.class));
         filter = IOHelper.readItemFilter(tag.getCompound("Filter"));
     }
 
     @Override
-    public List<Direction> getDirections(int id) {
+    public Set<Direction> getDirections(int id) {
         return directions;
     }
 

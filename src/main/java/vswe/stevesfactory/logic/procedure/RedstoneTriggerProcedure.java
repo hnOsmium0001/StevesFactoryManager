@@ -2,33 +2,36 @@ package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import vswe.stevesfactory.api.capability.CapabilitySignalReactor;
-import vswe.stevesfactory.api.capability.ISignalReactor;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.blocks.RedstoneInputTileEntity;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
+import vswe.stevesfactory.ui.manager.menu.RedstoneSidesMenu;
 import vswe.stevesfactory.utils.IOHelper;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class RedstoneTriggerProcedure extends AbstractProcedure implements IInventoryTarget {
+public class RedstoneTriggerProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, ILogicalConjunction {
 
     public static final int INVENTORIES = 0;
+    public static final int DIRECTIONS = 0;
 
     public static final int HIGH_CHILD = 0;
     public static final int LOW_CHILD = 1;
 
     private List<BlockPos> watchingSources = new ArrayList<>();
+    private Set<Direction> directions = EnumSet.allOf(Direction.class);
+    private Type conjunctionType = Type.ANY;
 
     private int highSignals = 0;
     private boolean reload = true;
@@ -47,10 +50,10 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
         if (reload) {
             for (BlockPos watching : watchingSources) {
                 World world = getController().getControllerWorld();
-                // TODO capability
-                ISignalReactor tile = (ISignalReactor) world.getTileEntity(watching);
+                TileEntity tile = world.getTileEntity(watching);
                 if (tile != null) {
-                    tile.subscribeEvent(this::executeHigh, this::executeLow);
+                    tile.getCapability(CapabilitySignalReactor.SIGNAL_REACTOR_CAPABILITY)
+                            .ifPresent(cap -> cap.subscribeEvent(this::executeHigh, this::executeLow));
                 }
             }
             reload = false;
@@ -90,6 +93,7 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
     public FlowComponent<RedstoneTriggerProcedure> createFlowComponent() {
         FlowComponent<RedstoneTriggerProcedure> f = FlowComponent.of(this, 0, 2);
         f.addMenu(new InventorySelectionMenu<>(INVENTORIES, I18n.format("gui.sfm.Menu.RedstoneTrigger.Watches"), I18n.format("error.sfm.RedstoneTrigger.NoWatches"), CapabilitySignalReactor.SIGNAL_REACTOR_CAPABILITY));
+        f.addMenu(new RedstoneSidesMenu<>(DIRECTIONS));
         return f;
     }
 
@@ -97,6 +101,8 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
     public CompoundNBT serialize() {
         CompoundNBT tag = super.serialize();
         tag.put("Watching", IOHelper.writeBlockPoses(watchingSources));
+        tag.putIntArray("Directions", IOHelper.direction2Index(directions));
+        tag.putInt("ConjunctionType", conjunctionType.ordinal());
         return tag;
     }
 
@@ -104,11 +110,28 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
     public void deserialize(CompoundNBT tag) {
         super.deserialize(tag);
         watchingSources = IOHelper.readBlockPoses(tag.getList("Watching", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
+        directions = IOHelper.index2DirectionFill(tag.getIntArray("Directions"), EnumSet.noneOf(Direction.class));
+        conjunctionType = Type.VALUES[tag.getInt("ConjunctionType")];
         reload = true;
     }
 
     @Override
     public List<BlockPos> getInventories(int id) {
         return watchingSources;
+    }
+
+    @Override
+    public Set<Direction> getDirections(int id) {
+        return directions;
+    }
+
+    @Override
+    public Type getConjunctionType() {
+        return conjunctionType;
+    }
+
+    @Override
+    public void setConjunctionType(Type type) {
+        conjunctionType = type;
     }
 }

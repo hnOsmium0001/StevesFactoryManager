@@ -17,7 +17,6 @@ public final class CapabilitySignalReactor {
 
     public static void register() {
         CapabilityManager.INSTANCE.register(ISignalReactor.class, new Capability.IStorage<ISignalReactor>() {
-            @Nullable
             @Override
             public INBT writeNBT(Capability<ISignalReactor> capability, ISignalReactor instance, Direction side) {
                 return new CompoundNBT();
