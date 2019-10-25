@@ -2,7 +2,6 @@ package vswe.stevesfactory.ui.manager.editor;
 
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.IErrorPopulator;
-import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;

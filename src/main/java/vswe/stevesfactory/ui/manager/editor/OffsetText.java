@@ -1,18 +1,12 @@
 package vswe.stevesfactory.ui.manager.editor;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.client.gui.screen.Screen;
-import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
-import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 class OffsetText extends AbstractWidget implements LeafWidgetMixin {
 

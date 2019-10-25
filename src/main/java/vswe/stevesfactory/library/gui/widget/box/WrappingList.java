@@ -8,14 +8,15 @@ import com.google.common.base.Preconditions;
 import net.minecraft.client.resources.I18n;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.ScissorTest;
+import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
-import vswe.stevesfactory.utils.*;
+import vswe.stevesfactory.utils.Utils;
+import vswe.stevesfactory.utils.VectorHelper;
 
 import java.awt.*;
 import java.util.List;

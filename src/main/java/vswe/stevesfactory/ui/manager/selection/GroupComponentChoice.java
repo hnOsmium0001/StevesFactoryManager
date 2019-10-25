@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.library.gui.RenderingHelper;
-import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
-import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
-import vswe.stevesfactory.library.gui.contextmenu.DefaultEntry;
-import vswe.stevesfactory.library.gui.contextmenu.IEntry;
+import vswe.stevesfactory.library.gui.contextmenu.*;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
@@ -15,9 +12,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class GroupComponentChoice extends AbstractWidget implements IComponentChoice, LeafWidgetMixin {
 

@@ -13,13 +13,13 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.Config;
+import vswe.stevesfactory.library.gui.RenderingHelper;
+import vswe.stevesfactory.library.gui.ScissorTest;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.ScissorTest;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
@@ -276,7 +276,7 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     }
 
     public int getAbsBarTop() {
-        int top = getAbsoluteX();
+        int top = getAbsoluteY();
         return Utils.lowerBound((int) scrollDistance * (getHeight() - getBarHeight()) / getBarExtraHeight() + top, top);
     }
 

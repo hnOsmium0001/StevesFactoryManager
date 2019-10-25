@@ -1,6 +1,5 @@
 package vswe.stevesfactory.ui.manager.menu;
 
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -11,10 +10,7 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public final class SettingsEditor extends AbstractContainer<IWidget> {
 
@@ -64,9 +60,8 @@ public final class SettingsEditor extends AbstractContainer<IWidget> {
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
-    public Checkbox addOption(boolean value, BooleanConsumer setter, String translationKey) {
+    public Checkbox addOption(boolean value, String translationKey) {
         Checkbox checkbox = new Checkbox(0, 0, 8, 8);
-        checkbox.onStateChange = setter;
         checkbox.setChecked(value);
         checkbox.translateLabel(translationKey);
         children.add(checkbox);

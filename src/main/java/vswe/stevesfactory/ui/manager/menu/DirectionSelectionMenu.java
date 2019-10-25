@@ -5,10 +5,10 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.logic.procedure.IDirectionTarget;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import java.util.List;
 

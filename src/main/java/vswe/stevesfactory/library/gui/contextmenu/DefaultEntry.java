@@ -1,11 +1,11 @@
 package vswe.stevesfactory.library.gui.contextmenu;
 
 import net.minecraft.util.ResourceLocation;
-import vswe.stevesfactory.library.gui.window.IWindow;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.RenderingHelper;
+import vswe.stevesfactory.library.gui.window.IWindow;
 
 import javax.annotation.Nullable;
 import java.awt.*;

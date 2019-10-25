@@ -2,16 +2,17 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
-import org.lwjgl.glfw.GLFW;
-import vswe.stevesfactory.library.gui.widget.IWidget;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
-import vswe.stevesfactory.library.gui.RenderingHelper;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
+
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 
 class DirectionButton extends AbstractIconButton {
 
@@ -65,7 +66,7 @@ class DirectionButton extends AbstractIconButton {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT) {
             setEditing(!editing);
             return super.mouseClicked(mouseX, mouseY, button);
         }

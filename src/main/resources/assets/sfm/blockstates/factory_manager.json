@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "sfm:block/factory_manager" }
+    "": {
+      "model": "sfm:block/factory_manager"
+    }
   }
 }

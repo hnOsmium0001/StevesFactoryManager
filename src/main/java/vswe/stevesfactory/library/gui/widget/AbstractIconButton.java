@@ -24,7 +24,7 @@ public abstract class AbstractIconButton extends AbstractWidget implements IButt
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         preRenderEvent(mouseX, mouseY);
-        GlStateManager.color3f(1F,1F,1F);
+        GlStateManager.color3f(1F, 1F, 1F);
         TextureWrapper tex = isDisabled() ? getTextureDisabled()
                 : isClicked() ? getTextureClicked()
                 : isHovered() ? getTextureHovered()

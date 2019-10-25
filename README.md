@@ -1,4 +1,8 @@
-# Steve's Factory Manager [![](http://cf.way2muchnoise.eu/versions/steves-factory-manager-reborn.svg)](https://www.curseforge.com/minecraft/mc-mods/steves-factory-manager-reborn) [![](http://cf.way2muchnoise.eu/full_steves-factory-manager-reborn_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/steves-factory-manager-reborn)
+![](https://user-images.githubusercontent.com/36975818/67539681-c9581b80-f697-11e9-95db-ac182c72cdd4.jpg "Steve's Factory Manager")
+
+[![](http://cf.way2muchnoise.eu/versions/steves-factory-manager-reborn.svg)](https://www.curseforge.com/minecraft/mc-mods/steves-factory-manager-reborn)
+[![](http://cf.way2muchnoise.eu/full_steves-factory-manager-reborn_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/steves-factory-manager-reborn)
+[![](https://img.shields.io/badge/Discord-TeamReborn-738bd7.svg)](https://discord.gg/teamreborn)
 
 Steve's Factory Manager is a Minecraft mod which allows you to set up systems that moves and manages items between inventories and machines with a graphical programming interface.
 

@@ -1,8 +1,8 @@
 package vswe.stevesfactory.library.gui.layout;
 
 import com.google.common.base.Preconditions;
-import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 
 import java.awt.*;
 import java.util.List;

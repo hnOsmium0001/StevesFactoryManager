@@ -130,10 +130,11 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
         stackLimitInput.setValue(filter.stackLimit)
                 .setBackgroundStyle(BackgroundStyle.RED_OUTLINE)
                 .translateLabel("gui.sfm.Menu.FilterAmount");
-        settings.addOption(filter.isMatchingAmount(), b -> {
+        Checkbox checkbox = settings.addOption(filter.isMatchingAmount(), "gui.sfm.Menu.MatchAmount");
+        checkbox.onStateChange = b -> {
             filter.setMatchingAmount(b);
             stackLimitInput.setEnabled(b);
-        }, "gui.sfm.Menu.MatchAmount");
+        };
     }
 
     @Override
@@ -176,9 +177,10 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
             setDimensions(90, 14);
 
             tag = new TextField(0, 0, 75, getHeight());
+            int buttonSize = 9;
             AbstractIconButton removeEntry = new AbstractIconButton(
-                    tag.getXRight() + 4, getHeight() / 2 - 9 / 2 - 1 /* Exclusive position, just to make it look nice */,
-                    9, 9) {
+                    tag.getXRight() + 4, getHeight() / 2 - buttonSize / 2 - 1 /* Exclusive position, just to make it look nice */,
+                    buttonSize, buttonSize) {
                 @Override
                 public TextureWrapper getTextureNormal() {
                     return FactoryManagerGUI.CLOSE_ICON;

@@ -2,10 +2,10 @@ package vswe.stevesfactory.ui.manager;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
-import vswe.stevesfactory.library.gui.widget.IWidget;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.contextmenu.DefaultEntry;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.RenderingHelper;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 
 import java.util.Collection;
 

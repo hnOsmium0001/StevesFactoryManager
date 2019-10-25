@@ -5,7 +5,8 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
-import vswe.stevesfactory.library.gui.contextmenu.*;
+import vswe.stevesfactory.library.gui.contextmenu.DefaultEntry;
+import vswe.stevesfactory.library.gui.contextmenu.IEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

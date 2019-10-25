@@ -2,8 +2,9 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.gui.widget.TextButton;
+
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 
 class ActivationButton extends TextButton {
 
@@ -33,7 +34,7 @@ class ActivationButton extends TextButton {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isEnabled() && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (isEnabled() && button == GLFW_MOUSE_BUTTON_LEFT) {
             target.selected = !target.selected;
             updateText();
             return super.mouseClicked(mouseX, mouseY, button);

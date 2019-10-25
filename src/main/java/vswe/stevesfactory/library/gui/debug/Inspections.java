@@ -7,9 +7,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.Config;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.IWindow;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 
 import java.awt.*;
 

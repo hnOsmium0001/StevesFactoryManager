@@ -2,8 +2,8 @@ package vswe.stevesfactory.library.gui.widget.slot;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.item.ItemStack;
-import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 
 import javax.annotation.Nonnull;
 import java.util.*;
