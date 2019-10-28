@@ -5,8 +5,6 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.*;
 
-import javax.annotation.Nullable;
-
 public final class CapabilitySignalReactor {
 
     private CapabilitySignalReactor() {

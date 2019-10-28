@@ -1,24 +1,25 @@
 package vswe.stevesfactory.blocks;
 
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import vswe.stevesfactory.api.capability.CapabilitySignalReactor;
-import vswe.stevesfactory.api.capability.ISignalReactor;
+import vswe.stevesfactory.api.capability.*;
 import vswe.stevesfactory.setup.ModBlocks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class RedstoneInputTileEntity extends BaseTileEntity implements ISignalReactor {
 
-    private List<BooleanConsumer> eventHandlers = new ArrayList<>();
+    private List<Predicate<SignalStatus>> eventHandlers = new ArrayList<>();
     private LazyOptional<ISignalReactor> signalReactor = LazyOptional.of(() -> this);
 
-    private boolean lastSignalState;
+    private SignalStatus lastSignalState;
 
     public RedstoneInputTileEntity() {
         super(ModBlocks.redstoneInputTileEntity);
@@ -39,29 +40,38 @@ public class RedstoneInputTileEntity extends BaseTileEntity implements ISignalRe
         return world.isBlockPowered(pos);
     }
 
+    @Override
+    public void subscribeEvent(Consumer<SignalStatus> onChange) {
+        eventHandlers.add(status -> {
+            onChange.accept(status);
+            return false;
+        });
+    }
+
+    @Override
+    public void subscribeEvent(Predicate<SignalStatus> onChange) {
+        eventHandlers.add(onChange);
+    }
+
     void onRedstoneChange() {
-        boolean signal = hasSignal();
-        if (lastSignalState != signal) {
-            for (BooleanConsumer eventHandler : eventHandlers) {
-                eventHandler.accept(signal);
-            }
-            lastSignalState = signal;
+        assert world != null;
+        SignalStatus status = SignalStatus.scan(world, pos);
+        if (!lastSignalState.equals(status)) {
+            eventHandlers.removeIf(handler -> handler.test(status));
+            lastSignalState = status;
         }
     }
 
     @Override
-    public void subscribeEvent(BooleanConsumer onChange) {
-        eventHandlers.add(onChange);
+    public void read(CompoundNBT compound) {
+        super.read(compound);
+        lastSignalState = new SignalStatus();
+        lastSignalState.read(compound.getCompound("LastSignal"));
     }
 
     @Override
-    public void subscribeEvent(Runnable onHigh, Runnable onLow) {
-        eventHandlers.add(t -> {
-            if (t) {
-                onHigh.run();
-            } else {
-                onLow.run();
-            }
-        });
+    public CompoundNBT write(CompoundNBT compound) {
+        compound.put("LastSignal", lastSignalState.write(new CompoundNBT()));
+        return super.write(compound);
     }
 }

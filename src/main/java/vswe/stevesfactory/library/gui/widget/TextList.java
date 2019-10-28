@@ -1,11 +1,9 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 
-import java.util.Collections;
 import java.util.List;
 
 import static vswe.stevesfactory.library.gui.RenderingHelper.fontHeight;
@@ -13,7 +11,6 @@ import static vswe.stevesfactory.library.gui.RenderingHelper.fontHeight;
 public class TextList extends AbstractWidget implements LeafWidgetMixin {
 
     private List<String> texts;
-    private List<String> textView;
     private boolean fitContents = false;
 
     private int fontHeight = fontHeight();
@@ -22,7 +19,6 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
     public TextList(int width, int height, List<String> texts) {
         super(0, 0, width, height);
         this.texts = texts;
-        this.textView = Collections.unmodifiableList(texts);
     }
 
     @Override
@@ -35,7 +31,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         GlStateManager.translatef(x, y, 0F);
         GlStateManager.scalef(scaleFactor, scaleFactor, 1F);
         for (String text : texts) {
-            fontRenderer().drawString(text, 0, 0, 0x000000);
+            fontRenderer().drawString(text, 0, 0, 0xff404040);
             GlStateManager.translatef(0F, fontHeight, 0F);
         }
         GlStateManager.popMatrix();
@@ -51,7 +47,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
     }
 
     public List<String> getTexts() {
-        return textView;
+        return texts;
     }
 
     public String getLine(int line) {
@@ -63,20 +59,12 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         tryExpand(newLine);
     }
 
-    public void addTranslatedLine(String translationKey) {
-        addLine(I18n.format(translationKey));
-    }
-
-    public void addTranslatedLine(String translationKey, Object... args) {
-        addLine(I18n.format(translationKey, args));
-    }
-
     public void addLineSplit(String text) {
-        addLineSplit(getWidth(), text);
+        addLineSplit((int) (getWidth() / scaleFactor), text);
     }
 
     public void addLineSplit(int maxWidth, String text) {
-        int end = fontRenderer().sizeStringToWidth(text, maxWidth);
+        int end = (int) (fontRenderer().sizeStringToWidth(text, maxWidth));
         if (end >= text.length()) {
             addLine(text);
         } else {
@@ -85,14 +73,6 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
             addLine(trimmed);
             addLineSplit(maxWidth, after);
         }
-    }
-
-    public void addTranslatedLineSplit(int maxWidth, String translationKey) {
-        addLineSplit(maxWidth, I18n.format(translationKey));
-    }
-
-    public void addTranslatedLineSplit(int maxWidth, String translationKey, Object... args) {
-        addLineSplit(maxWidth, I18n.format(translationKey, args));
     }
 
     private void tryExpand(String line) {

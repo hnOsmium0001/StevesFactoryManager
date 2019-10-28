@@ -31,21 +31,27 @@ public class RedstoneSidesMenu<P extends IProcedure & IProcedureClientData & IDi
         all = new RadioButton(filterTypeController);
         int y = HEADING_BOX.getPortionHeight() + 4;
         any.setLocation(4, y);
-        any.translateLabel("gui.sfm.Menu.RequireAll");
+        any.translateLabel("gui.sfm.Menu.IfAny");
         all.setLocation(getWidth() / 2, y);
-        all.translateLabel("gui.sfm.Menu.IfAny");
+        all.translateLabel("gui.sfm.Menu.RequireAll");
         addChildren(any);
         addChildren(all);
 
         EnumMap<Direction, Checkbox> sides = new EnumMap<>(Direction.class);
         for (Direction direction : VectorHelper.DIRECTIONS) {
-            Checkbox checkbox = new Checkbox();
-            checkbox.translateLabel("gui.sfm." + direction.getName());
-            addChildren(checkbox);
-            sides.put(direction, checkbox);
+            Checkbox box = new Checkbox();
+            box.translateLabel("gui.sfm." + direction.getName());
+            addChildren(box);
+            sides.put(direction, box);
         }
-        //noinspection UnstableApiUsage
         this.sides = Maps.immutableEnumMap(sides);
+
+        TextList info = new TextList(getWidth() - 4 * 2, 16, new ArrayList<>());
+        info.setFontHeight(6);
+        info.addLineSplit(I18n.format("gui.sfm.Menu.RedstoneTrigger.Sides.Info"));
+        info.setLocation(4, any.getYBottom() + 2);
+        addChildren(info);
+
         reflow();
     }
 
@@ -53,12 +59,15 @@ public class RedstoneSidesMenu<P extends IProcedure & IProcedureClientData & IDi
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
         P procedure = getLinkedProcedure();
-        any.onChecked = () -> procedure.setConjunctionType(ILogicalConjunction.Type.ANY);
-        all.onChecked = () -> procedure.setConjunctionType(ILogicalConjunction.Type.ALL);
+        any.check(procedure.getConjunction() == ILogicalConjunction.Type.ANY);
+        all.check(procedure.getConjunction() == ILogicalConjunction.Type.ALL);
+        any.onChecked = () -> procedure.setConjunction(ILogicalConjunction.Type.ANY);
+        all.onChecked = () -> procedure.setConjunction(ILogicalConjunction.Type.ALL);
 
         for (Map.Entry<Direction, Checkbox> entry : sides.entrySet()) {
-            Checkbox checkbox = entry.getValue();
-            checkbox.onStateChange = b -> procedure.setEnabled(id, entry.getKey(), b);
+            Checkbox box = entry.getValue();
+            box.setChecked(procedure.isEnabled(id, entry.getKey()));
+            box.onStateChange = b -> procedure.setEnabled(id, entry.getKey(), b);
         }
     }
 

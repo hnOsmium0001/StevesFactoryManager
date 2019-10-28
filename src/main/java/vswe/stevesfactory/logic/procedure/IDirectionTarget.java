@@ -8,7 +8,7 @@ public interface IDirectionTarget {
 
     Set<Direction> getDirections(int id);
 
-    default boolean isNorthEnabled(int id, Direction direction) {
+    default boolean isEnabled(int id, Direction direction) {
         return getDirections(id).contains(direction);
     }
 

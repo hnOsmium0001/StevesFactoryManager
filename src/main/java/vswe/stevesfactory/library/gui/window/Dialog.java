@@ -2,6 +2,7 @@ package vswe.stevesfactory.library.gui.window;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.screen.BackgroundRenderers;
@@ -96,7 +97,7 @@ public class Dialog extends AbstractPopupWindow {
     private static Dialog dialogue(String message) {
         Dialog dialog = new Dialog();
         dialog.insertBeforeMessage(new Spacer(0, 5));
-        dialog.messageBox.addTranslatedLineSplit(160, message);
+        dialog.messageBox.addLineSplit(160, I18n.format(message));
         return dialog;
     }
 

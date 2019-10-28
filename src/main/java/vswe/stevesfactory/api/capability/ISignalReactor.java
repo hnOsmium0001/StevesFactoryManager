@@ -1,12 +1,23 @@
 package vswe.stevesfactory.api.capability;
 
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public interface ISignalReactor {
 
     boolean hasSignal();
 
-    void subscribeEvent(BooleanConsumer onChange);
+    /**
+     * Register an event handler.
+     *
+     * @see #subscribeEvent(Predicate)
+     */
+    void subscribeEvent(Consumer<SignalStatus> onChange);
 
-    void subscribeEvent(Runnable onHigh, Runnable onLow);
+    /**
+     * Register an event handler. If the lambda return {@code true}, the event handler will be removed.
+     *
+     * @see #subscribeEvent(Consumer)
+     */
+    void subscribeEvent(Predicate<SignalStatus> onChange);
 }

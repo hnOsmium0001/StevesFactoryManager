@@ -44,7 +44,7 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 
     @Override
     public boolean isValid() {
-        return graph != null && graph.getController().isValid();
+        return graph != null && graph.isValid();
     }
 
     @Override
