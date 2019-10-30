@@ -50,10 +50,6 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         return texts;
     }
 
-    public String getLine(int line) {
-        return texts.get(line);
-    }
-
     public void addLine(String newLine) {
         texts.add(newLine);
         tryExpand(newLine);

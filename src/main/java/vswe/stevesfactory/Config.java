@@ -24,6 +24,7 @@ public final class Config {
         public final BooleanValue enableItemImport;
         public final BooleanValue enableItemExport;
         public final BooleanValue enableCrafting;
+        public final BooleanValue enableRedstoneEmitter;
 
         private CommonCategory(Builder builder) {
             builder.comment("Factory manager config options").push("factoryManager");
@@ -42,6 +43,7 @@ public final class Config {
             enableItemImport = builder.define("EnableItemImport", true);
             enableItemExport = builder.define("EnableItemExport", true);
             enableCrafting = builder.define("EnableCrafting", true);
+            enableRedstoneEmitter = builder.define("EnableRedstoneEmitter", true);
             builder.pop();
         }
     }

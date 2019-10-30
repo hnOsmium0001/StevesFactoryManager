@@ -1,12 +1,11 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.resources.I18n;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 
 public class RadioButton extends AbstractWidget implements IButton, LeafWidgetMixin {
 
@@ -81,14 +80,6 @@ public class RadioButton extends AbstractWidget implements IButton, LeafWidgetMi
 
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    public void translateLabel(String translationKey) {
-        label = I18n.format(translationKey);
-    }
-
-    public void translateLabel(String translationKey, Object... args) {
-        label = I18n.format(translationKey, args);
     }
 
     @Override

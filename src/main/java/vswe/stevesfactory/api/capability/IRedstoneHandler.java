@@ -10,6 +10,8 @@ public interface IRedstoneHandler {
 
     boolean isStrong();
 
+    boolean isWeak();
+
     void setType(Type type);
 
     enum Type implements IStringSerializable {
@@ -40,5 +42,7 @@ public interface IRedstoneHandler {
         public static Type getByIndicator(boolean strong) {
             return strong ? STRONG : WEAK;
         }
+
+        public static Type[] VALUES = values();
     }
 }

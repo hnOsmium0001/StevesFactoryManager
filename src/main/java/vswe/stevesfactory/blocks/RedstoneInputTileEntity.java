@@ -4,7 +4,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import vswe.stevesfactory.api.capability.*;
+import vswe.stevesfactory.api.capability.CapabilitySignalReactor;
+import vswe.stevesfactory.api.capability.ISignalReactor;
+import vswe.stevesfactory.api.capability.SignalStatus;
 import vswe.stevesfactory.setup.ModBlocks;
 
 import javax.annotation.Nonnull;
@@ -16,6 +18,7 @@ import java.util.function.Predicate;
 
 public class RedstoneInputTileEntity extends BaseTileEntity implements ISignalReactor {
 
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") // the .removeIf() call has side effects of triggering the event handlesr
     private List<Predicate<SignalStatus>> eventHandlers = new ArrayList<>();
     private LazyOptional<ISignalReactor> signalReactor = LazyOptional.of(() -> this);
 
@@ -56,7 +59,7 @@ public class RedstoneInputTileEntity extends BaseTileEntity implements ISignalRe
     void onRedstoneChange() {
         assert world != null;
         SignalStatus status = SignalStatus.scan(world, pos);
-        if (!lastSignalState.equals(status)) {
+        if (lastSignalState == null || !lastSignalState.equals(status)) {
             eventHandlers.removeIf(handler -> handler.test(status));
             lastSignalState = status;
         }

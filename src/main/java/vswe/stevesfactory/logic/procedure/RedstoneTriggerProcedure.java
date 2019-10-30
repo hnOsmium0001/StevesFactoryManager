@@ -98,7 +98,10 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
     public FlowComponent<RedstoneTriggerProcedure> createFlowComponent() {
         FlowComponent<RedstoneTriggerProcedure> f = FlowComponent.of(this, 0, 2);
         f.addMenu(new InventorySelectionMenu<>(INVENTORIES, I18n.format("gui.sfm.Menu.RedstoneTrigger.Watches"), I18n.format("error.sfm.RedstoneTrigger.NoWatches"), CapabilitySignalReactor.SIGNAL_REACTOR_CAPABILITY));
-        f.addMenu(new RedstoneSidesMenu<>(DIRECTIONS));
+        f.addMenu(new RedstoneSidesMenu<>(DIRECTIONS,
+                () -> conjunction == Type.ANY, () -> conjunction = Type.ANY, I18n.format("gui.sfm.Menu.IfAny"),
+                () -> conjunction == Type.ALL, () -> conjunction = Type.ALL, I18n.format("gui.sfm.Menu.RequireAll"),
+                I18n.format("gui.sfm.Menu.RedstoneTrigger.Sides"), I18n.format("gui.sfm.Menu.RedstoneTrigger.Sides.Info")));
         f.addMenu(new RedstoneStrengthMenu<>());
         return f;
     }
