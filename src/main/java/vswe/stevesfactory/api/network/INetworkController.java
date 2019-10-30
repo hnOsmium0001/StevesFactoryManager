@@ -75,6 +75,8 @@ public interface INetworkController {
 
     void removeAllCommandGraphs();
 
+    boolean isGraphValid(CommandGraph graph);
+
     /**
      * Sync command graph data.
      */

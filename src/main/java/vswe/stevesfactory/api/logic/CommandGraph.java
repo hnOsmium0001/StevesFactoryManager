@@ -29,7 +29,7 @@ public final class CommandGraph implements Iterable<IProcedure> {
     }
 
     public boolean isValid() {
-        return controller != null && root != null;
+        return controller != null && controller.isValid() && controller.isGraphValid(this) && root != null;
     }
 
     public IProcedure getRoot() {

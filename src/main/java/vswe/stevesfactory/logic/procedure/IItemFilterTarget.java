@@ -16,7 +16,6 @@ public interface IItemFilterTarget {
                 flowComponent,
                 () -> procedure.getFilter(filterID),
                 filter -> procedure.setFilter(filterID, filter));
-        String filterName = I18n.format("gui.sfm.Menu.ItemFilter");
         pm.on(filter -> filter instanceof ItemTraitsFilter)
                 .name(I18n.format("gui.sfm.Menu.ItemFilter.Traits"))
                 .prop(ItemTraitsFilter::new)

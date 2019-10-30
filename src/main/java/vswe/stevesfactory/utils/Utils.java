@@ -46,4 +46,8 @@ public final class Utils {
         Arrays.setAll(result, i -> i + start);
         return result;
     }
+
+    public static boolean invertIf(boolean bool, boolean predicate) {
+        return bool ^ predicate;
+    }
 }

@@ -42,9 +42,9 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
         blacklist = new RadioButton(filterTypeController);
         int y = HEADING_BOX.getPortionHeight() + 4;
         whitelist.setLocation(4, y);
-        whitelist.translateLabel("gui.sfm.whitelist");
+        whitelist.setLabel(I18n.format("gui.sfm.whitelist"));
         blacklist.setLocation(getWidth() / 2, y);
-        blacklist.translateLabel("gui.sfm.blacklist");
+        blacklist.setLabel(I18n.format("gui.sfm.blacklist"));
 
         slots = new WrappingList<>(false);
         slots.setLocation(4, whitelist.getYBottom() + 4);
@@ -94,9 +94,9 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
         blacklist.onChecked = () -> filter.type = FilterType.BLACKLIST;
 
         settings = new SettingsEditor(this);
-        settings.addOption(filter.isMatchingAmount(), filter::setMatchingAmount, "gui.sfm.Menu.MatchAmount");
-        settings.addOption(filter.isMatchingDamage(), filter::setMatchingDamage, "gui.sfm.Menu.MatchDamage");
-        settings.addOption(filter.isMatchingTag(), filter::setMatchingTag, "gui.sfm.Menu.MatchTag");
+        settings.addOption(filter.isMatchingAmount(), "gui.sfm.Menu.MatchAmount").onStateChange = filter::setMatchingAmount;
+        settings.addOption(filter.isMatchingDamage(), "gui.sfm.Menu.MatchDamage").onStateChange = filter::setMatchingDamage;
+        settings.addOption(filter.isMatchingTag(), "gui.sfm.Menu.MatchTag").onStateChange = filter::setMatchingTag;
     }
 
     @Override

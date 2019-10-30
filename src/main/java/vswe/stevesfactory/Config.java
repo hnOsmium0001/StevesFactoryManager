@@ -19,10 +19,12 @@ public final class Config {
         // Due to Forge config limitations (and laziness of not wanting to write a custom config)
         // disabled procedures will only be excluded in the selection menu; but kept registered
         public final BooleanValue enableIntervalTrigger;
+        public final BooleanValue enableRedstoneTrigger;
         public final BooleanValue enableItemTransfer;
         public final BooleanValue enableItemImport;
         public final BooleanValue enableItemExport;
         public final BooleanValue enableCrafting;
+        public final BooleanValue enableRedstoneEmitter;
 
         private CommonCategory(Builder builder) {
             builder.comment("Factory manager config options").push("factoryManager");
@@ -36,10 +38,12 @@ public final class Config {
 
             builder.comment("Procedures config options", "Run '/sfm reload componentGroups' after updating config").push("procedures");
             enableIntervalTrigger = builder.define("EnableIntervalTrigger", true);
+            enableRedstoneTrigger = builder.define("EnableRedstoneTrigger", true);
             enableItemTransfer = builder.define("EnableItemTransfer", true);
             enableItemImport = builder.define("EnableItemImport", true);
             enableItemExport = builder.define("EnableItemExport", true);
             enableCrafting = builder.define("EnableCrafting", true);
+            enableRedstoneEmitter = builder.define("EnableRedstoneEmitter", true);
             builder.pop();
         }
     }

@@ -230,6 +230,11 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         graphs.clear();
     }
 
+    @Override
+    public boolean isGraphValid(CommandGraph graph) {
+        return graphs.contains(graph);
+    }
+
     /**
      * @return {@code true} always. See {@link Multiset#add(Object)} for details.
      */
