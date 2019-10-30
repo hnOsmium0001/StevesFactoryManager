@@ -8,7 +8,7 @@
 
   "message.sfm.reload.componentGroups.success": "Successfully reloaded component groups",
   "message.sfm.settings.query": "Entry %s is currently set to %s",
-  "message.sfm.settings.set": "Entry %s is now set to %s无效过滤器：白名单并且设置为空",
+  "message.sfm.settings.set": "Entry %s is now set to %s",
 
   "logic.sfm.interval_trigger": "Interval Trigger",
   "logic.sfm.redstone_trigger": "Redstone Trigger",
@@ -20,7 +20,7 @@
   "logic.sfm.fluid_import": "Input (F)",
   "logic.sfm.fluid_export": "Output (F)",
   "logic.sfm.fluid_condition": "Condition (F)",
-  "logic.sfm.redstone_emitter": "Emitter",
+  "logic.sfm.redstone_emitter": "Redstone Emitter",
   "logic.sfm.redstone_condition": "Condition (R)",
   "logic.sfm.crafting": "Crafter",
   "logic.sfm.for_each": "For Each",
@@ -29,8 +29,11 @@
   "logic.sfm.camouflage": "Camouflage",
   "logic.sfm.sign_updater": "Sign",
 
-  "component_group.sfm.ItemIO": "Item I/O",
   "component_group.sfm.Trigger": "Trigger",
+  "component_group.sfm.ItemInteraction": "Item Interactions",
+  "component_group.sfm.FluidInteraction": "Item Interactions",
+  "component_group.sfm.RedstoneInteraction": "Redstone Interactions",
+  "component_group.sfm.Conditions": "Item Interactions",
 
   "gui.sfm.seconds": "second(s)",
   "gui.sfm.ticks": "ticks",
@@ -137,6 +140,6 @@
   "error.sfm.CraftingProcedure.NoRecipe": "No recipe specified",
   "error.sfm.TraitsFilter.WhitelistEmpty": "Illegal filter: whitelist with no item filters specified",
   "error.sfm.TagsFilter.WhitelistEmpty": "Illegal filter: whitelist with no tags specified",
-  "error.sfm.RedstoneTrigger.NoWatches": "No watched redstone receivers specified",
+  "error.sfm.RedstoneTrigger.NoWatches": "No redstone receivers specified",
   "error.sfm.RedstoneEmitter.NoEmitters": "No redstone emitters specified"
 }

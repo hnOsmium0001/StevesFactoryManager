@@ -2,16 +2,21 @@ package vswe.stevesfactory.blocks;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import vswe.stevesfactory.Config;
 import vswe.stevesfactory.api.capability.CapabilityRedstone;
 import vswe.stevesfactory.api.capability.RedstoneSignalHandler;
+import vswe.stevesfactory.api.network.ICable;
+import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.setup.ModBlocks;
+import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class RedstoneEmitterTileEntity extends BaseTileEntity {
+public class RedstoneEmitterTileEntity extends BaseTileEntity implements ICable {
 
     private LazyOptional<RedstoneSignalHandler> redstoneDown = LazyOptional.of(this::createSignalHandler);
     private LazyOptional<RedstoneSignalHandler> redstoneUp = LazyOptional.of(this::createSignalHandler);
@@ -70,5 +75,20 @@ public class RedstoneEmitterTileEntity extends BaseTileEntity {
         compound.put("West", redstoneWest.orElseThrow(RuntimeException::new).write());
         compound.put("East", redstoneEast.orElseThrow(RuntimeException::new).write());
         return super.write(compound);
+    }
+
+    @Override
+    public BlockPos getPosition() {
+        return pos;
+    }
+
+    @Override
+    public boolean isCable() {
+        return Config.COMMON.isRedstoneEmitterBlockCables.get();
+    }
+
+    @Override
+    public void addLinksFor(INetworkController controller) {
+        NetworkHelper.updateLinksFor(controller, this);
     }
 }

@@ -16,6 +16,9 @@ public final class Config {
         public final IntValue maxSearchDepth;
         public final IntValue rescanInterval;
 
+        public final BooleanValue isRedstoneInputBlockCables;
+        public final BooleanValue isRedstoneEmitterBlockCables;
+
         // Due to Forge config limitations (and laziness of not wanting to write a custom config)
         // disabled procedures will only be excluded in the selection menu; but kept registered
         public final BooleanValue enableIntervalTrigger;
@@ -34,6 +37,15 @@ public final class Config {
             rescanInterval = builder
                     .comment("Number of ticks for the Factory Manager to rescan the network. Set to -1 to make it never rescan passively")
                     .defineInRange("RescanInterval", 100, -1, Integer.MAX_VALUE);
+            builder.pop();
+
+            builder.comment("Block property config options").push("blocks");
+            isRedstoneInputBlockCables = builder
+                    .comment("Whether the redstone input block is considered a cable")
+                    .define("IsRedstoneInputBlockCables", false);
+            isRedstoneEmitterBlockCables = builder
+                    .comment("Whether the redstone emitter block is considered a cable")
+                    .define("IsRedstoneEmitterBlockCables", false);
             builder.pop();
 
             builder.comment("Procedures config options", "Run '/sfm reload componentGroups' after updating config").push("procedures");

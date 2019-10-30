@@ -15,9 +15,9 @@ public class RedstoneInputBlock extends BaseBlock {
     @Override
     @SuppressWarnings("deprecation")
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        RedstoneInputTileEntity tile = (RedstoneInputTileEntity) world.getTileEntity(pos);
-        if (tile != null) {
-            tile.onRedstoneChange();
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof RedstoneInputTileEntity) {
+            ((RedstoneInputTileEntity) tile).onRedstoneChange();
         }
     }
 
