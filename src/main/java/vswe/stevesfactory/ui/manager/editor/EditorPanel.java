@@ -26,6 +26,11 @@ import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.ConnectionNodes.Node;
 import vswe.stevesfactory.ui.manager.editor.ConnectionNodes.OutputNode;
+import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
+import vswe.stevesfactory.ui.manager.UserPreferencesPanel;
+import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
+import vswe.stevesfactory.ui.manager.editor.ControlFlow.OutputNode;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -122,6 +127,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
             GlStateManager.translatef(xOffset.get(), yOffset.get(), 0F);
             RenderingHelper.translate(xOffset.get(), yOffset.get());
+            // Widgets are translated on render, which means player inputs will go at the translated positions
+            // we need to translate the inputs back to the original position for logic handling, since the data position isn't changed at all
+            int translatedX = mouseX - xOffset.get();
+            int translatedY = mouseY - yOffset.get();
 
             // If this is put into the rendering logic of the nodes, the connection line will be above of of the flow components if
             // they are in a certain order.
@@ -132,14 +141,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
                     continue;
                 }
                 for (Node node : child.getOutputNodes().getChildren()) {
-                    ((OutputNode) node).renderConnectionLine();
+                    ((OutputNode) node).renderConnectionLine(translatedX, translatedY);
                 }
             }
 
-            // Widgets are translated on render, which means player inputs will go at the translated positions
-            // we need to translate the inputs back to the original position for logic handling, since the data position isn't changed at all
-            int translatedX = mouseX - xOffset.get();
-            int translatedY = mouseY - yOffset.get();
             // Iterate in ascending order for rendering as a special case
             for (FlowComponent<?> child : children) {
                 if (!currentGroup.equals(child.getGroup())) {

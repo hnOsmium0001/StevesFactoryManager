@@ -1,6 +1,11 @@
 package vswe.stevesfactory.api.logic;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Connection {
 
@@ -27,10 +32,14 @@ public final class Connection {
         return create(from, out, to, in);
     }
 
+    private static final ImmutableList<Point> EMPTY_LIST = ImmutableList.of();
+
     private IProcedure from;
     private int fromIdx;
     private IProcedure to;
     private int toIdx;
+    private int toIn;
+    private List<Point> polylineNodes = EMPTY_LIST;
 
     Connection(IProcedure from, int fromIdx, IProcedure to, int toIdx) {
         this.from = from;
@@ -58,6 +67,32 @@ public final class Connection {
 
     public int getDestinationInputIndex() {
         return toIdx;
+    }
+
+    public void clearNodes() {
+        if (polylineNodes != EMPTY_LIST) {
+            polylineNodes.clear();
+        }
+    }
+
+    private void updateListType() {
+        if (polylineNodes == EMPTY_LIST) {
+            polylineNodes = new ArrayList<>();
+        }
+    }
+
+    public void addNodeFront(Point node) {
+        updateListType();
+        polylineNodes.add(0, node);
+    }
+
+    public void addNode(Point node) {
+        updateListType();
+        polylineNodes.add(node);
+    }
+
+    public List<Point> getPolylineNodes() {
+        return polylineNodes;
     }
 
     @Override

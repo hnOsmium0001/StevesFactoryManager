@@ -17,7 +17,10 @@ import vswe.stevesfactory.logic.item.CraftingBufferElement;
 import vswe.stevesfactory.logic.item.DirectBufferElement;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
@@ -28,7 +31,6 @@ import java.util.function.BiConsumer;
 public class ProcedureExecutor implements IExecutionContext {
 
     private static final Object2IntMap<Class<? extends IItemBuffer>> itemOrderAssociation = new Object2IntOpenHashMap<>();
-    public static final int THRESHOLD = 10;
     private static int nextItemOrder = 0;
     private static final Object2IntMap<Class<? extends IFluidBuffer>> fluidOrderAssociation = new Object2IntOpenHashMap<>();
     private static int nextFluidOrder = 0;

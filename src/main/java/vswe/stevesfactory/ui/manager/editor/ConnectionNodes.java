@@ -3,17 +3,23 @@ package vswe.stevesfactory.ui.manager.editor;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.api.logic.Connection;
 import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
+import vswe.stevesfactory.utils.VectorHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -29,10 +35,6 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
 
         public static void drawConnectionLine(Node first, Node second) {
             drawConnectionLine(first.getCenterX(), first.getCenterY(), second.getCenterX(), second.getCenterY());
-        }
-
-        public static void drawConnectionLine(Node source, int mx, int my) {
-            drawConnectionLine(source.getCenterX(), source.getCenterY(), mx, my);
         }
 
         public static void drawConnectionLine(int x1, int y1, int x2, int y2) {
@@ -56,6 +58,8 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
 
         private Node pairedNode;
         private int index;
+
+        protected Connection connection;
 
         public Node(ConnectionNodes parent, int index) {
             super(0, 0, WIDTH, HEIGHT);
@@ -114,6 +118,10 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (!isInside(mouseX, mouseY)) {
+                return false;
+            }
+            getWindow().setFocusedWidget(this);
             switch (button) {
                 case GLFW_MOUSE_BUTTON_LEFT:
                     EditorPanel editor = getFlowComponent().getParentWidget();
@@ -127,6 +135,15 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
                     break;
             }
             return true;
+        }
+
+        @Override
+        public boolean mouseReleased(double mouseX, double mouseY, int button) {
+            if (isInside(mouseX, mouseY)) {
+                getWindow().setFocusedWidget(null);
+                return true;
+            }
+            return false;
         }
 
         @Nullable
@@ -216,8 +233,19 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
 
     static final class OutputNode extends Node {
 
+        public static final int BORDER = 0xff4d4d4d;
+        public static final int NORMAL_FILLER = 0xff9d9d9d;
+        public static final int HOVERED_FILLER = 0xffc7c7c7;
+
+        public static final int NODE_WIDTH = 6;
+        public static final int NODE_HEIGHT = 6;
+        public static final int HALF_NODE_WIDTH = NODE_WIDTH / 2;
+        public static final int HALF_NODE_HEIGHT = NODE_HEIGHT / 2;
+
         public static final TextureWrapper OUTPUT_NORMAL = TextureWrapper.ofFlowComponent(18, 45, WIDTH, HEIGHT);
         public static final TextureWrapper OUTPUT_HOVERED = OUTPUT_NORMAL.toRight(1);
+
+        private Point draggingNode;
 
         public OutputNode(ConnectionNodes parent, int index) {
             super(parent, index);
@@ -249,6 +277,47 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
         }
 
         @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (connection != null) {
+                for (Point node : connection.getPolylineNodes()) {
+                    int x1 = node.x - HALF_NODE_WIDTH;
+                    int y1 = node.y - HALF_NODE_HEIGHT;
+                    int x2 = node.x + HALF_NODE_WIDTH;
+                    int y2 = node.y + HALF_NODE_HEIGHT;
+                    if (VectorHelper.isInside((int) mouseX, (int) mouseY, x1, y1, x2, y2)) {
+                        draggingNode = node;
+                        return true;
+                    }
+                }
+            }
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        @Override
+        public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+//            if (getWindow().getFocusedWidget() != this) {
+//                return false;
+//            }
+            if (draggingNode != null) {
+                draggingNode.x = (int) mouseX;
+                draggingNode.y = (int) mouseY;
+                return true;
+            } else if (connection != null) {
+                // TODO activation check
+                draggingNode = new Point(getAbsoluteX(), getAbsoluteY());
+                connection.addNodeFront(draggingNode);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean mouseReleased(double mouseX, double mouseY, int button) {
+            draggingNode = null;
+            return super.mouseReleased(mouseX, mouseY, button);
+        }
+
+        @Override
         protected void onDisconnect() {
             super.onDisconnect();
         }
@@ -274,10 +343,39 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
             super.render(mouseX, mouseY, particleTicks);
         }
 
-        public void renderConnectionLine() {
+        public void renderConnectionLine(int mouseX, int mouseY) {
             InputNode other = getPairedNode();
             if (other != null) {
-                drawConnectionLine(this, other);
+                int currX = getCenterX(), currY = getCenterY();
+                int nextX, nextY;
+                GlStateManager.enableDepthTest();
+                GlStateManager.pushMatrix();
+                GlStateManager.translatef(0F, 0F, 0.1F);
+                if (connection != null) {
+                    for (Point node : connection.getPolylineNodes()) {
+                        nextX = node.x;
+                        nextY = node.y;
+
+                        drawConnectionLine(currX, currY, nextX, nextY);
+
+                        GlStateManager.disableTexture();
+                        Tessellator.getInstance().getBuffer().begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+                        int x1 = node.x - HALF_NODE_WIDTH;
+                        int y1 = node.y - HALF_NODE_HEIGHT;
+                        int x2 = node.x + HALF_NODE_WIDTH;
+                        int y2 = node.y + HALF_NODE_HEIGHT;
+                        RenderingHelper.rectVertices(x1, y1, x2, y2, BORDER);
+                        RenderingHelper.rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, VectorHelper.isInside(mouseX, mouseY, x1, y1, x2, y2) ? HOVERED_FILLER : NORMAL_FILLER);
+                        Tessellator.getInstance().draw();
+                        GlStateManager.enableTexture();
+
+                        currX = nextX;
+                        currY = nextY;
+                    }
+                }
+                drawConnectionLine(currX, currY, other.getCenterX(), other.getCenterY());
+                GlStateManager.popMatrix();
+                GlStateManager.disableDepthTest();
             }
         }
 
@@ -313,10 +411,11 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
                     }
                     IProcedure successor = connection.getDestination();
                     FlowComponent<?> other = m.get(successor);
-                    Node from = nodes.get(i);
+                    OutputNode from = (OutputNode) nodes.get(i);
                     Node to = other.getInputNodes().nodes.get(connection.getDestinationInputIndex());
 
                     from.connect(to);
+                    from.connection = connection;
                 }
                 initializing = false;
             }
@@ -373,6 +472,36 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
         for (Node node : nodes) {
             if (node.getParentWidget().getParentWidget() == component) {
                 node.disconnect();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        for (Node child : getChildren()) {
+            if (child.mouseClicked(mouseX, mouseY, button)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        for (Node child : getChildren()) {
+            if (child.mouseReleased(mouseX, mouseY, button)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        for (Node child : getChildren()) {
+            if (child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
                 return true;
             }
         }
