@@ -22,3 +22,4 @@
 # Project files
 !src/
 !.gitlab-ci.yml
+!.crowdin.yml
