@@ -107,9 +107,12 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
             BlockPos neighbor = center.offset(direction);
             TileEntity tile = world.getTileEntity(neighbor);
             if (tile instanceof ICable && !connectedCables.contains(neighbor)) {
-                addCableToNetwork((ICable) tile, neighbor);
-                // Recursive search (DFS)
-                search(neighbor, depth + 1);
+                ICable cable = (ICable) tile;
+                if (cable.isCable()) {
+                    addCableToNetwork(cable, neighbor);
+                    // Recursive search (DFS)
+                    search(neighbor, depth + 1);
+                }
             }
         }
     }
@@ -230,6 +233,11 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
         graphs.clear();
     }
 
+    @Override
+    public boolean isGraphValid(CommandGraph graph) {
+        return graphs.contains(graph);
+    }
+
     /**
      * @return {@code true} always. See {@link Multiset#add(Object)} for details.
      */
@@ -243,22 +251,7 @@ public class FactoryManagerTileEntity extends BaseTileEntity implements ITickabl
     @Override
     public void addLinksFor(INetworkController controller) {
         markDirty();
-        for (Capability<?> cap : StevesFactoryManagerAPI.getRecognizableCapabilities()) {
-            updateLinks(controller, cap);
-        }
-    }
-
-    private void updateLinks(INetworkController controller, Capability<?> cap) {
-        assert world != null;
-        for (BlockPos neighbor : getNeighbors()) {
-            TileEntity tile = world.getTileEntity(neighbor);
-            if (tile == null) {
-                continue;
-            }
-            if (Utils.hasCapabilityAtAll(tile, cap)) {
-                controller.addLink(cap, neighbor);
-            }
-        }
+        NetworkHelper.updateLinksFor(controller, this);
     }
 
     @Override

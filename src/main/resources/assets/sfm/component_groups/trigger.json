@@ -1,8 +1,9 @@
 {
   "name": "sfm:trigger",
-  "translation_key": "component_groups.sfm.Trigger",
+  "translation_key": "component_group.sfm.Trigger",
   "icon": "sfm:textures/gui/component_icon/trigger.png",
   "members": [
-    "sfm:interval_trigger"
+    "sfm:interval_trigger",
+    "sfm:redstone_trigger"
   ]
 }

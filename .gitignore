@@ -21,5 +21,6 @@
 
 # Project files
 !src/
-!.gitlab-ci.yml
+!.github/
+!.travis.yml
 !.crowdin.yml

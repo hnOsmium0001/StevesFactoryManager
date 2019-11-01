@@ -6,6 +6,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
 import vswe.stevesfactory.api.logic.CommandGraph;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Set;
 
@@ -38,7 +39,7 @@ public interface INetworkController {
      * use {@link #addLink(Capability, BlockPos)} and {@link #removeLink(Capability, BlockPos)} to do so. Controllers are allowed to be
      * designed such that modification to the returning set might cause breakage.
      */
-    <T> Set<BlockPos> getLinkedInventories(Capability<T> cap);
+    <T> Set<BlockPos> getLinkedInventories(@Nullable Capability<T> cap);
 
     /**
      * Connect a inventory located at position to the network.
@@ -74,6 +75,8 @@ public interface INetworkController {
     boolean removeCommandGraph(CommandGraph graph);
 
     void removeAllCommandGraphs();
+
+    boolean isGraphValid(CommandGraph graph);
 
     /**
      * Sync command graph data.

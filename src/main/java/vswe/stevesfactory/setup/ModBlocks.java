@@ -11,10 +11,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ObjectHolder;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.blocks.CableBlock;
-import vswe.stevesfactory.blocks.CableTileEntity;
-import vswe.stevesfactory.blocks.FactoryManagerBlock;
-import vswe.stevesfactory.blocks.FactoryManagerTileEntity;
+import vswe.stevesfactory.blocks.*;
 import vswe.stevesfactory.setup.builder.BlockBuilder;
 
 import java.util.ArrayList;
@@ -40,6 +37,17 @@ public final class ModBlocks {
     @ObjectHolder("sfm:cable")
     public static TileEntityType<CableTileEntity> cableTileEntity;
 
+    @ObjectHolder("sfm:redstone_emitter")
+    public static RedstoneEmitterBlock redstoneEmitterBlock;
+    @ObjectHolder("sfm:redstone_emitter")
+    public static TileEntityType<RedstoneEmitterTileEntity> redstoneEmitterTileEntity;
+
+    @ObjectHolder("sfm:redstone_input")
+    public static RedstoneInputBlock redstoneInputBlock;
+    @ObjectHolder("sfm:redstone_input")
+    public static TileEntityType<RedstoneInputTileEntity> redstoneInputTileEntity;
+
+
     public static void init() {
         pendingBlocks.add(new BlockBuilder<FactoryManagerTileEntity>("factory_manager")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(4F, 10F))
@@ -53,6 +61,20 @@ public final class ModBlocks {
                 .constructor(CableBlock::new)
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(CableTileEntity::new, block))
+                .noRenderer());
+
+        pendingBlocks.add(new BlockBuilder<RedstoneEmitterTileEntity>("redstone_emitter")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
+                .constructor(RedstoneEmitterBlock::new)
+                .item(defaultItemProperties())
+                .tileEntity(block -> TileEntityType.Builder.create(RedstoneEmitterTileEntity::new, block))
+                .noRenderer());
+
+        pendingBlocks.add(new BlockBuilder<RedstoneInputTileEntity>("redstone_input")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
+                .constructor(RedstoneInputBlock::new)
+                .item(defaultItemProperties())
+                .tileEntity(block -> TileEntityType.Builder.create(RedstoneInputTileEntity::new, block))
                 .noRenderer());
     }
 

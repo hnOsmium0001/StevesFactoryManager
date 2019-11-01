@@ -1,6 +1,7 @@
 {
   "files": [
-    "item_io.json",
+    "item_interaction.json",
+    "redstone_interaction.json",
     "trigger.json"
   ]
 }

@@ -4,6 +4,7 @@ import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
@@ -25,6 +26,9 @@ public class SingularComponentChoice extends AbstractWidget implements IComponen
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         renderBackground(mouseX, mouseY);
         RenderingHelper.drawCompleteTexture(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), getIcon());
+        if (isInside(mouseX, mouseY)) {
+            WidgetScreen.getCurrentScreen().setHoveringText(type.getLocalizedName(), mouseX, mouseY);
+        }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 

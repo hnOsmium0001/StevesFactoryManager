@@ -4,10 +4,7 @@ import com.google.common.base.Preconditions;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.nbt.StringNBT;
+import net.minecraft.nbt.*;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
@@ -17,9 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import vswe.stevesfactory.logic.item.IItemFilter;
 import vswe.stevesfactory.logic.item.IItemFilter.ItemFilters;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
@@ -147,5 +142,20 @@ public final class IOHelper {
             res.add(Direction.byIndex(index));
         }
         return res;
+    }
+
+    public static <T extends Collection<Direction>> T index2Direction(int[] indices, IntFunction<T> factory) {
+        T collection = factory.apply(indices.length);
+        for (int index : indices) {
+            collection.add(Direction.byIndex(index));
+        }
+        return collection;
+    }
+
+    public static <T extends Collection<Direction>> T index2DirectionFill(int[] indices, T collection) {
+        for (int index : indices) {
+            collection.add(Direction.byIndex(index));
+        }
+        return collection;
     }
 }

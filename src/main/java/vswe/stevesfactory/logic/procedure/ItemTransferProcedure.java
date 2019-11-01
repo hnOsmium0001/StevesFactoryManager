@@ -29,9 +29,9 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     public static final int FILTER = 0;
 
     private List<BlockPos> sourceInventories = new ArrayList<>();
-    private List<Direction> sourceDirections = new ArrayList<>();
+    private Set<Direction> sourceDirections = EnumSet.noneOf(Direction.class);
     private List<BlockPos> destinationInventories = new ArrayList<>();
-    private List<Direction> destinationDirections = new ArrayList<>();
+    private Set<Direction> destinationDirections = EnumSet.noneOf(Direction.class);
     private IItemFilter filter = new ItemTraitsFilter();
 
     public ItemTransferProcedure() {
@@ -112,8 +112,8 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     @OnlyIn(Dist.CLIENT)
     public FlowComponent<ItemTransferProcedure> createFlowComponent() {
         FlowComponent<ItemTransferProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Source"), I18n.format("error.sfm.ItemTransfer.NoSrcInv")));
-        f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Destination"), I18n.format("error.sfm.ItemTransfer.NoSrcTarget")));
+        f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Source"), I18n.format("error.sfm.ItemTransfer.NoSrcInv"), CapabilityItemHandler.ITEM_HANDLER_CAPABILITY));
+        f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Destination"), I18n.format("error.sfm.ItemTransfer.NoSrcTarget"), CapabilityItemHandler.ITEM_HANDLER_CAPABILITY));
         f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Source"), I18n.format("error.sfm.ItemTransfer.NoDestInv")));
         f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Destination"), I18n.format("error.sfm.ItemTransfer.NoDestTarget")));
         IItemFilterTarget.createFilterMenu(this, f, FILTER);
@@ -135,9 +135,9 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     public void deserialize(CompoundNBT tag) {
         super.deserialize(tag);
         sourceInventories = IOHelper.readBlockPoses(tag.getList("SourcePoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
-        sourceDirections = IOHelper.index2Direction(tag.getIntArray("SourceDirections"));
+        sourceDirections = IOHelper.index2DirectionFill(tag.getIntArray("SourceDirections"), EnumSet.noneOf(Direction.class));
         destinationInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
-        destinationDirections = IOHelper.index2Direction(tag.getIntArray("TargetDirections"));
+        destinationDirections = IOHelper.index2DirectionFill(tag.getIntArray("TargetDirections"), EnumSet.noneOf(Direction.class));
         filter = IOHelper.readItemFilter(tag.getCompound("Filter"));
     }
 
@@ -161,7 +161,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     }
 
     @Override
-    public List<Direction> getDirections(int id) {
+    public Set<Direction> getDirections(int id) {
         switch (id) {
             case SOURCE_INVENTORIES:
             default:

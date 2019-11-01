@@ -270,7 +270,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         try {
             tag = JsonToNBT.getTagFromJson(json);
         } catch (CommandSyntaxException e) {
-            Dialog.createDialog("gui.sfm.ContextMenu.Paste.Procedure.Fail").tryAddSelfToActiveGUI();
+            Dialog.createDialog("gui.sfm.ContextMenu.PasteProcedure.Fail").tryAddSelfToActiveGUI();
             return;
         }
 

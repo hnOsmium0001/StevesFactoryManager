@@ -47,9 +47,9 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
         blacklist = new RadioButton(filterTypeController);
         int y = HEADING_BOX.getPortionHeight() + 4;
         whitelist.setLocation(4, y);
-        whitelist.translateLabel("gui.sfm.whitelist");
+        whitelist.setLabel(I18n.format("gui.sfm.whitelist"));
         blacklist.setLocation(getWidth() / 2, y);
-        blacklist.translateLabel("gui.sfm.blacklist");
+        blacklist.setLabel(I18n.format("gui.sfm.blacklist"));
 
         int contentY = whitelist.getYBottom() + 4;
 

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CR",
+    "RR"
+  ],
+  "key": {
+    "C": {
+      "item": "sfm:cable"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
+  "result": {
+    "item": "sfm:redstone_emitter"
+  }
+}

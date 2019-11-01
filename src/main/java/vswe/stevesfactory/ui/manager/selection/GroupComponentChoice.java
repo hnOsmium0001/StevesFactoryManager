@@ -1,6 +1,7 @@
 package vswe.stevesfactory.ui.manager.selection;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.library.gui.RenderingHelper;
@@ -28,6 +29,9 @@ public class GroupComponentChoice extends AbstractWidget implements IComponentCh
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         renderBackground(mouseX, mouseY);
         RenderingHelper.drawCompleteTexture(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), getIcon());
+        if (isInside(mouseX, mouseY)) {
+            WidgetScreen.getCurrentScreen().setHoveringText(I18n.format(group.getTranslationKey()), mouseX, mouseY);
+        }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
