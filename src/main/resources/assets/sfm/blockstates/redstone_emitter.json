@@ -1,10 +1,6 @@
 {
   "variants": {
-    "type=weak": {
-      "model": "sfm:block/redstone_emitter_weak"
-    },
-    "type=strong": {
-      "model": "sfm:block/redstone_emitter_strong"
-    }
+    "type=weak": { "model": "sfm:block/redstone_emitter_weak" },
+    "type=strong": { "model": "sfm:block/redstone_emitter_strong" }
   }
 }

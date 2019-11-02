@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down": { "model": "sfm:block/instant_item_intake", "x": 90 },
+    "facing=up": { "model": "sfm:block/instant_item_intake", "x": 270 },
+    "facing=north": { "model": "sfm:block/instant_item_intake" },
+    "facing=south": { "model": "sfm:block/instant_item_intake", "y": 180 },
+    "facing=west": { "model": "sfm:block/instant_item_intake", "y": 270 },
+    "facing=east": { "model": "sfm:block/instant_item_intake", "y": 90 }
+  }
+}

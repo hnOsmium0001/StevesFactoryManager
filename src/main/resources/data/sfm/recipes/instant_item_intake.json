@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "sfm:cable"
+      "item": "sfm:item_intake"
     },
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "forge:ingots/gold"
     }
   ],
   "result": {
-    "item": "sfm:redstone_input"
+    "item": "sfm:instant_item_intake"
   }
 }

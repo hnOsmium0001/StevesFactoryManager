@@ -5,16 +5,16 @@
       "item": "sfm:cable"
     },
     {
-      "tag": "forge:dusts/redstone"
+      "item": "minecraft:hopper"
     },
     {
-      "tag": "forge:dusts/redstone"
+      "item": "minecraft:hopper"
     },
     {
-      "tag": "forge:dusts/redstone"
+      "item": "minecraft:dropper"
     }
   ],
   "result": {
-    "item": "sfm:redstone_emitter"
+    "item": "sfm:item_intake"
   }
 }

@@ -47,6 +47,16 @@ public final class ModBlocks {
     @ObjectHolder("sfm:redstone_input")
     public static TileEntityType<RedstoneInputTileEntity> redstoneInputTileEntity;
 
+    @ObjectHolder("sfm:item_intake")
+    public static ItemIntakeBlock itemIntakeBlock;
+    @ObjectHolder("sfm:item_intake")
+    public static TileEntityType<ItemIntakeTileEntity> itemIntakeTileEntity;
+
+    @ObjectHolder("sfm:instant_item_intake")
+    public static ItemIntakeBlock instantItemIntakeBlock;
+    @ObjectHolder("sfm:instant_item_intake")
+    public static TileEntityType<ItemIntakeTileEntity> instantItemIntakeTileEntity;
+
 
     public static void init() {
         pendingBlocks.add(new BlockBuilder<FactoryManagerTileEntity>("factory_manager")
@@ -75,6 +85,20 @@ public final class ModBlocks {
                 .constructor(RedstoneInputBlock::new)
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(RedstoneInputTileEntity::new, block))
+                .noRenderer());
+
+        pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("item_intake")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
+                .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::regular, props))
+                .item(defaultItemProperties())
+                .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::regular, block))
+                .noRenderer());
+
+        pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("instant_item_intake")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
+                .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::instant, props))
+                .item(defaultItemProperties())
+                .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::instant, block))
                 .noRenderer());
     }
 

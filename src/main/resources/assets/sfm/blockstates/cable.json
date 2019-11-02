@@ -1,7 +1,5 @@
 {
   "variants": {
-    "": {
-      "model": "sfm:block/cable"
-    }
+    "": { "model": "sfm:block/cable" }
   }
 }
