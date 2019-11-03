@@ -131,6 +131,6 @@
   "error.sfm.CraftingProcedure.NoRecipe": "缺少合成表",
   "error.sfm.TraitsFilter.WhitelistEmpty": "无效过滤器：白名单并且设置为空",
   "error.sfm.TagsFilter.WhitelistEmpty": "无效过滤器：白名单并且设置为空",
-  "error.sfm.RedstoneTrigger.NoWatches": "No redstone receivers specified",
-  "error.sfm.RedstoneEmitter.NoEmitters": "No redstone emitters specified"
+  "error.sfm.RedstoneTrigger.NoWatches": "未指定红石信号接收器",
+  "error.sfm.RedstoneEmitter.NoEmitters": "未指定红石信号发射器"
 }
