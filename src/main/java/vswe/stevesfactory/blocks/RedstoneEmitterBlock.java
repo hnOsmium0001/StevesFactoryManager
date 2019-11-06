@@ -7,12 +7,13 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.*;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import vswe.stevesfactory.api.capability.CapabilityRedstone;
 import vswe.stevesfactory.api.capability.IRedstoneHandler;
 
-public class RedstoneEmitterBlock extends BaseBlock {
+public class RedstoneEmitterBlock extends Block {
 
     public static final EnumProperty<IRedstoneHandler.Type> TYPE_PROPERTY = EnumProperty.create("type", IRedstoneHandler.Type.class);
 

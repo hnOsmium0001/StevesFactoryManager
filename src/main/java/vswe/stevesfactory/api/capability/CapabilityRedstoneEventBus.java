@@ -10,28 +10,28 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public final class CapabilitySignalReactor {
+public final class CapabilityRedstoneEventBus {
 
-    private CapabilitySignalReactor() {
+    private CapabilityRedstoneEventBus() {
     }
 
-    @CapabilityInject(ISignalReactor.class)
-    public static Capability<ISignalReactor> SIGNAL_REACTOR_CAPABILITY;
+    @CapabilityInject(IRedstoneEventBus.class)
+    public static Capability<IRedstoneEventBus> REDSTONE_EVENT_BUS_CAPABILITY;
 
     public static void register() {
-        CapabilityManager.INSTANCE.register(ISignalReactor.class, new Capability.IStorage<ISignalReactor>() {
+        CapabilityManager.INSTANCE.register(IRedstoneEventBus.class, new Capability.IStorage<IRedstoneEventBus>() {
             @Override
-            public INBT writeNBT(Capability<ISignalReactor> capability, ISignalReactor instance, Direction side) {
+            public INBT writeNBT(Capability<IRedstoneEventBus> capability, IRedstoneEventBus instance, Direction side) {
                 return new CompoundNBT();
             }
 
             @Override
-            public void readNBT(Capability<ISignalReactor> capability, ISignalReactor instance, Direction side, INBT nbt) {
+            public void readNBT(Capability<IRedstoneEventBus> capability, IRedstoneEventBus instance, Direction side, INBT nbt) {
             }
-        }, DummySignalReactor::new);
+        }, DummyRedstoneEventBus::new);
     }
 
-    static class DummySignalReactor implements ISignalReactor {
+    static class DummyRedstoneEventBus implements IRedstoneEventBus {
 
         @Override
         public boolean hasSignal() {

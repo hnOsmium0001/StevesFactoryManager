@@ -9,7 +9,6 @@ import net.minecraft.world.IWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.*;
@@ -55,36 +54,34 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
             }
 
             for (Direction direction : directions) {
-                LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
-                if (cap.isPresent()) {
-                    IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    context.forEachItemBuffer((item, buffer) -> {
-                        ItemStack bufferedStack = buffer.getStack();
-                        if (!filter.test(bufferedStack)) {
-                            return;
-                        }
-                        if (bufferedStack.isEmpty()) {
-                            return;
-                        }
+                tile
+                        .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction)
+                        .ifPresent(handler -> context.forEachItemBuffer((item, buffer) -> {
+                            ItemStack bufferedStack = buffer.getStack();
+                            if (!filter.test(bufferedStack)) {
+                                return;
+                            }
+                            if (bufferedStack.isEmpty()) {
+                                return;
+                            }
 
-                        // Simulate limit input stack size
-                        int sourceCount = bufferedStack.getCount();
-                        int need = Math.min(calculateNeededAmount(handler, bufferedStack), sourceCount);
-                        if (need == 0) {
-                            return;
-                        }
-                        bufferedStack.setCount(need);
+                            // Simulate limit input stack size
+                            int sourceCount = bufferedStack.getCount();
+                            int need = Math.min(calculateNeededAmount(handler, bufferedStack), sourceCount);
+                            if (need == 0) {
+                                return;
+                            }
+                            bufferedStack.setCount(need);
 
-                        ItemStack untaken = ItemHandlerHelper.insertItem(handler, bufferedStack, false);
-                        int takenCount = need - untaken.getCount();
-                        int untakenCount = sourceCount - takenCount;
+                            ItemStack untaken = ItemHandlerHelper.insertItem(handler, bufferedStack, false);
+                            int takenCount = need - untaken.getCount();
+                            int untakenCount = sourceCount - takenCount;
 
-                        buffer.use(takenCount);
-                        // Reuse stack object
-                        untaken.setCount(untakenCount);
-                        buffer.setStack(untaken);
-                    });
-                }
+                            buffer.use(takenCount);
+                            // Reuse stack object
+                            untaken.setCount(untakenCount);
+                            buffer.setStack(untaken);
+                        }));
             }
         }
     }

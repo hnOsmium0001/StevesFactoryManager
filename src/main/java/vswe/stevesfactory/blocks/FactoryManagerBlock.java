@@ -1,5 +1,6 @@
 package vswe.stevesfactory.blocks;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -11,9 +12,7 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
-import javax.annotation.Nullable;
-
-public class FactoryManagerBlock extends BaseBlock {
+public class FactoryManagerBlock extends Block {
 
     public FactoryManagerBlock(Properties properties) {
         super(properties);
@@ -47,7 +46,6 @@ public class FactoryManagerBlock extends BaseBlock {
         return true;
     }
 
-    @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new FactoryManagerTileEntity();

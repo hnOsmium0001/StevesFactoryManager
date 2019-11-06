@@ -7,7 +7,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import vswe.stevesfactory.api.capability.CapabilitySignalReactor;
+import vswe.stevesfactory.api.capability.CapabilityRedstoneEventBus;
 import vswe.stevesfactory.api.capability.SignalStatus;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -55,7 +55,8 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
                 World world = getController().getControllerWorld();
                 TileEntity tile = world.getTileEntity(watching);
                 if (tile != null) {
-                    tile.getCapability(CapabilitySignalReactor.SIGNAL_REACTOR_CAPABILITY)
+                    tile
+                            .getCapability(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY)
                             .ifPresent(cap -> cap.subscribeEvent(status -> {
                                 // If this procedure is invalid, which means it was removed from the controller, remove the event handler
                                 if (!this.isValid()) {
@@ -97,7 +98,7 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
     @Override
     public FlowComponent<RedstoneTriggerProcedure> createFlowComponent() {
         FlowComponent<RedstoneTriggerProcedure> f = FlowComponent.of(this, 0, 2);
-        f.addMenu(new InventorySelectionMenu<>(INVENTORIES, I18n.format("gui.sfm.Menu.RedstoneTrigger.Watches"), I18n.format("error.sfm.RedstoneTrigger.NoWatches"), CapabilitySignalReactor.SIGNAL_REACTOR_CAPABILITY));
+        f.addMenu(new InventorySelectionMenu<>(INVENTORIES, I18n.format("gui.sfm.Menu.RedstoneTrigger.Watches"), I18n.format("error.sfm.RedstoneTrigger.NoWatches"), CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY));
         f.addMenu(new RedstoneSidesMenu<>(DIRECTIONS,
                 () -> conjunction == Type.ANY, () -> conjunction = Type.ANY, I18n.format("gui.sfm.Menu.IfAny"),
                 () -> conjunction == Type.ALL, () -> conjunction = Type.ALL, I18n.format("gui.sfm.Menu.RequireAll"),

@@ -37,8 +37,10 @@ public class ProductSlot extends ConfigurationSlot<IWidget> {
     public ItemStack evalCraftResult() {
         ClientWorld world = Minecraft.getInstance().world;
         CraftingInventory inventory = getRecipeHandler().getInventory();
-        Optional<ICraftingRecipe> recipe = world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, inventory, world);
-        return stack = recipe.map(r -> r.getCraftingResult(inventory)).orElse(ItemStack.EMPTY);
+        return stack = world.getRecipeManager()
+                .getRecipe(IRecipeType.CRAFTING, inventory, world)
+                .map(r -> r.getCraftingResult(inventory))
+                .orElse(ItemStack.EMPTY);
     }
 
     public ItemStack getCraftResult() {

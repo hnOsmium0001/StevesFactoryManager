@@ -1,6 +1,7 @@
 package vswe.stevesfactory.blocks;
 
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
@@ -16,7 +17,7 @@ import vswe.stevesfactory.utils.NetworkHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class RedstoneEmitterTileEntity extends BaseTileEntity implements ICable {
+public class RedstoneEmitterTileEntity extends TileEntity implements ICable {
 
     private LazyOptional<RedstoneSignalHandler> redstoneDown = LazyOptional.of(this::createSignalHandler);
     private LazyOptional<RedstoneSignalHandler> redstoneUp = LazyOptional.of(this::createSignalHandler);
@@ -31,9 +32,7 @@ public class RedstoneEmitterTileEntity extends BaseTileEntity implements ICable 
 
     private RedstoneSignalHandler createSignalHandler() {
         assert world != null;
-        return new RedstoneSignalHandler(() -> {
-            world.notifyNeighbors(pos, ModBlocks.redstoneEmitterBlock);
-        });
+        return new RedstoneSignalHandler(() -> world.notifyNeighbors(pos, ModBlocks.redstoneEmitterBlock));
     }
 
     @Nonnull

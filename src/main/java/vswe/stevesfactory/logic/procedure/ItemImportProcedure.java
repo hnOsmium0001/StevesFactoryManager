@@ -9,9 +9,7 @@ import net.minecraft.world.IWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
@@ -56,20 +54,20 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
             }
 
             for (Direction direction : directions) {
-                LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
-                if (cap.isPresent()) {
-                    IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    filter.extractFromInventory((stack, slot) -> {
-                        // If this stack is used to create the buffer, the stack count will be reset and we will lose necessary information
-                        int count = stack.getCount();
-                        DirectBufferElement element = buffers.computeIfAbsent(stack.getItem(), key -> {
-                            stack.setCount(0);
-                            return new DirectBufferElement(stack);
+                tile
+                        .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction)
+                        .ifPresent(handler -> {
+                            filter.extractFromInventory((stack, slot) -> {
+                                // If this stack is used to create the buffer, the stack count will be reset and we will lose necessary information
+                                int count = stack.getCount();
+                                DirectBufferElement element = buffers.computeIfAbsent(stack.getItem(), key -> {
+                                    stack.setCount(0);
+                                    return new DirectBufferElement(stack);
+                                });
+                                element.stack.grow(count);
+                                element.addInventory(handler, slot);
+                            }, handler);
                         });
-                        element.stack.grow(count);
-                        element.addInventory(handler, slot);
-                    }, handler);
-                }
             }
         }
     }

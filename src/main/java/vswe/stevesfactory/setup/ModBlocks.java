@@ -57,7 +57,6 @@ public final class ModBlocks {
     @ObjectHolder("sfm:instant_item_intake")
     public static TileEntityType<ItemIntakeTileEntity> instantItemIntakeTileEntity;
 
-
     public static void init() {
         pendingBlocks.add(new BlockBuilder<FactoryManagerTileEntity>("factory_manager")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(4F, 10F))

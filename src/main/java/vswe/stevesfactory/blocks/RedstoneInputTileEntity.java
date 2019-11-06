@@ -1,6 +1,7 @@
 package vswe.stevesfactory.blocks;
 
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
@@ -19,11 +20,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class RedstoneInputTileEntity extends BaseTileEntity implements ICable, ISignalReactor {
+public class RedstoneInputTileEntity extends TileEntity implements ICable, IRedstoneEventBus {
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") // the .removeIf() call has side effects of triggering the event handlesr
     private List<Predicate<SignalStatus>> eventHandlers = new ArrayList<>();
-    private LazyOptional<ISignalReactor> signalReactor = LazyOptional.of(() -> this);
+    private LazyOptional<IRedstoneEventBus> signalReactor = LazyOptional.of(() -> this);
 
     private SignalStatus lastSignalState = new SignalStatus();
 
@@ -34,7 +35,7 @@ public class RedstoneInputTileEntity extends BaseTileEntity implements ICable, I
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilitySignalReactor.SIGNAL_REACTOR_CAPABILITY) {
+        if (cap == CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY) {
             return signalReactor.cast();
         }
         return super.getCapability(cap, side);

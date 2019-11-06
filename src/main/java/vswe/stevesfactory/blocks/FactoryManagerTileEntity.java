@@ -20,7 +20,6 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.Config;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -32,7 +31,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class FactoryManagerTileEntity extends BaseTileEntity implements ITickableTileEntity, INetworkController, ICable {
+public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INetworkController, ICable {
 
     private Set<BlockPos> connectedCables = new HashSet<>();
     private Map<Capability<?>, Multiset<BlockPos>> linkedInventories = new IdentityHashMap<>();

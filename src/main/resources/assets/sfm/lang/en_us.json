@@ -11,6 +11,9 @@
   "message.sfm.reload.componentGroups.success": "Successfully reloaded component groups",
   "message.sfm.settings.query": "Entry %s is currently set to %s",
   "message.sfm.settings.set": "Entry %s is now set to %s",
+  "message.sfm.ItemIntake.CycleMode": "Item intake is now set to {0}",
+  "message.sfm.ItemIntake.Mode.Front": "front",
+  "message.sfm.ItemIntake.Mode.Centered": "centered",
 
   "logic.sfm.interval_trigger": "Interval Trigger",
   "logic.sfm.redstone_trigger": "Redstone Trigger",
@@ -24,9 +27,9 @@
 
   "component_group.sfm.Trigger": "Trigger",
   "component_group.sfm.ItemInteraction": "Item Interactions",
-  "component_group.sfm.FluidInteraction": "Item Interactions",
+  "component_group.sfm.FluidInteraction": "Fluid Interactions",
   "component_group.sfm.RedstoneInteraction": "Redstone Interactions",
-  "component_group.sfm.Conditions": "Item Interactions",
+  "component_group.sfm.FlowControl": "Flow Control",
 
   "gui.sfm.seconds": "second(s)",
   "gui.sfm.ticks": "ticks",

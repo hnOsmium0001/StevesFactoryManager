@@ -4,9 +4,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.*;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
 
-public class RedstoneInputBlock extends BaseBlock {
+public class RedstoneInputBlock extends Block {
 
     public RedstoneInputBlock(Properties properties) {
         super(properties);

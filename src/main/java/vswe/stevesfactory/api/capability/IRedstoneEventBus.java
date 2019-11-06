@@ -3,7 +3,7 @@ package vswe.stevesfactory.api.capability;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public interface ISignalReactor {
+public interface IRedstoneEventBus {
 
     boolean hasSignal();
 
