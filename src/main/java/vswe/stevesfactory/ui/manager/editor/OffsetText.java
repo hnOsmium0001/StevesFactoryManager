@@ -64,11 +64,11 @@ class OffsetText extends AbstractWidget implements LeafWidgetMixin {
             if (Screen.hasControlDown()) {
                 set(0);
             } else {
-                Dialog.createPrompt("gui.sfm.Editor.EditOffset", (b, s) -> {
+                Dialog.createPrompt("gui.sfm.FactoryManager.Editor.EditOffset", (b, s) -> {
                     try {
                         set(Integer.parseInt(s));
                     } catch (NumberFormatException e) {
-                        Dialog.createDialog("gui.sfm.Editor.InvalidNumberFormat").tryAddSelfToActiveGUI();
+                        Dialog.createDialog("gui.sfm.FactoryManager.Editor.InvalidNumberFormat").tryAddSelfToActiveGUI();
                     }
                 }).tryAddSelfToActiveGUI();
             }

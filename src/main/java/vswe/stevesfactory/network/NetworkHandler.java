@@ -23,14 +23,15 @@ public final class NetworkHandler {
 
     public static void register() {
         // Both
-        registerMessage(PacketSyncCommandGraphs.class, PacketSyncCommandGraphs::encode, PacketSyncCommandGraphs::decode, PacketSyncCommandGraphs::handle);
 
         // Client to server
+        registerMessage(PacketSyncCommandGraphs.class, PacketSyncCommandGraphs::encode, PacketSyncCommandGraphs::decode, PacketSyncCommandGraphs::handle);
+        registerMessage(PacketSyncIntakeData.class, PacketSyncIntakeData::encode, PacketSyncIntakeData::decode, PacketSyncIntakeData::handle);
 
         // Server to client
-        registerMessage(PacketOpenManagerGUI.class, PacketOpenManagerGUI::encode, PacketOpenManagerGUI::decode, PacketOpenManagerGUI::handle);
+        registerMessage(PacketOpenGUI.class, PacketOpenGUI::encode, PacketOpenGUI::decode, PacketOpenGUI::handle);
         registerMessage(PacketReloadComponentGroups.class, PacketReloadComponentGroups::encode, PacketReloadComponentGroups::decode, PacketReloadComponentGroups::handle);
-        registerMessage(PacketInspectionsSetting.class, PacketInspectionsSetting::encode, PacketInspectionsSetting::decode, PacketInspectionsSetting::handle);
+        registerMessage(PacketSettings.class, PacketSettings::encode, PacketSettings::decode, PacketSettings::handle);
     }
 
     public static void sendTo(ServerPlayerEntity player, Object msg) {

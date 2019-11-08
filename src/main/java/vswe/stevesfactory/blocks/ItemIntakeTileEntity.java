@@ -1,80 +1,162 @@
 package vswe.stevesfactory.blocks;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.*;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import vswe.stevesfactory.Config;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
+import vswe.stevesfactory.render.IWorkingAreaProvider;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-public class ItemIntakeTileEntity extends TileEntity implements ITickableTileEntity, ICable {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 
-    public enum Mode {
-        FRONT("message.sfm.ItemIntake.Mode.Front"),
-        CENTERED("message.sfm.ItemIntake.Mode.Centered");
+public abstract class ItemIntakeTileEntity extends TileEntity implements ITickableTileEntity, ICable, IWorkingAreaProvider {
 
-        public final String nameKey;
+    public enum Mode implements IStringSerializable {
+        FRONT("front", "message.sfm.ItemIntake.CycleMode.Front"),
+        CENTERED("centered", "message.sfm.ItemIntake.CycleMode.Centered");
 
-        Mode(String nameKey) {
-            this.nameKey = nameKey;
+        public final String name;
+        public final String statusTranslationKey;
+
+        Mode(String name, String statusTranslationKey) {
+            this.name = name;
+            this.statusTranslationKey = statusTranslationKey;
+        }
+
+        @Override
+        public String getName() {
+            return name;
         }
 
         public static final Mode[] VALUES = values();
     }
 
     public static ItemIntakeTileEntity regular() {
-        return new ItemIntakeTileEntity(ModBlocks.itemIntakeTileEntity,
-                Config.COMMON.isItemIntakeBlockCables,
-                Config.COMMON.regularPickupInterval,
-                Config.COMMON.regularMaxPickupDistance);
+        return new ItemIntakeTileEntity(ModBlocks.itemIntakeTileEntity) {
+            @Override
+            public boolean isCable() {
+                return Config.COMMON.isItemIntakeBlockCables.get();
+            }
+
+            @Override
+            public int getMaximumRadius() {
+                return Config.COMMON.regularMaxRadius.get();
+            }
+
+            @Override
+            protected int getPickupInterval() {
+                return Config.COMMON.regularPickupInterval.get();
+            }
+        };
     }
 
     public static ItemIntakeTileEntity instant() {
-        return new ItemIntakeTileEntity(ModBlocks.instantItemIntakeTileEntity,
-                Config.COMMON.isInstantItemIntakeBlockCables,
-                Config.COMMON.instantPickupInterval,
-                Config.COMMON.instantMaxPickupDistance);
+        return new ItemIntakeTileEntity(ModBlocks.instantItemIntakeTileEntity) {
+            @Override
+            public boolean isCable() {
+                return Config.COMMON.isInstantItemIntakeBlockCables.get();
+            }
+
+            @Override
+            public int getMaximumRadius() {
+                return Config.COMMON.instantMaxRadius.get();
+            }
+
+            @Override
+            protected int getPickupInterval() {
+                return Config.COMMON.instantPickupInterval.get();
+            }
+        };
     }
 
-    private final ForgeConfigSpec.BooleanValue isCable;
-    private final ForgeConfigSpec.IntValue pickupInterval;
-    private final ForgeConfigSpec.IntValue maxPickupDistance;
+    private static final int STATE_READY = 0;
+    private static final int STATE_RELOAD = -1;
 
+    // Capabilities
+    private LazyOptional<ItemStackHandler> invCap = LazyOptional.of(() -> new ItemStackHandler(5));
+
+    // Data
     private Mode mode = Mode.FRONT;
+    private int radius = 0;
+    private boolean rendering = false;
 
+    // Tile entity/world state
+    private AxisAlignedBB pickupBox = new AxisAlignedBB(BlockPos.ZERO);
     private int ticks;
 
-    private ItemIntakeTileEntity(TileEntityType<?> tileEntityTypeIn, ForgeConfigSpec.BooleanValue isCable, ForgeConfigSpec.IntValue pickupInterval, ForgeConfigSpec.IntValue maxPickupDistance) {
+    private ItemIntakeTileEntity(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
-        this.isCable = isCable;
-        this.pickupInterval = pickupInterval;
-        this.maxPickupDistance = maxPickupDistance;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        ticks = 0;
+        ticks = STATE_RELOAD;
     }
 
     @Override
     public void tick() {
         assert world != null;
         if (world.isRemote) {
-            if (ticks == 0) {
+            if (ticks == STATE_RELOAD) {
+                reload();
+                return;
+            }
+            if (ticks == STATE_READY) {
                 collectItems();
-                ticks = pickupInterval.get();
+                ticks = getPickupInterval();
             } else {
                 ticks--;
             }
         }
     }
 
+    private void reload() {
+        setMode(mode);
+        setRadius(radius);
+        setRendering(rendering);
+    }
+
     private void collectItems() {
-        // TODO
+        List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, pickupBox);
+        for (ItemEntity item : items) {
+            ItemStack stack = item.getItem();
+            item.remove();
+        }
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public abstract int getMaximumRadius();
+
+    public void setRadius(int radius) {
+        this.radius = MathHelper.clamp(radius, 0, getMaximumRadius());
+        BlockState state = getBlockState();
+        BlockPos origin = mode == Mode.CENTERED
+                ? pos
+                : pos.offset(state.get(BlockStateProperties.FACING), this.radius + 1);
+        this.pickupBox = new AxisAlignedBB(origin).grow(this.radius);
     }
 
     public Mode getMode() {
@@ -82,22 +164,36 @@ public class ItemIntakeTileEntity extends TileEntity implements ITickableTileEnt
     }
 
     public void setMode(Mode mode) {
+        assert world != null;
         this.mode = mode;
+        world.setBlockState(pos, getBlockState().with(ItemIntakeBlock.MODE_PROPERTY, mode));
     }
 
     public void cycleMode() {
         int next = mode.ordinal() + 1;
-        mode = next >= Mode.VALUES.length ? Mode.VALUES[0] : Mode.VALUES[next];
+        int max = Mode.VALUES.length;
+        setMode(Mode.VALUES[next >= max ? 0 : next]);
+    }
+
+    protected abstract int getPickupInterval();
+
+    @Override
+    public AxisAlignedBB getWorkingArea() {
+        return pickupBox;
+    }
+
+    @Override
+    public boolean isRendering() {
+        return rendering;
+    }
+
+    public void setRendering(boolean rendering) {
+        this.rendering = rendering;
     }
 
     @Override
     public BlockPos getPosition() {
         return pos;
-    }
-
-    @Override
-    public boolean isCable() {
-        return isCable.get();
     }
 
     @Override
@@ -108,12 +204,28 @@ public class ItemIntakeTileEntity extends TileEntity implements ITickableTileEnt
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
-        tag.putInt("Mode", mode.ordinal());
+        // Just retrieve data, update world state when chunk is loaded, in #tick()
+        mode = Mode.VALUES[tag.getInt("Mode")];
+        radius = tag.getInt("Radius");
+        rendering = tag.getBoolean("Rendering");
+        invCap.ifPresent(inv -> inv.deserializeNBT(tag.getCompound("Inventory")));
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
-        mode = Mode.VALUES[tag.getInt("Mode")];
+        tag.putInt("Mode", mode.ordinal());
+        tag.putInt("Radius", radius);
+        tag.putBoolean("Rendering", rendering);
+        invCap.map(ItemStackHandler::serializeNBT).ifPresent(data -> tag.put("Inventory", data));
         return super.write(tag);
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return invCap.cast();
+        }
+        return super.getCapability(cap, side);
     }
 }

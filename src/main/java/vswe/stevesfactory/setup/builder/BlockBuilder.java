@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class BlockBuilder<T extends TileEntity> {
 
@@ -40,7 +41,7 @@ public final class BlockBuilder<T extends TileEntity> {
 
     // TileEntityRenderer construction
     private Class<T> tileClass = null;
-    private TileEntityRenderer<T> tileEntityRenderer = null;
+    private Supplier<Supplier<TileEntityRenderer<T>>> rendererFactory = null;
 
     public BlockBuilder(String registryName) {
         this(new ResourceLocation(StevesFactoryManager.MODID, registryName));
@@ -90,15 +91,15 @@ public final class BlockBuilder<T extends TileEntity> {
         return this;
     }
 
-    public BlockBuilder<T> renderer(@Nonnull Class<T> tileClass, @Nonnull TileEntityRenderer<T> tileEntityRenderer) {
+    public BlockBuilder<T> renderer(@Nonnull Class<T> tileClass, @Nonnull Supplier<Supplier<TileEntityRenderer<T>>> rendererFactory) {
         this.tileClass = Objects.requireNonNull(tileClass);
-        this.tileEntityRenderer = Objects.requireNonNull(tileEntityRenderer);
+        this.rendererFactory = Objects.requireNonNull(rendererFactory);
         return this;
     }
 
     public BlockBuilder<T> noRenderer() {
         this.tileClass = null;
-        this.tileEntityRenderer = null;
+        this.rendererFactory = null;
         return this;
     }
 
@@ -132,7 +133,7 @@ public final class BlockBuilder<T extends TileEntity> {
     @SuppressWarnings("UnusedReturnValue")
     public boolean tryRegisterTileEntityRenderer() {
         if (hasTileEntityRenderer()) {
-            ClientRegistry.bindTileEntitySpecialRenderer(tileClass, tileEntityRenderer);
+            ClientRegistry.bindTileEntitySpecialRenderer(tileClass, rendererFactory.get().get());
             return true;
         }
         return false;
@@ -147,7 +148,7 @@ public final class BlockBuilder<T extends TileEntity> {
     }
 
     public boolean hasTileEntityRenderer() {
-        return tileClass != null && tileEntityRenderer != null;
+        return tileClass != null && rendererFactory != null;
     }
 
     public ResourceLocation getRegistryName() {

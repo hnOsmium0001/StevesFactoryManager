@@ -20,8 +20,8 @@ public final class Config {
         // Item intake options
         public final IntValue regularPickupInterval;
         public final IntValue instantPickupInterval;
-        public final IntValue regularMaxPickupDistance;
-        public final IntValue instantMaxPickupDistance;
+        public final IntValue regularMaxRadius;
+        public final IntValue instantMaxRadius;
 
         // Block property options
         public final BooleanValue isRedstoneInputBlockCables;
@@ -53,16 +53,16 @@ public final class Config {
             builder.comment("Item intake config options").push("itemIntake");
             regularPickupInterval = builder
                     .comment("Interval between each pickup attempt for regular item intake, in ticks")
-                    .defineInRange("pickupInterval", 20, 0, Integer.MAX_VALUE);
+                    .defineInRange("regularPickupInterval", 20, 0, Integer.MAX_VALUE);
             instantPickupInterval = builder
                     .comment("Interval between each pickup attempt for instant item intake, in ticks")
-                    .defineInRange("pickupInterval", 20, 0, Integer.MAX_VALUE);
-            regularMaxPickupDistance = builder
+                    .defineInRange("instantPickupInterval", 20, 0, Integer.MAX_VALUE);
+            regularMaxRadius = builder
                     .comment("Maximum pickup radius that an item take can have, for regular item intake")
-                    .defineInRange("maxPickupDistance", 3, 0, Integer.MAX_VALUE);
-            instantMaxPickupDistance = builder
+                    .defineInRange("regularMaxPickupDistance", 3, 0, Integer.MAX_VALUE);
+            instantMaxRadius = builder
                     .comment("Maximum pickup radius that an item take can have, for instant item intake")
-                    .defineInRange("maxPickupDistance", 3, 0, Integer.MAX_VALUE);
+                    .defineInRange("instantMaxPickupDistance", 3, 0, Integer.MAX_VALUE);
             builder.pop();
 
             builder.comment("Block property config options").push("blocks");
@@ -111,7 +111,7 @@ public final class Config {
                     .comment("How long one move wheel movement for scrolling lists")
                     .defineInRange("scrollSpeed", 20, 1, 256);
             enableInspections = builder
-                    .comment("Default value for InspectionBoxHighlighting (modifiable in-game via command /sfm settings, but does not persist)")
+                    .comment("Default value for InspectionBoxHighlighting", "Modifiable in-game via command /sfm settings, but does not persist through relaunches")
                     .define("enableInspections", false);
             builder.pop();
 

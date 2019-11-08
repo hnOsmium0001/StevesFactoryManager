@@ -1,9 +1,10 @@
-package vswe.stevesfactory.utils;
+package vswe.stevesfactory.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
@@ -13,7 +14,9 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import vswe.stevesfactory.StevesFactoryManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import static org.lwjgl.opengl.GL11.GL_LINES;
 import static org.lwjgl.opengl.GL11.glLineWidth;
@@ -43,6 +46,14 @@ public final class BlockHighlight {
     public BlockHighlight(BlockPos pos, long expireTime) {
         this.pos = pos;
         this.expireTime = expireTime;
+    }
+
+    public void render(float particleTicks) {
+        renderOutline(pos, particleTicks);
+    }
+
+    public boolean isExpired() {
+        return Minecraft.getInstance().world.getGameTime() > expireTime;
     }
 
     // #renderOutline, #renderOutlines, and #blockOutlineVertices are adapted from McJtyLib
@@ -75,31 +86,6 @@ public final class BlockHighlight {
 
         GlStateManager.enableTexture();
         GlStateManager.popMatrix();
-    }
-
-    public static void renderOutlines(ClientPlayerEntity p, Set<BlockPos> coordinates, int r, int g, int b, float partialTicks) {
-        double eyeHeight = p.getEyeHeight();
-        double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * partialTicks;
-        double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * partialTicks + eyeHeight;
-        double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * partialTicks;
-
-        RenderHelper.disableStandardItemLighting();
-        Minecraft.getInstance().gameRenderer.disableLightmap();
-        GlStateManager.disableDepthTest();
-        GlStateManager.disableTexture();
-        GlStateManager.disableLighting();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.depthMask(false);
-
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
-
-        renderOutlines(coordinates, r, g, b, 4);
-
-        GlStateManager.popMatrix();
-
-        Minecraft.getInstance().gameRenderer.enableLightmap();
-        GlStateManager.enableTexture();
     }
 
     /**
@@ -154,13 +140,5 @@ public final class BlockHighlight {
         buffer.pos(mx + 1, my, mz + 1).color(r, g, b, a).endVertex();
         buffer.pos(mx, my, mz + 1).color(r, g, b, a).endVertex();
         buffer.pos(mx, my + 1, mz + 1).color(r, g, b, a).endVertex();
-    }
-
-    public void render(float particleTicks) {
-        renderOutline(pos, particleTicks);
-    }
-
-    public boolean isExpired() {
-        return Minecraft.getInstance().world.getGameTime() > expireTime;
     }
 }

@@ -12,6 +12,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ObjectHolder;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.blocks.*;
+import vswe.stevesfactory.render.WorkingAreaRenderer;
 import vswe.stevesfactory.setup.builder.BlockBuilder;
 
 import java.util.ArrayList;
@@ -91,14 +92,14 @@ public final class ModBlocks {
                 .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::regular, props))
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::regular, block))
-                .noRenderer());
+                .renderer(ItemIntakeTileEntity.class, () -> () -> new WorkingAreaRenderer<>()));
 
         pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("instant_item_intake")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
                 .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::instant, props))
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::instant, block))
-                .noRenderer());
+                .renderer(ItemIntakeTileEntity.class, () -> () -> new WorkingAreaRenderer<>()));
     }
 
     @SubscribeEvent

@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.Config;
@@ -27,7 +26,6 @@ import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.List;
-import java.util.Objects;
 
 public class FactoryManagerGUI extends WidgetScreen {
 
@@ -58,11 +56,11 @@ public class FactoryManagerGUI extends WidgetScreen {
     public static final float WIDTH_PROPORTION = 2F / 3F;
     public static final float HEIGHT_PROPORTION = 3F / 4F;
 
-    public BlockPos controllerPos;
+    private INetworkController controller;
 
-    public FactoryManagerGUI(BlockPos controllerPos) {
-        super(new TranslationTextComponent("gui.sfm.factoryManager.title"));
-        this.controllerPos = controllerPos;
+    public FactoryManagerGUI(INetworkController controller) {
+        super(new TranslationTextComponent("gui.sfm.Title.FactoryManager"));
+        this.controller = controller;
     }
 
     @Override
@@ -73,19 +71,13 @@ public class FactoryManagerGUI extends WidgetScreen {
 
     @Override
     public void removed() {
-        super.removed();
-        sync();
-    }
-
-    private void sync() {
         getPrimaryWindow().topLevel.editorPanel.saveAll();
-
-        INetworkController controller = getController();
         controller.sync();
+        super.removed();
     }
 
     public INetworkController getController() {
-        return Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
+        return controller;
     }
 
     @Override

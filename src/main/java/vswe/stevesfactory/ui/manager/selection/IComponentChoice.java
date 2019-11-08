@@ -29,7 +29,7 @@ public interface IComponentChoice extends IWidget {
     }
 
     default void createFlowComponent(IProcedureType<?> type) {
-        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).controllerPos;
+        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).getController().getPosition();
         INetworkController controller = (INetworkController) Objects.requireNonNull(Minecraft.getInstance().world.getTileEntity(controllerPos));
 
         FlowComponent<?> flowComponent = NetworkHelper.fabricateInstance(type, controller).createFlowComponent();

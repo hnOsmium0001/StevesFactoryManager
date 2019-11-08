@@ -56,14 +56,14 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         super(WidthOccupierType.MAX_WIDTH);
         readProcedures();
 
-        xOffset = new OffsetText(I18n.format("gui.sfm.Editor.XOff"), 0, 0);
+        xOffset = new OffsetText(I18n.format("gui.sfm.FactoryManager.Editor.XOff"), 0, 0);
         xOffset.setParentWidget(this);
-        yOffset = new OffsetText(I18n.format("gui.sfm.Editor.YOff"), 0, 0);
+        yOffset = new OffsetText(I18n.format("gui.sfm.FactoryManager.Editor.YOff"), 0, 0);
         yOffset.setParentWidget(this);
     }
 
     public void readProcedures() {
-        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).controllerPos;
+        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).getController().getPosition();
         INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
 
         Map<IProcedure, FlowComponent<?>> m = new HashMap<>();

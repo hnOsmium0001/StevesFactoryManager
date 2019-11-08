@@ -15,16 +15,14 @@ import vswe.stevesfactory.library.gui.debug.Inspections;
 
 import java.util.function.Supplier;
 
-public final class PacketInspectionsSetting {
+public final class PacketSettings {
 
-    public static final String NAME = "inspectionsOverlay";
-
-    public static void query(ServerPlayerEntity client) {
-        NetworkHandler.sendTo(client, new PacketInspectionsSetting(Mode.QUERY, false));
+    public static void query(ServerPlayerEntity client, String name) {
+        NetworkHandler.sendTo(client, new PacketSettings(Mode.QUERY, name, false));
     }
 
-    public static void set(ServerPlayerEntity client, boolean value) {
-        NetworkHandler.sendTo(client, new PacketInspectionsSetting(Mode.SET, value));
+    public static void set(ServerPlayerEntity client, String name, boolean value) {
+        NetworkHandler.sendTo(client, new PacketSettings(Mode.SET, name, value));
     }
 
     public enum Mode {
@@ -33,43 +31,47 @@ public final class PacketInspectionsSetting {
         public static final Mode[] VALUES = values();
     }
 
-    public static void encode(PacketInspectionsSetting msg, PacketBuffer buf) {
+    public static void encode(PacketSettings msg, PacketBuffer buf) {
         buf.writeInt(msg.mode.ordinal());
+        buf.writeString(msg.name);
         buf.writeBoolean(msg.value);
     }
 
-    public static PacketInspectionsSetting decode(PacketBuffer buf) {
+    public static PacketSettings decode(PacketBuffer buf) {
         Mode mode = Mode.VALUES[buf.readInt()];
+        String name = buf.readString();
         boolean value = buf.readBoolean();
-        return new PacketInspectionsSetting(mode, value);
+        return new PacketSettings(mode, name, value);
     }
 
-    public static void handle(PacketInspectionsSetting msg, Supplier<NetworkEvent.Context> ctx) {
+    public static void handle(PacketSettings msg, Supplier<NetworkEvent.Context> ctx) {
         Preconditions.checkState(ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT);
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> handleClient(msg, ctx));
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static void handleClient(PacketInspectionsSetting msg, Supplier<NetworkEvent.Context> ctx) {
+    public static void handleClient(PacketSettings msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             switch (msg.mode) {
                 case QUERY:
-                    Minecraft.getInstance().player.sendMessage(new StringTextComponent(I18n.format("message.sfm.settings.query", NAME, Inspections.enabled)));
+                    Minecraft.getInstance().player.sendMessage(new StringTextComponent(I18n.format("message.sfm.settings.query", msg.name, Inspections.enabled)));
                     break;
                 case SET:
                     Inspections.enabled = msg.value;
-                    Minecraft.getInstance().player.sendMessage(new StringTextComponent(I18n.format("message.sfm.settings.set", NAME, Inspections.enabled)));
+                    Minecraft.getInstance().player.sendMessage(new StringTextComponent(I18n.format("message.sfm.settings.set", msg.name, Inspections.enabled)));
                     break;
             }
-            ctx.get().setPacketHandled(true);
         });
+        ctx.get().setPacketHandled(true);
     }
 
     private Mode mode;
+    private String name;
     private boolean value;
 
-    public PacketInspectionsSetting(Mode mode, boolean value) {
+    public PacketSettings(Mode mode, String name, boolean value) {
         this.mode = mode;
+        this.name = name;
         this.value = value;
     }
 }

@@ -11,9 +11,8 @@
   "message.sfm.reload.componentGroups.success": "Successfully reloaded component groups",
   "message.sfm.settings.query": "Entry %s is currently set to %s",
   "message.sfm.settings.set": "Entry %s is now set to %s",
-  "message.sfm.ItemIntake.CycleMode": "Item intake is now set to {0}",
-  "message.sfm.ItemIntake.Mode.Front": "front",
-  "message.sfm.ItemIntake.Mode.Centered": "centered",
+  "message.sfm.ItemIntake.CycleMode.Front": "Collection box is in front of the intake block",
+  "message.sfm.ItemIntake.CycleMode.Centered": "Collection box is centered at the intake block",
 
   "logic.sfm.interval_trigger": "Interval Trigger",
   "logic.sfm.redstone_trigger": "Redstone Trigger",
@@ -45,13 +44,17 @@
   "gui.sfm.cancel": "Cancel",
   "gui.sfm.yes": "Yes",
   "gui.sfm.no": "No",
-
   "gui.sfm.WrappingList.SearchStatus": "Found: %d",
-  "gui.sfm.Editor.XOff": "X: ",
-  "gui.sfm.Editor.YOff": "Y: ",
-  "gui.sfm.Editor.EditOffset": "Enter a new offset: ",
-  "gui.sfm.Editor.InvalidNumberFormat": "Invalid number format: %s!",
-  "gui.sfm.Selection.NoComponentGroupsPresent": "No members specified",
+
+  "gui.sfm.FactoryManager.Title": "Factory Manager",
+  "gui.sfm.FactoryManager.Editor.XOff": "X: ",
+  "gui.sfm.FactoryManager.Editor.YOff": "Y: ",
+  "gui.sfm.FactoryManager.Editor.EditOffset": "Enter a new offset: ",
+  "gui.sfm.FactoryManager.Editor.InvalidNumberFormat": "Invalid number format: %s!",
+  "gui.sfm.FactoryManager.Selection.NoComponentGroupsPresent": "No members specified",
+  "gui.sfm.ItemIntake.Title": "Item Intake",
+  "gui.sfm.ItemIntake.Radius": "Working area radius",
+  "gui.sfm.ItemIntake.RenderWorkingArea": "Renders working area",
 
   "gui.sfm.ContextMenu.Delete": "Delete",
   "gui.sfm.ContextMenu.DeleteAll": "Delete All",
@@ -68,7 +71,6 @@
   "gui.sfm.ContextMenu.Menus.CycleProperty": "Cycle to next property",
   "gui.sfm.ContextMenu.Menus.CycleProperty.Named": "Change to %s",
   "gui.sfm.ContextMenu.BlockTarget.Highlight": "Highlight in world",
-
   "gui.sfm.Menu.Interval": "Interval",
   "gui.sfm.Menu.Interval.Info": "Time between this command is triggered",
   "gui.sfm.Menu.InventorySelection": "Inventories",

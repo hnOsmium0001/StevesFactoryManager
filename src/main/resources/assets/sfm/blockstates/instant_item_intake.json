@@ -1,10 +1,16 @@
 {
   "variants": {
-    "facing=down": { "model": "sfm:block/instant_item_intake", "x": 90 },
-    "facing=up": { "model": "sfm:block/instant_item_intake", "x": 270 },
-    "facing=north": { "model": "sfm:block/instant_item_intake" },
-    "facing=south": { "model": "sfm:block/instant_item_intake", "y": 180 },
-    "facing=west": { "model": "sfm:block/instant_item_intake", "y": 270 },
-    "facing=east": { "model": "sfm:block/instant_item_intake", "y": 90 }
+    "mode=front,facing=down": { "model": "sfm:block/directional_instant_item_intake", "x": 90 },
+    "mode=front,facing=up": { "model": "sfm:block/directional_instant_item_intake", "x": 270 },
+    "mode=front,facing=north": { "model": "sfm:block/directional_instant_item_intake" },
+    "mode=front,facing=south": { "model": "sfm:block/directional_instant_item_intake", "y": 180 },
+    "mode=front,facing=west": { "model": "sfm:block/directional_instant_item_intake", "y": 270 },
+    "mode=front,facing=east": { "model": "sfm:block/directional_instant_item_intake", "y": 90 },
+    "mode=centered,facing=down": { "model": "sfm:block/instant_item_intake" },
+    "mode=centered,facing=up": { "model": "sfm:block/instant_item_intake" },
+    "mode=centered,facing=north": { "model": "sfm:block/instant_item_intake" },
+    "mode=centered,facing=south": { "model": "sfm:block/instant_item_intake" },
+    "mode=centered,facing=west": { "model": "sfm:block/instant_item_intake" },
+    "mode=centered,facing=east": { "model": "sfm:block/instant_item_intake"}
   }
 }

@@ -81,7 +81,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         markDirty();
 
         ServerPlayerEntity client = (ServerPlayerEntity) player;
-        PacketOpenManagerGUI.openFactoryManager(client, getDimension(), getPosition(), write(new CompoundNBT()));
+        PacketOpenGUI.openFactoryManager(client, getDimension(), getPosition(), write(new CompoundNBT()));
     }
 
     private void search() {
@@ -278,7 +278,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     public void sync() {
         assert world != null;
         if (world.isRemote) {
-            NetworkHandler.sendToServer(new PacketSyncCommandGraphs(graphs, getDimension(), getPosition()));
+            NetworkHandler.sendToServer(new PacketSyncCommandGraphs(getDimension(), getPosition(), graphs));
         }
     }
 

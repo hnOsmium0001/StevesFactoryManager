@@ -42,7 +42,7 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
         list.getScrollUpArrow().setLocation(100, 24);
         list.alignArrows();
         FactoryManagerGUI gui = (FactoryManagerGUI) WidgetScreen.getCurrentScreen();
-        INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(gui.controllerPos));
+        INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(gui.getController().getPosition()));
         for (BlockPos pos : controller.getLinkedInventories(cap)) {
             list.addElement(new BlockTarget(pos));
         }

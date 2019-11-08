@@ -164,7 +164,7 @@ public class Dialog extends AbstractPopupWindow {
         FlowLayout.vertical(children, 0, 0, 0);
 
         updateDimensions();
-        updatePosition();
+        updateChildPosition();
         onPostReflow.run();
     }
 

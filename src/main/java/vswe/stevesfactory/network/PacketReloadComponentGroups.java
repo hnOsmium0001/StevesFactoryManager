@@ -35,9 +35,7 @@ public final class PacketReloadComponentGroups {
     @OnlyIn(Dist.CLIENT)
     private static void handleClient(Supplier<NetworkEvent.Context> ctx) {
         ComponentGroup.reload();
-        ctx.get().enqueueWork(() -> {
-            Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("message.sfm.reload.componentGroups.success"));
-            ctx.get().setPacketHandled(true);
-        });
+        ctx.get().enqueueWork(() -> Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("message.sfm.reload.componentGroups.success")));
+        ctx.get().setPacketHandled(true);
     }
 }

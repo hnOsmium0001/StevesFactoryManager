@@ -54,16 +54,16 @@ public abstract class AbstractWindow implements IWindow, IInspectionInfoProvider
     public void centralize() {
         position.x = scaledWidth() / 2 - getWidth() / 2;
         position.y = scaledHeight() / 2 - getHeight() / 2;
-        updatePosition();
+        updateChildPosition();
     }
 
     @Override
     public void setPosition(int x, int y) {
         IWindow.super.setPosition(x, y);
-        updatePosition();
+        updateChildPosition();
     }
 
-    protected final void updatePosition() {
+    protected final void updateChildPosition() {
         if (getChildren() != null) {
             for (IWidget child : getChildren()) {
                 child.onParentPositionChanged();

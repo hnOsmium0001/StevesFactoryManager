@@ -3,7 +3,10 @@ package vswe.stevesfactory.blocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
@@ -13,10 +16,13 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import vswe.stevesfactory.network.PacketOpenGUI;
 
 import java.util.function.Supplier;
 
 public class ItemIntakeBlock extends Block {
+
+    public static final EnumProperty<ItemIntakeTileEntity.Mode> MODE_PROPERTY = EnumProperty.create("mode", ItemIntakeTileEntity.Mode.class);
 
     private Supplier<TileEntity> tileEntityFactory;
 
@@ -31,12 +37,18 @@ public class ItemIntakeBlock extends Block {
         if (world.isRemote) {
             return true;
         }
+
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof ItemIntakeTileEntity) {
             ItemIntakeTileEntity intake = (ItemIntakeTileEntity) tile;
-            intake.cycleMode();
-            player.sendStatusMessage(new TranslationTextComponent("message.sfm.ItemIntake.CycleMode", new TranslationTextComponent(intake.getMode().nameKey)), true);
-            return true;
+            if (player.isSneaking()) {
+                intake.cycleMode();
+                player.sendStatusMessage(new TranslationTextComponent(intake.getMode().statusTranslationKey), true);
+                return true;
+            } else {
+                PacketOpenGUI.openItemIntake((ServerPlayerEntity) player, world.dimension.getType(), pos, intake.write(new CompoundNBT()));
+                return false;
+            }
         }
         return false;
     }
@@ -49,7 +61,7 @@ public class ItemIntakeBlock extends Block {
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(BlockStateProperties.FACING);
+        builder.add(BlockStateProperties.FACING, MODE_PROPERTY);
     }
 
     @Override

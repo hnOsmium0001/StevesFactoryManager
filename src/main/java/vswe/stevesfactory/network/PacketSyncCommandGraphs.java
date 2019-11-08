@@ -1,5 +1,6 @@
 package vswe.stevesfactory.network;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -18,32 +19,31 @@ import java.util.function.Supplier;
 public final class PacketSyncCommandGraphs {
 
     public static void encode(PacketSyncCommandGraphs msg, PacketBuffer buf) {
+        buf.writeResourceLocation(Objects.requireNonNull(msg.dimension.getRegistryName()));
+        buf.writeBlockPos(msg.pos);
+
         buf.writeInt(msg.commandGraphs.size());
         for (CommandGraph graph : msg.commandGraphs) {
             buf.writeCompoundTag(graph.serialize());
         }
-        buf.writeResourceLocation(Objects.requireNonNull(msg.dimension.getRegistryName()));
-        buf.writeBlockPos(msg.pos);
     }
 
     public static PacketSyncCommandGraphs decode(PacketBuffer buf) {
+        DimensionType dimension = DimensionType.byName(buf.readResourceLocation());
+        BlockPos pos = buf.readBlockPos();
+
         int size = buf.readInt();
         List<CompoundNBT> graphs = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             graphs.add(buf.readCompoundTag());
         }
-
-        DimensionType dimension = DimensionType.byName(buf.readResourceLocation());
-        BlockPos pos = buf.readBlockPos();
-        return new PacketSyncCommandGraphs(graphs, dimension, pos);
+        return new PacketSyncCommandGraphs(dimension, pos, graphs);
     }
 
     public static void handle(PacketSyncCommandGraphs msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity sender = ctx.get().getSender();
-            if (sender == null) {
-                return;
-            }
+            Preconditions.checkState(sender != null, "Invalid usage of a client to server packet");
 
             World world = sender.world;
             TileEntity tile = world.getTileEntity(msg.pos);
@@ -55,27 +55,27 @@ public final class PacketSyncCommandGraphs {
                     controller.addCommandGraph(graph);
                 }
             } else {
-                StevesFactoryManager.logger.warn("Received packet with invalid controller position! {}", msg);
+                StevesFactoryManager.logger.error("Received packet with invalid controller position {}!", msg);
             }
-            ctx.get().setPacketHandled(true);
         });
+        ctx.get().setPacketHandled(true);
     }
-
-    private List<CompoundNBT> data;
-    private Collection<CommandGraph> commandGraphs;
 
     private DimensionType dimension;
     private BlockPos pos;
 
-    public PacketSyncCommandGraphs(Collection<CommandGraph> commandGraphs, DimensionType dimension, BlockPos pos) {
-        this.commandGraphs = commandGraphs;
+    private List<CompoundNBT> data;
+    private Collection<CommandGraph> commandGraphs;
+
+    public PacketSyncCommandGraphs(DimensionType dimension, BlockPos pos, Collection<CommandGraph> commandGraphs) {
         this.dimension = dimension;
         this.pos = pos;
+        this.commandGraphs = commandGraphs;
     }
 
-    public PacketSyncCommandGraphs(List<CompoundNBT> data, DimensionType dimension, BlockPos pos) {
-        this.data = data;
+    public PacketSyncCommandGraphs(DimensionType dimension, BlockPos pos, List<CompoundNBT> data) {
         this.dimension = dimension;
         this.pos = pos;
+        this.data = data;
     }
 }

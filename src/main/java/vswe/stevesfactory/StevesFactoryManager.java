@@ -101,7 +101,7 @@ public class StevesFactoryManager {
                 // Query setting
                 .executes(context -> {
                     ServerPlayerEntity client = context.getSource().asPlayer();
-                    PacketInspectionsSetting.query(client);
+                    PacketSettings.query(client, "inspectionsOverlay");
                     return 0;
                 })
                 .then(Commands
@@ -110,7 +110,7 @@ public class StevesFactoryManager {
                         .executes(context -> {
                             ServerPlayerEntity client = context.getSource().asPlayer();
                             boolean value = BoolArgumentType.getBool(context, "value");
-                            PacketInspectionsSetting.set(client, value);
+                            PacketSettings.set(client, "inspectionsOverlay", value);
                             return 0;
                         }));
     }
