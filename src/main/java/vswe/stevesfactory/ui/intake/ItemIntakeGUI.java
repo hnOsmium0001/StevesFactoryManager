@@ -4,20 +4,17 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TranslationTextComponent;
 import vswe.stevesfactory.blocks.ItemIntakeTileEntity;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.screen.DisplayListCaches;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
-import vswe.stevesfactory.library.gui.widget.Checkbox;
-import vswe.stevesfactory.library.gui.widget.IWidget;
-import vswe.stevesfactory.library.gui.widget.NumberField;
+import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.window.AbstractWindow;
 import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.network.PacketSyncIntakeData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ItemIntakeGUI extends WidgetScreen {
 
@@ -36,19 +33,19 @@ public class ItemIntakeGUI extends WidgetScreen {
 
     @Override
     public void removed() {
+        int radius = getPrimaryWindow().radius.getValue();
+
+        // Client data
+        intake.setRadius(radius);
+        // No need to set the `mode` and `rendering` again because it is bond to view state
+
+        // Server data
         NetworkHandler.sendToServer(new PacketSyncIntakeData(
                 Objects.requireNonNull(intake.getWorld()).getDimension().getType(),
                 intake.getPos(),
-                getRadiusData(), getRenderingData()));
+                radius, intake.isRendering(), intake.getMode()));
+
         super.removed();
-    }
-
-    private int getRadiusData() {
-        return getPrimaryWindow().radius.getValue();
-    }
-
-    private boolean getRenderingData() {
-        return getPrimaryWindow().rendering.isChecked();
     }
 
     @Override
@@ -64,6 +61,7 @@ public class ItemIntakeGUI extends WidgetScreen {
         private int backgroundDL;
 
         private NumberField<Integer> radius;
+        private TextButton mode;
         private Checkbox rendering;
         private List<IWidget> children = new ArrayList<>();
 
@@ -74,12 +72,21 @@ public class ItemIntakeGUI extends WidgetScreen {
             radius = NumberField.integerFieldRanged(33, 12, 1, 0, intake.getMaximumRadius());
             radius.setWindow(this);
             radius.setValue(intake.getRadius());
+            radius.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
+            mode = TextButton.of(intake.getMode().statusTranslationKey);
+            mode.setWindow(this);
+            mode.onClick = b -> {
+                intake.cycleMode();
+                mode.setText(I18n.format(intake.getMode().statusTranslationKey));
+            };
             rendering = new Checkbox(0, 0, 8, 8);
             rendering.setWindow(this);
             rendering.setLabel(I18n.format("gui.sfm.ItemIntake.RenderWorkingArea"));
             rendering.setChecked(intake.isRendering());
+            rendering.onStateChange = intake::setRendering;
 
             children.add(radius);
+            children.add(mode);
             children.add(rendering);
             FlowLayout.vertical(children, 0, 0, 2);
         }
@@ -104,6 +111,7 @@ public class ItemIntakeGUI extends WidgetScreen {
             RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
             GlStateManager.callList(backgroundDL);
             renderChildren(mouseX, mouseY, particleTicks);
+            RenderingHelper.drawTextCenteredVertically(I18n.format("gui.sfm.ItemIntake.Radius"), radius.getAbsoluteXRight() + 2, radius.getAbsoluteY(), radius.getAbsoluteYBottom(), 0xff404040);
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }
     }

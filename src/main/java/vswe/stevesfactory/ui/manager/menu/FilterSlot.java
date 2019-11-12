@@ -64,7 +64,7 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
             setDimensions(menu.getWidth(), menu.getContentHeight());
 
             TextButton delete = new DeleteFilterButton();
-            delete.translate("gui.sfm.Menu.Delete");
+            delete.setText(I18n.format("gui.sfm.Menu.Delete"));
             delete.setDimensions(32, 11);
             delete.setLocation(getWidth() - delete.getWidth() - 2, 2);
             delete.onClick = b -> {

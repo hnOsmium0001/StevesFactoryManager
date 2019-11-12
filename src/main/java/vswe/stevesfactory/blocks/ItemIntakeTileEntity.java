@@ -5,18 +5,13 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.tileentity.*;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.*;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.*;
 import vswe.stevesfactory.Config;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -31,8 +26,8 @@ import java.util.List;
 public abstract class ItemIntakeTileEntity extends TileEntity implements ITickableTileEntity, ICable, IWorkingAreaProvider {
 
     public enum Mode implements IStringSerializable {
-        FRONT("front", "message.sfm.ItemIntake.CycleMode.Front"),
-        CENTERED("centered", "message.sfm.ItemIntake.CycleMode.Centered");
+        FRONT("front", "gui.sfm.ItemIntake.Mode.Front"),
+        CENTERED("centered", "gui.sfm.ItemIntake.Mode.Centered");
 
         public final String name;
         public final String statusTranslationKey;
@@ -58,6 +53,16 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
             }
 
             @Override
+            public boolean ignorePickupDelay() {
+                return false;
+            }
+
+            @Override
+            public int getInventorySize() {
+                return Config.COMMON.regularInventorySize.get();
+            }
+
+            @Override
             public int getMaximumRadius() {
                 return Config.COMMON.regularMaxRadius.get();
             }
@@ -77,6 +82,16 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
             }
 
             @Override
+            public boolean ignorePickupDelay() {
+                return true;
+            }
+
+            @Override
+            public int getInventorySize() {
+                return Config.COMMON.instantInventorySize.get();
+            }
+
+            @Override
             public int getMaximumRadius() {
                 return Config.COMMON.instantMaxRadius.get();
             }
@@ -91,10 +106,8 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
     private static final int STATE_READY = 0;
     private static final int STATE_RELOAD = -1;
 
-    // Capabilities
-    private LazyOptional<ItemStackHandler> invCap = LazyOptional.of(() -> new ItemStackHandler(5));
-
-    // Data
+    // Data and capabilities
+    private LazyOptional<ItemStackHandler> invCap = LazyOptional.of(() -> new ItemStackHandler(getInventorySize()));
     private Mode mode = Mode.FRONT;
     private int radius = 0;
     private boolean rendering = false;
@@ -116,17 +129,18 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
     @Override
     public void tick() {
         assert world != null;
-        if (world.isRemote) {
+        if (!world.isRemote) {
             if (ticks == STATE_RELOAD) {
                 reload();
+                ticks = STATE_READY;
                 return;
             }
             if (ticks == STATE_READY) {
                 collectItems();
                 ticks = getPickupInterval();
-            } else {
-                ticks--;
+                return;
             }
+            ticks--;
         }
     }
 
@@ -137,12 +151,29 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
     }
 
     private void collectItems() {
+        assert world != null;
+        ItemStackHandler handler = invCap.orElseThrow(RuntimeException::new);
         List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, pickupBox);
         for (ItemEntity item : items) {
-            ItemStack stack = item.getItem();
-            item.remove();
+            if (!ignorePickupDelay() && item.cannotPickup()) {
+                continue;
+            }
+            if (!item.isAlive()) {
+                continue;
+            }
+
+            ItemStack leftover = ItemHandlerHelper.insertItem(handler, item.getItem(), false);
+            if (leftover.isEmpty()) {
+                item.remove();
+            } else {
+                item.setItem(leftover);
+            }
         }
     }
+
+    public abstract boolean ignorePickupDelay();
+
+    public abstract int getInventorySize();
 
     public int getRadius() {
         return radius;

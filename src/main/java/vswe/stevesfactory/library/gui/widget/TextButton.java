@@ -136,22 +136,6 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
         this.text = text;
     }
 
-    public void translate(String translationKey) {
-        setText(I18n.format(translationKey));
-    }
-
-    public void translate(String translationKey, Object... args) {
-        setText(I18n.format(translationKey, args));
-    }
-
-    public void translateRaw(String translationKey) {
-        setTextRaw(I18n.format(translationKey));
-    }
-
-    public void translateRaw(String translationKey, Object... args) {
-        setTextRaw(I18n.format(translationKey, args));
-    }
-
     public boolean hasClickAction() {
         return onClick != DUMMY;
     }

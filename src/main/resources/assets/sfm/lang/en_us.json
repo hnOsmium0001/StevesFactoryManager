@@ -11,8 +11,6 @@
   "message.sfm.reload.componentGroups.success": "Successfully reloaded component groups",
   "message.sfm.settings.query": "Entry %s is currently set to %s",
   "message.sfm.settings.set": "Entry %s is now set to %s",
-  "message.sfm.ItemIntake.CycleMode.Front": "Collection box is in front of the intake block",
-  "message.sfm.ItemIntake.CycleMode.Centered": "Collection box is centered at the intake block",
 
   "logic.sfm.interval_trigger": "Interval Trigger",
   "logic.sfm.redstone_trigger": "Redstone Trigger",
@@ -55,6 +53,8 @@
   "gui.sfm.ItemIntake.Title": "Item Intake",
   "gui.sfm.ItemIntake.Radius": "Working area radius",
   "gui.sfm.ItemIntake.RenderWorkingArea": "Renders working area",
+  "gui.sfm.ItemIntake.Mode.Front": "Mode: front",
+  "gui.sfm.ItemIntake.Mode.Centered": "Mode: centered",
 
   "gui.sfm.ContextMenu.Delete": "Delete",
   "gui.sfm.ContextMenu.DeleteAll": "Delete All",

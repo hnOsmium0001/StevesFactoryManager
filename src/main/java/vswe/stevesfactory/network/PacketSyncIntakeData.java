@@ -21,6 +21,7 @@ public final class PacketSyncIntakeData {
         buf.writeBlockPos(msg.pos);
         buf.writeInt(msg.radius);
         buf.writeBoolean(msg.rendering);
+        buf.writeEnumValue(msg.mode);
     }
 
     public static PacketSyncIntakeData decode(PacketBuffer buf) {
@@ -28,7 +29,8 @@ public final class PacketSyncIntakeData {
         BlockPos pos = buf.readBlockPos();
         int radius = buf.readInt();
         boolean rendering = buf.readBoolean();
-        return new PacketSyncIntakeData(dimension, pos, radius, rendering);
+        ItemIntakeTileEntity.Mode mode = buf.readEnumValue(ItemIntakeTileEntity.Mode.class);
+        return new PacketSyncIntakeData(dimension, pos, radius, rendering, mode);
     }
 
     public static void handle(PacketSyncIntakeData msg, Supplier<NetworkEvent.Context> ctx) {
@@ -42,6 +44,7 @@ public final class PacketSyncIntakeData {
                 ItemIntakeTileEntity intake = (ItemIntakeTileEntity) tile;
                 intake.setRadius(msg.radius);
                 intake.setRendering(msg.rendering);
+                intake.setMode(msg.mode);
             } else {
                 StevesFactoryManager.logger.error("Received packet with invalid item intake position {}!", msg);
             }
@@ -54,11 +57,13 @@ public final class PacketSyncIntakeData {
 
     private int radius;
     private boolean rendering;
+    private ItemIntakeTileEntity.Mode mode;
 
-    public PacketSyncIntakeData(DimensionType dimension, BlockPos pos, int radius, boolean rendering) {
+    public PacketSyncIntakeData(DimensionType dimension, BlockPos pos, int radius, boolean rendering, ItemIntakeTileEntity.Mode mode) {
         this.dimension = dimension;
         this.pos = pos;
         this.radius = radius;
         this.rendering = rendering;
+        this.mode = mode;
     }
 }

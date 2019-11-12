@@ -13,7 +13,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import vswe.stevesfactory.network.PacketOpenGUI;
@@ -38,17 +37,14 @@ public class ItemIntakeBlock extends Block {
             return true;
         }
 
+        if (player.isSneaking()) {
+            return false;
+        }
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof ItemIntakeTileEntity) {
             ItemIntakeTileEntity intake = (ItemIntakeTileEntity) tile;
-            if (player.isSneaking()) {
-                intake.cycleMode();
-                player.sendStatusMessage(new TranslationTextComponent(intake.getMode().statusTranslationKey), true);
-                return true;
-            } else {
-                PacketOpenGUI.openItemIntake((ServerPlayerEntity) player, world.dimension.getType(), pos, intake.write(new CompoundNBT()));
-                return false;
-            }
+            PacketOpenGUI.openItemIntake((ServerPlayerEntity) player, world.dimension.getType(), pos, intake.write(new CompoundNBT()));
+            return true;
         }
         return false;
     }

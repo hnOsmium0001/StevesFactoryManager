@@ -22,6 +22,8 @@ public final class Config {
         public final IntValue instantPickupInterval;
         public final IntValue regularMaxRadius;
         public final IntValue instantMaxRadius;
+        public final IntValue regularInventorySize;
+        public final IntValue instantInventorySize;
 
         // Block property options
         public final BooleanValue isRedstoneInputBlockCables;
@@ -63,6 +65,12 @@ public final class Config {
             instantMaxRadius = builder
                     .comment("Maximum pickup radius that an item take can have, for instant item intake")
                     .defineInRange("instantMaxPickupDistance", 3, 0, Integer.MAX_VALUE);
+            regularInventorySize = builder
+                    .comment("Internal inventory size for item intakes")
+                    .defineInRange("regularInventorySize", 5, 1, 27);
+            instantInventorySize = builder
+                    .comment("Internal inventory size for instant item intakes")
+                    .defineInRange("instantInventorySize", 5, 0, 27);
             builder.pop();
 
             builder.comment("Block property config options").push("blocks");
