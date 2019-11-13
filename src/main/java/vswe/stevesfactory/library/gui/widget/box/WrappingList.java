@@ -16,7 +16,6 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.Utils;
-import vswe.stevesfactory.utils.VectorHelper;
 
 import java.awt.*;
 import java.util.List;
@@ -131,7 +130,7 @@ public class WrappingList<T extends IWidget & INamedElement> extends AbstractCon
         int y1 = getAbsoluteY() + getScrollingSectionY();
         int x2 = x1 + getScrollingSectionWidth();
         int y2 = y1 + getScrollingSectionHeight();
-        if (!VectorHelper.isInside((int) mouseX, (int) mouseY, x1, y1, x2, y2)) {
+        if (!Utils.isInside((int) mouseX, (int) mouseY, x1, y1, x2, y2)) {
             return false;
         }
 

@@ -39,7 +39,6 @@ public class StevesFactoryManager {
 
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::setup);
-        eventBus.addListener(this::loadComplete);
         eventBus.addListener(Config::onLoad);
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> eventBus.addListener(this::clientSetup));
 
@@ -47,7 +46,6 @@ public class StevesFactoryManager {
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
 
         ModBlocks.init();
-        ModItems.init();
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -56,11 +54,6 @@ public class StevesFactoryManager {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         ComponentGroup.reload();
-    }
-
-    private void loadComplete(final FMLLoadCompleteEvent event) {
-        ModBlocks.finishLoading();
-        ModItems.finishLoading();
     }
 
     private void serverStarting(final FMLServerStartingEvent event) {

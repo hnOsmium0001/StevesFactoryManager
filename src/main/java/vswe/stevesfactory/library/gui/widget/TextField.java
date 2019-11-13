@@ -8,7 +8,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -16,6 +15,8 @@ import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.utils.Utils;
 
 import java.awt.*;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class TextField extends AbstractWidget implements LeafWidgetMixin {
 
@@ -151,7 +152,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isEnabled() && editable) {
             getWindow().setFocusedWidget(this);
-            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            if (button == GLFW_MOUSE_BUTTON_RIGHT) {
                 setText("");
             }
             return true;
@@ -163,58 +164,58 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown()) {
             switch (keyCode) {
-                case GLFW.GLFW_KEY_C: {
+                case GLFW_KEY_C: {
                     copyText();
                     break;
                 }
-                case GLFW.GLFW_KEY_V: {
+                case GLFW_KEY_V: {
                     pasteText();
                     break;
                 }
-                case GLFW.GLFW_KEY_X: {
+                case GLFW_KEY_X: {
                     cutText();
                     break;
                 }
-                case GLFW.GLFW_KEY_A: {
+                case GLFW_KEY_A: {
                     selectAll();
                     break;
                 }
             }
         } else {
             switch (keyCode) {
-                case GLFW.GLFW_KEY_ESCAPE:
+                case GLFW_KEY_ESCAPE:
                     getWindow().changeFocus(this, false);
-                case GLFW.GLFW_KEY_ENTER:
-                case GLFW.GLFW_KEY_DOWN:
-                case GLFW.GLFW_KEY_UP:
-                case GLFW.GLFW_KEY_TAB: {
+                case GLFW_KEY_ENTER:
+                case GLFW_KEY_DOWN:
+                case GLFW_KEY_UP:
+                case GLFW_KEY_TAB: {
                     return false;
                 }
-                case GLFW.GLFW_KEY_HOME: {
+                case GLFW_KEY_HOME: {
                     updateSelection();
                     cursor = 0;
                     break;
                 }
-                case GLFW.GLFW_KEY_END: {
+                case GLFW_KEY_END: {
                     updateSelection();
                     cursor = text.length();
                     break;
                 }
-                case GLFW.GLFW_KEY_LEFT: {
+                case GLFW_KEY_LEFT: {
                     updateSelection();
                     if (cursor > 0) {
                         cursor--;
                     }
                     break;
                 }
-                case GLFW.GLFW_KEY_RIGHT: {
+                case GLFW_KEY_RIGHT: {
                     updateSelection();
                     if (cursor < text.length()) {
                         cursor++;
                     }
                     break;
                 }
-                case GLFW.GLFW_KEY_BACKSPACE: {
+                case GLFW_KEY_BACKSPACE: {
                     if (isRegionSelected()) {
                         replaceSelectedRegion("");
                     } else if (!text.isEmpty() && cursor > 0) {
@@ -224,7 +225,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
                     }
                     break;
                 }
-                case GLFW.GLFW_KEY_DELETE: {
+                case GLFW_KEY_DELETE: {
                     if (isRegionSelected()) {
                         replaceSelectedRegion("");
                     } else if (cursor < text.length()) {
@@ -456,16 +457,13 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
                 int selectionStart = getSelectionStart();
                 int selectionEnd = getSelectionEnd();
 
-                // Text: abcdefghijklmn
-                // Rendered: abcdefg, length=7
-                //                 ^6
                 int renderedStart = MathHelper.clamp(selectionStart - startOffset, 0, renderedText.length());
                 int renderedEnd = MathHelper.clamp(selectionEnd - startOffset, 0, renderedText.length());
 
                 String renderedSelection = renderedText.substring(renderedStart, renderedEnd);
                 String renderedPreSelection = renderedText.substring(0, renderedStart);
-                int selectionX = textX + fontRenderer().getStringWidth(renderedPreSelection);
-                int selectionWidth = fontRenderer().getStringWidth(renderedSelection);
+                int selectionX = (int) (textX + fontRenderer().getStringWidth(renderedPreSelection) * scaleFactor);
+                int selectionWidth = (int) (fontRenderer().getStringWidth(renderedSelection) * scaleFactor);
                 RenderingHelper.drawColorLogic(selectionX - 1, textY, selectionWidth + 1, fontRenderer().FONT_HEIGHT, 60, 147, 242, GlStateManager.LogicOp.OR_REVERSE);
             }
         } else {

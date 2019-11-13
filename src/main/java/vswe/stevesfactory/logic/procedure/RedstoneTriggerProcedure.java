@@ -22,6 +22,7 @@ import vswe.stevesfactory.utils.Utils;
 import javax.annotation.Nullable;
 import java.util.*;
 
+// TODO cache caps
 public class RedstoneTriggerProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, ILogicalConjunction, IAnalogTarget {
 
     public static final int INVENTORIES = 0;
@@ -152,19 +153,23 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
     }
 
     @Override
-    public void setAnalogRange(int begin, int end) {
-        analogBegin = begin;
-        analogEnd = end;
-    }
-
-    @Override
     public int getAnalogBegin() {
         return analogBegin;
     }
 
     @Override
+    public void setAnalogBegin(int analogBegin) {
+        this.analogBegin = analogBegin;
+    }
+
+    @Override
     public int getAnalogEnd() {
         return analogEnd;
+    }
+
+    @Override
+    public void setAnalogEnd(int analogEnd) {
+        this.analogEnd = analogEnd;
     }
 
     @Override

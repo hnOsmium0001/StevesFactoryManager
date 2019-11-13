@@ -681,8 +681,10 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
     }
 
     private void removeLinkedProcedure() {
+        // GUI only mutation
         inputNodes.removeAllConnections();
         outputNodes.removeAllConnections();
+        // Procedure graph mutation
         procedure.remove();
     }
 

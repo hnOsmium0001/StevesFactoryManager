@@ -36,7 +36,7 @@ class ActivationButton extends TextButton {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isEnabled() && button == GLFW_MOUSE_BUTTON_LEFT) {
-            target.selected = !target.selected;
+            target.toggleSelected();
             updateText();
             return super.mouseClicked(mouseX, mouseY, button);
         }
@@ -44,7 +44,7 @@ class ActivationButton extends TextButton {
     }
 
     private void updateText() {
-        text = target.selected ? I18n.format("gui.sfm.Menu.Deactivate") : I18n.format("gui.sfm.Menu.Activate");
+        text = target.isSelected() ? I18n.format("gui.sfm.Menu.Deactivate") : I18n.format("gui.sfm.Menu.Activate");
     }
 
     @Override

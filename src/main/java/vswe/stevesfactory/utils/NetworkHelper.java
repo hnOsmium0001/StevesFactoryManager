@@ -75,7 +75,7 @@ public final class NetworkHelper {
 
     public static void updateLinksFor(INetworkController controller, ICable cable, Capability<?> cap) {
         World world = controller.getControllerWorld();
-        for (BlockPos neighbor : VectorHelper.neighbors(cable.getPosition())) {
+        for (BlockPos neighbor : Utils.neighbors(cable.getPosition())) {
             TileEntity tile = world.getTileEntity(neighbor);
             if (tile == null) {
                 continue;

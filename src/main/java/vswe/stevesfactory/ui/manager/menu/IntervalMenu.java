@@ -37,7 +37,10 @@ public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
     @Override
     public void onLinkFlowComponent(FlowComponent<IntervalTriggerProcedure> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
-        interval.setValue(getLinkedProcedure().interval / 20);
+        IntervalTriggerProcedure procedure = getLinkedProcedure();
+        interval.setValue(procedure.interval / 20);
+        // Convert to ticks
+        interval.onValueUpdated = seconds -> procedure.interval = seconds * 20;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
                 getUnitText(),
                 interval.getAbsoluteXRight() + MARGIN_MIDDLE_UNIT_TEXT,
                 interval.getAbsoluteY(), interval.getAbsoluteYBottom(),
-                0x000000);
+                0xff000000);
     }
 
     public String getUnitText() {
@@ -70,11 +73,6 @@ public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
 
     public int getIntervalTicks() {
         return getIntervalSeconds() * 20;
-    }
-
-    @Override
-    protected void updateData() {
-        getLinkedProcedure().interval = getIntervalTicks();
     }
 
     @Override

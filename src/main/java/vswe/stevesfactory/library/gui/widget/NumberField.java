@@ -3,6 +3,7 @@ package vswe.stevesfactory.library.gui.widget;
 import net.minecraft.util.math.MathHelper;
 import vswe.stevesfactory.library.gui.widget.ValueField.ExceptionBasedValueField;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class NumberField<V extends Number> extends ExceptionBasedValueField<V> {
@@ -67,6 +68,8 @@ public class NumberField<V extends Number> extends ExceptionBasedValueField<V> {
                 .setValueFormat(s -> s.isEmpty() ? defaultValue : MathHelper.clamp(Integer.parseInt(s), lowerBound, upperBound), i -> Integer.toString(i));
     }
 
+    public Consumer<V> onValueUpdated = s -> {};
+
     public NumberField(int x, int y, int width, int height) {
         super(x, y, width, height);
     }
@@ -81,5 +84,12 @@ public class NumberField<V extends Number> extends ExceptionBasedValueField<V> {
     public NumberField<V> setValue(V number) {
         super.setValue(number);
         return this;
+    }
+
+    @Override
+    protected boolean updateText(String text) {
+        boolean result = super.updateText(text);
+        onValueUpdated.accept(getValue());
+        return result;
     }
 }

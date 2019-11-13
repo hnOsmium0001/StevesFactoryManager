@@ -77,6 +77,17 @@ public class RedstoneEmitterTileEntity extends TileEntity implements ICable {
     }
 
     @Override
+    protected void invalidateCaps() {
+        redstoneDown.invalidate();
+        redstoneUp.invalidate();
+        redstoneNorth.invalidate();
+        redstoneSouth.invalidate();
+        redstoneWest.invalidate();
+        redstoneEast.invalidate();
+        super.invalidateCaps();
+    }
+
+    @Override
     public BlockPos getPosition() {
         return pos;
     }

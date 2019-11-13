@@ -32,7 +32,6 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
     private final RadioButton whitelist, blacklist;
     private final LinearList<Entry> fields;
     private SettingsEditor settings;
-    private NumberField<Integer> stackLimitInput;
 
     public ItemTagFilterMenu(int id) {
         this(id, I18n.format("gui.sfm.Menu.ItemFilter.Tag"));
@@ -126,10 +125,11 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
         blacklist.onChecked = () -> filter.type = FilterType.BLACKLIST;
 
         settings = new SettingsEditor(this);
-        stackLimitInput = settings.addIntegerInput(1, 0, Integer.MAX_VALUE);
+        NumberField<Integer> stackLimitInput = settings.addIntegerInput(1, 0, Integer.MAX_VALUE);
         stackLimitInput.setValue(filter.stackLimit)
                 .setBackgroundStyle(BackgroundStyle.RED_OUTLINE)
                 .translateLabel("gui.sfm.Menu.FilterAmount");
+        stackLimitInput.onValueUpdated = i -> filter.stackLimit = i;
         Checkbox checkbox = settings.addOption(filter.isMatchingAmount(), "gui.sfm.Menu.MatchAmount");
         checkbox.onStateChange = b -> {
             filter.setMatchingAmount(b);
@@ -147,10 +147,6 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
             if (tag != null) {
                 filter.getTags().add(tag);
             }
-        }
-
-        if (stackLimitInput != null) {
-            filter.stackLimit = stackLimitInput.getValue();
         }
     }
 
@@ -177,6 +173,8 @@ public class ItemTagFilterMenu<P extends IProcedure & IProcedureClientData & IIt
             setDimensions(90, 14);
 
             tag = new TextField(0, 0, 75, getHeight());
+            tag.setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
+            tag.setFontHeight(7);
             int buttonSize = 9;
             AbstractIconButton removeEntry = new AbstractIconButton(
                     tag.getXRight() + 4, getHeight() / 2 - buttonSize / 2 - 1 /* Exclusive position, just to make it look nice */,

@@ -82,6 +82,12 @@ public class RedstoneInputTileEntity extends TileEntity implements ICable, IReds
     }
 
     @Override
+    protected void invalidateCaps() {
+        signalReactor.invalidate();
+        super.invalidateCaps();
+    }
+
+    @Override
     public BlockPos getPosition() {
         return pos;
     }

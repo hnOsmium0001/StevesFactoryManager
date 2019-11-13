@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static org.lwjgl.opengl.GL11.*;
 import static vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 
@@ -114,14 +116,14 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             switch (button) {
-                case GLFW.GLFW_MOUSE_BUTTON_LEFT:
+                case GLFW_MOUSE_BUTTON_LEFT:
                     EditorPanel editor = getFlowComponent().getParentWidget();
                     // If failed to finish connection (a connection has not been started yet)
                     if (!editor.tryFinishConnection(this)) {
                         editor.startConnection(this);
                     }
                     break;
-                case GLFW.GLFW_MOUSE_BUTTON_RIGHT:
+                case GLFW_MOUSE_BUTTON_RIGHT:
                     disconnect();
                     break;
             }

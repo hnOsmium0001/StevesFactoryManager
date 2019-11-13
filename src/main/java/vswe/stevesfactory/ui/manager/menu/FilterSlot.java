@@ -107,10 +107,12 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
                     .setValue(stack.getCount());
             count.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
             count.setLabel(I18n.format("gui.sfm.Menu.FilterAmount"));
+            count.onValueUpdated = stack::setCount;
             damage = NumberField.integerField(33, 12)
                     .setValue(stack.getDamage());
             damage.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
             damage.setLabel(I18n.format("gui.sfm.Menu.FilterDamage"));
+            damage.onValueUpdated = stack::setDamage;
 
             children = ImmutableList.of(close, delete, count, damage);
             reflow();
@@ -140,12 +142,6 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
             ir.renderItemOverlayIntoGUI(fontRenderer(), stack, x, y, "");
             RenderHelper.disableStandardItemLighting();
             GlStateManager.color3f(1F, 1F, 1F);
-        }
-
-        @Override
-        public void onRemoved() {
-            stack.setCount(count.getValue());
-            stack.setDamage(damage.getValue());
         }
 
         @Override

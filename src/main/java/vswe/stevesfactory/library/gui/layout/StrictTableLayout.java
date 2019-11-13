@@ -7,7 +7,7 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import java.awt.*;
 import java.util.List;
 
-import static vswe.stevesfactory.utils.VectorHelper.isInside;
+import static vswe.stevesfactory.utils.Utils.isInside;
 
 public final class StrictTableLayout {
 

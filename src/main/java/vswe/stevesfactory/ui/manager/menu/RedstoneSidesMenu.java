@@ -8,7 +8,7 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.logic.procedure.IDirectionTarget;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
-import vswe.stevesfactory.utils.VectorHelper;
+import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 import java.util.function.BooleanSupplier;
@@ -40,7 +40,7 @@ public class RedstoneSidesMenu<P extends IProcedure & IProcedureClientData & IDi
         addChildren(secondOption);
 
         sides = new EnumMap<>(Direction.class);
-        for (Direction direction : VectorHelper.DIRECTIONS) {
+        for (Direction direction : Utils.DIRECTIONS) {
             Checkbox box = new Checkbox();
             box.translateLabel("gui.sfm." + direction.getName());
             addChildren(box);

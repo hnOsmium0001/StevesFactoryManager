@@ -11,7 +11,6 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import java.util.List;
-import java.util.Set;
 
 public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IProcedureClientData> extends Menu<P> {
 
@@ -33,11 +32,17 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IP
         this.errorMessage = errorMessage;
 
         down = new DirectionButton(Direction.DOWN);
+        down.onStateChanged = b -> getLinkedProcedure().setEnabled(id, Direction.DOWN, b);
         up = new DirectionButton(Direction.UP);
+        up.onStateChanged = b -> getLinkedProcedure().setEnabled(id, Direction.UP, b);
         north = new DirectionButton(Direction.NORTH);
+        north.onStateChanged = b -> getLinkedProcedure().setEnabled(id, Direction.NORTH, b);
         south = new DirectionButton(Direction.SOUTH);
+        south.onStateChanged = b -> getLinkedProcedure().setEnabled(id, Direction.SOUTH, b);
         east = new DirectionButton(Direction.EAST);
+        east.onStateChanged = b -> getLinkedProcedure().setEnabled(id, Direction.EAST, b);
         west = new DirectionButton(Direction.WEST);
+        west.onStateChanged = b -> getLinkedProcedure().setEnabled(id, Direction.WEST, b);
         activationButton = new ActivationButton(down);
 
         final int y = HEADING_BOX.getPortionHeight() + 4;
@@ -67,51 +72,27 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IP
     @Override
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
-        for (Direction direction : flowComponent.getLinkedProcedure().getDirections(id)) {
+        for (Direction direction : getLinkedProcedure().getDirections(id)) {
             switch (direction) {
                 case DOWN:
-                    down.selected = true;
+                    down.setSelected(true);
                     break;
                 case UP:
-                    up.selected = true;
+                    up.setSelected(true);
                     break;
                 case NORTH:
-                    north.selected = true;
+                    north.setSelected(true);
                     break;
                 case SOUTH:
-                    south.selected = true;
+                    south.setSelected(true);
                     break;
                 case WEST:
-                    west.selected = true;
+                    west.setSelected(true);
                     break;
                 case EAST:
-                    east.selected = true;
+                    east.setSelected(true);
                     break;
             }
-        }
-    }
-
-    @Override
-    protected void updateData() {
-        Set<Direction> directions = getLinkedProcedure().getDirections(id);
-        directions.clear();
-        if (down.selected) {
-            directions.add(Direction.DOWN);
-        }
-        if (up.selected) {
-            directions.add(Direction.UP);
-        }
-        if (north.selected) {
-            directions.add(Direction.NORTH);
-        }
-        if (south.selected) {
-            directions.add(Direction.SOUTH);
-        }
-        if (east.selected) {
-            directions.add(Direction.EAST);
-        }
-        if (west.selected) {
-            directions.add(Direction.WEST);
         }
     }
 
@@ -145,11 +126,11 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IP
     }
 
     private boolean hasAnythingSelected() {
-        return down.selected
-                || up.selected
-                || north.selected
-                || south.selected
-                || east.selected
-                || west.selected;
+        return down.isSelected()
+                || up.isSelected()
+                || north.isSelected()
+                || south.isSelected()
+                || east.isSelected()
+                || west.isSelected();
     }
 }

@@ -26,6 +26,7 @@ import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.*;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.OutputNode;
+import vswe.stevesfactory.ui.userpreferences.UserPreferencesGUI;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -130,6 +131,8 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
                 }
             }
 
+            // Widgets are translated on render, which means player inputs will go at the translated positions
+            // we need to translate the inputs back to the original position for logic handling, since the data position isn't changed at all
             int translatedX = mouseX - xOffset.get();
             int translatedY = mouseY - yOffset.get();
             // Iterate in ascending order for rendering as a special case
@@ -236,6 +239,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
         int offset = Screen.hasShiftDown() ? Config.CLIENT.acceleratedEditorMoveSpeed.get() : Config.CLIENT.defaultEditorMoveSpeed.get();
         switch (keyCode) {
             case GLFW_KEY_UP:
@@ -251,7 +257,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
                 xOffset.add(offset);
                 break;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return false;
     }
 
     private void openActionMenu() {
@@ -259,7 +265,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
                 new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.ContextMenu.Paste", b -> actionPaste()),
                 new CallbackEntry(null, "gui.sfm.ContextMenu.CleanupProcedures", b -> actionCleanup()),
                 new CallbackEntry(null, "gui.sfm.ContextMenu.ToggleFullscreen", b -> actionToggleFullscreen()),
-                new UserPreferencesPanel.OpenerEntry()
+                UserPreferencesGUI.createContextMenuEntry()
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
     }

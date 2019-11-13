@@ -1,4 +1,4 @@
-package vswe.stevesfactory.setup.builder;
+package vswe.stevesfactory.setup;
 
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.types.Type;
@@ -12,13 +12,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import vswe.stevesfactory.StevesFactoryManager;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 public final class BlockBuilder<T extends TileEntity> {
 
@@ -40,8 +39,8 @@ public final class BlockBuilder<T extends TileEntity> {
     private TileEntityType<T> tileEntityType;
 
     // TileEntityRenderer construction
-    private Class<T> tileClass = null;
-    private Supplier<Supplier<TileEntityRenderer<T>>> rendererFactory = null;
+    private Class<T> tileClass;
+    private Supplier<TileEntityRenderer<T>> rendererFactory;
 
     public BlockBuilder(String registryName) {
         this(new ResourceLocation(StevesFactoryManager.MODID, registryName));
@@ -91,15 +90,9 @@ public final class BlockBuilder<T extends TileEntity> {
         return this;
     }
 
-    public BlockBuilder<T> renderer(@Nonnull Class<T> tileClass, @Nonnull Supplier<Supplier<TileEntityRenderer<T>>> rendererFactory) {
+    public BlockBuilder<T> renderer(@Nonnull Class<T> tileClass, @Nonnull Supplier<TileEntityRenderer<T>> rendererFactory) {
         this.tileClass = Objects.requireNonNull(tileClass);
         this.rendererFactory = Objects.requireNonNull(rendererFactory);
-        return this;
-    }
-
-    public BlockBuilder<T> noRenderer() {
-        this.tileClass = null;
-        this.rendererFactory = null;
         return this;
     }
 
@@ -129,11 +122,10 @@ public final class BlockBuilder<T extends TileEntity> {
         return tileEntityType;
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SuppressWarnings("UnusedReturnValue")
     public boolean tryRegisterTileEntityRenderer() {
         if (hasTileEntityRenderer()) {
-            ClientRegistry.bindTileEntitySpecialRenderer(tileClass, rendererFactory.get().get());
+            ClientRegistry.bindTileEntitySpecialRenderer(tileClass, rendererFactory.get());
             return true;
         }
         return false;
@@ -147,11 +139,19 @@ public final class BlockBuilder<T extends TileEntity> {
         return tileEntityTypeBuilder != null;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public boolean hasTileEntityRenderer() {
         return tileClass != null && rendererFactory != null;
     }
 
     public ResourceLocation getRegistryName() {
         return registryName;
+    }
+
+    public BlockBuilder<T> forClient(Supplier<Consumer<BlockBuilder<T>>> task) {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            task.get().accept(this);
+        }
+        return this;
     }
 }

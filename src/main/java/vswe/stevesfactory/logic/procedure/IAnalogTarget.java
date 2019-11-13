@@ -2,11 +2,13 @@ package vswe.stevesfactory.logic.procedure;
 
 public interface IAnalogTarget {
 
-    void setAnalogRange(int begin, int end);
-
     int getAnalogBegin();
 
+    void setAnalogBegin(int begin);
+
     int getAnalogEnd();
+
+    void setAnalogEnd(int end);
 
     boolean isInverted();
 

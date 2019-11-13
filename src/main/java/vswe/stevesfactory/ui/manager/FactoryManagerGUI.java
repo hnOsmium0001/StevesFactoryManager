@@ -6,7 +6,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
-import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.Config;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.RenderingHelper;
@@ -22,10 +21,13 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.AbstractWindow;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
+import vswe.stevesfactory.ui.userpreferences.UserPreferencesGUI;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.List;
+
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public class FactoryManagerGUI extends WidgetScreen {
 
@@ -236,8 +238,10 @@ public class FactoryManagerGUI extends WidgetScreen {
                 return true;
             }
             // Fallback action menu
-            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(new UserPreferencesPanel.OpenerEntry()));
+            if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+                ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
+                        UserPreferencesGUI.createContextMenuEntry()
+                ));
                 WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
             }
             return false;

@@ -19,6 +19,7 @@ import vswe.stevesfactory.utils.IOHelper;
 
 import java.util.*;
 
+// TODO cache caps
 public class RedstoneEmitterProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget {
 
     public static final int EMITTERS = 0;

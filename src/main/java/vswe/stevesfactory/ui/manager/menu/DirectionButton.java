@@ -1,5 +1,6 @@
 package vswe.stevesfactory.ui.manager.menu;
 
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
 import vswe.stevesfactory.library.gui.RenderingHelper;
@@ -23,9 +24,10 @@ class DirectionButton extends AbstractIconButton {
     private static final TextureWrapper SELECTED_HOVERED = SELECTED_NORMAL.toDown(1);
     private static final TextureWrapper SELECTED_DISABLED = SELECTED_NORMAL.toDown(2);
 
-    public boolean selected = false;
+    private boolean selected = false;
     private boolean editing = false;
 
+    public BooleanConsumer onStateChanged = b -> {};
     private final String name;
 
     public DirectionButton(Direction direction) {
@@ -90,6 +92,19 @@ class DirectionButton extends AbstractIconButton {
         } else {
             getParentWidget().clearEditing();
         }
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+        onStateChanged.accept(selected);
+    }
+
+    public void toggleSelected() {
+        setSelected(!selected);
     }
 
     @Override

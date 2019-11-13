@@ -34,6 +34,9 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     private Set<Direction> destinationDirections = EnumSet.noneOf(Direction.class);
     private IItemFilter filter = new ItemTraitsFilter();
 
+    private List<LazyOptional<IItemHandler>> cachedSourceCaps = new ArrayList<>();
+    private List<LazyOptional<IItemHandler>> cachedDestinationCaps = new ArrayList<>();
+
     public ItemTransferProcedure() {
         super(Procedures.ITEM_TRANSFER.getFactory());
     }
@@ -45,8 +48,52 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             return;
         }
 
-        Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        // TODO invalidate cache based on dirty checking
+        cacheCaps(context);
+
         List<SingleItemBufferElement> items = new ArrayList<>();
+        for (LazyOptional<IItemHandler> cap : cachedSourceCaps) {
+            if (cap.isPresent()) {
+                IItemHandler handler = cap.orElseThrow(RuntimeException::new);
+                filter.extractFromInventory((stack, slot) -> items.add(new SingleItemBufferElement(stack, handler, slot)), handler);
+            }
+        }
+
+        for (LazyOptional<IItemHandler> cap : cachedDestinationCaps) {
+            if (cap.isPresent()) {
+                IItemHandler handler = cap.orElseThrow(RuntimeException::new);
+                // We don't need filter here because this is just in one procedure
+                // It does not make sense to have multiple filters for one item transferring step
+                for (SingleItemBufferElement buffer : items) {
+                    ItemStack source = buffer.stack;
+                    if (source.isEmpty()) {
+                        continue;
+                    }
+                    int sourceStackSize = source.getCount();
+                    ItemStack untaken = ItemHandlerHelper.insertItem(handler, source, false);
+
+                    buffer.used += sourceStackSize - untaken.getCount();
+                    buffer.stack = untaken;
+                }
+            }
+
+        }
+
+        for (SingleItemBufferElement buffer : items) {
+            if (buffer.used > 0) {
+                buffer.inventory.extractItem(buffer.slot, buffer.used, false);
+            }
+        }
+    }
+
+    public boolean hasError() {
+        return sourceInventories.isEmpty() || sourceDirections.isEmpty()
+                || destinationInventories.isEmpty() || destinationDirections.isEmpty();
+    }
+
+    private void cacheCaps(IExecutionContext context) {
+        Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        cachedSourceCaps.clear();
         for (BlockPos pos : sourceInventories) {
             // Don't force remove non-existing connections as a more user friendly design
             // so that in case player accidentally break a cable, the settings are still preserved
@@ -61,12 +108,11 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             for (Direction direction : sourceDirections) {
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
-                    IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    filter.extractFromInventory((stack, slot) -> items.add(new SingleItemBufferElement(stack, handler, slot)), handler);
+                    cachedSourceCaps.add(cap);
                 }
             }
         }
-
+        cachedDestinationCaps.clear();
         for (BlockPos pos : destinationInventories) {
             if (!linkedInventories.contains(pos)) {
                 continue;
@@ -78,34 +124,10 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             for (Direction direction : destinationDirections) {
                 LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
                 if (cap.isPresent()) {
-                    IItemHandler handler = cap.orElseThrow(RuntimeException::new);
-                    // We don't need filter here because this is just in one procedure
-                    // It does not make sense to have multiple filters for one item transferring step
-                    for (SingleItemBufferElement buffer : items) {
-                        ItemStack source = buffer.stack;
-                        if (source.isEmpty()) {
-                            continue;
-                        }
-                        int sourceStackSize = source.getCount();
-                        ItemStack untaken = ItemHandlerHelper.insertItem(handler, source, false);
-
-                        buffer.used += sourceStackSize - untaken.getCount();
-                        buffer.stack = untaken;
-                    }
+                    cachedDestinationCaps.add(cap);
                 }
             }
         }
-
-        for (SingleItemBufferElement buffer : items) {
-            if (buffer.used > 0) {
-                buffer.inventory.extractItem(buffer.slot, buffer.used, false);
-            }
-        }
-    }
-
-    public boolean hasError() {
-        return sourceInventories.isEmpty() || sourceDirections.isEmpty()
-                || destinationInventories.isEmpty() || destinationDirections.isEmpty();
     }
 
     @Override

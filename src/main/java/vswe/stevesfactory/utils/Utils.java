@@ -1,10 +1,14 @@
 package vswe.stevesfactory.utils;
 
+import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Collection of general helper methods that doesn't worth creating an extra helper class for them.
@@ -14,8 +18,13 @@ public final class Utils {
     private Utils() {
     }
 
+    /**
+     * Cached immutable list of {@link Direction}s for helping reduce memory usage.
+     */
+    public static final ImmutableList<Direction> DIRECTIONS = ImmutableList.copyOf(Direction.values());
+
     public static boolean hasCapabilityAtAll(ICapabilityProvider provider, Capability<?> cap) {
-        for (Direction direction : VectorHelper.DIRECTIONS) {
+        for (Direction direction : DIRECTIONS) {
             if (provider.getCapability(cap, direction).isPresent()) {
                 return true;
             }
@@ -49,5 +58,34 @@ public final class Utils {
 
     public static boolean invertIf(boolean bool, boolean predicate) {
         return bool ^ predicate;
+    }
+
+    public static Iterable<BlockPos> neighbors(BlockPos center) {
+        return () -> neighborsIterator(center);
+    }
+
+    public static Iterator<BlockPos> neighborsIterator(BlockPos center) {
+        return new AbstractIterator<BlockPos>() {
+            private int index = 0;
+
+            @Override
+            protected BlockPos computeNext() {
+                if (index >= DIRECTIONS.size()) {
+                    return endOfData();
+                }
+                return center.offset(DIRECTIONS.get(index++));
+            }
+        };
+    }
+
+    public static boolean isInside(int x, int y, int mx, int my) {
+        return isInside(x, y, 0, 0, mx, my);
+    }
+
+    public static boolean isInside(int x, int y, int bx1, int by1, int bx2, int by2) {
+        return x >= bx1 &&
+                x < bx2 &&
+                y >= by1 &&
+                y < by2;
     }
 }

@@ -43,7 +43,7 @@
   "gui.sfm.yes": "Yes",
   "gui.sfm.no": "No",
   "gui.sfm.WrappingList.SearchStatus": "Found: %d",
-
+  "gui.sfm.UserPreferences.Title": "User Preferences",
   "gui.sfm.FactoryManager.Title": "Factory Manager",
   "gui.sfm.FactoryManager.Editor.XOff": "X: ",
   "gui.sfm.FactoryManager.Editor.YOff": "Y: ",
@@ -55,6 +55,7 @@
   "gui.sfm.ItemIntake.RenderWorkingArea": "Renders working area",
   "gui.sfm.ItemIntake.Mode.Front": "Mode: front",
   "gui.sfm.ItemIntake.Mode.Centered": "Mode: centered",
+  "gui.sfm.ItemIntake.SaveData": "Save and close",
 
   "gui.sfm.ContextMenu.Delete": "Delete",
   "gui.sfm.ContextMenu.DeleteAll": "Delete All",

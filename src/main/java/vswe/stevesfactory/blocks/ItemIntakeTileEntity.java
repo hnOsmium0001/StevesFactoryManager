@@ -195,9 +195,13 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
     }
 
     public void setMode(Mode mode) {
-        assert world != null;
-        this.mode = mode;
-        world.setBlockState(pos, getBlockState().with(ItemIntakeBlock.MODE_PROPERTY, mode));
+        if (this.mode != mode) {
+            assert world != null;
+            this.mode = mode;
+            world.setBlockState(pos, getBlockState().with(ItemIntakeBlock.MODE_PROPERTY, mode));
+            // Update pickup box
+            setRadius(radius);
+        }
     }
 
     public void cycleMode() {
@@ -249,6 +253,12 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
         tag.putBoolean("Rendering", rendering);
         invCap.map(ItemStackHandler::serializeNBT).ifPresent(data -> tag.put("Inventory", data));
         return super.write(tag);
+    }
+
+    @Override
+    protected void invalidateCaps() {
+        invCap.invalidate();
+        super.invalidateCaps();
     }
 
     @Nonnull

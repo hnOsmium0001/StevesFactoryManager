@@ -33,17 +33,11 @@ public class ItemIntakeGUI extends WidgetScreen {
 
     @Override
     public void removed() {
-        int radius = getPrimaryWindow().radius.getValue();
-
-        // Client data
-        intake.setRadius(radius);
-        // No need to set the `mode` and `rendering` again because it is bond to view state
-
         // Server data
         NetworkHandler.sendToServer(new PacketSyncIntakeData(
                 Objects.requireNonNull(intake.getWorld()).getDimension().getType(),
                 intake.getPos(),
-                radius, intake.isRendering(), intake.getMode()));
+                intake.getRadius(), intake.isRendering(), intake.getMode()));
 
         super.removed();
     }
@@ -73,6 +67,7 @@ public class ItemIntakeGUI extends WidgetScreen {
             radius.setWindow(this);
             radius.setValue(intake.getRadius());
             radius.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
+            radius.onValueUpdated = intake::setRadius;
             mode = TextButton.of(intake.getMode().statusTranslationKey);
             mode.setWindow(this);
             mode.onClick = b -> {
@@ -85,10 +80,17 @@ public class ItemIntakeGUI extends WidgetScreen {
             rendering.setChecked(intake.isRendering());
             rendering.onStateChange = intake::setRendering;
 
+            TextButton btnSaveData = TextButton.of("gui.sfm.ItemIntake.SaveData", b -> onClose());
+            btnSaveData.setWindow(this);
+            btnSaveData.setWidth(getContentWidth());
+
             children.add(radius);
             children.add(mode);
             children.add(rendering);
+            children.add(btnSaveData);
             FlowLayout.vertical(children, 0, 0, 2);
+
+            btnSaveData.alignBottom(getContentHeight());
         }
 
         private void updatePosAndDL() {

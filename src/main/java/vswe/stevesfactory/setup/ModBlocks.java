@@ -9,11 +9,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.registries.ObjectHolder;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.blocks.*;
 import vswe.stevesfactory.render.WorkingAreaRenderer;
-import vswe.stevesfactory.setup.builder.BlockBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,43 +63,41 @@ public final class ModBlocks {
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(4F, 10F))
                 .constructor(FactoryManagerBlock::new)
                 .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(FactoryManagerTileEntity::new, block))
-                .noRenderer());
+                .tileEntity(block -> TileEntityType.Builder.create(FactoryManagerTileEntity::new, block)));
 
         pendingBlocks.add(new BlockBuilder<CableTileEntity>("cable")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
                 .constructor(CableBlock::new)
                 .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(CableTileEntity::new, block))
-                .noRenderer());
+                .tileEntity(block -> TileEntityType.Builder.create(CableTileEntity::new, block)));
 
         pendingBlocks.add(new BlockBuilder<RedstoneEmitterTileEntity>("redstone_emitter")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
                 .constructor(RedstoneEmitterBlock::new)
                 .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(RedstoneEmitterTileEntity::new, block))
-                .noRenderer());
+                .tileEntity(block -> TileEntityType.Builder.create(RedstoneEmitterTileEntity::new, block)));
 
         pendingBlocks.add(new BlockBuilder<RedstoneInputTileEntity>("redstone_input")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
                 .constructor(RedstoneInputBlock::new)
                 .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(RedstoneInputTileEntity::new, block))
-                .noRenderer());
+                .tileEntity(block -> TileEntityType.Builder.create(RedstoneInputTileEntity::new, block)));
 
         pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("item_intake")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
                 .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::regular, props))
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::regular, block))
-                .renderer(ItemIntakeTileEntity.class, () -> () -> new WorkingAreaRenderer<>()));
+                .forClient(() -> builder -> builder
+                        .renderer(ItemIntakeTileEntity.class, WorkingAreaRenderer::new)));
 
         pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("instant_item_intake")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
                 .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::instant, props))
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::instant, block))
-                .renderer(ItemIntakeTileEntity.class, () -> () -> new WorkingAreaRenderer<>()));
+                .forClient(() -> builder -> builder
+                        .renderer(ItemIntakeTileEntity.class, WorkingAreaRenderer::new)));
     }
 
     @SubscribeEvent
@@ -122,7 +120,8 @@ public final class ModBlocks {
         pendingBlocks.forEach(BlockBuilder::tryRegisterTileEntityRenderer);
     }
 
-    public static void finishLoading() {
+    @SubscribeEvent
+    public static void finishLoading(FMLLoadCompleteEvent event) {
         pendingBlocks = null;
     }
 }

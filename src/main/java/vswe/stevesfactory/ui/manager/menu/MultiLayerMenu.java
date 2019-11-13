@@ -123,9 +123,6 @@ public abstract class MultiLayerMenu<P extends IProcedure & IProcedureClientData
     }
 
     public void openEditor(@Nullable IWidget editor) {
-        if (openEditor != null) {
-            openEditor.onRemoved();
-        }
         this.openEditor = editor;
         if (editor != null) {
             editor.setParentWidget(this);

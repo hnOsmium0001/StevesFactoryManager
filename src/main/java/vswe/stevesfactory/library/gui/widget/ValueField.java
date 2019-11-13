@@ -22,7 +22,7 @@ public abstract class ValueField<V> extends TextField {
         @Override
         protected boolean updateText(String text) {
             try {
-                number = getParser().apply(text);
+                value = getParser().apply(text);
                 setInternalText(text);
                 return true;
             } catch (RuntimeException ignored) {
@@ -47,7 +47,7 @@ public abstract class ValueField<V> extends TextField {
             // On loss focus, we override the text with number
             // This is for special format limiting that does not throw an exception
             if (!focus) {
-                setText(getStringifier().apply(number));
+                setText(getStringifier().apply(value));
             }
         }
     }
@@ -72,7 +72,7 @@ public abstract class ValueField<V> extends TextField {
         protected boolean updateText(String text) {
             if (formatValidator.test(text)) {
                 setInternalText(text);
-                this.number = getParser().apply(getText());
+                this.value = getParser().apply(getText());
                 return true;
             }
             return false;
@@ -100,7 +100,7 @@ public abstract class ValueField<V> extends TextField {
 
     private Function<String, V> parser;
     private Function<V, String> stringifier;
-    protected V number;
+    protected V value;
 
     protected ValueField(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -121,12 +121,12 @@ public abstract class ValueField<V> extends TextField {
     }
 
     public V getValue() {
-        return number;
+        return value;
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public ValueField<V> setValue(V number) {
-        this.number = number;
+        this.value = number;
         super.updateText(stringifier.apply(number));
         return this;
     }

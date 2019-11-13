@@ -42,18 +42,14 @@ public class RedstoneStrengthMenu<P extends IProcedure & IProcedureClientData & 
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
         P procedure = getLinkedProcedure();
-        begin.setValue(procedure.getAnalogBegin());
-        end.setValue(procedure.getAnalogEnd());
-        invertCondition.setChecked(procedure.isInverted());
         // Using method reference causes LambdaConversionError due to type erasure. This is fixed in JDK 9, which is not available to Minecraft (yet)
         // See JDK-8141508
+        begin.setValue(procedure.getAnalogBegin());
+        begin.onValueUpdated = begin -> procedure.setAnalogBegin(begin);
+        end.setValue(procedure.getAnalogEnd());
+        end.onValueUpdated = end -> procedure.setAnalogEnd(end);
+        invertCondition.setChecked(procedure.isInverted());
         invertCondition.onStateChange = b -> procedure.setInverted(b);
-    }
-
-    @Override
-    protected void updateData() {
-        P procedure = getLinkedProcedure();
-        procedure.setAnalogRange(begin.getValue(), end.getValue());
     }
 
     @Override

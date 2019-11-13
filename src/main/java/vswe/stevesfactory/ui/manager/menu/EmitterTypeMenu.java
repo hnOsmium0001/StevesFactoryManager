@@ -57,12 +57,7 @@ public class EmitterTypeMenu extends Menu<RedstoneEmitterProcedure> {
         }
         type.get(procedure.getOperationType()).check(true);
         valueInput.setValue(procedure.getValue());
-    }
-
-    @Override
-    protected void updateData() {
-        RedstoneEmitterProcedure procedure = getLinkedProcedure();
-        procedure.setValue(valueInput.getValue());
+        valueInput.onValueUpdated = procedure::setValue;
     }
 
     @Override

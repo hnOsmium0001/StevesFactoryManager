@@ -102,7 +102,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         }
         assert world != null;
         StevesFactoryManager.logger.trace("Searching at cable {}", center);
-        for (Direction direction : VectorHelper.DIRECTIONS) {
+        for (Direction direction : Utils.DIRECTIONS) {
             BlockPos neighbor = center.offset(direction);
             TileEntity tile = world.getTileEntity(neighbor);
             if (tile instanceof ICable && !connectedCables.contains(neighbor)) {

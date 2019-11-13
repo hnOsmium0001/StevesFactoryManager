@@ -21,6 +21,7 @@ import vswe.stevesfactory.utils.IOHelper;
 
 import java.util.*;
 
+// TODO cache caps
 public class ItemExportProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
     public static final int INVENTORIES = 0;
