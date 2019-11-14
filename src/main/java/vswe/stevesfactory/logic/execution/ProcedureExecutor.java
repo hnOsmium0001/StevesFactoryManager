@@ -91,6 +91,9 @@ public class ProcedureExecutor implements IExecutionContext {
     @Override
     public void forEachItemBuffer(BiConsumer<Item, IItemBufferElement> lambda) {
         for (Map<Item, IItemBufferElement> buffers : itemBufferElements) {
+            if (buffers == null) {
+                continue;
+            }
             buffers.forEach(lambda);
         }
     }

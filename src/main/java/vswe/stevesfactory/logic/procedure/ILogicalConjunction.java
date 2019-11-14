@@ -1,5 +1,6 @@
 package vswe.stevesfactory.logic.procedure;
 
+// No #markDirty() here because no mutable reference is returned
 public interface ILogicalConjunction {
 
     enum Type {

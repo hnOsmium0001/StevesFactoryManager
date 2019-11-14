@@ -80,8 +80,6 @@ public class WorkingAreaRenderer<T extends TileEntity & IWorkingAreaProvider> ex
             buffer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).color(R, G, B, A).endVertex();
             buffer.pos(aabb.maxX, aabb.minY, aabb.maxZ).color(R, G, B, A).endVertex();
 
-            buffer.sortVertexData((float) x, (float) y, (float) z);
-
             Tessellator.getInstance().draw();
         }
         // Outlines

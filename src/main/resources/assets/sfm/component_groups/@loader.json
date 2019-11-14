@@ -1,7 +1,10 @@
 {
   "files": [
+    "trigger.json",
+    "flow_control.json",
     "item_interaction.json",
+    "fluid_interaction.json",
     "redstone_interaction.json",
-    "trigger.json"
+    "misc.json"
   ]
 }

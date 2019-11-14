@@ -8,18 +8,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
 import vswe.stevesfactory.api.capability.CapabilityRedstone;
 import vswe.stevesfactory.api.capability.IRedstoneHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.menu.*;
+import vswe.stevesfactory.ui.manager.menu.EmitterTypeMenu;
+import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
+import vswe.stevesfactory.ui.manager.menu.RedstoneSidesMenu;
 import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
-// TODO cache caps
 public class RedstoneEmitterProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget {
 
     public static final int EMITTERS = 0;
@@ -30,7 +36,9 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
     private IRedstoneHandler.Type signalType = IRedstoneHandler.Type.WEAK;
     private OperationType operationType = OperationType.FIXED;
 
+    private List<LazyOptional<IRedstoneHandler>> cachedRedstoneCaps = new ArrayList<>();
     private int value = 15;
+    private boolean dirty = false;
 
     public RedstoneEmitterProcedure() {
         super(Procedures.REDSTONE_EMITTER.getFactory());
@@ -43,46 +51,53 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
             return;
         }
 
-        for (BlockPos emitter : emitters) {
-            TileEntity tile = context.getControllerWorld().getTileEntity(emitter);
-            if (tile == null) {
-                continue;
-            }
-            for (Direction direction : directions) {
-                tile.getCapability(CapabilityRedstone.REDSTONE_CAPABILITY, direction).ifPresent(redstone -> {
-                    redstone.setType(signalType);
-                    switch (operationType) {
-                        case FIXED:
-                            redstone.setSignal(value);
-                            break;
-                        case TOGGLE:
-                            int power = redstone.getSignal();
-                            redstone.setSignal(power > 0 ? 0 : value);
-                            break;
-//                        case FORWARD:
-//                            break;
-//                        case BACKWARD:
-//                            break;
-                        case MIN:
-                            redstone.setSignal(Math.min(redstone.getSignal(), value));
-                            break;
-                        case MAX:
-                            redstone.setSignal(Math.max(redstone.getSignal(), value));
-                            break;
-                        case INCREASE:
-                            redstone.setSignal(redstone.getSignal() + value);
-                            break;
-                        case DECREASE:
-                            redstone.setSignal(redstone.getSignal() - value);
-                            break;
-                    }
-                });
-            }
+        updateCache(context);
+        for (LazyOptional<IRedstoneHandler> cap : cachedRedstoneCaps) {
+            cap.ifPresent(redstone -> {
+                redstone.setType(signalType);
+                switch (operationType) {
+                    case FIXED:
+                        redstone.setSignal(value);
+                        break;
+                    case TOGGLE:
+                        int power = redstone.getSignal();
+                        redstone.setSignal(power > 0 ? 0 : value);
+                        break;
+                    case FORWARD:
+                        // TODO
+                        break;
+                    case BACKWARD:
+                        // TODO
+                        break;
+                    case MIN:
+                        redstone.setSignal(Math.min(redstone.getSignal(), value));
+                        break;
+                    case MAX:
+                        redstone.setSignal(Math.max(redstone.getSignal(), value));
+                        break;
+                    case INCREASE:
+                        redstone.setSignal(redstone.getSignal() + value);
+                        break;
+                    case DECREASE:
+                        redstone.setSignal(redstone.getSignal() - value);
+                        break;
+                }
+            });
         }
     }
 
     public boolean hasError() {
         return emitters.isEmpty() || directions.isEmpty();
+    }
+
+    private void updateCache(IExecutionContext context) {
+        if (!dirty) {
+            return;
+        }
+
+        cachedRedstoneCaps.clear();
+        NetworkHelper.cacheDirectionalCaps(context, cachedRedstoneCaps, emitters, directions, CapabilityRedstone.REDSTONE_CAPABILITY);
+        dirty = false;
     }
 
     @Override
@@ -117,11 +132,17 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
         operationType = OperationType.VALUES[tag.getInt("OperationType")];
         signalType = IRedstoneHandler.Type.VALUES[tag.getInt("SignalType")];
         value = tag.getInt("Value");
+        markDirty();
     }
 
     @Override
     public List<BlockPos> getInventories(int id) {
         return emitters;
+    }
+
+    @Override
+    public void markDirty() {
+        dirty = true;
     }
 
     public int getValue() {

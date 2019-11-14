@@ -1,0 +1,8 @@
+{
+  "parent": "sfm:block/base/cube_front_face",
+  "textures": {
+    "particles": "sfm:block/interactor_front_empty",
+    "side": "sfm:block/idle",
+    "front": "sfm:block/interactor_front_aim"
+  }
+}

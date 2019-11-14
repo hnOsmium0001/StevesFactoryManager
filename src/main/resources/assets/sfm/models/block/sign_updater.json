@@ -1,0 +1,7 @@
+{
+  "parent": "sfm:block/base/cube_front_face",
+  "textures": {
+    "side": "sfm:block/idle",
+    "front": "sfm:block/sign_updater_front"
+  }
+}

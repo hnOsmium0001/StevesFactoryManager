@@ -1,0 +1,8 @@
+{
+  "name": "sfm:misc",
+  "translation_key": "component_group.sfm.Misc",
+  "icon": "sfm:textures/gui/component_icon/group.png",
+  "members": [
+    "sfm:sign_updater"
+  ]
+}

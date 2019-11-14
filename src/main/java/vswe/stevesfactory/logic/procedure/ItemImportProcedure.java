@@ -2,26 +2,29 @@ package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
-import vswe.stevesfactory.logic.item.*;
+import vswe.stevesfactory.logic.item.DirectBufferElement;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.NetworkHelper;
 
 import java.util.*;
 
-// TODO cache caps
 public class ItemImportProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
     public static final int INVENTORIES = 0;
@@ -30,6 +33,9 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
     private List<BlockPos> inventories = new ArrayList<>();
     private Set<Direction> directions = EnumSet.noneOf(Direction.class);
     private IItemFilter filter = new ItemTraitsFilter();
+
+    private List<LazyOptional<IItemHandler>> cachedCaps = new ArrayList<>();
+    private boolean dirty = false;
 
     public ItemImportProcedure() {
         super(Procedures.ITEM_IMPORT.getFactory());
@@ -42,39 +48,34 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
             return;
         }
 
-        Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        updateCaches(context);
         Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
-        IWorld world = context.getControllerWorld();
-        for (BlockPos pos : inventories) {
-            if (!linkedInventories.contains(pos)) {
-                continue;
-            }
-            TileEntity tile = world.getTileEntity(pos);
-            if (tile == null) {
-                continue;
-            }
-
-            for (Direction direction : directions) {
-                tile
-                        .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction)
-                        .ifPresent(handler -> {
-                            filter.extractFromInventory((stack, slot) -> {
-                                // If this stack is used to create the buffer, the stack count will be reset and we will lose necessary information
-                                int count = stack.getCount();
-                                DirectBufferElement element = buffers.computeIfAbsent(stack.getItem(), key -> {
-                                    stack.setCount(0);
-                                    return new DirectBufferElement(stack);
-                                });
-                                element.stack.grow(count);
-                                element.addInventory(handler, slot);
-                            }, handler);
-                        });
-            }
+        for (LazyOptional<IItemHandler> cap : cachedCaps) {
+            cap.ifPresent(handler -> filter.extractFromInventory((stack, slot) -> {
+                // If this stack is used to create the buffer, the stack count will be reset and we will lose necessary information
+                int count = stack.getCount();
+                DirectBufferElement element = buffers.computeIfAbsent(stack.getItem(), key -> {
+                    stack.setCount(0);
+                    return new DirectBufferElement(stack);
+                });
+                element.stack.grow(count);
+                element.addInventory(handler, slot);
+            }, handler));
         }
     }
 
     public boolean hasError() {
         return inventories.isEmpty() || directions.isEmpty();
+    }
+
+    private void updateCaches(IExecutionContext context) {
+        if (!dirty) {
+            return;
+        }
+
+        cachedCaps.clear();
+        NetworkHelper.cacheDirectionalCaps(context, cachedCaps, inventories, directions, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        dirty = false;
     }
 
     @Override
@@ -102,6 +103,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         inventories = IOHelper.readBlockPoses(tag.getList("Inventories", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         directions = IOHelper.index2DirectionFill(tag.getIntArray("Directions"), EnumSet.noneOf(Direction.class));
         filter = IOHelper.readItemFilter(tag.getCompound("Filter"));
+        markDirty();
     }
 
     @Override
@@ -112,6 +114,11 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
     @Override
     public List<BlockPos> getInventories(int id) {
         return inventories;
+    }
+
+    @Override
+    public void markDirty() {
+        dirty = true;
     }
 
     @Override

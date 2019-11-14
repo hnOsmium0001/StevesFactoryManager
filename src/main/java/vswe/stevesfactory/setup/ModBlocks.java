@@ -58,33 +58,48 @@ public final class ModBlocks {
     @ObjectHolder("sfm:instant_item_intake")
     public static TileEntityType<ItemIntakeTileEntity> instantItemIntakeTileEntity;
 
+    @ObjectHolder("sfm:bud")
+    public static BUDBlock budBlock;
+    @ObjectHolder("sfm:bud")
+    public static TileEntityType<BUDTileEntity> budTileEntity;
+
+    @ObjectHolder("sfm:world_interactor")
+    public static WorldInteractorBlock worldInteractorBlock;
+    @ObjectHolder("sfm:world_interactor")
+    public static TileEntityType<WorldInteractorTileEntity> worldInteractorTileEntity;
+
+    @ObjectHolder("sfm:sign_updater")
+    public static SignUpdaterBlock signUpdaterBlock;
+    @ObjectHolder("sfm:sign_updater")
+    public static TileEntityType<SignUpdaterTileEntity> signUpdaterTileEntity;
+
     public static void init() {
         pendingBlocks.add(new BlockBuilder<FactoryManagerTileEntity>("factory_manager")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(4F, 10F))
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(3F, 10F))
                 .constructor(FactoryManagerBlock::new)
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(FactoryManagerTileEntity::new, block)));
 
         pendingBlocks.add(new BlockBuilder<CableTileEntity>("cable")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1F, 10F))
                 .constructor(CableBlock::new)
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(CableTileEntity::new, block)));
 
         pendingBlocks.add(new BlockBuilder<RedstoneEmitterTileEntity>("redstone_emitter")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
                 .constructor(RedstoneEmitterBlock::new)
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(RedstoneEmitterTileEntity::new, block)));
 
         pendingBlocks.add(new BlockBuilder<RedstoneInputTileEntity>("redstone_input")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
                 .constructor(RedstoneInputBlock::new)
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(RedstoneInputTileEntity::new, block)));
 
         pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("item_intake")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
                 .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::regular, props))
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::regular, block))
@@ -92,12 +107,30 @@ public final class ModBlocks {
                         .renderer(ItemIntakeTileEntity.class, WorkingAreaRenderer::new)));
 
         pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("instant_item_intake")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(2F, 10F))
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
                 .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::instant, props))
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::instant, block))
                 .forClient(() -> builder -> builder
                         .renderer(ItemIntakeTileEntity.class, WorkingAreaRenderer::new)));
+
+        pendingBlocks.add(new BlockBuilder<BUDTileEntity>("bud")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
+                .constructor(BUDBlock::new)
+                .item(defaultItemProperties())
+                .tileEntity(block -> TileEntityType.Builder.create(BUDTileEntity::new, block)));
+
+        pendingBlocks.add(new BlockBuilder<WorldInteractorTileEntity>("world_interactor")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
+                .constructor(WorldInteractorBlock::new)
+                .item(defaultItemProperties())
+                .tileEntity(block -> TileEntityType.Builder.create(WorldInteractorTileEntity::new, block)));
+
+        pendingBlocks.add(new BlockBuilder<SignUpdaterTileEntity>("sign_updater")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
+                .constructor(SignUpdaterBlock::new)
+                .item(defaultItemProperties())
+                .tileEntity(block -> TileEntityType.Builder.create(SignUpdaterTileEntity::new, block)));
     }
 
     @SubscribeEvent

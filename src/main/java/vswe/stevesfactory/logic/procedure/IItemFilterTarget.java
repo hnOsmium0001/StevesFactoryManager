@@ -3,12 +3,15 @@ package vswe.stevesfactory.logic.procedure;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureClientData;
-import vswe.stevesfactory.logic.item.*;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.ItemTagFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.PropertyManager;
 import vswe.stevesfactory.ui.manager.menu.ItemTagFilterMenu;
 import vswe.stevesfactory.ui.manager.menu.ItemTraitsFilterMenu;
 
+// No #markDirty() here because no capabilities are involved in this data target
 public interface IItemFilterTarget {
 
     static <P extends IProcedure & IProcedureClientData & IItemFilterTarget> PropertyManager<IItemFilter, P> createFilterMenu(P procedure, FlowComponent<P> flowComponent, int filterID) {

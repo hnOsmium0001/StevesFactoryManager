@@ -1,5 +1,6 @@
 package vswe.stevesfactory.logic.procedure;
 
+// No #markDirty() because there is no mutable references returned here
 public interface IAnalogTarget {
 
     int getAnalogBegin();

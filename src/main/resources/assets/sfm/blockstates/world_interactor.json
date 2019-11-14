@@ -1,0 +1,156 @@
+{
+  "variants": {
+    "facing=down,aim=down": {
+      "model": "sfm:block/world_interactor_front",
+      "x": 90
+    },
+    "facing=up,aim=down": {
+      "model": "sfm:block/world_interactor_opposite",
+      "x": 270
+    },
+    "facing=north,aim=down": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 180,
+      "y": 180
+    },
+    "facing=south,aim=down": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 180
+    },
+    "facing=west,aim=down": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 180,
+      "y": 90
+    },
+    "facing=east,aim=down": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 180,
+      "y": 270
+    },
+    "facing=down,aim=up": {
+      "model": "sfm:block/world_interactor_opposite",
+      "x": 90
+    },
+    "facing=up,aim=up": {
+      "model": "sfm:block/world_interactor_front",
+      "x": 270
+    },
+    "facing=north,aim=up": {
+      "model": "sfm:block/world_interactor_vertical_side"
+    },
+    "facing=south,aim=up": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "y": 180
+    },
+    "facing=west,aim=up": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "y": 270
+    },
+    "facing=east,aim=up": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "y": 90
+    },
+    "facing=down,aim=north": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 90
+    },
+    "facing=up,aim=north": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,aim=north": {
+      "model": "sfm:block/world_interactor_front"
+    },
+    "facing=south,aim=north": {
+      "model": "sfm:block/world_interactor_opposite",
+      "y": 180
+    },
+    "facing=west,aim=north": {
+      "model": "sfm:block/world_interactor_horizontal_side",
+      "x": 180,
+      "y": 180
+    },
+    "facing=east,aim=north": {
+      "model": "sfm:block/world_interactor_horizontal_side"
+    },
+    "facing=down,aim=south": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,aim=south": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 270
+    },
+    "facing=north,aim=south": {
+      "model": "sfm:block/world_interactor_opposite"
+    },
+    "facing=south,aim=south": {
+      "model": "sfm:block/world_interactor_front",
+      "y": 180
+    },
+    "facing=west,aim=south": {
+      "model": "sfm:block/world_interactor_horizontal_side",
+      "y": 180
+    },
+    "facing=east,aim=south": {
+      "model": "sfm:block/world_interactor_horizontal_side",
+      "x": 180
+    },
+    "facing=down,aim=west": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,aim=west": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 270,
+      "y": 90
+    },
+    "facing=north,aim=west": {
+      "model": "sfm:block/world_interactor_horizontal_side",
+      "y": 270
+    },
+    "facing=south,aim=west": {
+      "model": "sfm:block/world_interactor_horizontal_side",
+      "y": 90,
+      "x": 180
+    },
+    "facing=west,aim=west": {
+      "model": "sfm:block/world_interactor_front",
+      "y": 270
+    },
+    "facing=east,aim=west": {
+      "model": "sfm:block/world_interactor_opposite",
+      "y": 90
+    },
+    "facing=down,aim=east": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,aim=east": {
+      "model": "sfm:block/world_interactor_vertical_side",
+      "x": 270,
+      "y": 270
+    },
+    "facing=north,aim=east": {
+      "model": "sfm:block/world_interactor_horizontal_side",
+      "y": 270,
+      "x": 180
+    },
+    "facing=south,aim=east": {
+      "model": "sfm:block/world_interactor_horizontal_side",
+      "y": 90
+    },
+    "facing=west,aim=east": {
+      "model": "sfm:block/world_interactor_opposite",
+      "y": 270
+    },
+    "facing=east,aim=east": {
+      "model": "sfm:block/world_interactor_front",
+      "y": 90
+    }
+  }
+}

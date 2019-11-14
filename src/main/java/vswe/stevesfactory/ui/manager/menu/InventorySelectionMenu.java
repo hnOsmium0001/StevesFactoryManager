@@ -54,7 +54,7 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
     @Override
     public void onLinkFlowComponent(FlowComponent<P> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
-        Set<BlockPos> poses = new HashSet<>(flowComponent.getLinkedProcedure().getInventories(id));
+        Set<BlockPos> poses = new HashSet<>(getLinkedProcedure().getInventories(id));
         for (BlockTarget target : list.getContents()) {
             if (poses.contains(target.pos)) {
                 target.setSelected(true);
@@ -74,13 +74,15 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IP
 
     @Override
     protected void updateData() {
-        List<BlockPos> inventories = getLinkedProcedure().getInventories(id);
+        P procedure = getLinkedProcedure();
+        List<BlockPos> inventories = procedure.getInventories(id);
         inventories.clear();
         for (BlockTarget target : list.getContents()) {
             if (target.isSelected()) {
                 inventories.add(target.pos);
             }
         }
+        procedure.markDirty();
     }
 
     @Override

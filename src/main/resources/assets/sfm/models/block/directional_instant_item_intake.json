@@ -1,12 +1,7 @@
 {
-  "parent": "block/cube",
+  "parent": "sfm:block/base/cube_front_face",
   "textures": {
-    "down": "sfm:block/intake_instant",
-    "up": "sfm:block/intake_instant",
-    "north": "sfm:block/intake_instant_front",
-    "south": "sfm:block/intake_instant",
-    "west": "sfm:block/intake_instant",
-    "east": "sfm:block/intake_instant",
-    "particle": "sfm:block/intake_instant_front"
+    "side": "sfm:block/intake_instant_side",
+    "front": "sfm:block/intake_instant_front"
   }
 }

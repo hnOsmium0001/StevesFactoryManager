@@ -2,10 +2,14 @@ package vswe.stevesfactory.utils;
 
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.ImmutableList;
+import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -87,5 +91,14 @@ public final class Utils {
                 x < bx2 &&
                 y >= by1 &&
                 y < by2;
+    }
+
+    public static void dropInventoryItems(World world, BlockPos pos, IItemHandler inventory) {
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+            }
+        }
     }
 }

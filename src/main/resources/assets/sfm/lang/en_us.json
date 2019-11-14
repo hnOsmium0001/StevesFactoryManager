@@ -7,6 +7,9 @@
   "block.sfm.redstone_emitter": "Redstone Emitter",
   "block.sfm.item_intake": "Item Valve",
   "block.sfm.instant_item_intake": "Rapid Item Valve",
+  "block.sfm.bud": "Block Detector (WIP)",
+  "block.sfm.world_interactor": "Block Gate (WIP)",
+  "block.sfm.sign_updater": "Sign Updater (WIP)",
 
   "message.sfm.reload.componentGroups.success": "Successfully reloaded component groups",
   "message.sfm.settings.query": "Entry %s is currently set to %s",
@@ -14,12 +17,11 @@
 
   "logic.sfm.interval_trigger": "Interval Trigger",
   "logic.sfm.redstone_trigger": "Redstone Trigger",
+  "logic.sfm.bud": "Block Detector Trigger",
   "logic.sfm.item_transfer": "Item Transfer",
   "logic.sfm.item_import": "Input",
   "logic.sfm.item_export": "Output",
-  "logic.sfm.item_condition": "Condition",
   "logic.sfm.redstone_emitter": "Redstone Emitter",
-  "logic.sfm.redstone_condition": "Condition (R)",
   "logic.sfm.crafting": "Crafter",
 
   "component_group.sfm.Trigger": "Trigger",
@@ -27,6 +29,7 @@
   "component_group.sfm.FluidInteraction": "Fluid Interactions",
   "component_group.sfm.RedstoneInteraction": "Redstone Interactions",
   "component_group.sfm.FlowControl": "Flow Control",
+  "component_group.sfm.Misc": "Misc",
 
   "gui.sfm.seconds": "second(s)",
   "gui.sfm.ticks": "ticks",

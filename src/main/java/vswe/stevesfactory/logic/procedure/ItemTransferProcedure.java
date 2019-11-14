@@ -3,24 +3,30 @@ package vswe.stevesfactory.logic.procedure;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.*;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
-import vswe.stevesfactory.logic.item.*;
+import vswe.stevesfactory.logic.*;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
+import vswe.stevesfactory.logic.item.SingleItemBufferElement;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 public class ItemTransferProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
@@ -36,9 +42,11 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
 
     private List<LazyOptional<IItemHandler>> cachedSourceCaps = new ArrayList<>();
     private List<LazyOptional<IItemHandler>> cachedDestinationCaps = new ArrayList<>();
+    private boolean dirty = false;
 
     public ItemTransferProcedure() {
         super(Procedures.ITEM_TRANSFER.getFactory());
+        filter.setType(FilterType.BLACKLIST);
     }
 
     @Override
@@ -48,7 +56,6 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             return;
         }
 
-        // TODO invalidate cache based on dirty checking
         cacheCaps(context);
 
         List<SingleItemBufferElement> items = new ArrayList<>();
@@ -92,42 +99,16 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     }
 
     private void cacheCaps(IExecutionContext context) {
+        if (!dirty) {
+            return;
+        }
+
         Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         cachedSourceCaps.clear();
-        for (BlockPos pos : sourceInventories) {
-            // Don't force remove non-existing connections as a more user friendly design
-            // so that in case player accidentally break a cable, the settings are still preserved
-            // the player can just place the cable back and everything will function properly as before
-            if (!linkedInventories.contains(pos)) {
-                continue;
-            }
-            TileEntity tile = context.getControllerWorld().getTileEntity(pos);
-            if (tile == null) {
-                continue;
-            }
-            for (Direction direction : sourceDirections) {
-                LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
-                if (cap.isPresent()) {
-                    cachedSourceCaps.add(cap);
-                }
-            }
-        }
         cachedDestinationCaps.clear();
-        for (BlockPos pos : destinationInventories) {
-            if (!linkedInventories.contains(pos)) {
-                continue;
-            }
-            TileEntity tile = context.getControllerWorld().getTileEntity(pos);
-            if (tile == null) {
-                continue;
-            }
-            for (Direction direction : destinationDirections) {
-                LazyOptional<IItemHandler> cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
-                if (cap.isPresent()) {
-                    cachedDestinationCaps.add(cap);
-                }
-            }
-        }
+        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedSourceCaps, sourceInventories, sourceDirections, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedDestinationCaps, destinationInventories, destinationDirections, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        dirty = false;
     }
 
     @Override
@@ -161,6 +142,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
         destinationInventories = IOHelper.readBlockPoses(tag.getList("TargetPoses", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         destinationDirections = IOHelper.index2DirectionFill(tag.getIntArray("TargetDirections"), EnumSet.noneOf(Direction.class));
         filter = IOHelper.readItemFilter(tag.getCompound("Filter"));
+        markDirty();
     }
 
     @Override
@@ -178,8 +160,14 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             case SOURCE_INVENTORIES:
             default:
                 return sourceInventories;
-            case DESTINATION_INVENTORIES: return destinationInventories;
+            case DESTINATION_INVENTORIES:
+                return destinationInventories;
         }
+    }
+
+    @Override
+    public void markDirty() {
+        dirty = true;
     }
 
     @Override
@@ -188,7 +176,8 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
             case SOURCE_INVENTORIES:
             default:
                 return sourceDirections;
-            case DESTINATION_INVENTORIES: return destinationDirections;
+            case DESTINATION_INVENTORIES:
+                return destinationDirections;
         }
     }
 

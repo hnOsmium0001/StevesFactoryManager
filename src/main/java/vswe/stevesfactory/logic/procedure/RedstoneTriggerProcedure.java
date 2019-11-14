@@ -9,20 +9,26 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import vswe.stevesfactory.api.capability.CapabilityRedstoneEventBus;
 import vswe.stevesfactory.api.capability.SignalStatus;
-import vswe.stevesfactory.api.logic.*;
+import vswe.stevesfactory.api.logic.Connection;
+import vswe.stevesfactory.api.logic.IExecutionContext;
+import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.menu.*;
+import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
+import vswe.stevesfactory.ui.manager.menu.RedstoneSidesMenu;
+import vswe.stevesfactory.ui.manager.menu.RedstoneStrengthMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.Utils;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
-// TODO cache caps
 public class RedstoneTriggerProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, ILogicalConjunction, IAnalogTarget {
 
     public static final int INVENTORIES = 0;
@@ -38,7 +44,9 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
     private int analogEnd = 15;
     private boolean invertCondition = false;
 
-    private boolean reload = true;
+    // Do not cache caps because we use it once, to set listeners for redstone changes
+    // However we still want the dirty check to update listeners upon data mutation
+    private boolean dirty = true;
 
     public RedstoneTriggerProcedure() {
         super(Procedures.REDSTONE_TRIGGER.getFactory(), 0, 2);
@@ -51,29 +59,31 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
 
     @Override
     public void tick() {
-        if (reload) {
-            for (BlockPos watching : watchingSources) {
-                World world = getController().getControllerWorld();
-                TileEntity tile = world.getTileEntity(watching);
-                if (tile != null) {
-                    tile
-                            .getCapability(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY)
-                            .ifPresent(cap -> cap.subscribeEvent(status -> {
-                                // If this procedure is invalid, which means it was removed from the controller, remove the event handler
-                                if (!this.isValid()) {
-                                    return true;
-                                }
-                                // Actual triggering logic
-                                // If is high powered, don't check for low power, and vice versa
-                                if (test(status, !status.hasSignal())) {
-                                    execute(successors()[status.hasSignal() ? HIGH_SUCCESSOR : LOW_SUCCESSOR]);
-                                }
-                                return false;
-                            }));
-                }
-            }
-            reload = false;
+        if (!dirty) {
+            return;
         }
+
+        for (BlockPos watching : watchingSources) {
+            World world = getController().getControllerWorld();
+            TileEntity tile = world.getTileEntity(watching);
+            if (tile != null) {
+                tile
+                        .getCapability(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY)
+                        .ifPresent(cap -> cap.subscribeEvent(status -> {
+                            // If this procedure is invalid, which means it was removed from the controller, remove the event handler
+                            if (!this.isValid()) {
+                                return true;
+                            }
+                            // Actual triggering logic
+                            // If is high powered, don't check for low power, and vice versa
+                            if (test(status, !status.hasSignal())) {
+                                execute(successors()[status.hasSignal() ? HIGH_SUCCESSOR : LOW_SUCCESSOR]);
+                            }
+                            return false;
+                        }));
+            }
+        }
+        dirty = false;
     }
 
     private boolean test(SignalStatus status, boolean checkLowPower) {
@@ -129,12 +139,17 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
         analogBegin = tag.getInt("AnalogBegin");
         analogEnd = tag.getInt("AnalogEnd");
         invertCondition = tag.getBoolean("InvertCondition");
-        reload = true;
+        markDirty();
     }
 
     @Override
     public List<BlockPos> getInventories(int id) {
         return watchingSources;
+    }
+
+    @Override
+    public void markDirty() {
+        dirty = true;
     }
 
     @Override

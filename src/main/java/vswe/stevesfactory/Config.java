@@ -36,6 +36,7 @@ public final class Config {
         // disabled procedures will only be excluded in the selection menu; but kept registered
         public final BooleanValue enableIntervalTrigger;
         public final BooleanValue enableRedstoneTrigger;
+        public final BooleanValue enableBUDTrigger;
         public final BooleanValue enableItemTransfer;
         public final BooleanValue enableItemImport;
         public final BooleanValue enableItemExport;
@@ -55,10 +56,10 @@ public final class Config {
             builder.comment("Item intake config options").push("itemIntake");
             regularPickupInterval = builder
                     .comment("Interval between each pickup attempt for regular item intake, in ticks")
-                    .defineInRange("regularPickupInterval", 20, 0, Integer.MAX_VALUE);
+                    .defineInRange("regularPickupInterval", 80, 0, Integer.MAX_VALUE);
             instantPickupInterval = builder
                     .comment("Interval between each pickup attempt for instant item intake, in ticks")
-                    .defineInRange("instantPickupInterval", 20, 0, Integer.MAX_VALUE);
+                    .defineInRange("instantPickupInterval", 80, 0, Integer.MAX_VALUE);
             regularMaxRadius = builder
                     .comment("Maximum pickup radius that an item take can have, for regular item intake")
                     .defineInRange("regularMaxPickupDistance", 3, 0, Integer.MAX_VALUE);
@@ -91,6 +92,7 @@ public final class Config {
             builder.comment("Procedures config options", "Run '/sfm reload componentGroups' after updating config").push("procedures");
             enableIntervalTrigger = builder.define("enableIntervalTrigger", true);
             enableRedstoneTrigger = builder.define("enableRedstoneTrigger", true);
+            enableBUDTrigger = builder.define("enableBUDTrigger", true);
             enableItemTransfer = builder.define("enableItemTransfer", true);
             enableItemImport = builder.define("enableItemImport", true);
             enableItemExport = builder.define("enableItemExport", true);

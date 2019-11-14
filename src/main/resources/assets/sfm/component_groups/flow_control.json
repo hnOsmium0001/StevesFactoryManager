@@ -1,0 +1,7 @@
+{
+  "name": "sfm:flow_control",
+  "translation_key": "component_group.sfm.FlowControl",
+  "icon": "sfm:textures/gui/component_icon/flow_control.png",
+  "members": [
+  ]
+}

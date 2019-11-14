@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "sfm:block/intake_instant"
+    "all": "sfm:block/intake_instant_side"
   }
 }

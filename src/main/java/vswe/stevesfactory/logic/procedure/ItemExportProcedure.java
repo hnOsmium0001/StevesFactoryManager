@@ -2,13 +2,12 @@ package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.*;
@@ -18,10 +17,10 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
+import vswe.stevesfactory.utils.NetworkHelper;
 
 import java.util.*;
 
-// TODO cache caps
 public class ItemExportProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
     public static final int INVENTORIES = 0;
@@ -30,6 +29,9 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
     private List<BlockPos> inventories = new ArrayList<>();
     private Set<Direction> directions = EnumSet.noneOf(Direction.class);
     private IItemFilter filter = new ItemTraitsFilter();
+
+    private List<LazyOptional<IItemHandler>> cachedCaps = new ArrayList<>();
+    private boolean dirty = false;
 
     public ItemExportProcedure() {
         super(Procedures.ITEM_EXPORT.getFactory());
@@ -43,47 +45,34 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
             return;
         }
 
-        Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        IWorld world = context.getControllerWorld();
-        for (BlockPos pos : inventories) {
-            if (!linkedInventories.contains(pos)) {
-                continue;
-            }
-            TileEntity tile = world.getTileEntity(pos);
-            if (tile == null) {
-                continue;
-            }
+        updateCaches(context);
+        for (LazyOptional<IItemHandler> cap : cachedCaps) {
+            cap.ifPresent(handler -> context.forEachItemBuffer((item, buffer) -> {
+                ItemStack bufferedStack = buffer.getStack();
+                if (!filter.test(bufferedStack)) {
+                    return;
+                }
+                if (bufferedStack.isEmpty()) {
+                    return;
+                }
 
-            for (Direction direction : directions) {
-                tile
-                        .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction)
-                        .ifPresent(handler -> context.forEachItemBuffer((item, buffer) -> {
-                            ItemStack bufferedStack = buffer.getStack();
-                            if (!filter.test(bufferedStack)) {
-                                return;
-                            }
-                            if (bufferedStack.isEmpty()) {
-                                return;
-                            }
+                // Simulate limit input stack size
+                int sourceCount = bufferedStack.getCount();
+                int need = Math.min(calculateNeededAmount(handler, bufferedStack), sourceCount);
+                if (need == 0) {
+                    return;
+                }
+                bufferedStack.setCount(need);
 
-                            // Simulate limit input stack size
-                            int sourceCount = bufferedStack.getCount();
-                            int need = Math.min(calculateNeededAmount(handler, bufferedStack), sourceCount);
-                            if (need == 0) {
-                                return;
-                            }
-                            bufferedStack.setCount(need);
+                ItemStack untaken = ItemHandlerHelper.insertItem(handler, bufferedStack, false);
+                int takenCount = need - untaken.getCount();
+                int untakenCount = sourceCount - takenCount;
 
-                            ItemStack untaken = ItemHandlerHelper.insertItem(handler, bufferedStack, false);
-                            int takenCount = need - untaken.getCount();
-                            int untakenCount = sourceCount - takenCount;
-
-                            buffer.use(takenCount);
-                            // Reuse stack object
-                            untaken.setCount(untakenCount);
-                            buffer.setStack(untaken);
-                        }));
-            }
+                buffer.use(takenCount);
+                // Reuse stack object
+                untaken.setCount(untakenCount);
+                buffer.setStack(untaken);
+            }));
         }
     }
 
@@ -99,6 +88,16 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
             }
         }
         return filter.limitFlowRate(source, totalCount);
+    }
+
+    private void updateCaches(IExecutionContext context) {
+        if (!dirty) {
+            return;
+        }
+
+        cachedCaps.clear();
+        NetworkHelper.cacheDirectionalCaps(context, cachedCaps, inventories, directions, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        dirty = true;
     }
 
     public boolean hasError() {
@@ -130,6 +129,7 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
         inventories = IOHelper.readBlockPoses(tag.getList("Inventories", Constants.NBT.TAG_COMPOUND), new ArrayList<>());
         directions = IOHelper.index2DirectionFill(tag.getIntArray("Directions"), EnumSet.noneOf(Direction.class));
         filter = IOHelper.readItemFilter(tag.getCompound("Filter"));
+        markDirty();
     }
 
     @Override
@@ -140,6 +140,11 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
     @Override
     public List<BlockPos> getInventories(int id) {
         return inventories;
+    }
+
+    @Override
+    public void markDirty() {
+        dirty = true;
     }
 
     @Override

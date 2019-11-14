@@ -10,6 +10,7 @@ import vswe.stevesfactory.Config;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
+import vswe.stevesfactory.blocks.BUDBlock;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.logic.procedure.*;
 import vswe.stevesfactory.utils.NetworkHelper;
@@ -23,6 +24,7 @@ public final class Procedures<P extends IProcedure> {
 
     public static final Procedures<IntervalTriggerProcedure> INTERVAL_TRIGGER = new Procedures<>("interval_trigger", IntervalTriggerProcedure::new, Config.COMMON.enableIntervalTrigger);
     public static final Procedures<RedstoneTriggerProcedure> REDSTONE_TRIGGER = new Procedures<>("redstone_trigger", RedstoneTriggerProcedure::new, Config.COMMON.enableRedstoneTrigger);
+    public static final Procedures<BUDTriggerProcedure> BUD_TRIGGER = new Procedures<>("bud_trigger", BUDTriggerProcedure::new, Config.COMMON.enableBUDTrigger);
     public static final Procedures<ItemTransferProcedure> ITEM_TRANSFER = new Procedures<>("item_transfer", ItemTransferProcedure::new, Config.COMMON.enableItemTransfer);
     public static final Procedures<ItemImportProcedure> ITEM_IMPORT = new Procedures<>("item_import", ItemImportProcedure::new, Config.COMMON.enableItemImport);
     public static final Procedures<ItemExportProcedure> ITEM_EXPORT = new Procedures<>("item_export", ItemExportProcedure::new, Config.COMMON.enableItemExport);
@@ -46,6 +48,7 @@ public final class Procedures<P extends IProcedure> {
     static {
         map.put(INTERVAL_TRIGGER.getRegistryName(), INTERVAL_TRIGGER);
         map.put(REDSTONE_TRIGGER.getRegistryName(), REDSTONE_TRIGGER);
+        map.put(BUD_TRIGGER.getRegistryName(), BUD_TRIGGER);
         map.put(ITEM_TRANSFER.getRegistryName(), ITEM_TRANSFER);
         map.put(ITEM_IMPORT.getRegistryName(), ITEM_IMPORT);
         map.put(ITEM_EXPORT.getRegistryName(), ITEM_EXPORT);
