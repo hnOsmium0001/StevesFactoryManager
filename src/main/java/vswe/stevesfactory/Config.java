@@ -42,6 +42,7 @@ public final class Config {
         public final BooleanValue enableItemExport;
         public final BooleanValue enableCrafting;
         public final BooleanValue enableRedstoneEmitter;
+        public final BooleanValue enableSignUpdater;
 
         private CommonCategory(Builder builder) {
             builder.comment("Factory manager config options").push("factoryManager");
@@ -92,12 +93,13 @@ public final class Config {
             builder.comment("Procedures config options", "Run '/sfm reload componentGroups' after updating config").push("procedures");
             enableIntervalTrigger = builder.define("enableIntervalTrigger", true);
             enableRedstoneTrigger = builder.define("enableRedstoneTrigger", true);
-            enableBUDTrigger = builder.define("enableBUDTrigger", true);
+            enableBUDTrigger = builder.define("enableBUDTrigger", false); // TODO complete procedure and remove WIP
             enableItemTransfer = builder.define("enableItemTransfer", true);
             enableItemImport = builder.define("enableItemImport", true);
             enableItemExport = builder.define("enableItemExport", true);
             enableCrafting = builder.define("enableCrafting", true);
             enableRedstoneEmitter = builder.define("enableRedstoneEmitter", true);
+            enableSignUpdater = builder.define("enableSignUpdater", false); // TODO
             builder.pop();
         }
     }
