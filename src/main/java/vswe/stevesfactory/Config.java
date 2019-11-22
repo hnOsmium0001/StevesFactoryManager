@@ -41,6 +41,7 @@ public final class Config {
         public final BooleanValue enableItemImport;
         public final BooleanValue enableItemExport;
         public final BooleanValue enableCrafting;
+        public final BooleanValue enableFluidTransfer;
         public final BooleanValue enableRedstoneEmitter;
         public final BooleanValue enableSignUpdater;
 
@@ -97,7 +98,8 @@ public final class Config {
             enableItemTransfer = builder.define("enableItemTransfer", true);
             enableItemImport = builder.define("enableItemImport", true);
             enableItemExport = builder.define("enableItemExport", true);
-            enableCrafting = builder.define("enableCrafting", true);
+            enableCrafting = builder.define("enableCrafting", false); // TODO fix bugs and re-enable
+            enableFluidTransfer = builder.define("enableFluidTransfer", false); // TODO
             enableRedstoneEmitter = builder.define("enableRedstoneEmitter", true);
             enableSignUpdater = builder.define("enableSignUpdater", false); // TODO
             builder.pop();
@@ -123,7 +125,7 @@ public final class Config {
                     .comment("How long one move wheel movement for scrolling lists")
                     .defineInRange("scrollSpeed", 20, 1, 256);
             enableInspections = builder
-                    .comment("Default value for InspectionBoxHighlighting", "Modifiable in-game via command /sfm settings, but does not persist through relaunches")
+                    .comment("Set to true to enable debug highlighting for GUIs")
                     .define("enableInspections", false);
             builder.pop();
 

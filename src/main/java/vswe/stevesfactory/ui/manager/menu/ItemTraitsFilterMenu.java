@@ -94,9 +94,9 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & 
         blacklist.onChecked = () -> filter.type = FilterType.BLACKLIST;
 
         settings = new SettingsEditor(this);
-        settings.addOption(filter.isMatchingAmount(), "gui.sfm.Menu.MatchAmount").onStateChange = filter::setMatchingAmount;
-        settings.addOption(filter.isMatchingDamage(), "gui.sfm.Menu.MatchDamage").onStateChange = filter::setMatchingDamage;
-        settings.addOption(filter.isMatchingTag(), "gui.sfm.Menu.MatchTag").onStateChange = filter::setMatchingTag;
+        settings.addOption(filter.isMatchingAmount(), "gui.sfm.Menu.ItemFilter.Traits.MatchAmount").onStateChange = filter::setMatchingAmount;
+        settings.addOption(filter.isMatchingDamage(), "gui.sfm.Menu.ItemFilter.Traits.MatchDamage").onStateChange = filter::setMatchingDamage;
+        settings.addOption(filter.isMatchingTag(), "gui.sfm.Menu.ItemFilter.Traits.MatchTag").onStateChange = filter::setMatchingTag;
     }
 
     @Override

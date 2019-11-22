@@ -17,25 +17,37 @@ import java.util.function.Supplier;
 public final class PacketReloadComponentGroups {
 
     public static void reload(ServerPlayerEntity client) {
-        NetworkHandler.sendTo(client, new PacketReloadComponentGroups());
+        NetworkHandler.sendTo(client, new PacketReloadComponentGroups(false));
+    }
+
+    public static void reset(ServerPlayerEntity client) {
+        NetworkHandler.sendTo(client, new PacketReloadComponentGroups(true));
     }
 
     public static void encode(PacketReloadComponentGroups msg, PacketBuffer buf) {
+        buf.writeBoolean(msg.reset);
     }
 
     public static PacketReloadComponentGroups decode(PacketBuffer buf) {
-        return new PacketReloadComponentGroups();
+        boolean reset = buf.readBoolean();
+        return new PacketReloadComponentGroups(reset);
     }
 
     public static void handle(PacketReloadComponentGroups msg, Supplier<NetworkEvent.Context> ctx) {
         Preconditions.checkState(ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT);
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> handleClient(ctx));
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> handleClient(msg, ctx));
     }
 
     @OnlyIn(Dist.CLIENT)
-    private static void handleClient(Supplier<NetworkEvent.Context> ctx) {
-        ComponentGroup.reload();
+    private static void handleClient(PacketReloadComponentGroups msg, Supplier<NetworkEvent.Context> ctx) {
+        ComponentGroup.reload(msg.reset);
         ctx.get().enqueueWork(() -> Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("message.sfm.reload.componentGroups.success")));
         ctx.get().setPacketHandled(true);
+    }
+
+    private boolean reset;
+
+    public PacketReloadComponentGroups(boolean reset) {
+        this.reset = reset;
     }
 }

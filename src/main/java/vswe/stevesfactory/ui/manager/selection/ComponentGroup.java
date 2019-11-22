@@ -4,6 +4,7 @@ import com.google.gson.*;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.StevesFactoryManagerAPI;
@@ -15,7 +16,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-public final class ComponentGroup implements Comparable<ComponentGroup> {
+public final class ComponentGroup {
 
     public static final Set<IProcedureType<?>> groupedTypes = new HashSet<>();
     public static final Set<IProcedureType<?>> ungroupedTypes = new HashSet<>();
@@ -28,13 +29,26 @@ public final class ComponentGroup implements Comparable<ComponentGroup> {
     }
 
     public static void reload() {
+        reload(false);
+    }
+
+    public static void reload(boolean reset) {
         preSetup();
 
         File directory = getConfigDirectory();
-        String[] list = directory.list();
         JsonParser parser = new JsonParser();
-        if (!directory.exists() || list == null || list.length == 0) {
-            copySettings(parser, directory);
+        if (reset) {
+            try {
+                FileUtils.deleteDirectory(directory);
+                copySettings(parser, directory);
+            } catch (IOException e) {
+                StevesFactoryManager.logger.error("Error resetting component group configs", e);
+            }
+        } else {
+            String[] list = directory.list();
+            if (!directory.exists() || list == null || list.length == 0) {
+                copySettings(parser, directory);
+            }
         }
 
         try {
@@ -55,13 +69,11 @@ public final class ComponentGroup implements Comparable<ComponentGroup> {
     private static void copySettings(JsonParser parser, File configDir) {
         boolean success = configDir.mkdirs();
 
+        String ordersFileName = "@orders.json"; // Default value
         try (InputStream loaderIn = StevesFactoryManager.class.getResourceAsStream(defaultComponentsPath + "@loader.json")) {
             // No need to close this because it is essentially a wrapper around the InputStream
             InputStreamReader loadReader = new InputStreamReader(loaderIn);
             JsonObject loaderRoot = parser.parse(loadReader).getAsJsonObject();
-
-            // Prepare for constructing @order.json from @loader.json
-            List<String> orderEntries = new ArrayList<>();
 
             // Parsing files
             JsonArray files = loaderRoot.getAsJsonArray("files");
@@ -76,34 +88,21 @@ public final class ComponentGroup implements Comparable<ComponentGroup> {
                 } catch (IOException e) {
                     StevesFactoryManager.logger.error("Error copying default component group config file {}", filePath, e);
                 }
-
-                // Read registry name from file (without constructing the component group object) for constructing @order.json later
-                // See #processName(JsonElement)
-                try (InputStream fileIn = StevesFactoryManager.class.getResourceAsStream(filePath)) {
-                    JsonObject groupRoot = parser.parse(new InputStreamReader(fileIn)).getAsJsonObject();
-                    orderEntries.add(groupRoot.get("name").getAsString());
-                } catch (IOException e) {
-                    StevesFactoryManager.logger.error("Error copying default component group config file {}", filePath, e);
-                }
             }
 
-            // Write to @order.json
-            try (FileWriter writer = new FileWriter(configDir.getPath() + "/@order.json")) {
-                Gson gson = new GsonBuilder()
-                        .setPrettyPrinting()
-                        .create();
-
-                JsonObject root = new JsonObject();
-                JsonArray entries = new JsonArray();
-                for (String entry : orderEntries) {
-                    entries.add(entry);
-                }
-                root.add("order", entries);
-
-                writer.write(gson.toJson(root));
+            JsonElement ordersElement = loaderRoot.get("orders");
+            if (ordersElement != null) {
+                ordersFileName = ordersElement.getAsString();
             }
         } catch (IOException e) {
             StevesFactoryManager.logger.error("Error reading loader config", e);
+        }
+
+        // Copying @orders.json
+        try (InputStream orderIn = StevesFactoryManager.class.getResourceAsStream(defaultComponentsPath + ordersFileName)) {
+            Files.copy(orderIn, new File(configDir.getPath() + "/@orders.json").toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            StevesFactoryManager.logger.error("Error copying default component group order config", e);
         }
     }
 
@@ -134,12 +133,11 @@ public final class ComponentGroup implements Comparable<ComponentGroup> {
                 JsonElement rootElement = parser.parse(reader);
                 ComponentGroup group = new ComponentGroup();
                 group.setup(rootElement);
-                group.index = orders.getOrDefault(group.registryName.toString(), 0);
                 groups.add(group);
             }
         }
 
-        Collections.sort(groups);
+        groups.sort(Comparator.comparingInt(group -> orders.getOrDefault(group.getRegistryName().toString(), 0)));
     }
 
     private static void categorizeTypes() {
@@ -157,11 +155,6 @@ public final class ComponentGroup implements Comparable<ComponentGroup> {
     private ResourceLocation icon;
     private String translationKey;
     private List<IProcedureType<?>> members = new ArrayList<>();
-
-    /**
-     * Index declared in {@code @order.json}. If the registry name does not exist, defaults to {@code 0}.
-     */
-    private int index = -1;
 
     private ComponentGroup() {
     }
@@ -222,10 +215,5 @@ public final class ComponentGroup implements Comparable<ComponentGroup> {
                 this.members.add(type);
             }
         }
-    }
-
-    @Override
-    public int compareTo(ComponentGroup that) {
-        return this.index - that.index;
     }
 }

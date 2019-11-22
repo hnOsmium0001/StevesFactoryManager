@@ -106,12 +106,12 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
             count = NumberField.integerFieldRanged(33, 12, 1, 1, Integer.MAX_VALUE)
                     .setValue(stack.getCount());
             count.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
-            count.setLabel(I18n.format("gui.sfm.Menu.FilterAmount"));
+            count.setLabel(I18n.format("gui.sfm.Menu.ItemFilter.Traits.Amount"));
             count.onValueUpdated = stack::setCount;
             damage = NumberField.integerField(33, 12)
                     .setValue(stack.getDamage());
             damage.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
-            damage.setLabel(I18n.format("gui.sfm.Menu.FilterDamage"));
+            damage.setLabel(I18n.format("gui.sfm.Menu.ItemFilter.Traits.Damage"));
             damage.onValueUpdated = stack::setDamage;
 
             children = ImmutableList.of(close, delete, count, damage);

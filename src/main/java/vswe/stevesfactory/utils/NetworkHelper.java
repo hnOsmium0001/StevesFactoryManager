@@ -25,13 +25,6 @@ public final class NetworkHelper {
     private NetworkHelper() {
     }
 
-    public static LinkType getLinkType(@Nullable TileEntity tile) {
-        if (tile instanceof IConnectable) {
-            return ((IConnectable) tile).getConnectionType();
-        }
-        return LinkType.DEFAULT;
-    }
-
     public static <P extends IProcedure> P fabricateInstance(IProcedureType<P> type, INetworkController controller) {
         P procedure = type.createInstance(controller);
         CommandGraph graph = procedure.getGraph();
@@ -46,9 +39,9 @@ public final class NetworkHelper {
     }
 
     public static IProcedure retrieveProcedure(CommandGraph graph, CompoundNBT tag) {
-        IProcedure procedure = findTypeFor(tag).retrieveInstance(tag);
-        procedure.setGraph(graph);
-        return procedure;
+        IProcedure p = findTypeFor(tag).retrieveInstance(tag);
+        p.setGraph(graph);
+        return p;
     }
 
     public static IProcedureType<?> findTypeFor(CompoundNBT tag) {
@@ -71,6 +64,13 @@ public final class NetworkHelper {
         };
     }
 
+    public static LinkType getLinkType(@Nullable TileEntity tile) {
+        if (tile instanceof IConnectable) {
+            return ((IConnectable) tile).getConnectionType();
+        }
+        return LinkType.DEFAULT;
+    }
+
     public static void updateLinksFor(INetworkController controller, ICable cable) {
         for (Capability<?> cap : StevesFactoryManagerAPI.getRecognizableCapabilities()) {
             updateLinksFor(controller, cable, cap);
@@ -84,8 +84,20 @@ public final class NetworkHelper {
             if (tile == null) {
                 continue;
             }
-            if (Utils.hasCapabilityAtAll(tile, cap)) {
-                controller.addLink(cap, neighbor);
+            switch (getLinkType(tile)) {
+                case ALWAYS:
+                    if (Utils.hasCapabilityAtAll(tile, cap)) {
+                        controller.addLink(cap, neighbor);
+                    } else {
+                        controller.addLink(IConnectable.UNKNOWN_CONNECTION_CAPABILITY, neighbor);
+                    }
+                    break;
+                case DEFAULT:
+                    if (Utils.hasCapabilityAtAll(tile, cap)) {
+                        controller.addLink(cap, neighbor);
+                    }
+                    break;
+                case NEVER: break;
             }
         }
     }
@@ -115,11 +127,11 @@ public final class NetworkHelper {
         }
     }
 
-    public static <T> void updateCaps(IExecutionContext context, Collection<LazyOptional<T>> target, Collection<BlockPos> poses, Capability<T> capability) {
-        updateCaps(context, context.getController().getLinkedInventories(capability), target, poses, capability);
+    public static <T> void cacheCaps(IExecutionContext context, Collection<LazyOptional<T>> target, Collection<BlockPos> poses, Capability<T> capability) {
+        cacheCaps(context, context.getController().getLinkedInventories(capability), target, poses, capability);
     }
 
-    public static <T> void updateCaps(IExecutionContext context, Set<BlockPos> linkedInventories, Collection<LazyOptional<T>> target, Collection<BlockPos> poses, Capability<T> capability) {
+    public static <T> void cacheCaps(IExecutionContext context, Set<BlockPos> linkedInventories, Collection<LazyOptional<T>> target, Collection<BlockPos> poses, Capability<T> capability) {
         for (BlockPos pos : poses) {
             if (!linkedInventories.contains(pos)) {
                 continue;

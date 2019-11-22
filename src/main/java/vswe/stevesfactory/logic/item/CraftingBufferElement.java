@@ -8,33 +8,10 @@ import net.minecraft.item.crafting.Ingredient;
 import vswe.stevesfactory.api.item.IItemBufferElement;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 
-import java.util.IdentityHashMap;
 import java.util.Map;
 
+// TODO fix dupes and crashes
 public class CraftingBufferElement implements IItemBufferElement {
-
-    private static final Map<ICraftingRecipe, Map<Item, ItemStack>> ingredientsCache = new IdentityHashMap<>();
-
-    private static Map<Item, ItemStack> getMatchingStacks(ICraftingRecipe recipe) {
-        Map<Item, ItemStack> result = ingredientsCache.get(recipe);
-        if (result != null) {
-            return result;
-        }
-
-        Map<Item, ItemStack> cache = new IdentityHashMap<>();
-        for (Ingredient ingredient : recipe.getIngredients()) {
-            for (ItemStack stack : ingredient.getMatchingStacks()) {
-                ItemStack existing = cache.get(stack.getItem());
-                if (existing == null) {
-                    cache.put(stack.getItem(), stack.copy());
-                } else {
-                    existing.grow(stack.getCount());
-                }
-            }
-        }
-        ingredientsCache.put(recipe, cache);
-        return cache;
-    }
 
     private final IExecutionContext context;
 
@@ -81,42 +58,51 @@ public class CraftingBufferElement implements IItemBufferElement {
 
     public void refresh() {
         Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
-        int maxAvailable = Integer.MAX_VALUE;
-        for (Map.Entry<Item, ItemStack> entry : getMatchingStacks(recipe).entrySet()) {
-            ItemStack matchable = entry.getValue();
-            // The total number of the ingredients needed in this recipe
-            int needed = matchable.getCount();
+        int batchesAvailable = Integer.MAX_VALUE;
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            // Number of crafting set performable, just looking at this ingredient
+            int totalAvailableSets = 0;
+            for (ItemStack matchable : ingredient.getMatchingStacks()) {
+                DirectBufferElement buffer = buffers.get(matchable.getItem());
+                if (buffer == null) {
+                    continue;
+                }
 
-            DirectBufferElement buffer = buffers.get(matchable.getItem());
-            if (buffer == null) {
-                maxAvailable = 0;
-                break;
+                ItemStack source = buffer.getStack();
+                // The total number of this ingredients needed in this recipe
+                int needed = matchable.getCount();
+                // Number of available resource
+                int available = source.getCount();
+                totalAvailableSets += available / needed;
             }
 
-            ItemStack source = buffer.getStack();
-            // Number of available resource
-            int available = source.getCount();
-            // Number of crafting set performable, just looking at this ingredient
-            int availableSets = available / needed;
-
-            maxAvailable = Math.min(maxAvailable, availableSets);
+            if (totalAvailableSets == 0) {
+                // Fast path for resulting nothing: cannot find any stacks for this ingredient, therefore this will be the limiting reagent
+                batchesAvailable = 0;
+                break;
+            } else {
+                batchesAvailable = Math.min(batchesAvailable, totalAvailableSets);
+            }
         }
-        result.setCount(outputBase * maxAvailable);
+        result.setCount(outputBase * batchesAvailable);
     }
 
     @Override
     public void use(int amount) {
         int actualSize = amount / outputBase;
         Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
-        for (Map.Entry<Item, ItemStack> entry : getMatchingStacks(recipe).entrySet()) {
-            ItemStack matchable = entry.getValue();
-            DirectBufferElement buffer = buffers.get(matchable.getItem());
-            if (buffer == null) {
-                continue;
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            int required = actualSize;
+            for (ItemStack matchable : ingredient.getMatchingStacks()) {
+                DirectBufferElement buffer = buffers.get(matchable.getItem());
+                if (buffer == null) {
+                    continue;
+                }
+                int consumption = Math.min(buffer.stack.getCount(), required);
+                buffer.use(consumption);
+                buffer.stack.shrink(consumption);
+                required -= consumption;
             }
-            int consumption = actualSize * matchable.getCount();
-            buffer.use(consumption);
-            buffer.stack.shrink(consumption);
         }
     }
 

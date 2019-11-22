@@ -1,27 +1,10 @@
 {
   "variants": {
-    "facing=down": {
-      "model": "sfm:block/sign_updater",
-      "x": 90
-    },
-    "facing=up": {
-      "model": "sfm:block/sign_updater",
-      "x": 270
-    },
-    "facing=north": {
-      "model": "sfm:block/sign_updater"
-    },
-    "facing=south": {
-      "model": "sfm:block/sign_updater",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "sfm:block/sign_updater",
-      "y": 270
-    },
-    "facing=east": {
-      "model": "sfm:block/sign_updater",
-      "y": 90
-    }
+    "facing=down": { "model": "sfm:block/sign_updater", "x": 90 },
+    "facing=up": { "model": "sfm:block/sign_updater", "x": 270 },
+    "facing=north": { "model": "sfm:block/sign_updater" },
+    "facing=south": { "model": "sfm:block/sign_updater", "y": 180 },
+    "facing=west": { "model": "sfm:block/sign_updater", "y": 270 },
+    "facing=east": { "model": "sfm:block/sign_updater", "y": 90 }
   }
 }

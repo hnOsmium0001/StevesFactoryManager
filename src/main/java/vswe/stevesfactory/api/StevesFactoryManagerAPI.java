@@ -10,8 +10,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.*;
-import vswe.stevesfactory.api.capability.CapabilityRedstone;
-import vswe.stevesfactory.api.capability.CapabilityRedstoneEventBus;
+import vswe.stevesfactory.api.capability.*;
 import vswe.stevesfactory.api.logic.IProcedureType;
 
 import java.util.HashSet;
@@ -39,6 +38,7 @@ public class StevesFactoryManagerAPI {
             recognizableCapabilities.add(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
             recognizableCapabilities.add(CapabilityRedstone.REDSTONE_CAPABILITY);
             recognizableCapabilities.add(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY);
+            recognizableCapabilities.add(CapabilityTextDisplay.TEXT_DISPLAY_CAPABILITY);
         }
         return recognizableCapabilities;
     }
@@ -47,6 +47,7 @@ public class StevesFactoryManagerAPI {
     public static void setup(FMLCommonSetupEvent event) {
         CapabilityRedstone.register();
         CapabilityRedstoneEventBus.register();
+        CapabilityTextDisplay.register();
     }
 
     @SubscribeEvent

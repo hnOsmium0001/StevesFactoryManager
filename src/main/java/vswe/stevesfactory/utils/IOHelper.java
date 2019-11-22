@@ -158,4 +158,43 @@ public final class IOHelper {
         }
         return collection;
     }
+
+    public static ListNBT writeStrings(Collection<String> texts) {
+        ListNBT list = new ListNBT();
+        for (String text : texts) {
+            list.add(new StringNBT(text));
+        }
+        return list;
+    }
+
+    public static ListNBT writeStrings(String[] texts) {
+        ListNBT list = new ListNBT();
+        for (String text : texts) {
+            list.add(new StringNBT(text));
+        }
+        return list;
+    }
+
+    public static <T extends Collection<String>> T readStrings(ListNBT list, T target) {
+        for (int i = 0; i < list.size(); i++) {
+            target.add(list.getString(i));
+        }
+        return target;
+    }
+
+    public static String[] readStrings(ListNBT list) {
+        String[] result = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            result[i] = list.getString(i);
+        }
+        return result;
+    }
+
+    public static String[] readStrings(ListNBT list, String[] target) {
+        Preconditions.checkArgument(list.size() == target.length);
+        for (int i = 0; i < list.size(); i++) {
+            target[i] = list.getString(i);
+        }
+        return target;
+    }
 }
