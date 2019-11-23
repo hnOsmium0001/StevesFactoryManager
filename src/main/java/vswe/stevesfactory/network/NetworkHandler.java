@@ -31,7 +31,6 @@ public final class NetworkHandler {
         // Server to client
         registerMessage(PacketOpenGUI.class, PacketOpenGUI::encode, PacketOpenGUI::decode, PacketOpenGUI::handle);
         registerMessage(PacketReloadComponentGroups.class, PacketReloadComponentGroups::encode, PacketReloadComponentGroups::decode, PacketReloadComponentGroups::handle);
-        registerMessage(PacketSettings.class, PacketSettings::encode, PacketSettings::decode, PacketSettings::handle);
     }
 
     public static void sendTo(ServerPlayerEntity player, Object msg) {

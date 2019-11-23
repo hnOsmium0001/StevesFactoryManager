@@ -1,8 +1,13 @@
 package vswe.stevesfactory;
 
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.*;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.config.ModConfig;
+import vswe.stevesfactory.library.gui.debug.Inspections;
 
 public final class Config {
 
@@ -91,7 +96,7 @@ public final class Config {
                     .define("isInstantItemIntakeBlockCables", false);
             builder.pop();
 
-            builder.comment("Procedures config options", "Run '/sfm reload componentGroups' after updating config").push("procedures");
+            builder.comment("Procedures config options", "Run '/sfm componentGroups reload' after updating config").push("procedures");
             enableIntervalTrigger = builder.define("enableIntervalTrigger", true);
             enableRedstoneTrigger = builder.define("enableRedstoneTrigger", true);
             enableBUDTrigger = builder.define("enableBUDTrigger", false); // TODO complete procedure and remove WIP
@@ -161,5 +166,8 @@ public final class Config {
 
     static void onLoad(ModConfig.Loading event) {
         StevesFactoryManager.logger.debug("Loaded {} config file {}", StevesFactoryManager.MODID, event.getConfig().getFileName());
+    }
+
+    static void onConfigChanged(ConfigChangedEvent event) {
     }
 }

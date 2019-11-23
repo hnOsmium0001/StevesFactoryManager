@@ -17,6 +17,13 @@ import static vswe.stevesfactory.library.gui.RenderingHelper.*;
 
 public abstract class Inspections implements IRenderEventListener {
 
+    /**
+     * Master switch for enabling/disabling inspection. Used for SFM setting 'InspectionBoxHighlighting'.
+     */
+    public static boolean isEnabled() {
+        return Config.CLIENT.enableInspections.get();
+    }
+
     public interface IInspectionInfoProvider {
 
         void provideInformation(ITextReceiver receiver);
@@ -77,11 +84,6 @@ public abstract class Inspections implements IRenderEventListener {
         }
     };
 
-    /**
-     * Master switch for enabling/disabling inspection. Used for SFM setting 'InspectionBoxHighlighting'.
-     */
-    public static boolean enabled = Config.CLIENT.enableInspections.get();
-
     public static final int CONTENTS = 0x662696ff;
     public static final int BORDER = 0x88e38a42;
     public static final int BORDER_A = BORDER >> 24 & 255;
@@ -93,7 +95,7 @@ public abstract class Inspections implements IRenderEventListener {
 
     @SuppressWarnings("UnusedReturnValue")
     public final boolean tryRender(IWidget widget, int mx, int my) {
-        if (!enabled) {
+        if (!isEnabled()) {
             return false;
         }
         if (widget.isInside(mx, my) && shouldRender(widget, mx, my)) {
@@ -108,7 +110,7 @@ public abstract class Inspections implements IRenderEventListener {
 
     @SuppressWarnings("UnusedReturnValue")
     public final boolean tryRender(IWindow window, int mx, int my) {
-        if (!enabled) {
+        if (!isEnabled()) {
             return false;
         }
         if (window.isInside(mx, my) && shouldRender(window, mx, my)) {

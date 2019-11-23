@@ -2,6 +2,7 @@ package vswe.stevesfactory.blocks;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.AbstractSignBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.SignTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -10,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import vswe.stevesfactory.api.capability.CapabilityTextDisplay;
 import vswe.stevesfactory.api.capability.ITextDisplay;
@@ -26,6 +28,8 @@ public class SignUpdaterTileEntity extends TileEntity implements ITextDisplay {
 
     private LazyOptional<ITextDisplay> textDisplayCap = LazyOptional.of(() -> this);
     private SignTileEntity cachedSign;
+
+    private long updatedTick = -1;
 
     public SignUpdaterTileEntity() {
         super(ModBlocks.signUpdaterTileEntity);
@@ -93,6 +97,7 @@ public class SignUpdaterTileEntity extends TileEntity implements ITextDisplay {
         SignTileEntity sign = getCachedSign();
         if (sign != null) {
             sign.setText(line, text);
+            syncData();
         }
     }
 
@@ -137,5 +142,17 @@ public class SignUpdaterTileEntity extends TileEntity implements ITextDisplay {
     protected void invalidateCaps() {
         textDisplayCap.invalidate();
         super.invalidateCaps();
+    }
+
+    public void syncData() {
+        assert world != null;
+        if (updatedTick == world.getGameTime()) {
+            return;
+        }
+
+        BlockPos neighbor = pos.offset(this.getFacing());
+        BlockState neighborState = world.getBlockState(neighbor);
+        world.notifyBlockUpdate(neighbor, neighborState, neighborState, Constants.BlockFlags.DEFAULT);
+        updatedTick = world.getGameTime();
     }
 }

@@ -20,9 +20,9 @@ import vswe.stevesfactory.ui.manager.menu.SignUpdaterLinesMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+// TODO support for RFTools screens
 public class SignUpdaterProcedure extends AbstractProcedure implements IInventoryTarget {
 
     public static final int SIGNS = 0;
@@ -35,6 +35,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
 
     public SignUpdaterProcedure() {
         super(Procedures.SIGN_UPDATER.getFactory());
+        Arrays.fill(texts, "");
     }
 
     @Override
@@ -64,7 +65,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
     @OnlyIn(Dist.CLIENT)
     public FlowComponent<SignUpdaterProcedure> createFlowComponent() {
         FlowComponent<SignUpdaterProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>(SIGNS, I18n.format("gui.sfm.Menu.SignUpdater.Signs"), I18n.format("error.sfm.SignUpdater.NoTargets"), IConnectable.UNKNOWN_CONNECTION_CAPABILITY));
+        f.addMenu(new InventorySelectionMenu<>(SIGNS, I18n.format("gui.sfm.Menu.SignUpdater.Signs"), I18n.format("error.sfm.SignUpdater.NoTargets"), CapabilityTextDisplay.TEXT_DISPLAY_CAPABILITY));
         f.addMenu(new SignUpdaterLinesMenu());
         return f;
     }
@@ -72,6 +73,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
     @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = super.serialize();
+        tag.put("Signs", IOHelper.writeBlockPoses(signs));
         tag.put("Texts", IOHelper.writeStrings(texts));
         return tag;
     }
@@ -79,6 +81,8 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
     @Override
     public void deserialize(CompoundNBT tag) {
         super.deserialize(tag);
+        signs.clear();
+        IOHelper.readBlockPoses(tag.getList("Signs", Constants.NBT.TAG_COMPOUND), signs);
         IOHelper.readStrings(tag.getList("Texts", Constants.NBT.TAG_STRING), texts);
         markDirty();
     }
@@ -86,6 +90,10 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
     @Override
     public List<BlockPos> getInventories(int id) {
         return signs;
+    }
+
+    public String[] getTexts() {
+        return texts;
     }
 
     @Override
