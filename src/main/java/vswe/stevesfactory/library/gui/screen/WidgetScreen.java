@@ -2,7 +2,8 @@ package vswe.stevesfactory.library.gui.screen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.config.GuiUtils;
@@ -20,7 +21,7 @@ import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
 
-public abstract class WidgetScreen extends Screen implements IGuiEventListener {
+public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerScreen<C> implements IGuiEventListener {
 
     public static final TextureWrapper ITEM_SLOT = TextureWrapper.ofFlowComponent(0, 106, 18, 18);
 
@@ -49,8 +50,8 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     private List<String> hoveringText;
     private int hoveringTextX, hoveringTextY;
 
-    protected WidgetScreen(ITextComponent title) {
-        super(title);
+    protected WidgetScreen(C container, PlayerInventory inv, ITextComponent title) {
+        super(container, inv, title);
         // Safe downwards erasure cast
         @SuppressWarnings("unchecked") List<IWindow> popupWindows = (List<IWindow>) (List<? extends IWindow>) this.popupWindows;
         windows = CompositeUnmodifiableList.of(regularWindows, popupWindows);
@@ -99,19 +100,16 @@ public abstract class WidgetScreen extends Screen implements IGuiEventListener {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float particleTicks) {
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         // Dark transparent overlay
         renderBackground();
 
         inspectionHandler.startCycle();
-        primaryWindow.render(mouseX, mouseY, particleTicks);
+        primaryWindow.render(mouseX, mouseY, partialTicks);
         for (IWindow window : windows) {
-            window.render(mouseX, mouseY, particleTicks);
+            window.render(mouseX, mouseY, partialTicks);
         }
         inspectionHandler.endCycle();
-
-        // This should do nothing because we are not adding vanilla buttons
-        super.render(mouseX, mouseY, particleTicks);
 
         if (hoveringText != null) {
             GuiUtils.drawHoveringText(hoveringText, hoveringTextX, hoveringTextY, scaledWidth(), scaledHeight(), Integer.MAX_VALUE, font);

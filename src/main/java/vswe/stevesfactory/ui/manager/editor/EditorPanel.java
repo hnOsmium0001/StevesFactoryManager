@@ -23,10 +23,10 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
-import vswe.stevesfactory.ui.manager.*;
+import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
 import vswe.stevesfactory.ui.manager.editor.ControlFlow.OutputNode;
-import vswe.stevesfactory.ui.userpreferences.UserPreferencesGUI;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -264,8 +264,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.ContextMenu.Paste", b -> actionPaste()),
                 new CallbackEntry(null, "gui.sfm.ContextMenu.CleanupProcedures", b -> actionCleanup()),
-                new CallbackEntry(null, "gui.sfm.ContextMenu.ToggleFullscreen", b -> actionToggleFullscreen()),
-                UserPreferencesGUI.createContextMenuEntry()
+                new CallbackEntry(null, "gui.sfm.ContextMenu.ToggleFullscreen", b -> actionToggleFullscreen())
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
     }

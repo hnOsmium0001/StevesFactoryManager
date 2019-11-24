@@ -4,24 +4,18 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
-import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import vswe.stevesfactory.network.PacketOpenGUI;
+import vswe.stevesfactory.ui.intake.ItemIntakeContainer;
 import vswe.stevesfactory.utils.Utils;
 
 import java.util.function.Supplier;
@@ -49,7 +43,7 @@ public class ItemIntakeBlock extends Block {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof ItemIntakeTileEntity) {
             ItemIntakeTileEntity intake = (ItemIntakeTileEntity) tile;
-            PacketOpenGUI.openItemIntake((ServerPlayerEntity) player, world.dimension.getType(), pos, intake.write(new CompoundNBT()));
+            ItemIntakeContainer.openGUI((ServerPlayerEntity) player, intake);
             return true;
         }
         return false;

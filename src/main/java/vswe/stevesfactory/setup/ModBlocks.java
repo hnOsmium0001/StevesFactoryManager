@@ -73,7 +73,7 @@ public final class ModBlocks {
     @ObjectHolder("sfm:sign_updater")
     public static TileEntityType<SignUpdaterTileEntity> signUpdaterTileEntity;
 
-    public static void init() {
+    static {
         pendingBlocks.add(new BlockBuilder<FactoryManagerTileEntity>("factory_manager")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(3F, 10F))
                 .constructor(FactoryManagerBlock::new)

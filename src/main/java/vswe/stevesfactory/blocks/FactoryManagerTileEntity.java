@@ -3,8 +3,9 @@ package vswe.stevesfactory.blocks;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.player.*;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.*;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -12,6 +13,8 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
@@ -23,15 +26,17 @@ import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
-import vswe.stevesfactory.network.*;
+import vswe.stevesfactory.network.NetworkHandler;
+import vswe.stevesfactory.network.PacketSyncCommandGraphs;
 import vswe.stevesfactory.setup.ModBlocks;
+import vswe.stevesfactory.ui.manager.FactoryManagerContainer;
 import vswe.stevesfactory.utils.*;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INetworkController, ICable {
+public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider, INetworkController, ICable {
 
     private Set<BlockPos> connectedCables = new HashSet<>();
     private Map<Capability<?>, Multiset<BlockPos>> linkedInventories = new IdentityHashMap<>();
@@ -80,8 +85,8 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         search();
         markDirty();
 
-        ServerPlayerEntity client = (ServerPlayerEntity) player;
-        PacketOpenGUI.openFactoryManager(client, getDimension(), getPosition(), write(new CompoundNBT()));
+        FactoryManagerContainer.openGUI((ServerPlayerEntity) player, this);
+//        PacketOpenGUI.openFactoryManager(client, getDimension(), getPosition(), write(new CompoundNBT()));
     }
 
     private void search() {
@@ -310,9 +315,11 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     @Override
     public void read(CompoundNBT compound) {
         StevesFactoryManager.logger.trace("Restoring data from NBT {}", compound);
-
         super.read(compound);
+        readCustom(compound);
+    }
 
+    public void readCustom(CompoundNBT compound) {
         connectedCables.clear();
         IOHelper.readBlockPoses(compound.getList("ConnectedCables", Constants.NBT.TAG_COMPOUND), connectedCables);
 
@@ -347,7 +354,11 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         StevesFactoryManager.logger.trace("Writing data into NBT ({})", pos);
+        writeCustom(compound);
+        return super.write(compound);
+    }
 
+    public CompoundNBT writeCustom(CompoundNBT compound) {
         compound.put("ConnectedCables", IOHelper.writeBlockPoses(connectedCables));
 
         ListNBT serializedInventories = new ListNBT();
@@ -373,6 +384,16 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         }
         compound.put("CommandGraphs", commandGraphs);
 
-        return super.write(compound);
+        return compound;
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return new TranslationTextComponent("gui.sfm.Title.FactoryManager");
+    }
+
+    @Override
+    public Container createMenu(int i, PlayerInventory inv, PlayerEntity player) {
+        return new FactoryManagerContainer(i, this);
     }
 }

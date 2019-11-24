@@ -2,6 +2,8 @@ package vswe.stevesfactory.ui.intake;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import vswe.stevesfactory.blocks.ItemIntakeTileEntity;
 import vswe.stevesfactory.library.gui.RenderingHelper;
@@ -16,13 +18,10 @@ import vswe.stevesfactory.network.PacketSyncIntakeData;
 
 import java.util.*;
 
-public class ItemIntakeGUI extends WidgetScreen {
+public class ItemIntakeGUI extends WidgetScreen<ItemIntakeContainer> {
 
-    private ItemIntakeTileEntity intake;
-
-    public ItemIntakeGUI(ItemIntakeTileEntity intake) {
-        super(new TranslationTextComponent("gui.sfm.Title.ItemIntake"));
-        this.intake = intake;
+    public ItemIntakeGUI(ItemIntakeContainer container, PlayerInventory inv, ITextComponent title) {
+        super(container, inv, title);
     }
 
     @Override
@@ -35,9 +34,9 @@ public class ItemIntakeGUI extends WidgetScreen {
     public void removed() {
         // Server data
         NetworkHandler.sendToServer(new PacketSyncIntakeData(
-                Objects.requireNonNull(intake.getWorld()).getDimension().getType(),
-                intake.getPos(),
-                intake.getRadius(), intake.isRendering(), intake.getMode()));
+                Objects.requireNonNull(container.intake.getWorld()).getDimension().getType(),
+                container.intake.getPos(),
+                container.intake.getRadius(), container.intake.isRendering(), container.intake.getMode()));
 
         super.removed();
     }
@@ -63,22 +62,22 @@ public class ItemIntakeGUI extends WidgetScreen {
             setContents(WIDTH, HEIGHT);
             updatePosAndDL();
 
-            radius = NumberField.integerFieldRanged(33, 12, 1, 0, intake.getMaximumRadius());
+            radius = NumberField.integerFieldRanged(33, 12, 1, 0, container.intake.getMaximumRadius());
             radius.setWindow(this);
-            radius.setValue(intake.getRadius());
+            radius.setValue(container.intake.getRadius());
             radius.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
-            radius.onValueUpdated = intake::setRadius;
-            mode = TextButton.of(intake.getMode().statusTranslationKey);
+            radius.onValueUpdated = container.intake::setRadius;
+            mode = TextButton.of(container.intake.getMode().statusTranslationKey);
             mode.setWindow(this);
             mode.onClick = b -> {
-                intake.cycleMode();
-                mode.setText(I18n.format(intake.getMode().statusTranslationKey));
+                container.intake.cycleMode();
+                mode.setText(I18n.format(container.intake.getMode().statusTranslationKey));
             };
             rendering = new Checkbox(0, 0, 8, 8);
             rendering.setWindow(this);
             rendering.setLabel(I18n.format("gui.sfm.ItemIntake.RenderWorkingArea"));
-            rendering.setChecked(intake.isRendering());
-            rendering.onStateChange = intake::setRendering;
+            rendering.setChecked(container.intake.isRendering());
+            rendering.onStateChange = container.intake::setRendering;
 
             TextButton btnSaveData = TextButton.of("gui.sfm.ItemIntake.SaveData", b -> onClose());
             btnSaveData.setWindow(this);

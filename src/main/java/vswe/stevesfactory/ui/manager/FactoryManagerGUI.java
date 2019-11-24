@@ -4,8 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.ITextComponent;
 import vswe.stevesfactory.Config;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.RenderingHelper;
@@ -21,7 +22,6 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.AbstractWindow;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
-import vswe.stevesfactory.ui.userpreferences.UserPreferencesGUI;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -29,7 +29,7 @@ import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
-public class FactoryManagerGUI extends WidgetScreen {
+public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
     public static FactoryManagerGUI getActiveGUI() {
         return (FactoryManagerGUI) Minecraft.getInstance().currentScreen;
@@ -58,11 +58,8 @@ public class FactoryManagerGUI extends WidgetScreen {
     public static final float WIDTH_PROPORTION = 2F / 3F;
     public static final float HEIGHT_PROPORTION = 3F / 4F;
 
-    private INetworkController controller;
-
-    public FactoryManagerGUI(INetworkController controller) {
-        super(new TranslationTextComponent("gui.sfm.Title.FactoryManager"));
-        this.controller = controller;
+    public FactoryManagerGUI(FactoryManagerContainer container, PlayerInventory inv, ITextComponent title) {
+        super(container, inv, title);
     }
 
     @Override
@@ -74,12 +71,12 @@ public class FactoryManagerGUI extends WidgetScreen {
     @Override
     public void removed() {
         getPrimaryWindow().topLevel.editorPanel.saveAll();
-        controller.sync();
+        container.controller.sync();
         super.removed();
     }
 
     public INetworkController getController() {
-        return controller;
+        return container.controller;
     }
 
     @Override
@@ -240,7 +237,6 @@ public class FactoryManagerGUI extends WidgetScreen {
             // Fallback action menu
             if (button == GLFW_MOUSE_BUTTON_RIGHT) {
                 ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                        UserPreferencesGUI.createContextMenuEntry()
                 ));
                 WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
             }

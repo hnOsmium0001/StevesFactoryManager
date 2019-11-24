@@ -2,6 +2,10 @@ package vswe.stevesfactory.blocks;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -9,6 +13,8 @@ import net.minecraft.tileentity.*;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.*;
@@ -17,13 +23,14 @@ import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.render.IWorkingAreaProvider;
 import vswe.stevesfactory.setup.ModBlocks;
+import vswe.stevesfactory.ui.intake.ItemIntakeContainer;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class ItemIntakeTileEntity extends TileEntity implements ITickableTileEntity, ICable, IWorkingAreaProvider {
+public abstract class ItemIntakeTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider, ICable, IWorkingAreaProvider {
 
     public enum Mode implements IStringSerializable {
         FRONT("front", "gui.sfm.ItemIntake.Mode.Front"),
@@ -239,6 +246,10 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
+        readCustom(tag);
+    }
+
+    public void readCustom(CompoundNBT tag) {
         // Just retrieve data, update world state when chunk is loaded, in #tick()
         mode = Mode.VALUES[tag.getInt("Mode")];
         radius = tag.getInt("Radius");
@@ -248,11 +259,16 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
+        writeCustom(tag);
+        return super.write(tag);
+    }
+
+    public CompoundNBT writeCustom(CompoundNBT tag) {
         tag.putInt("Mode", mode.ordinal());
         tag.putInt("Radius", radius);
         tag.putBoolean("Rendering", rendering);
         invCap.map(ItemStackHandler::serializeNBT).ifPresent(data -> tag.put("Inventory", data));
-        return super.write(tag);
+        return tag;
     }
 
     @Override
@@ -268,5 +284,15 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
             return invCap.cast();
         }
         return super.getCapability(cap, side);
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return new TranslationTextComponent("gui.sfm.Title.ItemIntake");
+    }
+
+    @Override
+    public Container createMenu(int i, PlayerInventory inv, PlayerEntity player) {
+        return new ItemIntakeContainer(i, this);
     }
 }
