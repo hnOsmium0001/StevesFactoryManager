@@ -1,13 +1,9 @@
 package vswe.stevesfactory;
 
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.*;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.config.ModConfig;
-import vswe.stevesfactory.library.gui.debug.Inspections;
 
 public final class Config {
 
@@ -120,6 +116,7 @@ public final class Config {
         public final BooleanValue enableInspections;
 
         // Factory manager GUI options
+        public final BooleanValue useFixedSizeScreen;
         public final BooleanValue useBackgroundOnFullscreen;
         public final IntValue defaultEditorMoveSpeed;
         public final IntValue acceleratedEditorMoveSpeed;
@@ -135,6 +132,10 @@ public final class Config {
             builder.pop();
 
             builder.comment("Factory manager GUI config options").push("factoryManagerGUI");
+            useFixedSizeScreen = builder
+                    .comment("Enable to fix the factory manager size at 256*140, ",
+                            "otherwise it will be 2/3 of the window width, and 3/4 of the window height")
+                    .define("useFixedSizeScreen", false);
             useBackgroundOnFullscreen = builder
                     .comment("Enable to use vanilla background instead of a plain rectangle")
                     .define("useBackgroundOnFullscreen", false);

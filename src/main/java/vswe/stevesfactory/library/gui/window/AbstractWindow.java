@@ -8,8 +8,8 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledHeight;
-import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
+import static vswe.stevesfactory.library.gui.screen.WidgetScreen.screenHeight;
+import static vswe.stevesfactory.library.gui.screen.WidgetScreen.screenWidth;
 
 public abstract class AbstractWindow implements IWindow, IInspectionInfoProvider {
 
@@ -52,8 +52,8 @@ public abstract class AbstractWindow implements IWindow, IInspectionInfoProvider
     }
 
     public void centralize() {
-        position.x = scaledWidth() / 2 - getWidth() / 2;
-        position.y = scaledHeight() / 2 - getHeight() / 2;
+        position.x = screenWidth() / 2 - getWidth() / 2;
+        position.y = screenHeight() / 2 - getHeight() / 2;
         updateChildPosition();
     }
 

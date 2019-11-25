@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 
-import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledHeight;
-import static vswe.stevesfactory.library.gui.screen.WidgetScreen.scaledWidth;
+import static vswe.stevesfactory.library.gui.screen.WidgetScreen.screenHeight;
+import static vswe.stevesfactory.library.gui.screen.WidgetScreen.screenWidth;
 
 public class ContextMenu extends AbstractPopupWindow {
 
@@ -70,8 +70,8 @@ public class ContextMenu extends AbstractPopupWindow {
             xOff = left;
         } else {
             int right = getX() + getWidth() + MIN_DISTANCE;
-            if (right > scaledWidth()) {
-                xOff = right - scaledWidth();
+            if (right > screenWidth()) {
+                xOff = right - screenWidth();
             }
         }
         int top = getY() - MIN_DISTANCE;
@@ -79,8 +79,8 @@ public class ContextMenu extends AbstractPopupWindow {
             yOff = top;
         } else {
             int bottom = getY() + getHeight() + MIN_DISTANCE;
-            if (bottom > scaledHeight()) {
-                yOff = bottom - scaledHeight();
+            if (bottom > screenHeight()) {
+                yOff = bottom - screenHeight();
             }
         }
         move(-xOff, -yOff);

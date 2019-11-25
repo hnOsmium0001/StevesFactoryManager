@@ -151,7 +151,7 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
         }
     }
 
-    private void reload() {
+    public void reload() {
         setMode(mode);
         setRadius(radius);
         setRendering(rendering);
@@ -294,5 +294,19 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
     @Override
     public Container createMenu(int i, PlayerInventory inv, PlayerEntity player) {
         return new ItemIntakeContainer(i, this);
+    }
+
+    @Override
+    public CompoundNBT getUpdateTag() {
+        return write(new CompoundNBT());
+    }
+
+    // Semi-equivalent of #onLoad for client-only purposes
+    @Override
+    public void handleUpdateTag(CompoundNBT tag) {
+        // Does TileEntity#read by default
+        super.handleUpdateTag(tag);
+        // This will always be on client, and world will always be ready
+        reload();
     }
 }

@@ -55,6 +55,8 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
     // GUI code
     ///////////////////////////////////////////////////////////////////////////
 
+    public static final int FIXED_WIDTH = 256;
+    public static final int FIXED_HEIGHT = 180;
     public static final float WIDTH_PROPORTION = 2F / 3F;
     public static final float HEIGHT_PROPORTION = 3F / 4F;
 
@@ -142,8 +144,8 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             this.screenBounds.width = width;
             this.screenBounds.height = height;
             // Centering
-            this.screenBounds.x = scaledWidth() / 2 - width / 2;
-            this.screenBounds.y = scaledHeight() / 2 - height / 2;
+            this.screenBounds.x = screenWidth() / 2 - width / 2;
+            this.screenBounds.y = screenHeight() / 2 - height / 2;
 
             setPosition(screenBounds.x, screenBounds.y);
             setBorder(width, height);
@@ -155,14 +157,20 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
         }
 
         private void asProportional() {
-            int width = (int) (scaledWidth() * WIDTH_PROPORTION);
-            int height = (int) (scaledHeight() * HEIGHT_PROPORTION);
+            int width, height;
+            if (Config.CLIENT.useFixedSizeScreen.get()) {
+                width = FIXED_WIDTH;
+                height = FIXED_HEIGHT;
+            } else {
+                width = (int) (screenWidth() * WIDTH_PROPORTION);
+                height = (int) (screenHeight() * HEIGHT_PROPORTION);
+            }
             setScreenBounds(width, height);
             topLevel.reflow();
         }
 
         private void asFullscreen() {
-            setScreenBounds(scaledWidth(), scaledHeight());
+            setScreenBounds(screenWidth(), screenHeight());
             topLevel.reflow();
         }
 
@@ -227,20 +235,6 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);
             selectionPanel.reflow();
             editorPanel.reflow();
-        }
-
-        @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (super.mouseClicked(mouseX, mouseY, button)) {
-                return true;
-            }
-            // Fallback action menu
-            if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-                ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                ));
-                WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
-            }
-            return false;
         }
     }
 }

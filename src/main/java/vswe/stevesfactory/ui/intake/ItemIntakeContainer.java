@@ -33,5 +33,6 @@ public class ItemIntakeContainer extends WidgetContainer {
         BlockPos pos = data.readBlockPos();
         intake = (ItemIntakeTileEntity) Objects.requireNonNull(inv.player.world.getTileEntity(pos));
         intake.readCustom(Objects.requireNonNull(data.readCompoundTag()));
+        intake.reload();
     }
 }

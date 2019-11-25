@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "${mod_version}"
+version = "${mc_version}-${mod_version}-${release_type}"
 group = 'vswe.stevesfactory'
 archivesBaseName = "${mod_name}"
 
@@ -66,8 +66,27 @@ minecraft {
     }
 }
 
+repositories {
+    maven {
+        // JEI
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.k-4u.nl"
+    }
+    maven {
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+
+    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 }
 
 jar {
@@ -82,4 +101,17 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+}
+
+def static getCheckedOutGitCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+task buildForCommit(type: Copy, dependsOn: build) {
+    group = "build"
+    from "$buildDir/libs"
+    into "$buildDir/libs-custom"
+    include "**/${mod_name}-*.jar"
+    rename "${mod_name}-${mc_version}-${mod_version}-${release_type}.jar",
+            "${mod_name}-${mc_version}-${mod_version}-${getCheckedOutGitCommitHash()}.jar"
 }

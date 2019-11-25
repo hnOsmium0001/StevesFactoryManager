@@ -1,7 +1,9 @@
 package vswe.stevesfactory.library.gui.screen;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -29,12 +31,20 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
         return (WidgetScreen) Minecraft.getInstance().currentScreen;
     }
 
-    public static int scaledWidth() {
-        return Minecraft.getInstance().mainWindow.getScaledWidth();
+    public static int screenWidth() {
+        Screen screen = Minecraft.getInstance().currentScreen;
+        if (screen != null) {
+            return screen.width;
+        }
+        return 0;
     }
 
-    public static int scaledHeight() {
-        return Minecraft.getInstance().mainWindow.getScaledHeight();
+    public static int screenHeight() {
+        Screen screen = Minecraft.getInstance().currentScreen;
+        if (screen != null) {
+            return screen.height;
+        }
+        return 0;
     }
 
     private IWindow primaryWindow;
@@ -90,6 +100,8 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
     protected void initializePrimaryWindow(IWindow primaryWindow) {
         if (this.primaryWindow == null) {
             this.primaryWindow = primaryWindow;
+            xSize = primaryWindow.getWidth();
+            ySize = primaryWindow.getHeight();
         } else {
             throw new IllegalStateException("Already initialized the primary window " + this.primaryWindow);
         }
@@ -112,7 +124,7 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
         inspectionHandler.endCycle();
 
         if (hoveringText != null) {
-            GuiUtils.drawHoveringText(hoveringText, hoveringTextX, hoveringTextY, scaledWidth(), scaledHeight(), Integer.MAX_VALUE, font);
+            GuiUtils.drawHoveringText(hoveringText, hoveringTextX, hoveringTextY, screenWidth(), screenHeight(), Integer.MAX_VALUE, font);
             hoveringText = null;
         }
     }
