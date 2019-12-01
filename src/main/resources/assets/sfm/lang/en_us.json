@@ -172,8 +172,8 @@
   "error.sfm.SignUpdater.NoTargets": "No sign updater blocks specified",
   "error.sfm.FluidIO.NoInv": "No tanks specified",
   "error.sfm.FluidIO.NoTarget": "No targets specified",
-  "error.sfm.FluidTransfer.NoSrcInv": "No source tanks specified",
+  "error.sfm.FluidTransfer.NoSrcTank": "No source tanks specified",
   "error.sfm.FluidTransfer.NoSrcTarget": "No source targets specified",
-  "error.sfm.FluidTransfer.NoDestInv": "No destination tanks specified",
+  "error.sfm.FluidTransfer.NoDestTank": "No destination tanks specified",
   "error.sfm.FluidTransfer.NoDestTarget": "No destination targets specified"
 }

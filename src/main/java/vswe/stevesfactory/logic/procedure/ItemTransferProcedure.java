@@ -9,24 +9,17 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.*;
-import vswe.stevesfactory.logic.item.IItemFilter;
-import vswe.stevesfactory.logic.item.ItemTraitsFilter;
-import vswe.stevesfactory.logic.item.SingleItemBufferElement;
+import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ItemTransferProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
@@ -166,11 +159,6 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     }
 
     @Override
-    public void markDirty() {
-        dirty = true;
-    }
-
-    @Override
     public Set<Direction> getDirections(int id) {
         switch (id) {
             case SOURCE_INVENTORIES:
@@ -191,5 +179,10 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
         if (filterID == FILTER) {
             this.filter = filter;
         }
+    }
+
+    @Override
+    public void markDirty() {
+        dirty = true;
     }
 }

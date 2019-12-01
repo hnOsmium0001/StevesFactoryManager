@@ -13,7 +13,8 @@ import vswe.stevesfactory.logic.Procedures;
 
 import javax.annotation.Nullable;
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public final class ComponentGroup {
@@ -22,18 +23,15 @@ public final class ComponentGroup {
     public static final Set<IProcedureType<?>> ungroupedTypes = new HashSet<>();
     public static final List<ComponentGroup> groups = new ArrayList<>();
 
-    private static final String defaultComponentsPath = "/assets/" + StevesFactoryManager.MODID + "/component_groups/";
+    private static final String DEFAULT_COMPONENTS_PATH = "/assets/" + StevesFactoryManager.MODID + "/component_groups/";
+    private static final String ORDER_DECLARATION_FILE = "@order.json";
 
     private static File getConfigDirectory() {
         return new File("./config/" + StevesFactoryManager.MODID + "/component_groups/");
     }
 
-    public static void reload() {
-        reload(false);
-    }
-
     public static void reload(boolean reset) {
-        preSetup();
+        cleanCache();
 
         File directory = getConfigDirectory();
         JsonParser parser = new JsonParser();
@@ -60,7 +58,7 @@ public final class ComponentGroup {
         categorizeTypes();
     }
 
-    private static void preSetup() {
+    private static void cleanCache() {
         groups.clear();
         groupedTypes.clear();
         ungroupedTypes.clear();
@@ -69,8 +67,8 @@ public final class ComponentGroup {
     private static void copySettings(JsonParser parser, File configDir) {
         boolean success = configDir.mkdirs();
 
-        String ordersFileName = "@orders.json"; // Default value
-        try (InputStream loaderIn = StevesFactoryManager.class.getResourceAsStream(defaultComponentsPath + "@loader.json")) {
+        String ordersFileName = "@order.json";
+        try (InputStream loaderIn = StevesFactoryManager.class.getResourceAsStream(DEFAULT_COMPONENTS_PATH + "@loader.json")) {
             // No need to close this because it is essentially a wrapper around the InputStream
             InputStreamReader loadReader = new InputStreamReader(loaderIn);
             JsonObject loaderRoot = parser.parse(loadReader).getAsJsonObject();
@@ -79,18 +77,17 @@ public final class ComponentGroup {
             JsonArray files = loaderRoot.getAsJsonArray("files");
             for (JsonElement element : files) {
                 String fileName = element.getAsString();
-                String filePath = defaultComponentsPath + fileName;
-                Path configPath = new File(configDir.getPath() + "/" + fileName).toPath();
+                String filePath = DEFAULT_COMPONENTS_PATH + fileName;
 
                 // Copy the definition file to config directory
                 try (InputStream fileIn = StevesFactoryManager.class.getResourceAsStream(filePath)) {
-                    Files.copy(fileIn, configPath, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(fileIn, new File(configDir.getPath() + "/" + fileName).toPath(), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     StevesFactoryManager.logger.error("Error copying default component group config file {}", filePath, e);
                 }
             }
 
-            JsonElement ordersElement = loaderRoot.get("orders");
+            JsonElement ordersElement = loaderRoot.get("orderFile");
             if (ordersElement != null) {
                 ordersFileName = ordersElement.getAsString();
             }
@@ -98,9 +95,9 @@ public final class ComponentGroup {
             StevesFactoryManager.logger.error("Error reading loader config", e);
         }
 
-        // Copying @orders.json
-        try (InputStream orderIn = StevesFactoryManager.class.getResourceAsStream(defaultComponentsPath + ordersFileName)) {
-            Files.copy(orderIn, new File(configDir.getPath() + "/@orders.json").toPath(), StandardCopyOption.REPLACE_EXISTING);
+        // Copying @order.json
+        try (InputStream orderIn = StevesFactoryManager.class.getResourceAsStream(DEFAULT_COMPONENTS_PATH + ordersFileName)) {
+            Files.copy(orderIn, new File(configDir.getPath() + "/" + ORDER_DECLARATION_FILE).toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             StevesFactoryManager.logger.error("Error copying default component group order config", e);
         }
@@ -108,7 +105,7 @@ public final class ComponentGroup {
 
     private static void setupInternal(JsonParser parser, File directory) throws IOException {
         Object2IntMap<String> orders = new Object2IntOpenHashMap<>();
-        File orderFile = new File(directory, "@order.json");
+        File orderFile = new File(directory, ORDER_DECLARATION_FILE);
         try (FileReader reader = new FileReader(orderFile)) {
             JsonObject root = parser.parse(reader).getAsJsonObject();
             JsonArray entries = root.getAsJsonArray("order");
@@ -126,7 +123,7 @@ public final class ComponentGroup {
         }
         for (File file : files) {
             String fileName = file.getName();
-            if (!"json".equals(FilenameUtils.getExtension(fileName)) || "@order.json".equals(fileName)) {
+            if (!"json".equals(FilenameUtils.getExtension(fileName)) || ORDER_DECLARATION_FILE.equals(fileName)) {
                 continue;
             }
             try (FileReader reader = new FileReader(file)) {

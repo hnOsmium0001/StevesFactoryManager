@@ -100,7 +100,7 @@ public final class Config {
             enableItemImport = builder.define("enableItemImport", true);
             enableItemExport = builder.define("enableItemExport", true);
             enableCrafting = builder.define("enableCrafting", false); // TODO fix bugs and re-enable
-            enableFluidTransfer = builder.define("enableFluidTransfer", false); // TODO
+            enableFluidTransfer = builder.define("enableFluidTransfer", true);
             enableRedstoneEmitter = builder.define("enableRedstoneEmitter", true);
             enableSignUpdater = builder.define("enableSignUpdater", false); // TODO
             builder.pop();

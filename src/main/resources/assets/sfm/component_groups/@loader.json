@@ -1,5 +1,5 @@
 {
-  "orders": "@orders.json",
+  "orderFile": "@order.json",
   "files": [
     "trigger.json",
     "item_interaction.json",

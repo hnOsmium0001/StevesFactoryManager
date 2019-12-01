@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.network.PacketReloadComponentGroups;
-import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.setup.ModContainers;
 import vswe.stevesfactory.ui.manager.selection.ComponentGroup;
 
@@ -53,7 +52,7 @@ public class StevesFactoryManager {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         ModContainers.registerFactories();
-        ComponentGroup.reload();
+        ComponentGroup.reload(false);
     }
 
     private void serverStarting(final FMLServerStartingEvent event) {
