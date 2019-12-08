@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.nbt.CompoundNBT;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
@@ -30,7 +30,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.*;
 
-public class FlowComponent<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements Comparable<FlowComponent<?>> {
+public class FlowComponent<P extends IProcedure & IClientDataStorage> extends AbstractContainer<IWidget> implements Comparable<FlowComponent<?>> {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
@@ -318,11 +318,11 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         }
     }
 
-    public static <P extends IProcedure & IProcedureClientData> FlowComponent<P> of(P procedure, int inputNodes, int outputNodes) {
+    public static <P extends IProcedure & IClientDataStorage> FlowComponent<P> of(P procedure, int inputNodes, int outputNodes) {
         return new FlowComponent<>(procedure, inputNodes, outputNodes);
     }
 
-    public static <P extends IProcedure & IProcedureClientData> FlowComponent<P> of(P procedure) {
+    public static <P extends IProcedure & IClientDataStorage> FlowComponent<P> of(P procedure) {
         return of(procedure, 1, 1);
     }
 
@@ -727,7 +727,7 @@ public class FlowComponent<P extends IProcedure & IProcedureClientData> extends 
         return procedure;
     }
 
-    public IProcedureClientData getDataHandler() {
+    public IClientDataStorage getDataHandler() {
         return procedure;
     }
 

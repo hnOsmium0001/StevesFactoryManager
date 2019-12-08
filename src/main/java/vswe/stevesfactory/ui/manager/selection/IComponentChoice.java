@@ -32,7 +32,7 @@ public interface IComponentChoice extends IWidget {
         BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).getController().getPosition();
         INetworkController controller = (INetworkController) Objects.requireNonNull(Minecraft.getInstance().world.getTileEntity(controllerPos));
 
-        FlowComponent<?> flowComponent = NetworkHelper.fabricateInstance(type, controller).createFlowComponent();
+        FlowComponent<?> flowComponent = NetworkHelper.fabricateInstance(controller, type).createFlowComponent();
         // Magic number so that the flow component don't overlap with the selection panel
         flowComponent.setLocation(10, 20);
         getEditorPanel().addChildren(flowComponent);

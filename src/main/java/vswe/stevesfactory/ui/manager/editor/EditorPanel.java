@@ -11,7 +11,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.util.math.BlockPos;
 import vswe.stevesfactory.Config;
-import vswe.stevesfactory.api.logic.CommandGraph;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.RenderingHelper;
@@ -68,12 +67,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
 
         Map<IProcedure, FlowComponent<?>> m = new HashMap<>();
-        for (CommandGraph graph : controller.getCommandGraphs()) {
-            for (IProcedure procedure : graph.collect()) {
-                FlowComponent<?> f = procedure.createFlowComponent();
-                m.put(procedure, f);
-                addChildren(f);
-            }
+        for (IProcedure procedure : controller.getPGraph().getAllProcedures()) {
+            FlowComponent<?> f = procedure.createFlowComponent();
+            m.put(procedure, f);
+            addChildren(f);
         }
 
         for (FlowComponent<?> child : children) {

@@ -4,7 +4,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
-import vswe.stevesfactory.api.logic.CommandGraph;
+import vswe.stevesfactory.api.logic.ProcedureGraph;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -63,20 +63,7 @@ public interface INetworkController {
 
     void removeAllLinks();
 
-    Collection<CommandGraph> getCommandGraphs();
-
-    @SuppressWarnings("UnusedReturnValue")
-    boolean addCommandGraph(CommandGraph graph);
-
-    @SuppressWarnings("UnusedReturnValue")
-    boolean addCommandGraphs(Collection<CommandGraph> graphs);
-
-    @SuppressWarnings("UnusedReturnValue")
-    boolean removeCommandGraph(CommandGraph graph);
-
-    void removeAllCommandGraphs();
-
-    boolean isGraphValid(CommandGraph graph);
+    ProcedureGraph getPGraph();
 
     /**
      * Sync command graph data.

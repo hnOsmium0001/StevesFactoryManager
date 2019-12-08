@@ -1,24 +1,20 @@
 package vswe.stevesfactory.logic;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.*;
-import vswe.stevesfactory.api.network.INetworkController;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class AbstractProcedure implements IProcedure, IProcedureClientData {
+public abstract class AbstractProcedure implements IProcedure, IClientDataStorage {
 
     private IProcedureType<?> type;
 
     private transient Connection[] successors;
     private transient Connection[] predecessors;
-
-    private transient CommandGraph graph;
 
     // Client data
     private int componentX;
@@ -35,16 +31,14 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         this.predecessors = new Connection[possibleParents];
     }
 
-    public INetworkController getController() {
-        Preconditions.checkState(graph != null);
-        INetworkController controller = graph.getController();
-        Preconditions.checkArgument(controller.isValid(), "The controller object is invalid!");
-        return controller;
-    }
-
     @Override
     public boolean isValid() {
-        return graph != null && graph.isValid();
+        return successors != null && predecessors != null;
+    }
+
+    private void markInvalid() {
+        successors = null;
+        predecessors = null;
     }
 
     @Override
@@ -60,10 +54,6 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
     @Override
     public void setInputConnection(@Nonnull Connection connection, int index) {
         predecessors[index] = connection;
-        if (connection.getSource().getGraph() != this.graph && isRoot()) {
-            getController().removeCommandGraph(graph);
-            graph = connection.getSource().getGraph();
-        }
     }
 
     @Override
@@ -73,20 +63,16 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
 
     @Override
     public Connection removeInputConnection(int index) {
-        Preconditions.checkState(!isRoot());
-        Connection ret = predecessors[index];
-
+        Connection prev = predecessors[index];
         predecessors[index] = null;
-        graph = graph.inducedSubgraph(this);
-        getController().addCommandGraph(graph);
-        return ret;
+        return prev;
     }
 
     @Override
     public Connection removeOutputConnection(int index) {
-        Connection ret = successors[index];
+        Connection prev = successors[index];
         successors[index] = null;
-        return ret;
+        return prev;
     }
 
     @Override
@@ -101,28 +87,12 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
                 successor.remove();
             }
         }
-        if (isRoot()) {
-            getController().removeCommandGraph(graph);
-        }
-    }
-
-    public boolean isRoot() {
-        return graph.getRoot() == this;
+        markInvalid();
     }
 
     @Override
     public IProcedureType<?> getType() {
         return type;
-    }
-
-    @Override
-    public CommandGraph getGraph() {
-        return graph;
-    }
-
-    @Override
-    public void setGraph(CommandGraph graph) {
-        this.graph = graph;
     }
 
     @Override
@@ -197,37 +167,8 @@ public abstract class AbstractProcedure implements IProcedure, IProcedureClientD
         pushFrame(context, successors[outputIndex]);
     }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("successors", stringifyIdentity(successors))
-                .add("predecessors", stringifyIdentity(predecessors))
-                .add("graph", "CommandGraph@" + graph.hashCode())
-                .add("componentX", componentX)
-                .add("componentY", componentY)
-                .toString();
-    }
-
     public static IProcedureType<?> readType(CompoundNBT tag) {
         ResourceLocation id = new ResourceLocation(tag.getString("ID"));
         return StevesFactoryManagerAPI.getProceduresRegistry().getValue(id);
-    }
-
-    public static String stringifyIdentity(@Nullable Connection connection) {
-        if (connection == null) {
-            return "null";
-        }
-        IProcedure node = connection.getDestination();
-        return node.getClass().getSimpleName() + '@' + System.identityHashCode(node);
-    }
-
-    public static String stringifyIdentity(Connection[] connections) {
-        StringBuilder result = new StringBuilder();
-        result.append('[');
-        for (Connection connection : connections) {
-            result.append(stringifyIdentity(connection));
-        }
-        result.append(']');
-        return result.toString();
     }
 }

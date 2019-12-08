@@ -5,7 +5,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.box.WrappingList;
@@ -16,7 +16,7 @@ import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import java.util.*;
 
-public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IProcedureClientData> extends Menu<P> {
+public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IClientDataStorage> extends Menu<P> {
 
     private final int id;
     private final String name;

@@ -3,7 +3,7 @@ package vswe.stevesfactory.ui.manager.menu;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public abstract class MultiLayerMenu<P extends IProcedure & IProcedureClientData> extends Menu<P> {
+public abstract class MultiLayerMenu<P extends IProcedure & IClientDataStorage> extends Menu<P> {
 
     private IWidget openEditor;
 

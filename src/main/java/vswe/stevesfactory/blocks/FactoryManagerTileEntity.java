@@ -23,11 +23,11 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.Config;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.CommandGraph;
+import vswe.stevesfactory.api.logic.ProcedureGraph;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.network.NetworkHandler;
-import vswe.stevesfactory.network.PacketSyncCommandGraphs;
+import vswe.stevesfactory.network.PacketSyncFlowcharts;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.ui.manager.FactoryManagerContainer;
 import vswe.stevesfactory.utils.*;
@@ -41,7 +41,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     private Set<BlockPos> connectedCables = new HashSet<>();
     private Map<Capability<?>, Multiset<BlockPos>> linkedInventories = new IdentityHashMap<>();
 
-    private Set<CommandGraph> graphs = new HashSet<>();
+    private ProcedureGraph graph = ProcedureGraph.create();
 
     private int ticks;
 
@@ -59,9 +59,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     public void tick() {
         assert world != null;
         if (!world.isRemote) {
-            for (CommandGraph graph : graphs) {
-                graph.getRoot().tick();
-            }
+            graph.tick(this);
 
             if (ticks == 0) {
                 reload();
@@ -86,7 +84,6 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         markDirty();
 
         FactoryManagerContainer.openGUI((ServerPlayerEntity) player, this);
-//        PacketOpenGUI.openFactoryManager(client, getDimension(), getPosition(), write(new CompoundNBT()));
     }
 
     private void search() {
@@ -209,37 +206,12 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     }
 
     @Override
-    public Set<CommandGraph> getCommandGraphs() {
-        return graphs;
+    public ProcedureGraph getPGraph() {
+        return graph;
     }
 
-    @Override
-    public boolean addCommandGraph(CommandGraph graph) {
-        markDirty();
-        return graphs.add(graph);
-    }
-
-    @Override
-    public boolean addCommandGraphs(Collection<CommandGraph> graphs) {
-        markDirty();
-        return this.graphs.addAll(graphs);
-    }
-
-    @Override
-    public boolean removeCommandGraph(CommandGraph graph) {
-        markDirty();
-        return graphs.remove(graph);
-    }
-
-    @Override
-    public void removeAllCommandGraphs() {
-        markDirty();
-        graphs.clear();
-    }
-
-    @Override
-    public boolean isGraphValid(CommandGraph graph) {
-        return graphs.contains(graph);
+    public void setPGraph(ProcedureGraph graph) {
+        this.graph = graph;
     }
 
     /**
@@ -283,7 +255,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     public void sync() {
         assert world != null;
         if (world.isRemote) {
-            NetworkHandler.sendToServer(new PacketSyncCommandGraphs(getDimension(), getPosition(), graphs));
+            NetworkHandler.sendToServer(new PacketSyncFlowcharts(getDimension(), getPosition(), graph));
         }
     }
 
@@ -343,12 +315,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             linkedInventories.put(cap, set);
         }
 
-        ListNBT commandGraphs = compound.getList("CommandGraphs", Constants.NBT.TAG_COMPOUND);
-        graphs.clear();
-        for (int i = 0; i < commandGraphs.size(); i++) {
-            CommandGraph graph = CommandGraph.deserializeFrom(commandGraphs.getCompound(i), this);
-            graphs.add(graph);
-        }
+        graph.deserialize(compound.getCompound("Procedures"));
     }
 
     @Override
@@ -377,12 +344,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             serializedInventories.add(element);
         }
         compound.put("LinkedInventories", serializedInventories);
-
-        ListNBT commandGraphs = new ListNBT();
-        for (CommandGraph graph : graphs) {
-            commandGraphs.add(graph.serialize());
-        }
-        compound.put("CommandGraphs", commandGraphs);
+        compound.put("Procedures", graph.serialize());
 
         return compound;
     }

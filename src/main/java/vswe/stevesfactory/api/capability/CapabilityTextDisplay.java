@@ -5,7 +5,7 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.*;
 
-public class CapabilityTextDisplay {
+public final class CapabilityTextDisplay {
 
     private CapabilityTextDisplay() {
     }

@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Supplier;
 
-public abstract class Menu<P extends IProcedure & IProcedureClientData> extends AbstractContainer<IWidget> implements IErrorPopulator, ResizableWidgetMixin {
+public abstract class Menu<P extends IProcedure & IClientDataStorage> extends AbstractContainer<IWidget> implements IErrorPopulator, ResizableWidgetMixin {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 40, 9, 9),

@@ -28,20 +28,20 @@ public final class Connection {
     }
 
     private IProcedure from;
-    private int fromOut;
+    private int fromIdx;
     private IProcedure to;
-    private int toIn;
+    private int toIdx;
 
-    Connection(IProcedure from, int fromOut, IProcedure to, int toIn) {
+    Connection(IProcedure from, int fromIdx, IProcedure to, int toIdx) {
         this.from = from;
-        this.fromOut = fromOut;
+        this.fromIdx = fromIdx;
         this.to = to;
-        this.toIn = toIn;
+        this.toIdx = toIdx;
     }
 
     public void remove() {
-        from.removeOutputConnection(fromOut);
-        to.removeInputConnection(toIn);
+        from.removeOutputConnection(fromIdx);
+        to.removeInputConnection(toIdx);
     }
 
     public IProcedure getSource() {
@@ -53,20 +53,20 @@ public final class Connection {
     }
 
     public int getSourceOutputIndex() {
-        return fromOut;
+        return fromIdx;
     }
 
     public int getDestinationInputIndex() {
-        return toIn;
+        return toIdx;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("from", from)
-                .add("fromOut", fromOut)
+                .add("fromOut", fromIdx)
                 .add("to", to)
-                .add("toIn", toIn)
+                .add("toIn", toIdx)
                 .toString();
     }
 }

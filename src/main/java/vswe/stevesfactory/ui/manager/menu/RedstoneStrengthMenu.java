@@ -2,7 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
@@ -13,7 +13,7 @@ import vswe.stevesfactory.ui.manager.editor.Menu;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RedstoneStrengthMenu<P extends IProcedure & IProcedureClientData & IAnalogTarget> extends Menu<P> {
+public class RedstoneStrengthMenu<P extends IProcedure & IClientDataStorage & IAnalogTarget> extends Menu<P> {
 
     private NumberField<Integer> begin;
     private NumberField<Integer> end;

@@ -2,7 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import net.minecraft.util.Direction;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.library.gui.layout.FlowLayout;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.logic.procedure.IDirectionTarget;
@@ -13,7 +13,7 @@ import vswe.stevesfactory.utils.Utils;
 import java.util.*;
 import java.util.function.BooleanSupplier;
 
-public class RedstoneSidesMenu<P extends IProcedure & IProcedureClientData & IDirectionTarget> extends Menu<P> {
+public class RedstoneSidesMenu<P extends IProcedure & IClientDataStorage & IDirectionTarget> extends Menu<P> {
 
     private final Map<Direction, Checkbox> sides;
 
