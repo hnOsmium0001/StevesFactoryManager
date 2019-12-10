@@ -11,7 +11,6 @@ import vswe.stevesfactory.Config;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
-import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout;
 import vswe.stevesfactory.library.gui.layout.StrictTableLayout.GrowDirection;
@@ -22,12 +21,12 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.AbstractWindow;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
+import vswe.stevesfactory.ui.manager.tool.ToolPanel;
+import vswe.stevesfactory.ui.manager.toolbox.ToolboxPanel;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.List;
-
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
@@ -99,13 +98,13 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
     public static class PrimaryWindow extends AbstractWindow {
 
+        public final TopLevelWidget topLevel;
+
         // The location and dimensions will be set in the constructor
         private Rectangle screenBounds = new Rectangle();
-
-        private TopLevelWidget topLevel;
+        private boolean fullscreen = false;
 
         private int backgroundDL;
-        private boolean fullscreen = false;
 
         private PrimaryWindow() {
             this.topLevel = new TopLevelWidget(this);
@@ -188,13 +187,17 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
         public final SelectionPanel selectionPanel;
         public final EditorPanel editorPanel;
+        public final ToolPanel toolPanel;
+        public final ToolboxPanel toolboxPanel;
         private final ImmutableList<DynamicWidthWidget<?>> children;
 
         private TopLevelWidget(PrimaryWindow window) {
             super(window);
             this.selectionPanel = new SelectionPanel();
             this.editorPanel = new EditorPanel();
-            this.children = ImmutableList.of(selectionPanel, editorPanel);
+            this.toolPanel = new ToolPanel();
+            this.toolboxPanel = new ToolboxPanel();
+            this.children = ImmutableList.of(selectionPanel, editorPanel, toolPanel, toolboxPanel);
             attachChildren();
         }
 
@@ -223,6 +226,8 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             // No render events for this object because it is technically internal for the window, and it has the exact size as the window
             selectionPanel.render(mouseX, mouseY, particleTicks);
             editorPanel.render(mouseX, mouseY, particleTicks);
+            toolPanel.render(mouseX, mouseY, particleTicks);
+            toolboxPanel.render(mouseX, mouseY, particleTicks);
         }
 
         @Override
@@ -230,11 +235,14 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             fillWindow();
             selectionPanel.setHeight(getHeight());
             editorPanel.setHeight(getHeight());
+            toolPanel.setHeight(getHeight());
+            toolboxPanel.setHeight(getHeight());
+
             selectionPanel.reflow();
             editorPanel.reflow();
+            toolPanel.reflow();
+            toolboxPanel.reflow();
             DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);
-            selectionPanel.reflow();
-            editorPanel.reflow();
         }
     }
 }

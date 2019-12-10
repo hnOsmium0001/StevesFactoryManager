@@ -91,6 +91,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     }
 
     @Override
+    public void reflow() {
+    }
+
+    @Override
     public EditorPanel addChildren(FlowComponent<?> widget) {
         widget.setParentWidget(this);
         widget.setZIndex(nextZIndex());
@@ -306,14 +310,12 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     }
 
     private void updateOffsets() {
-        if (xOffset != null && yOffset != null) {
-            xOffset.onParentPositionChanged();
-            yOffset.onParentPositionChanged();
-        }
+        xOffset.onParentPositionChanged();
+        yOffset.onParentPositionChanged();
     }
 
     @Override
-    public void reflow() {
+    public void onAfterReflow() {
         int statusX = getWidth() - 4;
         int fontHeight = fontRenderer().FONT_HEIGHT;
         int yStatusY = getHeight() - 4 - fontHeight;

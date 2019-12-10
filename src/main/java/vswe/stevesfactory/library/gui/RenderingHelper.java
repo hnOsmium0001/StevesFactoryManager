@@ -46,6 +46,12 @@ public final class RenderingHelper {
         return fontRenderer().getStringWidth(text);
     }
 
+    public static int textWidth(String text, int fontHeight) {
+        FontRenderer fr = fontRenderer();
+        float scale = (float) fontHeight / fr.FONT_HEIGHT;
+        return (int) (fr.getStringWidth(text) * scale);
+    }
+
     public static void useGradientGLStates() {
         GlStateManager.disableTexture();
         GlStateManager.disableAlphaTest();
@@ -331,6 +337,17 @@ public final class RenderingHelper {
         GlStateManager.translatef(x, y, 0F);
         GlStateManager.scalef(scale, scale, 1F);
         fr.drawStringWithShadow(text, 0, 0, color);
+        GlStateManager.popMatrix();
+    }
+
+    public static void drawVerticalText(String text, int x, int y, int fontHeight, int color) {
+        FontRenderer fr = fontRenderer();
+        float scale = (float) fontHeight / fr.FONT_HEIGHT;
+        GlStateManager.pushMatrix();
+        GlStateManager.translatef(x + fontHeight, y, 0F);
+        GlStateManager.rotated(90, 0F, 0F, 1F);
+        GlStateManager.scalef(scale, scale, 1F);
+        fr.drawString(text, 0, 0, color);
         GlStateManager.popMatrix();
     }
 

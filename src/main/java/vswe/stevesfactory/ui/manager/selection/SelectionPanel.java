@@ -6,6 +6,7 @@ import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI.TopLevelWidget;
 
@@ -59,9 +60,12 @@ public final class SelectionPanel extends DynamicWidthWidget<IComponentChoice> {
 
     @Override
     public void reflow() {
-        int w = getWidth();
         setWidth(Integer.MAX_VALUE);
         DOWN_RIGHT_4_STRICT_TABLE.reflow(getDimensions(), getChildren());
+        int w = getChildren().stream()
+                .max(Comparator.comparingInt(IWidget::getX))
+                .map(furthest -> furthest.getX() + furthest.getWidth())
+                .orElse(0) + DOWN_RIGHT_4_STRICT_TABLE.componentMargin;
         setWidth(w);
     }
 

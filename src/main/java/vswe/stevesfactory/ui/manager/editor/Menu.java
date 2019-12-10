@@ -219,7 +219,7 @@ public abstract class Menu<P extends IProcedure & IProcedureClientData> extends 
     }
 
     public int getHeadingColor() {
-        return 0x404040;
+        return 0xff404040;
     }
 
     public abstract String getHeadingText();
