@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
+import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 
 import java.awt.*;
 
@@ -379,5 +380,20 @@ public final class RenderingHelper {
     public static void clearTranslation() {
         translationX = 0;
         translationY = 0;
+    }
+
+    public static final int LEFT_BORDER = 2;
+
+    public static void renderSideLine(AbstractWidget widget) {
+        GlStateManager.disableTexture();
+        Tessellator.getInstance().getBuffer().begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        int x1 = widget.getAbsoluteX();
+        int x2 = x1 + LEFT_BORDER;
+        int y1 = widget.getAbsoluteY() - 1;
+        int y2 = widget.getAbsoluteYBottom() + 1;
+        rectVertices(x1, y1, x2, y2, 0xff797979);
+        rectVertices(x1 + 1, y1, x2, y2, 0xffffffff);
+        Tessellator.getInstance().draw();
+        GlStateManager.enableTexture();
     }
 }

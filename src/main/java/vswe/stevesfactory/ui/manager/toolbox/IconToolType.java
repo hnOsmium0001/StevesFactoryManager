@@ -3,7 +3,6 @@ package vswe.stevesfactory.ui.manager.toolbox;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import vswe.stevesfactory.blocks.FactoryManagerTileEntity;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
@@ -11,17 +10,17 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.tool.ToolPanel;
 
-import javax.tools.Tool;
 import java.util.function.Supplier;
 
 import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
 import static vswe.stevesfactory.library.gui.RenderingHelper.textWidth;
 
-public class IconToolType extends AbstractWidget implements IToolType, LeafWidgetMixin {
+public class IconToolType<T extends IWidget & ResizableWidgetMixin> extends AbstractWidget implements IToolType, LeafWidgetMixin {
 
     public static final int NORMAL_BORDER_COLOR = 0xff8c8c8c;
     public static final int HOVERED_BORDER_COLOR = 0xff8c8c8c;
@@ -32,11 +31,12 @@ public class IconToolType extends AbstractWidget implements IToolType, LeafWidge
     public static final int LABEL_VERTICAL_GAP = 3;
 
     private TextureWrapper tex;
-    private Supplier<IWidget> toolWindowConstructor;
     private String name = "";
-    private IWidget cachedToolWindow;
 
-    public IconToolType(TextureWrapper tex, Supplier<IWidget> toolWindowConstructor) {
+    private Supplier<T> toolWindowConstructor;
+    private T cachedToolWindow;
+
+    public IconToolType(TextureWrapper tex, Supplier<T> toolWindowConstructor) {
         super(0, 0, tex.getPortionWidth() / 2, tex.getPortionHeight() / 2);
         this.tex = tex;
         this.toolWindowConstructor = toolWindowConstructor;
@@ -79,7 +79,7 @@ public class IconToolType extends AbstractWidget implements IToolType, LeafWidge
     }
 
     @Override
-    public IWidget getToolWindow() {
+    public T getToolWindow() {
         if (cachedToolWindow == null) {
             cachedToolWindow = toolWindowConstructor.get();
         }

@@ -1,24 +1,17 @@
 package vswe.stevesfactory.ui.manager.tool;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import org.lwjgl.opengl.GL11;
-import vswe.stevesfactory.blocks.FactoryManagerTileEntity;
+import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
-import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
-import static vswe.stevesfactory.library.gui.RenderingHelper.usePlainColorGLStates;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 
 public final class ToolPanel extends DynamicWidthWidget<IWidget> {
 
@@ -34,46 +27,45 @@ public final class ToolPanel extends DynamicWidthWidget<IWidget> {
         } else {
             children = ImmutableList.of(panel);
             panel.setParentWidget(this);
+            panel.setX(RenderingHelper.LEFT_BORDER + 1);
             panel.setHeight(getHeight());
+            getWindow().setFocusedWidget(panel);
         }
         FactoryManagerGUI.getActiveGUI().getPrimaryWindow().topLevel.reflow();
     }
 
     @Override
-    public Collection<IWidget> getChildren() {
+    public List<IWidget> getChildren() {
         return children;
     }
 
     @Override
     public void reflow() {
+        IWidget widget = getContainedWidget();
+        setWidth(widget == null ? 0 : widget.getWidth() + 2 + RenderingHelper.LEFT_BORDER);
+    }
+
+    public IWidget getContainedWidget() {
+        return children.isEmpty() ? null : children.get(0);
     }
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        renderBackground();
+        RenderingHelper.renderSideLine(this);
+        super.render(mouseX, mouseY, particleTicks);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
-    private void renderBackground() {
-        GlStateManager.disableAlphaTest();
-        usePlainColorGLStates();
-        Tessellator.getInstance().getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        int x1 = getX();
-        int y1 = getY();
-        int x2 = x1 + getWidth();
-        int y2 = y1 + getHeight();
-        rectVertices(x1, y1, x2, y2, getNormalBorderColor());
-        rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, getNormalBackgroundColor());
-        Tessellator.getInstance().draw();
-        GlStateManager.enableAlphaTest();
-    }
-
-    public int getNormalBorderColor() {
-        return 0xff8c8c8c;
-    }
-
-    public int getNormalBackgroundColor() {
-        return 0xff737373;
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        if (isInside(mouseX, mouseY) && button == GLFW_MOUSE_BUTTON_LEFT) {
+            getWindow().setFocusedWidget(this);
+            return true;
+        }
+        return false;
     }
 }

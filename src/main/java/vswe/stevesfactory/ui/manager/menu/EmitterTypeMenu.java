@@ -52,7 +52,7 @@ public class EmitterTypeMenu extends Menu<RedstoneEmitterProcedure> {
             box.onChecked = () -> {
                 procedure.setOperationType(type);
                 paragraph.getTexts().clear();
-                paragraph.addLineSplit(I18n.format(type.descriptionKey));
+                paragraph.addLineSplit(I18n.format("gui.sfm.Menu.RedstoneEmitter.Type.Info"));
             };
         }
         type.get(procedure.getOperationType()).check(true);

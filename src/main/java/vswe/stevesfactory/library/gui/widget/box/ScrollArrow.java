@@ -12,10 +12,10 @@ import java.util.Objects;
 
 public abstract class ScrollArrow extends AbstractIconButton implements LeafWidgetMixin {
 
-    private static final TextureWrapper UP_NORMAL = TextureWrapper.ofFlowComponent(0, 58, 10, 6);
-    private static final TextureWrapper UP_HOVERED = UP_NORMAL.toRight(1);
-    private static final TextureWrapper UP_CLICKED = UP_NORMAL.toRight(2);
-    private static final TextureWrapper UP_DISABLED = UP_NORMAL.toRight(3);
+    public static final TextureWrapper UP_NORMAL = TextureWrapper.ofFlowComponent(0, 58, 10, 6);
+    public static final TextureWrapper UP_HOVERED = UP_NORMAL.toRight(1);
+    public static final TextureWrapper UP_CLICKED = UP_NORMAL.toRight(2);
+    public static final TextureWrapper UP_DISABLED = UP_NORMAL.toRight(3);
 
     public static ScrollArrow up(int x, int y) {
         return new ScrollArrow(x, y) {
@@ -46,10 +46,10 @@ public abstract class ScrollArrow extends AbstractIconButton implements LeafWidg
         };
     }
 
-    private static final TextureWrapper DOWN_NORMAL = UP_NORMAL.toDown(1);
-    private static final TextureWrapper DOWN_HOVERED = UP_HOVERED.toDown(1);
-    private static final TextureWrapper DOWN_CLICKED = UP_CLICKED.toDown(1);
-    private static final TextureWrapper DOWN_DISABLED = UP_DISABLED.toDown(1);
+    public static final TextureWrapper DOWN_NORMAL = UP_NORMAL.toDown(1);
+    public static final TextureWrapper DOWN_HOVERED = UP_HOVERED.toDown(1);
+    public static final TextureWrapper DOWN_CLICKED = UP_CLICKED.toDown(1);
+    public static final TextureWrapper DOWN_DISABLED = UP_DISABLED.toDown(1);
 
     public static ScrollArrow down(int x, int y) {
         return new ScrollArrow(x, y) {

@@ -47,8 +47,8 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
     public static final TextureWrapper SETTINGS_ICON_HOVERED = SETTINGS_ICON.toRight(1);
     public static final TextureWrapper ADD_ENTRY_ICON = TextureWrapper.ofFlowComponent(18, 125, 8, 8);
     public static final TextureWrapper ADD_ENTRY_HOVERED_ICON = ADD_ENTRY_ICON.toRight(1);
-    private static final TextureWrapper REMOVE_ENTRY_ICON = TextureWrapper.ofFlowComponent(34, 125, 8, 8);
-    private static final TextureWrapper REMOVE_ENTRY_HOVERED_ICON = REMOVE_ENTRY_ICON.toRight(1);
+    public static final TextureWrapper REMOVE_ENTRY_ICON = TextureWrapper.ofFlowComponent(34, 125, 8, 8);
+    public static final TextureWrapper REMOVE_ENTRY_HOVERED_ICON = REMOVE_ENTRY_ICON.toRight(1);
 
     ///////////////////////////////////////////////////////////////////////////
     // GUI code
@@ -230,13 +230,19 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             toolboxPanel.render(mouseX, mouseY, particleTicks);
         }
 
+        private int prevWidth, prevHeight;
+
         @Override
         public void reflow() {
             fillWindow();
-            selectionPanel.setHeight(getHeight());
-            editorPanel.setHeight(getHeight());
-            toolPanel.setHeight(getHeight());
-            toolboxPanel.setHeight(getHeight());
+            if (getWidth() != prevWidth || getHeight() != prevHeight) {
+                prevWidth = getWidth();
+                prevHeight = getHeight();
+                selectionPanel.setHeight(prevHeight);
+                editorPanel.setHeight(prevHeight);
+                toolPanel.setHeight(prevHeight);
+                toolboxPanel.setHeight(prevHeight);
+            }
 
             selectionPanel.reflow();
             editorPanel.reflow();

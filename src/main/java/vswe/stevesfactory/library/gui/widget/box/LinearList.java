@@ -42,14 +42,9 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         scrolling = button == GLFW.GLFW_MOUSE_BUTTON_LEFT && isInsideBar(mouseX, mouseY) && isDrawingScrollBar();
         if (scrolling) {
-            getWindow().setFocusedWidget(this);
             return true;
         }
-        if (super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
-        getWindow().setFocusedWidget(this);
-        return false;
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private boolean isInsideBar(double mouseX, double mouseY) {

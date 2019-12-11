@@ -24,8 +24,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidget implements INamedElement, LeafWidgetMixin {
 
-    private static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(36, 20, 16, 16);
-    private static final TextureWrapper HOVERED = NORMAL.toDown(1);
+    public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(36, 20, 16, 16);
+    public static final TextureWrapper HOVERED = NORMAL.toDown(1);
 
     protected ItemStack stack;
     protected E editor;

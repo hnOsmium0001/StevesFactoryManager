@@ -2,7 +2,6 @@ package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,16 +14,11 @@ import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.menu.EmitterTypeMenu;
-import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
-import vswe.stevesfactory.ui.manager.menu.RedstoneSidesMenu;
+import vswe.stevesfactory.ui.manager.menu.*;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class RedstoneEmitterProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget {
 
@@ -177,11 +171,9 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
         DECREASE("Decrease");
 
         public final String nameKey;
-        public final String descriptionKey;
 
         OperationType(String nameKey) {
             this.nameKey = "gui.sfm.Menu.RedstoneEmitter.Type." + nameKey;
-            this.descriptionKey = this.nameKey + ".Info";
         }
 
         public static final OperationType[] VALUES = values();

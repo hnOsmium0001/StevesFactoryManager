@@ -17,12 +17,12 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 
 class DirectionButton extends AbstractIconButton {
 
-    private static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 70, 31, 12);
-    private static final TextureWrapper HOVERED = NORMAL.toDown(1);
-    private static final TextureWrapper DISABLED = NORMAL.toDown(2);
-    private static final TextureWrapper SELECTED_NORMAL = NORMAL.toRight(1);
-    private static final TextureWrapper SELECTED_HOVERED = SELECTED_NORMAL.toDown(1);
-    private static final TextureWrapper SELECTED_DISABLED = SELECTED_NORMAL.toDown(2);
+    public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 70, 31, 12);
+    public static final TextureWrapper HOVERED = NORMAL.toDown(1);
+    public static final TextureWrapper DISABLED = NORMAL.toDown(2);
+    public static final TextureWrapper SELECTED_NORMAL = NORMAL.toRight(1);
+    public static final TextureWrapper SELECTED_HOVERED = SELECTED_NORMAL.toDown(1);
+    public static final TextureWrapper SELECTED_DISABLED = SELECTED_NORMAL.toDown(2);
 
     private boolean selected = false;
     private boolean editing = false;

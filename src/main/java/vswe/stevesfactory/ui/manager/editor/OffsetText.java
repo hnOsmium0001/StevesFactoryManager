@@ -52,10 +52,10 @@ class OffsetText extends AbstractWidget implements LeafWidgetMixin {
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        RenderEventDispatcher.onPreRender(this, mouseX, mouseX);
+        RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         int color = isInside(mouseX, mouseY) ? 0xffff00 : 0xffffff;
         fontRenderer().drawStringWithShadow(text, getAbsoluteX(), getAbsoluteY(), color);
-        RenderEventDispatcher.onPostRender(this, mouseX, mouseX);
+        RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     @Override

@@ -12,10 +12,10 @@ import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 
 public class RadioButton extends AbstractWidget implements IButton, LeafWidgetMixin {
 
-    private static final TextureWrapper UNCHECKED = TextureWrapper.ofFlowComponent(18, 20, 8, 8);
-    private static final TextureWrapper CHECKED = UNCHECKED.toRight(1);
-    private static final TextureWrapper HOVERED_UNCHECKED = UNCHECKED.toDown(1);
-    private static final TextureWrapper HOVERED_CHECKED = CHECKED.toDown(1);
+    public static final TextureWrapper UNCHECKED = TextureWrapper.ofFlowComponent(18, 20, 8, 8);
+    public static final TextureWrapper CHECKED = UNCHECKED.toRight(1);
+    public static final TextureWrapper HOVERED_UNCHECKED = UNCHECKED.toDown(1);
+    public static final TextureWrapper HOVERED_CHECKED = CHECKED.toDown(1);
 
     private final RadioController controller;
     private final int index;
