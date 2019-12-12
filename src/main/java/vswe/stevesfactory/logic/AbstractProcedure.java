@@ -20,6 +20,7 @@ public abstract class AbstractProcedure implements IProcedure, IClientDataStorag
     private int componentX;
     private int componentY;
     private String name;
+    private String group = "";
 
     public AbstractProcedure(IProcedureType<?> type) {
         this(type, 1, 1);
@@ -128,6 +129,16 @@ public abstract class AbstractProcedure implements IProcedure, IClientDataStorag
         this.name = name;
     }
 
+    @Override
+    public String getGroup() {
+        return group;
+    }
+
+    @Override
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -141,6 +152,7 @@ public abstract class AbstractProcedure implements IProcedure, IClientDataStorag
         tag.putInt("CompX", componentX);
         tag.putInt("CompY", componentY);
         tag.putString("Name", getName());
+        tag.putString("Group", getGroup());
         return tag;
     }
 
@@ -150,6 +162,7 @@ public abstract class AbstractProcedure implements IProcedure, IClientDataStorag
         componentX = tag.getInt("CompX");
         componentY = tag.getInt("CompY");
         name = tag.getString("Name");
+        group = tag.getString("Group");
     }
 
     @Override

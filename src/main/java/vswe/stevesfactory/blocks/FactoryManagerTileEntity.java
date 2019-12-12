@@ -3,6 +3,8 @@ package vswe.stevesfactory.blocks;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -12,6 +14,7 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -23,7 +26,8 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.Config;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.ProcedureGraph;
+import vswe.stevesfactory.api.StevesFactoryManagerAPI;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.network.NetworkHandler;
@@ -311,11 +315,50 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             for (int j = 0; j < serializedPoses.size(); j++) {
                 set.add(NBTUtil.readBlockPos(serializedPoses.getCompound(j)));
             }
-
             linkedInventories.put(cap, set);
         }
 
-        graph.deserialize(compound.getCompound("Procedures"));
+        // TODO remove for release
+        // Migrating from old format
+        int format = compound.getInt("FormatVer");
+        switch (format) {
+            case 0:
+                graph = ProcedureGraph.create();
+                ListNBT graphNBT = compound.getList("CommandGraphs", Constants.NBT.TAG_COMPOUND);
+                for (int i = 0; i < graphNBT.size(); i++) {
+                    CompoundNBT tag = graphNBT.getCompound(i);
+
+                    ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
+                    Int2ObjectMap<IProcedure> nodes = new Int2ObjectOpenHashMap<>();
+                    for (int j = 0; j < nodesNBT.size(); j++) {
+                        CompoundNBT nodeNBT = nodesNBT.getCompound(j);
+                        int id = nodeNBT.getInt("ID");
+                        IProcedure node;
+                        {
+                            CompoundNBT dataNBT = nodeNBT.getCompound("NodeData");
+                            ResourceLocation loc = new ResourceLocation(dataNBT.getString("ID"));
+                            IProcedureType<?> p = StevesFactoryManagerAPI.getProceduresRegistry().getValue(loc);
+                            node = Objects.requireNonNull(p).retrieveInstance(dataNBT);
+                        }
+                        nodes.put(id, node);
+                        graph.addProcedure(node);
+                    }
+
+                    ListNBT connectionNBT = tag.getList("Connections", Constants.NBT.TAG_COMPOUND);
+                    for (int j = 0; j < connectionNBT.size(); j++) {
+                        CompoundNBT nbt = connectionNBT.getCompound(j);
+                        IProcedure from = nodes.get(nbt.getInt("From"));
+                        int fromOut = nbt.getInt("FromOut");
+                        IProcedure to = nodes.get(nbt.getInt("To"));
+                        int toIn = nbt.getInt("ToIn");
+                        Connection.create(from, fromOut, to, toIn);
+                    }
+                }
+                break;
+            case 1:
+                graph.deserialize(compound.getCompound("Procedures"));
+                break;
+        }
     }
 
     @Override
@@ -326,6 +369,10 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     }
 
     public CompoundNBT writeCustom(CompoundNBT compound) {
+        // 0: Singular command graphs
+        // 1: Global procedure graphs
+        compound.putInt("FormatVer", 1);
+
         compound.put("ConnectedCables", IOHelper.writeBlockPoses(connectedCables));
 
         ListNBT serializedInventories = new ListNBT();

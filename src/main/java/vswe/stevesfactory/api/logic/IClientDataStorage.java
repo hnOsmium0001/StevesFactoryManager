@@ -2,7 +2,9 @@ package vswe.stevesfactory.api.logic;
 
 public interface IClientDataStorage {
 
-//    String getPath();
+    String getGroup();
+
+    void setGroup(String group);
 
     int getComponentX();
 
