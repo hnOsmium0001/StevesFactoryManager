@@ -3,7 +3,7 @@ package vswe.stevesfactory.ui.manager.menu;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.layout.properties.Side;
 import vswe.stevesfactory.library.gui.widget.RadioButton;
@@ -18,7 +18,7 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ItemTraitsFilterMenu<P extends IProcedure & IProcedureClientData & IItemFilterTarget> extends MultiLayerMenu<P> {
+public class ItemTraitsFilterMenu<P extends IProcedure & IClientDataStorage & IItemFilterTarget> extends MultiLayerMenu<P> {
 
     private static final Supplier<Integer> FILTER_SLOTS = () -> 20;
 

@@ -2,7 +2,7 @@ package vswe.stevesfactory.logic.procedure;
 
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.logic.item.IItemFilter;
 import vswe.stevesfactory.logic.item.ItemTagFilter;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
@@ -14,7 +14,7 @@ import vswe.stevesfactory.ui.manager.menu.ItemTraitsFilterMenu;
 // No #markDirty() here because no capabilities are involved in this data target
 public interface IItemFilterTarget {
 
-    static <P extends IProcedure & IProcedureClientData & IItemFilterTarget> PropertyManager<IItemFilter, P> createFilterMenu(P procedure, FlowComponent<P> flowComponent, int filterID) {
+    static <P extends IProcedure & IClientDataStorage & IItemFilterTarget> PropertyManager<IItemFilter, P> createFilterMenu(P procedure, FlowComponent<P> flowComponent, int filterID) {
         PropertyManager<IItemFilter, P> pm = new PropertyManager<>(
                 flowComponent,
                 () -> procedure.getFilter(filterID),

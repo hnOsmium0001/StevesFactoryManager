@@ -68,8 +68,7 @@ public class ItemTraitsFilter implements IItemFilter {
 
     public boolean test(ItemStack stack) {
         for (int i = 0; i < items.size(); i++) {
-            boolean b = isEqual(i, stack);
-            if (b) {
+            if (isEqual(i, stack)) {
                 return !getTypeFlag();
             }
         }

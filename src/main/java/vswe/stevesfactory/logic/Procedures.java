@@ -10,10 +10,8 @@ import vswe.stevesfactory.Config;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
-import vswe.stevesfactory.blocks.BUDBlock;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.logic.procedure.*;
-import vswe.stevesfactory.utils.NetworkHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,9 +50,9 @@ public final class Procedures<P extends IProcedure> {
     public final SimpleProcedureType<P> factory;
     public final ForgeConfigSpec.BooleanValue enabled;
 
-    private Procedures(String id, Supplier<P> rawConstructor, ForgeConfigSpec.BooleanValue enabled) {
+    private Procedures(String id, Supplier<P> constructor, ForgeConfigSpec.BooleanValue enabled) {
         this.id = id;
-        this.factory = new SimpleProcedureType<>(NetworkHelper.wrapConstructor(rawConstructor), rawConstructor, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
+        this.factory = new SimpleProcedureType<>(constructor, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
         this.factory.setRegistryName(new ResourceLocation(StevesFactoryManager.MODID, id));
         this.enabled = enabled;
     }

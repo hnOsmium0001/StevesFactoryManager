@@ -7,29 +7,21 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import vswe.stevesfactory.api.capability.CapabilityRedstoneEventBus;
-import vswe.stevesfactory.api.capability.SignalStatus;
-import vswe.stevesfactory.api.logic.Connection;
-import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.api.logic.IProcedure;
+import net.minecraftforge.common.util.LazyOptional;
+import vswe.stevesfactory.api.capability.*;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.Procedures;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
-import vswe.stevesfactory.ui.manager.menu.RedstoneSidesMenu;
-import vswe.stevesfactory.ui.manager.menu.RedstoneStrengthMenu;
+import vswe.stevesfactory.ui.manager.menu.*;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.Utils;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class RedstoneTriggerProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, ILogicalConjunction, IAnalogTarget {
+public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrigger, IInventoryTarget, IDirectionTarget, ILogicalConjunction, IAnalogTarget {
 
     public static final int INVENTORIES = 0;
     public static final int DIRECTIONS = 0;
@@ -58,29 +50,34 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
     }
 
     @Override
-    public void tick() {
+    public void tick(INetworkController controller) {
         if (!dirty) {
             return;
         }
 
         for (BlockPos watching : watchingSources) {
-            World world = getController().getControllerWorld();
+            World world = controller.getControllerWorld();
             TileEntity tile = world.getTileEntity(watching);
             if (tile != null) {
-                tile
-                        .getCapability(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY)
-                        .ifPresent(cap -> cap.subscribeEvent(status -> {
-                            // If this procedure is invalid, which means it was removed from the controller, remove the event handler
-                            if (!this.isValid()) {
-                                return true;
+                LazyOptional<IRedstoneEventBus> cap = tile.getCapability(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY);
+                if (cap.isPresent()) {
+                    cap.orElseThrow(RuntimeException::new).subscribeEvent(status -> {
+                        // If this procedure is invalid, which means it was removed from the controller, remove the event handler
+                        if (!this.isValid()) {
+                            return true;
+                        }
+                        // Actual triggering logic
+                        // If is high powered, don't check for low power, and vice versa
+                        if (test(status, !status.hasSignal())) {
+                            // TODO consider moving this to #execute(IExecutionContext)
+                            Connection connection = successors()[status.hasSignal() ? HIGH_SUCCESSOR : LOW_SUCCESSOR];
+                            if (connection != null) {
+                                new ProcedureExecutor(controller, world).start(connection.getDestination());
                             }
-                            // Actual triggering logic
-                            // If is high powered, don't check for low power, and vice versa
-                            if (test(status, !status.hasSignal())) {
-                                execute(successors()[status.hasSignal() ? HIGH_SUCCESSOR : LOW_SUCCESSOR]);
-                            }
-                            return false;
-                        }));
+                        }
+                        return false;
+                    });
+                }
             }
         }
         dirty = false;
@@ -93,17 +90,6 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements IInve
             result = conjunction.combine(result, Utils.invertIf(analogTest(power), checkLowPower));
         }
         return result;
-    }
-
-    private void execute(@Nullable Connection connection) {
-        if (connection != null) {
-            execute(connection.getDestination());
-        }
-    }
-
-    private void execute(IProcedure child) {
-        INetworkController controller = this.getController();
-        new ProcedureExecutor(controller, controller.getControllerWorld()).start(child);
     }
 
     @Override

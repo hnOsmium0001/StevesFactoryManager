@@ -3,7 +3,7 @@ package vswe.stevesfactory.ui.manager.menu;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
 import vswe.stevesfactory.library.gui.layout.properties.Side;
 import vswe.stevesfactory.logic.procedure.IRecipeTarget;
@@ -12,7 +12,7 @@ import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import java.util.List;
 
-public class RecipeConfigurationMenu<P extends IProcedure & IProcedureClientData & IRecipeTarget> extends Menu<P> {
+public class RecipeConfigurationMenu<P extends IProcedure & IClientDataStorage & IRecipeTarget> extends Menu<P> {
 
     private IngredientSlot[] ingredientSlots = new IngredientSlot[9];
     private ProductSlot productSlot;

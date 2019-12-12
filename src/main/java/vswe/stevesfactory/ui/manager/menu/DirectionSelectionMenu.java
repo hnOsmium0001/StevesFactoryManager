@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.logic.procedure.IDirectionTarget;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
@@ -12,7 +12,7 @@ import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import java.util.List;
 
-public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IProcedureClientData> extends Menu<P> {
+public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IClientDataStorage> extends Menu<P> {
 
     private final int id;
     private final String name;

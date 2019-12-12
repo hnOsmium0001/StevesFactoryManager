@@ -13,31 +13,28 @@ import java.util.function.*;
 
 public class SimpleProcedureType<P extends IProcedure> extends ForgeRegistryEntry<IProcedureType<?>> implements IProcedureType<P> {
 
-    private final Function<INetworkController, P> constructor;
-    private final Supplier<P> rawConstructor;
+    private final Supplier<P> constructor;
     private final ResourceLocation icon;
     private String translationKey = null;
 
-    public SimpleProcedureType(BiFunction<IProcedureType<P>, INetworkController, P> constructor, Function<IProcedureType<P>, P> rawConstructor, ResourceLocation icon) {
-        this.constructor = c -> constructor.apply(this, c);
-        this.rawConstructor = () -> rawConstructor.apply(this);
+    public SimpleProcedureType(Function<IProcedureType<P>, P> constructor, ResourceLocation icon) {
+        this.constructor = () -> constructor.apply(this);
         this.icon = icon;
     }
 
-    public SimpleProcedureType(Function<INetworkController, P> constructor, Supplier<P> rawConstructor, ResourceLocation icon) {
+    public SimpleProcedureType(Supplier<P> constructor, ResourceLocation icon) {
         this.constructor = constructor;
-        this.rawConstructor = rawConstructor;
         this.icon = icon;
     }
 
     @Override
-    public P createInstance(INetworkController controller) {
-        return constructor.apply(controller);
+    public P createInstance() {
+        return constructor.get();
     }
 
     @Override
     public P retrieveInstance(CompoundNBT tag) {
-        P procedure = rawConstructor.get();
+        P procedure = constructor.get();
         procedure.deserialize(tag);
         return procedure;
     }

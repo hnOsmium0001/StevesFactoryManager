@@ -3,6 +3,8 @@ package vswe.stevesfactory.blocks;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -12,6 +14,7 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -23,11 +26,12 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.Config;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.api.logic.CommandGraph;
+import vswe.stevesfactory.api.StevesFactoryManagerAPI;
+import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.network.NetworkHandler;
-import vswe.stevesfactory.network.PacketSyncCommandGraphs;
+import vswe.stevesfactory.network.PacketSyncFlowcharts;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.ui.manager.FactoryManagerContainer;
 import vswe.stevesfactory.utils.*;
@@ -41,7 +45,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     private Set<BlockPos> connectedCables = new HashSet<>();
     private Map<Capability<?>, Multiset<BlockPos>> linkedInventories = new IdentityHashMap<>();
 
-    private Set<CommandGraph> graphs = new HashSet<>();
+    private ProcedureGraph graph = ProcedureGraph.create();
 
     private int ticks;
 
@@ -59,9 +63,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     public void tick() {
         assert world != null;
         if (!world.isRemote) {
-            for (CommandGraph graph : graphs) {
-                graph.getRoot().tick();
-            }
+            graph.tick(this);
 
             if (ticks == 0) {
                 reload();
@@ -86,7 +88,6 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         markDirty();
 
         FactoryManagerContainer.openGUI((ServerPlayerEntity) player, this);
-//        PacketOpenGUI.openFactoryManager(client, getDimension(), getPosition(), write(new CompoundNBT()));
     }
 
     private void search() {
@@ -209,37 +210,12 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     }
 
     @Override
-    public Set<CommandGraph> getCommandGraphs() {
-        return graphs;
+    public ProcedureGraph getPGraph() {
+        return graph;
     }
 
-    @Override
-    public boolean addCommandGraph(CommandGraph graph) {
-        markDirty();
-        return graphs.add(graph);
-    }
-
-    @Override
-    public boolean addCommandGraphs(Collection<CommandGraph> graphs) {
-        markDirty();
-        return this.graphs.addAll(graphs);
-    }
-
-    @Override
-    public boolean removeCommandGraph(CommandGraph graph) {
-        markDirty();
-        return graphs.remove(graph);
-    }
-
-    @Override
-    public void removeAllCommandGraphs() {
-        markDirty();
-        graphs.clear();
-    }
-
-    @Override
-    public boolean isGraphValid(CommandGraph graph) {
-        return graphs.contains(graph);
+    public void setPGraph(ProcedureGraph graph) {
+        this.graph = graph;
     }
 
     /**
@@ -283,7 +259,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     public void sync() {
         assert world != null;
         if (world.isRemote) {
-            NetworkHandler.sendToServer(new PacketSyncCommandGraphs(getDimension(), getPosition(), graphs));
+            NetworkHandler.sendToServer(new PacketSyncFlowcharts(getDimension(), getPosition(), graph));
         }
     }
 
@@ -339,15 +315,49 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             for (int j = 0; j < serializedPoses.size(); j++) {
                 set.add(NBTUtil.readBlockPos(serializedPoses.getCompound(j)));
             }
-
             linkedInventories.put(cap, set);
         }
 
-        ListNBT commandGraphs = compound.getList("CommandGraphs", Constants.NBT.TAG_COMPOUND);
-        graphs.clear();
-        for (int i = 0; i < commandGraphs.size(); i++) {
-            CommandGraph graph = CommandGraph.deserializeFrom(commandGraphs.getCompound(i), this);
-            graphs.add(graph);
+        // TODO remove for release
+        // Migrating from old format
+        int format = compound.getInt("FormatVer");
+        switch (format) {
+            case 0:
+                graph = ProcedureGraph.create();
+                ListNBT graphNBT = compound.getList("CommandGraphs", Constants.NBT.TAG_COMPOUND);
+                for (int i = 0; i < graphNBT.size(); i++) {
+                    CompoundNBT tag = graphNBT.getCompound(i);
+
+                    ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
+                    Int2ObjectMap<IProcedure> nodes = new Int2ObjectOpenHashMap<>();
+                    for (int j = 0; j < nodesNBT.size(); j++) {
+                        CompoundNBT nodeNBT = nodesNBT.getCompound(j);
+                        int id = nodeNBT.getInt("ID");
+                        IProcedure node;
+                        {
+                            CompoundNBT dataNBT = nodeNBT.getCompound("NodeData");
+                            ResourceLocation loc = new ResourceLocation(dataNBT.getString("ID"));
+                            IProcedureType<?> p = StevesFactoryManagerAPI.getProceduresRegistry().getValue(loc);
+                            node = Objects.requireNonNull(p).retrieveInstance(dataNBT);
+                        }
+                        nodes.put(id, node);
+                        graph.addProcedure(node);
+                    }
+
+                    ListNBT connectionNBT = tag.getList("Connections", Constants.NBT.TAG_COMPOUND);
+                    for (int j = 0; j < connectionNBT.size(); j++) {
+                        CompoundNBT nbt = connectionNBT.getCompound(j);
+                        IProcedure from = nodes.get(nbt.getInt("From"));
+                        int fromOut = nbt.getInt("FromOut");
+                        IProcedure to = nodes.get(nbt.getInt("To"));
+                        int toIn = nbt.getInt("ToIn");
+                        Connection.create(from, fromOut, to, toIn);
+                    }
+                }
+                break;
+            case 1:
+                graph.deserialize(compound.getCompound("Procedures"));
+                break;
         }
     }
 
@@ -359,6 +369,10 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     }
 
     public CompoundNBT writeCustom(CompoundNBT compound) {
+        // 0: Singular command graphs
+        // 1: Global procedure graphs
+        compound.putInt("FormatVer", 1);
+
         compound.put("ConnectedCables", IOHelper.writeBlockPoses(connectedCables));
 
         ListNBT serializedInventories = new ListNBT();
@@ -377,12 +391,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             serializedInventories.add(element);
         }
         compound.put("LinkedInventories", serializedInventories);
-
-        ListNBT commandGraphs = new ListNBT();
-        for (CommandGraph graph : graphs) {
-            commandGraphs.add(graph.serialize());
-        }
-        compound.put("CommandGraphs", commandGraphs);
+        compound.put("Procedures", graph.serialize());
 
         return compound;
     }

@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.IProcedure;
-import vswe.stevesfactory.api.logic.IProcedureClientData;
+import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.library.gui.contextmenu.DefaultEntry;
 import vswe.stevesfactory.library.gui.contextmenu.IEntry;
 
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.*;
 
-public final class PropertyManager<T, P extends IProcedure & IProcedureClientData> {
+public final class PropertyManager<T, P extends IProcedure & IClientDataStorage> {
 
     private static final List<Supplier<IEntry>> EMPTY_LIST = ImmutableList.of();
 
@@ -137,7 +137,7 @@ public final class PropertyManager<T, P extends IProcedure & IProcedureClientDat
         });
     }
 
-    public static final class Case<T, P extends IProcedure & IProcedureClientData> {
+    public static final class Case<T, P extends IProcedure & IClientDataStorage> {
 
         private Predicate<T> condition;
         private Supplier<T> propertyFactory;

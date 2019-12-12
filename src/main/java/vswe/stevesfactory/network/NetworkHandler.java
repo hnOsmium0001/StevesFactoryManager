@@ -23,7 +23,7 @@ public final class NetworkHandler {
 
     public static void register() {
         // Client to server
-        registerMessage(PacketSyncCommandGraphs.class, PacketSyncCommandGraphs::encode, PacketSyncCommandGraphs::decode, PacketSyncCommandGraphs::handle);
+        registerMessage(PacketSyncFlowcharts.class, PacketSyncFlowcharts::encode, PacketSyncFlowcharts::decode, PacketSyncFlowcharts::handle);
         registerMessage(PacketSyncIntakeData.class, PacketSyncIntakeData::encode, PacketSyncIntakeData::decode, PacketSyncIntakeData::handle);
 
         // Server to client

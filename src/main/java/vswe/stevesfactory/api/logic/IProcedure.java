@@ -33,8 +33,6 @@ public interface IProcedure {
     /**
      * Serialize the procedure into a retrievable NBT format. This NBT compound should be able to be put into any factory with the same
      * registry name as this, and results in an equivalent procedure object using {@link IProcedureType#retrieveInstance(CompoundNBT)}.
-     * <p>
-     * The resulting NBT should not contain connection information that are only valid based on its context ({@link CommandGraph}).
      *
      * @implSpec The resulting NBT must contain an entry with the key "{@code ID}", associated with the registry name of the procedure.
      */
@@ -42,21 +40,14 @@ public interface IProcedure {
 
     void deserialize(CompoundNBT tag);
 
-    // TODO make this not implementation-dependent
+    // TODO make this implementation-independent
     @OnlyIn(Dist.CLIENT)
     FlowComponent<?> createFlowComponent();
 
     boolean isValid();
 
-    CommandGraph getGraph();
-
-    void setGraph(CommandGraph graph);
-
     /**
      * Remove this procedure and unlink all the related nodes.
-     * <p>
-     * The result of this operation should split the graph {@link #getGraph()} into {@code n+1} different graphs, where {@code n} is the
-     * number of successor nodes this node have. Note that this mechanism should be handled in each of the predecessor nodes, not here.
      */
     void remove();
 
@@ -69,7 +60,4 @@ public interface IProcedure {
 
     @SuppressWarnings("UnusedReturnValue")
     Connection removeOutputConnection(int index);
-
-    default void tick() {
-    }
 }

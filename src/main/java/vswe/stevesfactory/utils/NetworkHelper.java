@@ -25,22 +25,15 @@ public final class NetworkHelper {
     private NetworkHelper() {
     }
 
-    public static <P extends IProcedure> P fabricateInstance(IProcedureType<P> type, INetworkController controller) {
-        P procedure = type.createInstance(controller);
-        CommandGraph graph = procedure.getGraph();
-        controller.addCommandGraph(graph);
-        return procedure;
-    }
-
-    public static IProcedure retrieveProcedureAndAdd(INetworkController controller, CompoundNBT tag) {
-        IProcedure p = retrieveProcedure(new CommandGraph(controller), tag);
-        controller.addCommandGraph(p.getGraph());
+    public static <P extends IProcedure> P fabricateInstance(INetworkController controller, IProcedureType<P> type) {
+        P p = type.createInstance();
+        controller.getPGraph().addProcedure(p);
         return p;
     }
 
-    public static IProcedure retrieveProcedure(CommandGraph graph, CompoundNBT tag) {
+    public static IProcedure retrieveProcedureAndAdd(INetworkController controller, CompoundNBT tag) {
         IProcedure p = findTypeFor(tag).retrieveInstance(tag);
-        p.setGraph(graph);
+        controller.getPGraph().addProcedure(p);
         return p;
     }
 
@@ -56,11 +49,14 @@ public final class NetworkHelper {
         return p;
     }
 
+    /**
+     * Wrap a constructor of a procedure to a fabricator that constructs the procedures, and then immediately adds it to the controller.
+     */
     public static <P extends IProcedure> Function<INetworkController, P> wrapConstructor(Supplier<P> constructor) {
         return controller -> {
-            P procedure = constructor.get();
-            procedure.setGraph(new CommandGraph(controller, procedure));
-            return procedure;
+            P p = constructor.get();
+            controller.getPGraph().addProcedure(p);
+            return p;
         };
     }
 

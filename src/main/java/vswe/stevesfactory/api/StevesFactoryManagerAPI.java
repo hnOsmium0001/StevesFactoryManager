@@ -1,5 +1,6 @@
 package vswe.stevesfactory.api;
 
+import com.google.common.collect.Sets;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.event.RegistryEvent;
@@ -13,7 +14,6 @@ import net.minecraftforge.registries.*;
 import vswe.stevesfactory.api.capability.*;
 import vswe.stevesfactory.api.logic.IProcedureType;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @EventBusSubscriber(modid = StevesFactoryManagerAPI.MODID, bus = Bus.MOD)
@@ -33,7 +33,7 @@ public class StevesFactoryManagerAPI {
 
     public static Set<Capability<?>> getRecognizableCapabilities() {
         if (recognizableCapabilities == null) {
-            recognizableCapabilities = new HashSet<>();
+            recognizableCapabilities = Sets.newIdentityHashSet();
             recognizableCapabilities.add(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
             recognizableCapabilities.add(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
             recognizableCapabilities.add(CapabilityRedstone.REDSTONE_CAPABILITY);
