@@ -5,8 +5,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.nbt.CompoundNBT;
-import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IClientDataStorage;
+import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
 import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
@@ -19,11 +19,13 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.box.MinimumLinearList;
 import vswe.stevesfactory.library.gui.window.Dialog;
-import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
+import vswe.stevesfactory.ui.manager.editor.ConnectionNodes.Node;
+import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.List;
+import java.util.Queue;
 import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
@@ -41,7 +43,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
                 45, 3,
                 45, 11) {
             @Override
-            public void changeState(FlowComponent flowComponent) {
+            public void changeState(FlowComponent<?> flowComponent) {
                 flowComponent.expand();
             }
         },
@@ -53,7 +55,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
                 105, 3,
                 105, 11) {
             @Override
-            public void changeState(FlowComponent flowComponent) {
+            public void changeState(FlowComponent<?> flowComponent) {
                 flowComponent.collapse();
             }
         };
@@ -97,12 +99,12 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
             return background.getPortionHeight();
         }
 
-        public abstract void changeState(FlowComponent flowComponent);
+        public abstract void changeState(FlowComponent<?> flowComponent);
     }
 
     public static class ToggleStateButton extends AbstractIconButton {
 
-        public ToggleStateButton(FlowComponent parent) {
+        public ToggleStateButton(FlowComponent<?> parent) {
             super(-1, -1, 9, 10);
             setParentWidget(parent);
         }
@@ -128,8 +130,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
         @Nonnull
         @Override
-        public FlowComponent getParentWidget() {
-            return Objects.requireNonNull((FlowComponent) super.getParentWidget());
+        public FlowComponent<?> getParentWidget() {
+            return Objects.requireNonNull((FlowComponent<?>) super.getParentWidget());
         }
 
         @Override
@@ -147,7 +149,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 124, 9, 9);
         public static final TextureWrapper HOVERING = NORMAL.toRight(1);
 
-        public RenameButton(FlowComponent parent) {
+        public RenameButton(FlowComponent<?> parent) {
             super(-1, -1, 9, 9);
             setParentWidget(parent);
         }
@@ -156,7 +158,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isEnabled() && button == GLFW_MOUSE_BUTTON_LEFT) {
                 setEnabled(false);
-                FlowComponent parent = getParentWidget();
+                FlowComponent<?> parent = getParentWidget();
                 parent.submitButton.setEnabled(true);
                 parent.cancelButton.setEnabled(true);
                 parent.nameBox.setEditable(true);
@@ -178,8 +180,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
         @Nonnull
         @Override
-        public FlowComponent getParentWidget() {
-            return Objects.requireNonNull((FlowComponent) super.getParentWidget());
+        public FlowComponent<?> getParentWidget() {
+            return Objects.requireNonNull((FlowComponent<?>) super.getParentWidget());
         }
 
         @Override
@@ -197,7 +199,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(0, 133, 7, 7);
         public static final TextureWrapper HOVERING = NORMAL.toRight(1);
 
-        public SubmitButton(FlowComponent parent) {
+        public SubmitButton(FlowComponent<?> parent) {
             super(-1, -1, 7, 7);
             setParentWidget(parent);
             setEnabled(false);
@@ -214,7 +216,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
         public void submit() {
             setEnabled(false);
-            FlowComponent parent = getParentWidget();
+            FlowComponent<?> parent = getParentWidget();
             parent.cancelButton.setEnabled(false);
             parent.renameButton.setEnabled(true);
             parent.nameBox.scrollToFront();
@@ -235,8 +237,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
         @Nonnull
         @Override
-        public FlowComponent getParentWidget() {
-            return Objects.requireNonNull((FlowComponent) super.getParentWidget());
+        public FlowComponent<?> getParentWidget() {
+            return Objects.requireNonNull((FlowComponent<?>) super.getParentWidget());
         }
 
         @Override
@@ -256,7 +258,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
         private String previousName;
 
-        public CancelButton(FlowComponent parent, String previousName) {
+        public CancelButton(FlowComponent<?> parent, String previousName) {
             super(-1, -1, 7, 7);
             setParentWidget(parent);
             setEnabled(false);
@@ -274,7 +276,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
         public void cancel() {
             setEnabled(false);
-            FlowComponent parent = getParentWidget();
+            FlowComponent<?> parent = getParentWidget();
             parent.submitButton.setEnabled(false);
             parent.renameButton.setEnabled(true);
             parent.setName(previousName);
@@ -304,8 +306,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
         @Nonnull
         @Override
-        public FlowComponent getParentWidget() {
-            return Objects.requireNonNull((FlowComponent) super.getParentWidget());
+        public FlowComponent<?> getParentWidget() {
+            return Objects.requireNonNull((FlowComponent<?>) super.getParentWidget());
         }
 
         @Override
@@ -328,15 +330,13 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
     private P procedure;
 
-    private int id;
-
     private final ToggleStateButton toggleStateButton;
     private final RenameButton renameButton;
     private final SubmitButton submitButton;
     private final CancelButton cancelButton;
     private final TextField nameBox;
-    private final ControlFlow inputNodes;
-    private final ControlFlow outputNodes;
+    private final ConnectionNodes inputNodes;
+    private final ConnectionNodes outputNodes;
     private final ErrorIndicator errorIndicator;
     private final MinimumLinearList<Menu<P>> menus;
     // A list that refers to all the widgets above
@@ -363,8 +363,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
                 .setTextColor(0xff303030, 0xff303030)
                 .setEditable(false)
                 .setFontHeight(6);
-        this.inputNodes = ControlFlow.inputNodes(amountInputs);
-        this.outputNodes = ControlFlow.outputNodes(amountOutputs);
+        this.inputNodes = ConnectionNodes.inputNodes(amountInputs);
+        this.outputNodes = ConnectionNodes.outputNodes(amountOutputs);
         this.errorIndicator = ErrorIndicator.error();
         this.menus = new MinimumLinearList<>(120, 130);
         this.menus.setLocation(2, 20);
@@ -625,15 +625,15 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
     public void setParentWidget(EditorPanel parent) {
         this.setParentWidget((IWidget) parent);
-        id = parent.nextID();
         collapse();
     }
 
     private void openContextMenu() {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                new CallbackEntry(DELETE_ICON, "gui.sfm.ContextMenu.Delete", b -> actionDelete()),
-                new CallbackEntry(CUT_ICON, "gui.sfm.ContextMenu.Cut", b -> actionCut()),
-                new CallbackEntry(COPY_ICON, "gui.sfm.ContextMenu.Copy", b -> actionCopy())
+                new CallbackEntry(DELETE_ICON, "gui.sfm.FactoryManager.Editor.CtxMenu.Delete", b -> actionDelete()),
+                new CallbackEntry(CUT_ICON, "gui.sfm.FactoryManager.Editor.CtxMenu.Cut", b -> actionCut()),
+                new CallbackEntry(COPY_ICON, "gui.sfm.FactoryManager.Editor.CtxMenu.Copy", b -> actionCopy()),
+                new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.ChangeGroup", b -> actionChangeGroup())
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
     }
@@ -641,12 +641,12 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     private void actionDelete() {
         if (Screen.hasShiftDown()) {
             Dialog.createBiSelectionDialog(
-                    "gui.sfm.ContextMenu.DeleteAll.ConfirmMsg",
+                    "gui.sfm.FactoryManager.Editor.PopupMsg.DeleteAll.ConfirmMsg",
                     "gui.sfm.yes",
                     "gui.sfm.no",
-                    b -> removeGraph(), b -> {}).tryAddSelfToActiveGUI();
+                    b -> removeGraph(this), b -> {}).tryAddSelfToActiveGUI();
         } else {
-            removeSelf();
+            remove();
         }
     }
 
@@ -658,7 +658,20 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
     private void actionCut() {
         actionCopy();
-        removeSelf();
+        remove();
+    }
+
+    private void actionChangeGroup() {
+        Dialog.createPrompt("gui.sfm.FactoryManager.Editor.PopupMsg.ChangeGroup.Msg", (b, group) -> {
+            // Update GUI connections
+            inputNodes.removeAllConnections();
+            outputNodes.removeAllConnections();
+            // Update procedure graph connections
+            NetworkHelper.removeAllConnectionsFor(procedure);
+
+            getLinkedProcedure().setGroup(group);
+            getActiveGUI().getTopLevel().toolboxPanel.getGroupList().onProcedureGroupChanged();
+        }).tryAddSelfToActiveGUI();
     }
 
     public void save() {
@@ -667,32 +680,58 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         }
     }
 
-    public void removeGraph() {
-        Set<FlowComponent<?>> children = getParentWidget().getFlowComponents();
-        for (FlowComponent<?> flowComponent : children) {
-            flowComponent.removeLinkedProcedure();
+    public static void removeGraph(FlowComponent<?> start) {
+        Set<FlowComponent<?>> visited = new HashSet<>();
+        Queue<FlowComponent<?>> nexts = new ArrayDeque<>();
+        nexts.add(start);
+        while (!nexts.isEmpty()) {
+            FlowComponent<?> node = nexts.remove();
+            for (Node conn : node.inputNodes.getChildren()) {
+                Node pair = conn.getPairedNode();
+                if (pair == null) {
+                    continue;
+                }
+                FlowComponent<?> prev = pair.getFlowComponent();
+                if (visited.contains(prev)) {
+                    continue;
+                }
+                visited.add(prev);
+                nexts.add(prev);
+            }
+            for (Node conn : node.outputNodes.getChildren()) {
+                Node pair = conn.getPairedNode();
+                if (pair == null) {
+                    continue;
+                }
+                FlowComponent<?> next = pair.getFlowComponent();
+                if (visited.contains(next)) {
+                    continue;
+                }
+                visited.add(next);
+                nexts.add(next);
+            }
         }
-        children.clear();
+        for (FlowComponent<?> node : visited) {
+            node.remove();
+        }
     }
 
-    public void removeSelf() {
-        removeLinkedProcedure();
-        getParentWidget().getFlowComponents().remove(this);
-    }
-
-    private void removeLinkedProcedure() {
+    public void remove() {
         // GUI only mutation
         inputNodes.removeAllConnections();
         outputNodes.removeAllConnections();
         // Procedure graph mutation
-        procedure.remove();
+        NetworkHelper.removeAllConnectionsFor(procedure);
+        procedure.markInvalid();
+
+        getParentWidget().getFlowComponents().remove(this);
     }
 
-    public ControlFlow getInputNodes() {
+    public ConnectionNodes getInputNodes() {
         return inputNodes;
     }
 
-    public ControlFlow getOutputNodes() {
+    public ConnectionNodes getOutputNodes() {
         return outputNodes;
     }
 
@@ -700,10 +739,6 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     @Override
     public EditorPanel getParentWidget() {
         return Objects.requireNonNull((EditorPanel) super.getParentWidget());
-    }
-
-    public int getID() {
-        return id;
     }
 
     public int getZIndex() {
@@ -721,6 +756,10 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
     public P getLinkedProcedure() {
         return procedure;
+    }
+
+    public String getGroup() {
+        return procedure.getGroup();
     }
 
     public IProcedure getProcedure() {

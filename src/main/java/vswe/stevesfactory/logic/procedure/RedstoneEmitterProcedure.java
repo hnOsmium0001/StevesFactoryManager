@@ -98,11 +98,11 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
     @OnlyIn(Dist.CLIENT)
     public FlowComponent<RedstoneEmitterProcedure> createFlowComponent() {
         FlowComponent<RedstoneEmitterProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>(EMITTERS, I18n.format("gui.sfm.Menu.RedstoneEmitter.Emitters"), I18n.format("error.sfm.RedstoneEmitter.NoEmitters"), CapabilityRedstone.REDSTONE_CAPABILITY));
+        f.addMenu(new InventorySelectionMenu<>(EMITTERS, I18n.format("menu.sfm.RedstoneEmitter.Emitters"), I18n.format("error.sfm.RedstoneEmitter.NoEmitters"), CapabilityRedstone.REDSTONE_CAPABILITY));
         f.addMenu(new RedstoneSidesMenu<>(SIDES,
-                () -> signalType == IRedstoneHandler.Type.WEAK, () -> signalType = IRedstoneHandler.Type.WEAK, I18n.format("gui.sfm.Menu.WeakRedstoneSignal"),
-                () -> signalType == IRedstoneHandler.Type.STRONG, () -> signalType = IRedstoneHandler.Type.STRONG, I18n.format("gui.sfm.Menu.StrongRedstoneSignal"),
-                I18n.format("gui.sfm.Menu.RedstoneEmitter.Sides"), I18n.format("gui.sfm.Menu.RedstoneEmitter.Sides.Info")));
+                () -> signalType == IRedstoneHandler.Type.WEAK, () -> signalType = IRedstoneHandler.Type.WEAK, I18n.format("menu.sfm.WeakRedstoneSignal"),
+                () -> signalType == IRedstoneHandler.Type.STRONG, () -> signalType = IRedstoneHandler.Type.STRONG, I18n.format("menu.sfm.StrongRedstoneSignal"),
+                I18n.format("menu.sfm.RedstoneEmitter.Sides"), I18n.format("menu.sfm.RedstoneEmitter.Sides.Info")));
         f.addMenu(new EmitterTypeMenu());
         return f;
     }
@@ -173,7 +173,7 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
         public final String nameKey;
 
         OperationType(String nameKey) {
-            this.nameKey = "gui.sfm.Menu.RedstoneEmitter.Type." + nameKey;
+            this.nameKey = "menu.sfm.RedstoneEmitter.Type." + nameKey;
         }
 
         public static final OperationType[] VALUES = values();

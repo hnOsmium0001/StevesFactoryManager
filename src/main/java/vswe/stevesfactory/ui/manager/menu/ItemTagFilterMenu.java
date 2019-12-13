@@ -34,7 +34,7 @@ public class ItemTagFilterMenu<P extends IProcedure & IClientDataStorage & IItem
     private SettingsEditor settings;
 
     public ItemTagFilterMenu(int id) {
-        this(id, I18n.format("gui.sfm.Menu.ItemFilter.Tag"));
+        this(id, I18n.format("menu.sfm.ItemFilter.Tag"));
     }
 
     public ItemTagFilterMenu(int id, String name) {
@@ -68,7 +68,7 @@ public class ItemTagFilterMenu<P extends IProcedure & IClientDataStorage & IItem
             public void render(int mouseX, int mouseY, float particleTicks) {
                 super.render(mouseX, mouseY, particleTicks);
                 if (isHovered()) {
-                    WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.ItemFilter.Tags.AddEntry"), mouseX, mouseY);
+                    WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("menu.sfm.ItemFilter.Tags.AddEntry"), mouseX, mouseY);
                 }
             }
 
@@ -128,9 +128,9 @@ public class ItemTagFilterMenu<P extends IProcedure & IClientDataStorage & IItem
         NumberField<Integer> stackLimitInput = settings.addIntegerInput(1, 0, Integer.MAX_VALUE);
         stackLimitInput.setValue(filter.stackLimit)
                 .setBackgroundStyle(BackgroundStyle.RED_OUTLINE)
-                .translateLabel("gui.sfm.Menu.ItemFilter.Traits.Amount");
+                .translateLabel("menu.sfm.ItemFilter.Traits.Amount");
         stackLimitInput.onValueUpdated = i -> filter.stackLimit = i;
-        Checkbox checkbox = settings.addOption(filter.isMatchingAmount(), "gui.sfm.Menu.ItemFilter.Traits.MatchAmount");
+        Checkbox checkbox = settings.addOption(filter.isMatchingAmount(), "menu.sfm.ItemFilter.Traits.MatchAmount");
         checkbox.onStateChange = b -> {
             filter.setMatchingAmount(b);
             stackLimitInput.setEnabled(b);

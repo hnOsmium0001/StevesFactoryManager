@@ -1,8 +1,10 @@
 package vswe.stevesfactory.ui.manager.tool.group;
 
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
-import java.util.Collection;
+import java.util.*;
 
 import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
 
@@ -10,11 +12,7 @@ public class GroupList extends LinearList<GroupButton> {
 
     public GroupList() {
         super(64, 0);
-
-//        for (int i = 0; i < 32; i++) {
-//            addChildren(new GroupButton());
-//        }
-//        reflow();
+        onProcedureGroupChanged();
     }
 
     @Override
@@ -40,5 +38,20 @@ public class GroupList extends LinearList<GroupButton> {
     @Override
     public int getMarginMiddle() {
         return 2;
+    }
+
+    public void onProcedureGroupChanged() {
+        getChildren().clear();
+        Set<String> existing = new HashSet<>();
+        for (FlowComponent<?> component : FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel.getFlowComponents()) {
+            String group = component.getGroup();
+            if (existing.contains(group)) {
+                continue;
+            }
+            existing.add(group);
+            GroupButton btn = new GroupButton(group);
+            addChildren(btn);
+        }
+        reflow();
     }
 }

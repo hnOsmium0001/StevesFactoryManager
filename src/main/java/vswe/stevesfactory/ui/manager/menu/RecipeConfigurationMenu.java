@@ -64,7 +64,7 @@ public class RecipeConfigurationMenu<P extends IProcedure & IClientDataStorage &
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menu.RecipeConfiguration");
+        return I18n.format("menu.sfm.RecipeConfiguration");
     }
 
     @Override

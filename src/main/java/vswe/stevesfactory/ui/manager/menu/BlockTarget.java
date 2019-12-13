@@ -44,7 +44,7 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                    new CallbackEntry(null, "gui.sfm.ContextMenu.BlockTarget.Highlight", b -> BlockHighlight.createHighlight(pos, 80))
+                    new CallbackEntry(null, "menu.sfm.BlockTarget.Highlight", b -> BlockHighlight.createHighlight(pos, 80))
             ));
             WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
             return true;

@@ -108,10 +108,10 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     @OnlyIn(Dist.CLIENT)
     public FlowComponent<ItemTransferProcedure> createFlowComponent() {
         FlowComponent<ItemTransferProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Source"), I18n.format("error.sfm.ItemTransfer.NoSrcInv"), CapabilityItemHandler.ITEM_HANDLER_CAPABILITY));
-        f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.InventorySelection.Destination"), I18n.format("error.sfm.ItemTransfer.NoSrcTarget"), CapabilityItemHandler.ITEM_HANDLER_CAPABILITY));
-        f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Source"), I18n.format("error.sfm.ItemTransfer.NoDestInv")));
-        f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("gui.sfm.Menu.TargetSides.Destination"), I18n.format("error.sfm.ItemTransfer.NoDestTarget")));
+        f.addMenu(new InventorySelectionMenu<>(SOURCE_INVENTORIES, I18n.format("menu.sfm.InventorySelection.Source"), I18n.format("error.sfm.ItemTransfer.NoSrcInv"), CapabilityItemHandler.ITEM_HANDLER_CAPABILITY));
+        f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("menu.sfm.InventorySelection.Destination"), I18n.format("error.sfm.ItemTransfer.NoSrcTarget"), CapabilityItemHandler.ITEM_HANDLER_CAPABILITY));
+        f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("menu.sfm.TargetSides.Source"), I18n.format("error.sfm.ItemTransfer.NoDestInv")));
+        f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("menu.sfm.TargetSides.Destination"), I18n.format("error.sfm.ItemTransfer.NoDestTarget")));
         IItemFilterTarget.createFilterMenu(this, f, FILTER);
         return f;
     }

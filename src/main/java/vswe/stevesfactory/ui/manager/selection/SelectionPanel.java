@@ -5,15 +5,20 @@ import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
+import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI.TopLevelWidget;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static vswe.stevesfactory.ui.manager.FactoryManagerGUI.DOWN_RIGHT_4_STRICT_TABLE;
 
 public final class SelectionPanel extends DynamicWidthWidget<IComponentChoice> {
@@ -80,10 +85,21 @@ public final class SelectionPanel extends DynamicWidthWidget<IComponentChoice> {
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        if (isInside(mouseX, mouseY) && button == GLFW_MOUSE_BUTTON_LEFT) {
-            getWindow().setFocusedWidget(this);
+        if (isInside(mouseX, mouseY)) {
+            if (button == GLFW_MOUSE_BUTTON_LEFT) {
+                getWindow().setFocusedWidget(this);
+            } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+                openActionMenu();
+            }
             return true;
         }
         return false;
+    }
+
+    private void openActionMenu() {
+        ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
+                new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
+        ));
+        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
     }
 }

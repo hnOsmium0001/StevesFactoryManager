@@ -39,7 +39,7 @@ public class SignUpdaterLinesMenu extends Menu<SignUpdaterProcedure> {
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menu.SignUpdater.Lines");
+        return I18n.format("menu.sfm.SignUpdater.Lines");
     }
 
     @Override

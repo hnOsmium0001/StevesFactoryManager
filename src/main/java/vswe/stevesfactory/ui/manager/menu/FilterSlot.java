@@ -64,7 +64,7 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
             setDimensions(menu.getWidth(), menu.getContentHeight());
 
             TextButton delete = new DeleteFilterButton();
-            delete.setText(I18n.format("gui.sfm.Menu.Delete"));
+            delete.setText(I18n.format("menu.sfm.Delete"));
             delete.setDimensions(32, 11);
             delete.setLocation(getWidth() - delete.getWidth() - 2, 2);
             delete.onClick = b -> {
@@ -77,7 +77,7 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
                 public void render(int mouseX, int mouseY, float particleTicks) {
                     super.render(mouseX, mouseY, particleTicks);
                     if (isHovered()) {
-                        WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.CloseEditor.Info"), mouseX, mouseY);
+                        WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("menu.sfm.CloseEditor.Info"), mouseX, mouseY);
                     }
                 }
 
@@ -106,12 +106,12 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
             count = NumberField.integerFieldRanged(33, 12, 1, 1, Integer.MAX_VALUE)
                     .setValue(stack.getCount());
             count.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
-            count.setLabel(I18n.format("gui.sfm.Menu.ItemFilter.Traits.Amount"));
+            count.setLabel(I18n.format("menu.sfm.ItemFilter.Traits.Amount"));
             count.onValueUpdated = stack::setCount;
             damage = NumberField.integerField(33, 12)
                     .setValue(stack.getDamage());
             damage.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
-            damage.setLabel(I18n.format("gui.sfm.Menu.ItemFilter.Traits.Damage"));
+            damage.setLabel(I18n.format("menu.sfm.ItemFilter.Traits.Damage"));
             damage.onValueUpdated = stack::setDamage;
 
             children = ImmutableList.of(close, delete, count, damage);
@@ -161,7 +161,7 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
         public void render(int mouseX, int mouseY, float particleTicks) {
             super.render(mouseX, mouseY, particleTicks);
             if (isHovered()) {
-                WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.Menu.Delete.Info"), mouseX, mouseY);
+                WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("menu.sfm.Delete.Info"), mouseX, mouseY);
             }
         }
 

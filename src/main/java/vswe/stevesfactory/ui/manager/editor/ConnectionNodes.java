@@ -3,7 +3,6 @@ package vswe.stevesfactory.ui.manager.editor;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.api.logic.Connection;
 import vswe.stevesfactory.api.logic.IProcedure;
@@ -22,9 +21,9 @@ import java.util.function.BiFunction;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static org.lwjgl.opengl.GL11.*;
-import static vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
+import static vswe.stevesfactory.ui.manager.editor.ConnectionNodes.Node;
 
-public abstract class ControlFlow extends AbstractContainer<Node> implements ResizableWidgetMixin {
+public abstract class ConnectionNodes extends AbstractContainer<Node> implements ResizableWidgetMixin {
 
     public static abstract class Node extends AbstractIconButton implements LeafWidgetMixin {
 
@@ -58,7 +57,7 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         private Node pairedNode;
         private int index;
 
-        public Node(ControlFlow parent, int index) {
+        public Node(ConnectionNodes parent, int index) {
             super(0, 0, WIDTH, HEIGHT);
             setParentWidget(parent);
             this.index = index;
@@ -149,8 +148,8 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
 
         @Nonnull
         @Override
-        public ControlFlow getParentWidget() {
-            return (ControlFlow) Objects.requireNonNull(super.getParentWidget());
+        public ConnectionNodes getParentWidget() {
+            return (ConnectionNodes) Objects.requireNonNull(super.getParentWidget());
         }
 
         public FlowComponent<?> getFlowComponent() {
@@ -173,7 +172,7 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         public static final TextureWrapper INPUT_NORMAL = TextureWrapper.ofFlowComponent(18, 51, WIDTH, HEIGHT);
         public static final TextureWrapper INPUT_HOVERED = INPUT_NORMAL.toRight(1);
 
-        public InputNode(ControlFlow parent, int index) {
+        public InputNode(ConnectionNodes parent, int index) {
             super(parent, index);
         }
 
@@ -220,7 +219,7 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         public static final TextureWrapper OUTPUT_NORMAL = TextureWrapper.ofFlowComponent(18, 45, WIDTH, HEIGHT);
         public static final TextureWrapper OUTPUT_HOVERED = OUTPUT_NORMAL.toRight(1);
 
-        public OutputNode(ControlFlow parent, int index) {
+        public OutputNode(ConnectionNodes parent, int index) {
             super(parent, index);
         }
 
@@ -243,9 +242,9 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         }
 
         private void linkToOther(Node other) {
-            if (!getParentWidget().bootstrapping) {
+            if (!getParentWidget().initializing) {
                 IProcedure target = other.getLinkedProcedure();
-                Connection.createAndOverride(getLinkedProcedure(), getIndex(), target, other.getIndex());
+                Connection.createAndOverride(getLinkedProcedure(), this.getIndex(), target, other.getIndex());
             }
         }
 
@@ -289,8 +288,8 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         }
     }
 
-    public static ControlFlow inputNodes(int amount) {
-        return new ControlFlow(amount, InputNode::new) {
+    public static ConnectionNodes inputNodes(int amount) {
+        return new ConnectionNodes(amount, InputNode::new) {
             @Override
             void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure) {
                 // Only connect on output nodes
@@ -298,11 +297,11 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         };
     }
 
-    public static ControlFlow outputNodes(int amount) {
-        return new ControlFlow(amount, OutputNode::new) {
+    public static ConnectionNodes outputNodes(int amount) {
+        return new ConnectionNodes(amount, OutputNode::new) {
             @Override
             void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure) {
-                bootstrapping = true;
+                initializing = true;
                 ImmutableList<Node> nodes = getChildren();
                 Connection[] successors = procedure.successors();
                 Preconditions.checkState(successors.length == nodes.size());
@@ -319,15 +318,15 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
 
                     from.connect(to);
                 }
-                bootstrapping = false;
+                initializing = false;
             }
         };
     }
 
     private final ImmutableList<Node> nodes;
-    boolean bootstrapping = false;
+    boolean initializing = false;
 
-    public ControlFlow(int amountNodes, BiFunction<ControlFlow, Integer, ? extends Node> factory) {
+    public ConnectionNodes(int amountNodes, BiFunction<ConnectionNodes, Integer, ? extends Node> factory) {
         super(0, 0, 0, Node.HEIGHT);
         ImmutableList.Builder<Node> builder = ImmutableList.builder();
         for (int i = 0; i < amountNodes; i++) {
@@ -370,7 +369,7 @@ public abstract class ControlFlow extends AbstractContainer<Node> implements Res
         return false;
     }
 
-    public boolean removeConnection(FlowComponent component) {
+    public boolean removeConnection(FlowComponent<?> component) {
         for (Node node : nodes) {
             if (node.getParentWidget().getParentWidget() == component) {
                 node.disconnect();

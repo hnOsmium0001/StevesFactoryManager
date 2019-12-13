@@ -96,6 +96,10 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
         return (PrimaryWindow) super.getPrimaryWindow();
     }
 
+    public TopLevelWidget getTopLevel() {
+        return getPrimaryWindow().topLevel;
+    }
+
     public static class PrimaryWindow extends AbstractWindow {
 
         public final TopLevelWidget topLevel;

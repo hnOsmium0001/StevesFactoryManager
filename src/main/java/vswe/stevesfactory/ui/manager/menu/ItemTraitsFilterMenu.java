@@ -30,7 +30,7 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IClientDataStorage & II
     private SettingsEditor settings;
 
     public ItemTraitsFilterMenu(int id) {
-        this(id, I18n.format("gui.sfm.Menu.ItemFilter.Traits"));
+        this(id, I18n.format("menu.sfm.ItemFilter.Traits"));
     }
 
     public ItemTraitsFilterMenu(int id, String name) {
@@ -94,9 +94,9 @@ public class ItemTraitsFilterMenu<P extends IProcedure & IClientDataStorage & II
         blacklist.onChecked = () -> filter.type = FilterType.BLACKLIST;
 
         settings = new SettingsEditor(this);
-        settings.addOption(filter.isMatchingAmount(), "gui.sfm.Menu.ItemFilter.Traits.MatchAmount").onStateChange = filter::setMatchingAmount;
-        settings.addOption(filter.isMatchingDamage(), "gui.sfm.Menu.ItemFilter.Traits.MatchDamage").onStateChange = filter::setMatchingDamage;
-        settings.addOption(filter.isMatchingTag(), "gui.sfm.Menu.ItemFilter.Traits.MatchTag").onStateChange = filter::setMatchingTag;
+        settings.addOption(filter.isMatchingAmount(), "menu.sfm.ItemFilter.Traits.MatchAmount").onStateChange = filter::setMatchingAmount;
+        settings.addOption(filter.isMatchingDamage(), "menu.sfm.ItemFilter.Traits.MatchDamage").onStateChange = filter::setMatchingDamage;
+        settings.addOption(filter.isMatchingTag(), "menu.sfm.ItemFilter.Traits.MatchTag").onStateChange = filter::setMatchingTag;
     }
 
     @Override

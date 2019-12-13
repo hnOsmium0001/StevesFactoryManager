@@ -25,10 +25,10 @@ public class RedstoneStrengthMenu<P extends IProcedure & IClientDataStorage & IA
         end = NumberField.integerFieldRanged(33, 12, 1, 1, 15);
         end.setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
         invertCondition = new Checkbox(0, 0, 8, 8);
-        invertCondition.translateLabel("gui.sfm.Menu.InvertCondition");
+        invertCondition.translateLabel("menu.sfm.InvertCondition");
         TextList info = new TextList(getWidth() - 10 * 2, 16, new ArrayList<>());
         info.setFontHeight(6);
-        info.addLineSplit(I18n.format("gui.sfm.Menu.RedstoneTrigger.Strength.Info"));
+        info.addLineSplit(I18n.format("menu.sfm.RedstoneTrigger.Strength.Info"));
         info.setLocation(4, HEADING_BOX.getPortionHeight() + 2);
 
         addChildren(begin);
@@ -65,13 +65,13 @@ public class RedstoneStrengthMenu<P extends IProcedure & IClientDataStorage & IA
     @Override
     public void renderContents(int mouseX, int mouseY, float particleTicks) {
         super.renderContents(mouseX, mouseY, particleTicks);
-        String text = I18n.format("gui.sfm.Menu.NumberRange");
+        String text = I18n.format("menu.sfm.NumberRange");
         RenderingHelper.drawTextCenteredVertically(text, begin.getAbsoluteXRight() + 2, begin.getAbsoluteY(), begin.getAbsoluteYBottom(), 0xff404040);
     }
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menu.RedstoneTrigger.Strength");
+        return I18n.format("menu.sfm.RedstoneTrigger.Strength");
     }
 
     @Override

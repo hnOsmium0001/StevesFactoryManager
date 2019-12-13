@@ -46,10 +46,7 @@ public interface IProcedure {
 
     boolean isValid();
 
-    /**
-     * Remove this procedure and unlink all the related nodes.
-     */
-    void remove();
+    void markInvalid();
 
     void setInputConnection(@Nonnull Connection connection, int index);
 

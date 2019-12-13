@@ -242,8 +242,8 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
             getWindow().setFocusedWidget(this);
             if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                 ImmutableList.Builder<IEntry> list = ImmutableList.<IEntry>builder()
-                        .add(new CallbackEntry(null, "gui.sfm.ContextMenu.Menus.CollapseAll", b -> flowComponent.collapseAllMenus()))
-                        .add(new CallbackEntry(null, "gui.sfm.ContextMenu.Menus.ExpandAll", b -> flowComponent.expandAllMenus()));
+                        .add(new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.CollapseAll", b -> flowComponent.collapseAllMenus()))
+                        .add(new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.ExpandAll", b -> flowComponent.expandAllMenus()));
                 for (Supplier<IEntry> entry : actionMenuEntries) {
                     list.add(entry.get());
                 }

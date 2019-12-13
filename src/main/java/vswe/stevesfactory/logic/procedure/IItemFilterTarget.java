@@ -20,13 +20,13 @@ public interface IItemFilterTarget {
                 () -> procedure.getFilter(filterID),
                 filter -> procedure.setFilter(filterID, filter));
         pm.on(filter -> filter instanceof ItemTraitsFilter)
-                .name(I18n.format("gui.sfm.Menu.ItemFilter.Traits"))
+                .name(I18n.format("menu.sfm.ItemFilter.Traits"))
                 .prop(ItemTraitsFilter::new)
-                .then(() -> new ItemTraitsFilterMenu<>(filterID, I18n.format("gui.sfm.Menu.ItemFilter.Traits")));
+                .then(() -> new ItemTraitsFilterMenu<>(filterID, I18n.format("menu.sfm.ItemFilter.Traits")));
         pm.on(filter -> filter instanceof ItemTagFilter)
-                .name(I18n.format("gui.sfm.Menu.ItemFilter.Tags"))
+                .name(I18n.format("menu.sfm.ItemFilter.Tags"))
                 .prop(ItemTagFilter::new)
-                .then(() -> new ItemTagFilterMenu<>(filterID, I18n.format("gui.sfm.Menu.ItemFilter.Tags")));
+                .then(() -> new ItemTagFilterMenu<>(filterID, I18n.format("menu.sfm.ItemFilter.Tags")));
         pm.actionCycling();
         pm.setProperty(procedure.getFilter(filterID));
         return pm;

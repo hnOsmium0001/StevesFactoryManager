@@ -26,8 +26,8 @@ public final class ProcedureGraph {
     private List<IProcedure> all;
 
     private ProcedureGraph() {
-        @SuppressWarnings("unchecked") // Safe downwards erasure cast
-        List<IProcedure> triggers = (List<IProcedure>) (List<? extends IProcedure>) this.triggers;
+        // Safe downwards erasure cast
+        @SuppressWarnings("unchecked") List<IProcedure> triggers = (List<IProcedure>) (List<? extends IProcedure>) this.triggers;
         List<IProcedure> regulars = this.regulars;
         this.all = CompositeUnmodifiableList.of(triggers, regulars);
     }
@@ -60,6 +60,55 @@ public final class ProcedureGraph {
 
     public List<IProcedure> getAllProcedures() {
         return all;
+    }
+
+    public Iterator<ITrigger> iteratorValidTriggers() {
+        return createValidOnlyIter(triggers);
+    }
+
+    public Iterator<IProcedure> iteratorValidRegulars() {
+        return createValidOnlyIter(regulars);
+    }
+
+    public Iterator<IProcedure> iteratorValidAll() {
+        return createValidOnlyIter(all);
+    }
+
+    public Iterable<ITrigger> iterableValidTriggers() {
+        return () -> createValidOnlyIter(triggers);
+    }
+
+    public Iterable<IProcedure> iterableValidRegulars() {
+        return () -> createValidOnlyIter(regulars);
+    }
+
+    public Iterable<IProcedure> iterableValidAll() {
+        return () -> createValidOnlyIter(all);
+    }
+
+    private static <T extends IProcedure> Iterator<T> createValidOnlyIter(List<T> list) {
+        return new Iterator<T>() {
+            private Iterator<T> backing = list.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return backing.hasNext();
+            }
+
+            @Override
+            public T next() {
+                T t;
+                do {
+                    t = backing.next();
+                } while (!t.isValid());
+                return t;
+            }
+        };
+    }
+
+    public void cleanInvalidProcedures() {
+        triggers.removeIf(p -> !p.isValid());
+        regulars.removeIf(p -> !p.isValid());
     }
 
     public CompoundNBT serialize() {
@@ -103,6 +152,9 @@ public final class ProcedureGraph {
     private Object2IntMap<IProcedure> createIDMap() {
         Object2IntMap<IProcedure> idMap = new Object2IntOpenHashMap<>(all.size());
         for (IProcedure node : all) {
+            if (!node.isValid()) {
+                continue;
+            }
             idMap.put(node, idMap.size());
         }
         return idMap;

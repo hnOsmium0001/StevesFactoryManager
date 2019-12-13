@@ -100,7 +100,7 @@ public final class PropertyManager<T, P extends IProcedure & IClientDataStorage>
     }
 
     public void actionCycling() {
-        action(() -> new DefaultEntry(null, "gui.sfm.ContextMenu.Menus.CycleProperty") {
+        action(() -> new DefaultEntry(null, "gui.sfm.CtxMenu.Menu.CycleProperty") {
             private int cachedIndex = -1;
             private String cachedText;
 
@@ -123,7 +123,7 @@ public final class PropertyManager<T, P extends IProcedure & IClientDataStorage>
                 int nextIndex = currentIndex + 1 >= cases.size() ? 0 : currentIndex + 1;
                 if (cachedIndex != nextIndex || cachedText == null) {
                     Case<T, P> caseElement = cases.get(nextIndex);
-                    cachedText = caseElement.hasName() ? I18n.format("gui.sfm.ContextMenu.Menus.CycleProperty.Named", caseElement.getName()) : super.getText();
+                    cachedText = caseElement.hasName() ? I18n.format("gui.sfm.CtxMenu.Menu.CycleProperty.Named", caseElement.getName()) : super.getText();
                     cachedIndex = nextIndex;
                     reflowSafe();
                 }

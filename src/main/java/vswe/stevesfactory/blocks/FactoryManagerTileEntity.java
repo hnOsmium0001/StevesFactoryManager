@@ -277,7 +277,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     private static final Map<String, Capability<?>> caps;
 
     static {
-        // TODO use proper private field accessing via accesstransformer.cfg
+        // TODO use proper solution for serializing capability types
         try {
             Field field = CapabilityManager.class.getDeclaredField("providers");
             field.setAccessible(true);
@@ -307,7 +307,6 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             // Constructed (heap) string and interned string behave differently in an IdentityHashMap
             // (CapabilityManager interns the capability name before putting them in the map)
             String capName = element.getString("Name").intern();
-//            Capability<?> cap = CapabilityManager.INSTANCE.providers.get(capName);
             Capability<?> cap = caps.get(capName);
 
             ListNBT serializedPoses = element.getList("Positions", Constants.NBT.TAG_COMPOUND);
@@ -369,8 +368,8 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     }
 
     public CompoundNBT writeCustom(CompoundNBT compound) {
-        // 0: Singular command graphs
-        // 1: Global procedure graphs
+        // Version 0: Singular command graphs
+        // Version 1: Global procedure graphs
         compound.putInt("FormatVer", 1);
 
         compound.put("ConnectedCables", IOHelper.writeBlockPoses(connectedCables));

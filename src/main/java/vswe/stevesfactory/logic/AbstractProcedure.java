@@ -37,7 +37,18 @@ public abstract class AbstractProcedure implements IProcedure, IClientDataStorag
         return successors != null && predecessors != null;
     }
 
-    private void markInvalid() {
+    @Override
+    public void markInvalid() {
+        for (Connection predecessor : predecessors) {
+            if (predecessor != null) {
+                predecessor.remove();
+            }
+        }
+        for (Connection successor : successors) {
+            if (successor != null) {
+                successor.remove();
+            }
+        }
         successors = null;
         predecessors = null;
     }
@@ -74,21 +85,6 @@ public abstract class AbstractProcedure implements IProcedure, IClientDataStorag
         Connection prev = successors[index];
         successors[index] = null;
         return prev;
-    }
-
-    @Override
-    public void remove() {
-        for (Connection predecessor : predecessors) {
-            if (predecessor != null) {
-                predecessor.remove();
-            }
-        }
-        for (Connection successor : successors) {
-            if (successor != null) {
-                successor.remove();
-            }
-        }
-        markInvalid();
     }
 
     @Override

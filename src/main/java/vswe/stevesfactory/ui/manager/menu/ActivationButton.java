@@ -44,7 +44,7 @@ class ActivationButton extends TextButton {
     }
 
     private void updateText() {
-        text = target.isSelected() ? I18n.format("gui.sfm.Menu.Deactivate") : I18n.format("gui.sfm.Menu.Activate");
+        text = target.isSelected() ? I18n.format("menu.sfm.Deactivate") : I18n.format("menu.sfm.Activate");
     }
 
     @Override

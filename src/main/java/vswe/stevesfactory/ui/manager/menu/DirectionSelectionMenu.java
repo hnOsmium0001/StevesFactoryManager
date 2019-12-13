@@ -23,7 +23,7 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IC
     private ActivationButton activationButton;
 
     public DirectionSelectionMenu(int id) {
-        this(id, I18n.format("gui.sfm.Menu.TargetSides"), I18n.format("error.sfm.ItemIO.NoTarget"));
+        this(id, I18n.format("menu.sfm.TargetSides"), I18n.format("error.sfm.ItemIO.NoTarget"));
     }
 
     public DirectionSelectionMenu(int id, String name, String errorMessage) {

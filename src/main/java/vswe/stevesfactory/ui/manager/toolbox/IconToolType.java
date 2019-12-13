@@ -73,7 +73,7 @@ public class IconToolType<T extends IWidget & ResizableWidgetMixin> extends Abst
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        ToolPanel panel = FactoryManagerGUI.getActiveGUI().getPrimaryWindow().topLevel.toolPanel;
+        ToolPanel panel = FactoryManagerGUI.getActiveGUI().getTopLevel().toolPanel;
         panel.setActivePanel(getToolWindow());
         return true;
     }
@@ -90,7 +90,7 @@ public class IconToolType<T extends IWidget & ResizableWidgetMixin> extends Abst
         return name;
     }
 
-    public IconToolType setName(String name) {
+    public IconToolType<T> setName(String name) {
         this.name = name;
         this.setHeight(getHeight() + LABEL_VERTICAL_GAP + textWidth(name, FONT_HEIGHT) + LABEL_VERTICAL_GAP);
         return this;

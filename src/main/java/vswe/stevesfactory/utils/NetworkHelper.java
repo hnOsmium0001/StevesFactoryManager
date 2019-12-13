@@ -15,8 +15,7 @@ import vswe.stevesfactory.api.network.*;
 import vswe.stevesfactory.api.network.IConnectable.LinkType;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -58,6 +57,47 @@ public final class NetworkHelper {
             controller.getPGraph().addProcedure(p);
             return p;
         };
+    }
+
+    public static void removeAllConnectionsFor(IProcedure procedure) {
+        for (Connection conn : procedure.predecessors()) {
+            if (conn != null) {
+                conn.remove();
+            }
+        }
+        for (Connection conn : procedure.successors()) {
+            if (conn != null) {
+                conn.remove();
+            }
+        }
+    }
+
+    public static void removeAllConnected(IProcedure start) {
+        Set<IProcedure> visited = new HashSet<>();
+        Queue<IProcedure> nexts = new ArrayDeque<>();
+        nexts.add(start);
+        while (!nexts.isEmpty()) {
+            IProcedure node = nexts.remove();
+            for (Connection conn : node.predecessors()) {
+                IProcedure source = conn.getSource();
+                if (visited.contains(source)) {
+                    continue;
+                }
+                visited.add(source);
+                nexts.add(source);
+            }
+            for (Connection conn : node.successors()) {
+                IProcedure dest = conn.getDestination();
+                if (visited.contains(dest)) {
+                    continue;
+                }
+                visited.add(dest);
+                nexts.add(dest);
+            }
+        }
+        for (IProcedure procedure : visited) {
+            procedure.markInvalid();
+        }
     }
 
     public static LinkType getLinkType(@Nullable TileEntity tile) {

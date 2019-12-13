@@ -24,8 +24,8 @@ import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
-import vswe.stevesfactory.ui.manager.editor.ControlFlow.OutputNode;
+import vswe.stevesfactory.ui.manager.editor.ConnectionNodes.Node;
+import vswe.stevesfactory.ui.manager.editor.ConnectionNodes.OutputNode;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -44,10 +44,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     private TreeSet<FlowComponent<?>> children = new TreeSet<>();
     private Collection<FlowComponent<?>> childrenView = new DescendingTreeSetBackedUnmodifiableCollection<>(children);
     private int nextZIndex = 0;
-    private int nextID = 0;
 
     // Node connection state
     private Node selectedNode;
+    private String currentGroup = "";
 
     private OffsetText xOffset;
     private OffsetText yOffset;
@@ -67,7 +67,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
 
         Map<IProcedure, FlowComponent<?>> m = new HashMap<>();
-        for (IProcedure procedure : controller.getPGraph().getAllProcedures()) {
+        for (IProcedure procedure : controller.getPGraph().iterableValidAll()) {
             FlowComponent<?> f = procedure.createFlowComponent();
             m.put(procedure, f);
             addChildren(f);
@@ -127,6 +127,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
             // The ideal way to solve this is to use depth testing, however it is such a huge amount of work to change all the GUI code written,
             // TODO use depth test instead of painter's algorithm
             for (FlowComponent<?> child : children) {
+                if (!currentGroup.equals(child.getGroup())) {
+                    continue;
+                }
                 for (Node node : child.getOutputNodes().getChildren()) {
                     ((OutputNode) node).renderConnectionLine();
                 }
@@ -138,6 +141,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
             int translatedY = mouseY - yOffset.get();
             // Iterate in ascending order for rendering as a special case
             for (FlowComponent<?> child : children) {
+                if (!currentGroup.equals(child.getGroup())) {
+                    continue;
+                }
                 child.render(translatedX, translatedY, particleTicks);
             }
 
@@ -181,8 +187,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         if (isInside(mouseX, mouseY)) {
             if (button == GLFW_MOUSE_BUTTON_LEFT) {
                 getWindow().setFocusedWidget(this);
-            }
-            if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+            } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
                 openActionMenu();
             }
             return true;
@@ -198,7 +203,18 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         if (yOffset.isInside(mouseX, mouseY)) {
             return yOffset.mouseReleased(mouseX, mouseY, button);
         }
-        return super.mouseReleased(mouseX - xOffset.get(), mouseY - yOffset.get(), button);
+
+        double translatedX = mouseX - xOffset.get();
+        double translatedY = mouseY - yOffset.get();
+        for (FlowComponent<?> child : getChildren()) {
+            if (!child.isInside(translatedX, translatedY) || !currentGroup.equals(child.getGroup())) {
+                continue;
+            }
+            if (child.mouseReleased(translatedX, translatedY, button)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -213,7 +229,16 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         if (yOffset.isInside(mouseX, mouseY)) {
             return yOffset.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         }
-        return super.mouseDragged(mouseX - xOffset.get(), mouseY - yOffset.get(), button, deltaX, deltaY);
+
+        for (FlowComponent<?> child : getChildren()) {
+            if (!child.isFocused() || !currentGroup.equals(child.getGroup())) {
+                continue;
+            }
+            if (child.mouseDragged(mouseX - xOffset.get(), mouseY - yOffset.get(), button, deltaX, deltaY)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -224,7 +249,18 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         if (yOffset.isInside(mouseX, mouseY)) {
             return yOffset.mouseScrolled(mouseX, mouseY, scroll);
         }
-        return super.mouseScrolled(mouseX - xOffset.get(), mouseY - yOffset.get(), scroll);
+
+        double translatedX = mouseX - xOffset.get();
+        double translatedY = mouseY - yOffset.get();
+        for (FlowComponent<?> child : getChildren()) {
+            if (!child.isInside(translatedX, translatedY) || !currentGroup.equals(child.getGroup())) {
+                continue;
+            }
+            if (child.mouseScrolled(translatedX, translatedY, scroll)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -235,14 +271,26 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         if (yOffset.isInside(mouseX, mouseY)) {
             yOffset.mouseMoved(mouseX, mouseY);
         }
-        super.mouseMoved(mouseX - xOffset.get(), mouseY - yOffset.get());
+
+        for (FlowComponent<?> child : getChildren()) {
+            if (!currentGroup.equals(child.getGroup())) {
+                continue;
+            }
+            child.mouseMoved(mouseX - xOffset.get(), mouseY - yOffset.get());
+        }
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
-            return true;
+        for (FlowComponent<?> child : getChildren()) {
+            if (!child.isFocused() || !currentGroup.equals(child.getGroup())) {
+                continue;
+            }
+            if (child.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
         }
+
         int offset = Screen.hasShiftDown() ? Config.CLIENT.acceleratedEditorMoveSpeed.get() : Config.CLIENT.defaultEditorMoveSpeed.get();
         switch (keyCode) {
             case GLFW_KEY_UP:
@@ -261,11 +309,47 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         return false;
     }
 
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        for (FlowComponent<?> child : getChildren()) {
+            if (!child.isFocused() || !currentGroup.equals(child.getGroup())) {
+                continue;
+            }
+            if (child.keyReleased(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean charTyped(char charTyped, int keyCode) {
+        for (FlowComponent<?> child : getChildren()) {
+            if (!child.isFocused() || !currentGroup.equals(child.getGroup())) {
+                continue;
+            }
+            if (child.charTyped(charTyped, keyCode)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void update(float particleTicks) {
+        for (FlowComponent<?> child : getChildren()) {
+            if (!currentGroup.equals(child.getGroup())) {
+                continue;
+            }
+            child.update(particleTicks);
+        }
+    }
+
     private void openActionMenu() {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.ContextMenu.Paste", b -> actionPaste()),
-                new CallbackEntry(null, "gui.sfm.ContextMenu.CleanupProcedures", b -> actionCleanup()),
-                new CallbackEntry(null, "gui.sfm.ContextMenu.ToggleFullscreen", b -> actionToggleFullscreen())
+                new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.FactoryManager.Editor.CtxMenu.Paste", b -> actionPaste()),
+                new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.CleanupProcedures", b -> actionCleanup()),
+                new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
         ));
         WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
     }
@@ -276,7 +360,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         try {
             tag = JsonToNBT.getTagFromJson(json);
         } catch (CommandSyntaxException e) {
-            Dialog.createDialog("gui.sfm.ContextMenu.PasteProcedure.Fail").tryAddSelfToActiveGUI();
+            Dialog.createDialog("gui.sfm.PopupMsg.PasteProcedure.Fail").tryAddSelfToActiveGUI();
             return;
         }
 
@@ -288,10 +372,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
     private void actionCleanup() {
         // TODO implement
-    }
-
-    private void actionToggleFullscreen() {
-        FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen();
     }
 
     @Override
@@ -347,10 +427,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         children.add(child);
     }
 
-    int nextID() {
-        return nextID++;
-    }
-
     public void startConnection(Node source) {
         selectedNode = source;
     }
@@ -375,6 +451,14 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         super.provideInformation(receiver);
         receiver.line("XOff=" + xOffset.get());
         receiver.line("YOff=" + yOffset.get());
+    }
+
+    public String getCurrentGroup() {
+        return currentGroup;
+    }
+
+    public void setCurrentGroup(String currentGroup) {
+        this.currentGroup = currentGroup;
     }
 
     @MethodsReturnNonnullByDefault

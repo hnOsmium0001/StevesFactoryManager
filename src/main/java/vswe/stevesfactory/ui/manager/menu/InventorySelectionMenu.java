@@ -25,7 +25,7 @@ public class InventorySelectionMenu<P extends IInventoryTarget & IProcedure & IC
     private WrappingList<BlockTarget> list;
 
     public InventorySelectionMenu(int id, Capability<?> cap) {
-        this(id, I18n.format("gui.sfm.Menu.InventorySelection"), I18n.format("error.sfm.ItemIO.NoInv"), cap);
+        this(id, I18n.format("menu.sfm.InventorySelection"), I18n.format("error.sfm.ItemIO.NoInv"), cap);
     }
 
     public InventorySelectionMenu(int id, String name, String errorMessage, Capability<?> cap) {

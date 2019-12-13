@@ -27,7 +27,7 @@ public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
         TextList description = new TextList(getWidth() - x * 2, 0, new ArrayList<>());
         description.setLocation(desX, HEADING_BOX.getPortionHeight() + 8);
         description.setFitContents(true);
-        description.addLineSplit(getWidth() - 4 * 2, I18n.format("gui.sfm.Menu.Interval.Info"));
+        description.addLineSplit(getWidth() - 4 * 2, I18n.format("menu.sfm.Interval.Info"));
         description.setFontHeight(8);
 
         addChildren(interval);
@@ -45,7 +45,7 @@ public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
 
     @Override
     public String getHeadingText() {
-        return I18n.format("gui.sfm.Menu.Interval");
+        return I18n.format("menu.sfm.Interval");
     }
 
     @Override
