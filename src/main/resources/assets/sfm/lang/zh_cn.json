@@ -8,7 +8,7 @@
   "block.sfm.instant_item_intake": "快速物品阀门",
   "block.sfm.bud": "方块更新检测器（WIP）",
   "block.sfm.world_interactor": "方块交互器（WIP）",
-  "block.sfm.sign_updater": "告示牌更新器（WIP）",
+  "block.sfm.sign_updater": "告示牌更新器",
   "message.sfm.reload.componentGroups.success": "成功加载命令类别定义",
   "message.sfm.settings.query": "设置项%s目前为：%s",
   "message.sfm.settings.set": "设置%s已被设为：%s",
