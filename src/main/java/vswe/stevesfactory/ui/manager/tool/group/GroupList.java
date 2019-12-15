@@ -6,8 +6,6 @@ import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import java.util.*;
 
-import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
-
 public class GroupList extends LinearList<GroupButton> {
 
     public GroupList() {
@@ -31,7 +29,7 @@ public class GroupList extends LinearList<GroupButton> {
         return this;
     }
 
-    public int calcButtonWidth() {
+    private int calcButtonWidth() {
         return getBarLeft() - 2;
     }
 
@@ -43,6 +41,10 @@ public class GroupList extends LinearList<GroupButton> {
     public void onProcedureGroupChanged() {
         getChildren().clear();
         Set<String> existing = new HashSet<>();
+
+        existing.add("");
+        addChildren(new GroupButton(""));
+
         for (FlowComponent<?> component : FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel.getFlowComponents()) {
             String group = component.getGroup();
             if (existing.contains(group)) {
@@ -53,5 +55,22 @@ public class GroupList extends LinearList<GroupButton> {
             addChildren(btn);
         }
         reflow();
+    }
+
+    public void delete(String withGroup) {
+        FactoryManagerGUI gui = FactoryManagerGUI.getActiveGUI();
+        for (FlowComponent<?> component : gui.getTopLevel().editorPanel.getFlowComponents()) {
+            if (component.getGroup().equals(withGroup)) {
+                gui.scheduleTask(w -> component.remove());
+            }
+        }
+    }
+
+    public void move(String withGroup, String toGroup) {
+        for (FlowComponent<?> component : FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel.getFlowComponents()) {
+            if (component.getGroup().equals(withGroup)) {
+                component.getLinkedProcedure().setGroup(toGroup);
+            }
+        }
     }
 }

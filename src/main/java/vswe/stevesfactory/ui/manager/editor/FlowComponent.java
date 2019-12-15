@@ -662,15 +662,9 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     }
 
     private void actionChangeGroup() {
-        Dialog.createPrompt("gui.sfm.FactoryManager.Editor.PopupMsg.ChangeGroup.Msg", (b, group) -> {
-            // Update GUI connections
-            inputNodes.removeAllConnections();
-            outputNodes.removeAllConnections();
-            // Update procedure graph connections
-            NetworkHelper.removeAllConnectionsFor(procedure);
-
-            getLinkedProcedure().setGroup(group);
-            getActiveGUI().getTopLevel().toolboxPanel.getGroupList().onProcedureGroupChanged();
+        Dialog.createPrompt("gui.sfm.FactoryManager.Editor.PopupMsg.ChangeGroup", (b, newGroup) -> {
+            disconnect();
+            setGroup(newGroup);
         }).tryAddSelfToActiveGUI();
     }
 
@@ -716,15 +710,18 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         }
     }
 
-    public void remove() {
-        // GUI only mutation
+    public void disconnect() {
+        // Update GUI connections
         inputNodes.removeAllConnections();
         outputNodes.removeAllConnections();
-        // Procedure graph mutation
+        // Update procedure graph connections
         NetworkHelper.removeAllConnectionsFor(procedure);
-        procedure.markInvalid();
+    }
 
-        getParentWidget().getFlowComponents().remove(this);
+    public void remove() {
+        disconnect();
+        procedure.invalidate();
+        getParentWidget().removeFlowComponent(this);
     }
 
     public ConnectionNodes getInputNodes() {
@@ -760,6 +757,11 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
     public String getGroup() {
         return procedure.getGroup();
+    }
+
+    public void setGroup(String group) {
+        procedure.setGroup(group);
+        getActiveGUI().getTopLevel().toolboxPanel.getGroupList().onProcedureGroupChanged();
     }
 
     public IProcedure getProcedure() {

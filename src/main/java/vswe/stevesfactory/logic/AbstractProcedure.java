@@ -38,7 +38,13 @@ public abstract class AbstractProcedure implements IProcedure, IClientDataStorag
     }
 
     @Override
-    public void markInvalid() {
+    public void invalidate() {
+        if (!this.isValid()) {
+            return;
+        }
+
+        onPreInvalidate();
+
         for (Connection predecessor : predecessors) {
             if (predecessor != null) {
                 predecessor.remove();
@@ -51,6 +57,14 @@ public abstract class AbstractProcedure implements IProcedure, IClientDataStorag
         }
         successors = null;
         predecessors = null;
+
+        onPostInvalidate();
+    }
+
+    protected void onPreInvalidate() {
+    }
+
+    protected void onPostInvalidate() {
     }
 
     @Override

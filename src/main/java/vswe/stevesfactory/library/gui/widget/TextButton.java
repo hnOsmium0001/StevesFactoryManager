@@ -129,7 +129,7 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
 
     public void setText(String text) {
         this.text = text;
-        setDimensions(fontRenderer().getStringWidth(text), 3 + fontHeight() + 2);
+        setDimensions(3 + fontRenderer().getStringWidth(text) + 3, 3 + fontHeight() + 2);
     }
 
     public void setTextRaw(String text) {

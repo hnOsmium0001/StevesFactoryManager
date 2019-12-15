@@ -46,7 +46,7 @@ public interface IProcedure {
 
     boolean isValid();
 
-    void markInvalid();
+    void invalidate();
 
     void setInputConnection(@Nonnull Connection connection, int index);
 

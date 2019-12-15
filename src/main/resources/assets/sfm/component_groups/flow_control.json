@@ -7,7 +7,6 @@
     "sfm:condition",
     "sfm:variable",
     "sfm:for_each",
-    "sfm:group",
-    "sfm:call_node"
+    "sfm:call"
   ]
 }

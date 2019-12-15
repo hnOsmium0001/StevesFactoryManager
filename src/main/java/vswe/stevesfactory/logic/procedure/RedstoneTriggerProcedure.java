@@ -26,15 +26,15 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
     public static final int INVENTORIES = 0;
     public static final int DIRECTIONS = 0;
 
-    public static final int HIGH_SUCCESSOR = 0;
-    public static final int LOW_SUCCESSOR = 1;
+    public static final int RISING_EDGE_CHILD = 0;
+    public static final int FALLING_EDGE_CHILD = 1;
 
     private List<BlockPos> watchingSources = new ArrayList<>();
     private Set<Direction> directions = EnumSet.allOf(Direction.class);
     private Type conjunction = Type.ANY;
     private int analogBegin = 1;
     private int analogEnd = 15;
-    private boolean invertCondition = false;
+    private boolean invertAnalog = false;
 
     // Do not cache caps because we use it once, to set listeners for redstone changes
     // However we still want the dirty check to update listeners upon data mutation
@@ -46,50 +46,64 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
 
     @Override
     public void execute(IExecutionContext context) {
-        pushFrame(context, HIGH_SUCCESSOR);
+        pushFrame(context, RISING_EDGE_CHILD);
     }
 
     @Override
     public void tick(INetworkController controller) {
-        if (!dirty) {
+        if (!dirty && this.isValid()) {
             return;
         }
 
+        World world = controller.getControllerWorld();
         for (BlockPos watching : watchingSources) {
-            World world = controller.getControllerWorld();
             TileEntity tile = world.getTileEntity(watching);
-            if (tile != null) {
-                LazyOptional<IRedstoneEventBus> cap = tile.getCapability(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY);
-                if (cap.isPresent()) {
-                    cap.orElseThrow(RuntimeException::new).subscribeEvent(status -> {
-                        // If this procedure is invalid, which means it was removed from the controller, remove the event handler
-                        if (!this.isValid()) {
-                            return true;
-                        }
-                        // Actual triggering logic
-                        // If is high powered, don't check for low power, and vice versa
-                        if (test(status, !status.hasSignal())) {
-                            // TODO consider moving this to #execute(IExecutionContext)
-                            Connection connection = successors()[status.hasSignal() ? HIGH_SUCCESSOR : LOW_SUCCESSOR];
-                            if (connection != null) {
-                                new ProcedureExecutor(controller, world).start(connection.getDestination());
-                            }
-                        }
-                        return false;
-                    });
-                }
+            if (tile == null) {
+                continue;
             }
+
+            LazyOptional<IRedstoneEventBus> cap = tile.getCapability(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY);
+            if (!cap.isPresent()) {
+                continue;
+            }
+            IRedstoneEventBus bus = cap.orElseThrow(RuntimeException::new);
+
+            // This holder is captured by this specific event handler
+            // Once the event handler is removed, this holder will be invalid
+            BooleanHolder last = new BooleanHolder(bus.hasSignal());
+            bus.subscribeEvent(status -> {
+                // If this procedure is invalid, which means it was removed from the controller, remove the event handler
+                if (!this.isValid()) {
+                    System.out.println("remove listeners");
+                    return true;
+                }
+
+                // Actual triggering logic
+                boolean current = applyConjunction(status);
+                if (current != last.value) {
+                    Connection connection = successors()[current ? RISING_EDGE_CHILD : FALLING_EDGE_CHILD];
+                    if (connection != null) {
+                        new ProcedureExecutor(controller, world).start(connection.getDestination());
+                    }
+                    last.value = current;
+                }
+                return false;
+            });
         }
         dirty = false;
     }
 
-    private boolean test(SignalStatus status, boolean checkLowPower) {
+    private boolean applyConjunction(SignalStatus status) {
         boolean result = conjunction == Type.ALL;
         for (Direction direction : directions) {
             int power = status.get(direction);
-            result = conjunction.combine(result, Utils.invertIf(analogTest(power), checkLowPower));
+            result = conjunction.combine(result, applyAnalog(power));
         }
         return result;
+    }
+
+    private boolean applyAnalog(int power) {
+        return Utils.invertIf(power >= analogBegin && power <= analogEnd, invertAnalog);
     }
 
     @Override
@@ -112,7 +126,7 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
         tag.putInt("ConjunctionType", conjunction.ordinal());
         tag.putInt("AnalogBegin", analogBegin);
         tag.putInt("AnalogEnd", analogEnd);
-        tag.putBoolean("InvertCondition", invertCondition);
+        tag.putBoolean("InvertAnalog", invertAnalog);
         return tag;
     }
 
@@ -124,7 +138,7 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
         conjunction = Type.VALUES[tag.getInt("ConjunctionType")];
         analogBegin = tag.getInt("AnalogBegin");
         analogEnd = tag.getInt("AnalogEnd");
-        invertCondition = tag.getBoolean("InvertCondition");
+        invertAnalog = tag.getBoolean("InvertCondition");
         markDirty();
     }
 
@@ -175,15 +189,20 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
 
     @Override
     public boolean isInverted() {
-        return invertCondition;
+        return invertAnalog;
     }
 
     @Override
     public void setInverted(boolean inverted) {
-        invertCondition = inverted;
+        invertAnalog = inverted;
     }
 
-    private boolean analogTest(int power) {
-        return Utils.invertIf(power >= analogBegin && power <= analogEnd, invertCondition);
+    private static final class BooleanHolder {
+
+        public boolean value;
+
+        public BooleanHolder(boolean value) {
+            this.value = value;
+        }
     }
 }

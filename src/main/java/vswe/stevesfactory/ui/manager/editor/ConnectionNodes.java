@@ -324,7 +324,7 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
     }
 
     private final ImmutableList<Node> nodes;
-    boolean initializing = false;
+    protected boolean initializing = false;
 
     public ConnectionNodes(int amountNodes, BiFunction<ConnectionNodes, Integer, ? extends Node> factory) {
         super(0, 0, 0, Node.HEIGHT);

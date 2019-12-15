@@ -102,7 +102,7 @@ public final class Config {
             enableCrafting = builder.define("enableCrafting", false); // TODO fix bugs and re-enable
             enableFluidTransfer = builder.define("enableFluidTransfer", true);
             enableRedstoneEmitter = builder.define("enableRedstoneEmitter", true);
-            enableSignUpdater = builder.define("enableSignUpdater", false); // TODO
+            enableSignUpdater = builder.define("enableSignUpdater", true);
             builder.pop();
         }
     }

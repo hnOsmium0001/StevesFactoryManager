@@ -35,7 +35,7 @@ public class Dialog extends AbstractPopupWindow {
     }
 
     public static Dialog createPrompt(String message, String defaultText, String confirm, String cancel, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
-        Dialog dialog = dialogue(message);
+        Dialog dialog = dialog(message);
 
         TextField inputBox = new TextField(0, 0, 0, 16).setText(defaultText);
         dialog.insertBeforeButtons(inputBox);
@@ -63,7 +63,7 @@ public class Dialog extends AbstractPopupWindow {
     }
 
     public static Dialog createBiSelectionDialog(String message, String confirm, String cancel, IntConsumer onConfirm, IntConsumer onCancel) {
-        Dialog dialog = dialogue(message);
+        Dialog dialog = dialog(message);
 
         dialog.buttons.addChildren(TextButton.of(confirm, onConfirm));
         dialog.bindRemoveSelf2LastButton();
@@ -84,7 +84,7 @@ public class Dialog extends AbstractPopupWindow {
     }
 
     public static Dialog createDialog(String message, String ok, IntConsumer onConfirm) {
-        Dialog dialog = dialogue(message);
+        Dialog dialog = dialog(message);
 
         dialog.buttons.addChildren(TextButton.of(ok, onConfirm));
         dialog.bindRemoveSelf2LastButton();
@@ -94,7 +94,7 @@ public class Dialog extends AbstractPopupWindow {
         return dialog;
     }
 
-    private static Dialog dialogue(String message) {
+    private static Dialog dialog(String message) {
         Dialog dialog = new Dialog();
         dialog.insertBeforeMessage(new Spacer(0, 5));
         dialog.messageBox.addLineSplit(160, I18n.format(message));

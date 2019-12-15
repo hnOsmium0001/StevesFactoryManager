@@ -171,7 +171,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
         // All other events will be iterated in descending order
         for (FlowComponent<?> child : getChildren()) {
-            // We know all child widgets are FlowComponent<?>'s, which are containers, therefore we can safely ignore whether the mouse is in box or not
+            if (!currentGroup.equals(child.getGroup())) {
+                continue;
+            }
             if (child.mouseClicked(translatedX, translatedY, button)) {
                 raiseComponentToTop(child);
                 return true;
@@ -207,7 +209,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         double translatedX = mouseX - xOffset.get();
         double translatedY = mouseY - yOffset.get();
         for (FlowComponent<?> child : getChildren()) {
-            if (!child.isInside(translatedX, translatedY) || !currentGroup.equals(child.getGroup())) {
+            if (!currentGroup.equals(child.getGroup())) {
                 continue;
             }
             if (child.mouseReleased(translatedX, translatedY, button)) {
@@ -231,7 +233,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         }
 
         for (FlowComponent<?> child : getChildren()) {
-            if (!child.isFocused() || !currentGroup.equals(child.getGroup())) {
+            if (!currentGroup.equals(child.getGroup())) {
                 continue;
             }
             if (child.mouseDragged(mouseX - xOffset.get(), mouseY - yOffset.get(), button, deltaX, deltaY)) {
@@ -253,7 +255,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         double translatedX = mouseX - xOffset.get();
         double translatedY = mouseY - yOffset.get();
         for (FlowComponent<?> child : getChildren()) {
-            if (!child.isInside(translatedX, translatedY) || !currentGroup.equals(child.getGroup())) {
+            if (!currentGroup.equals(child.getGroup())) {
                 continue;
             }
             if (child.mouseScrolled(translatedX, translatedY, scroll)) {
@@ -283,7 +285,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         for (FlowComponent<?> child : getChildren()) {
-            if (!child.isFocused() || !currentGroup.equals(child.getGroup())) {
+            if (!currentGroup.equals(child.getGroup())) {
                 continue;
             }
             if (child.keyPressed(keyCode, scanCode, modifiers)) {
@@ -312,7 +314,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         for (FlowComponent<?> child : getChildren()) {
-            if (!child.isFocused() || !currentGroup.equals(child.getGroup())) {
+            if (!currentGroup.equals(child.getGroup())) {
                 continue;
             }
             if (child.keyReleased(keyCode, scanCode, modifiers)) {
@@ -325,7 +327,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     @Override
     public boolean charTyped(char charTyped, int keyCode) {
         for (FlowComponent<?> child : getChildren()) {
-            if (!child.isFocused() || !currentGroup.equals(child.getGroup())) {
+            if (!currentGroup.equals(child.getGroup())) {
                 continue;
             }
             if (child.charTyped(charTyped, keyCode)) {
@@ -360,7 +362,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         try {
             tag = JsonToNBT.getTagFromJson(json);
         } catch (CommandSyntaxException e) {
-            Dialog.createDialog("gui.sfm.PopupMsg.PasteProcedure.Fail").tryAddSelfToActiveGUI();
+            Dialog.createDialog("gui.sfm.FactoryManager.Editor.PopupMsg.PasteProcedure.Fail").tryAddSelfToActiveGUI();
             return;
         }
 

@@ -96,7 +96,7 @@ public final class NetworkHelper {
             }
         }
         for (IProcedure procedure : visited) {
-            procedure.markInvalid();
+            procedure.invalidate();
         }
     }
 

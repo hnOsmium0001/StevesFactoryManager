@@ -31,7 +31,7 @@ import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.network.NetworkHandler;
-import vswe.stevesfactory.network.PacketSyncFlowcharts;
+import vswe.stevesfactory.network.PacketSyncProcedureGraph;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.ui.manager.FactoryManagerContainer;
 import vswe.stevesfactory.utils.*;
@@ -215,6 +215,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     }
 
     public void setPGraph(ProcedureGraph graph) {
+        this.graph.invalidateContent();
         this.graph = graph;
     }
 
@@ -259,11 +260,10 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     public void sync() {
         assert world != null;
         if (world.isRemote) {
-            NetworkHandler.sendToServer(new PacketSyncFlowcharts(getDimension(), getPosition(), graph));
+            NetworkHandler.sendToServer(new PacketSyncProcedureGraph(getDimension(), getPosition(), graph));
         }
     }
 
-    @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
         return new SUpdateTileEntityPacket(pos, 0, write(new CompoundNBT()));
@@ -288,6 +288,10 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         }
     }
 
+    private static Capability<?> findCapability(String name) {
+        return caps.get(name);
+    }
+
     @Override
     public void read(CompoundNBT compound) {
         StevesFactoryManager.logger.trace("Restoring data from NBT {}", compound);
@@ -306,8 +310,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
 
             // Constructed (heap) string and interned string behave differently in an IdentityHashMap
             // (CapabilityManager interns the capability name before putting them in the map)
-            String capName = element.getString("Name").intern();
-            Capability<?> cap = caps.get(capName);
+            Capability<?> cap = findCapability(element.getString("Name").intern());
 
             ListNBT serializedPoses = element.getList("Positions", Constants.NBT.TAG_COMPOUND);
             Multiset<BlockPos> set = HashMultiset.create();
@@ -322,7 +325,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         int format = compound.getInt("FormatVer");
         switch (format) {
             case 0:
-                graph = ProcedureGraph.create();
+                setPGraph(ProcedureGraph.create());
                 ListNBT graphNBT = compound.getList("CommandGraphs", Constants.NBT.TAG_COMPOUND);
                 for (int i = 0; i < graphNBT.size(); i++) {
                     CompoundNBT tag = graphNBT.getCompound(i);
@@ -353,11 +356,10 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
                         Connection.create(from, fromOut, to, toIn);
                     }
                 }
-                break;
-            case 1:
-                graph.deserialize(compound.getCompound("Procedures"));
-                break;
+                return;
         }
+
+        graph.deserialize(compound.getCompound("Procedures"));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package vswe.stevesfactory.ui.manager;
 
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.player.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -33,5 +32,11 @@ public class FactoryManagerContainer extends WidgetContainer {
         BlockPos pos = data.readBlockPos();
         controller = (FactoryManagerTileEntity) Objects.requireNonNull(inv.player.world.getTileEntity(pos));
         controller.readCustom(Objects.requireNonNull(data.readCompoundTag()));
+    }
+
+    @Override
+    public void onContainerClosed(PlayerEntity player) {
+        controller.sync();
+        super.onContainerClosed(player);
     }
 }

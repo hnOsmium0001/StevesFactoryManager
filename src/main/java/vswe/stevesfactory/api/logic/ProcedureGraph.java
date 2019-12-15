@@ -106,7 +106,13 @@ public final class ProcedureGraph {
         };
     }
 
-    public void cleanInvalidProcedures() {
+    public void invalidateContent() {
+        for (IProcedure procedure : all) {
+            procedure.invalidate();
+        }
+    }
+
+    public void cleanInvalidated() {
         triggers.removeIf(p -> !p.isValid());
         regulars.removeIf(p -> !p.isValid());
     }
@@ -161,6 +167,11 @@ public final class ProcedureGraph {
     }
 
     public void deserialize(CompoundNBT tag) {
+        // Invalidate the procedures to that any allocated resources could be released
+        invalidateContent();
+        triggers.clear();
+        regulars.clear();
+
         // Deserialize procedures from NBT
         ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
         Int2ObjectMap<IProcedure> nodes = new Int2ObjectOpenHashMap<>();
@@ -183,8 +194,6 @@ public final class ProcedureGraph {
         }
 
         // Place deserialized procedures into data structure
-        triggers.clear();
-        regulars.clear();
         for (int i = 0; i < nodes.size(); i++) {
             addProcedure(nodes.get(i));
         }

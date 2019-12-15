@@ -1,6 +1,3 @@
-/**
- * Server-side parts of the features.
- */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 package vswe.stevesfactory.blocks;

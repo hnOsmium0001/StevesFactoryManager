@@ -72,23 +72,11 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
     @Override
     public void removed() {
         getPrimaryWindow().topLevel.editorPanel.saveAll();
-        container.controller.sync();
         super.removed();
     }
 
     public INetworkController getController() {
         return container.controller;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public void resize(@Nonnull Minecraft mc, int newWidth, int newHeight) {
-        super.resize(mc, newWidth, newHeight);
-        getPrimaryWindow().asProportional();
     }
 
     @Override

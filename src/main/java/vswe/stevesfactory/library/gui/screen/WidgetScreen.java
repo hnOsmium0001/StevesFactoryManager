@@ -224,6 +224,7 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
             window.onRemoved();
         }
         primaryWindow.onRemoved();
+        super.removed();
     }
 
     public void scheduleTask(Consumer<WidgetScreen> task) {

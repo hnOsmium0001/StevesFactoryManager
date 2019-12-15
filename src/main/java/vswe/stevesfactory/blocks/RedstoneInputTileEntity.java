@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 
 public class RedstoneInputTileEntity extends TileEntity implements ICable, IRedstoneEventBus {
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") // the .removeIf() call has side effects of triggering the event handlesr
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") // The .removeIf() call has side effects of triggering the event handlers
     private List<Predicate<SignalStatus>> eventHandlers = new ArrayList<>();
     private LazyOptional<IRedstoneEventBus> signalReactor = LazyOptional.of(() -> this);
 
