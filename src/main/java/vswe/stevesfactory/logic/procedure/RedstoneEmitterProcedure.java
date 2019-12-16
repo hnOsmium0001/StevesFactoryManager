@@ -12,7 +12,7 @@ import vswe.stevesfactory.api.capability.CapabilityRedstone;
 import vswe.stevesfactory.api.capability.IRedstoneHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.*;
 import vswe.stevesfactory.utils.IOHelper;
@@ -35,7 +35,7 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
     private boolean dirty = false;
 
     public RedstoneEmitterProcedure() {
-        super(Procedures.REDSTONE_EMITTER.getFactory());
+        super(ModProcedures.redstoneEmitter);
     }
 
     @Override

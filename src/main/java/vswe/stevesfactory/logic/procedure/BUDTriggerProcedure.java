@@ -4,14 +4,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 // TODO
 public class BUDTriggerProcedure extends AbstractProcedure {
 
     public BUDTriggerProcedure() {
-        super(Procedures.BUD_TRIGGER.getFactory());
+        super(ModProcedures.budTrigger);
     }
 
     @Override

@@ -1,12 +1,12 @@
-package vswe.stevesfactory.api.item;
+package vswe.stevesfactory.api.logic.fluid;
 
-import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
-public interface IItemBufferElement {
+public interface IFluidBuffer {
 
-    ItemStack getStack();
+    FluidStack getStack();
 
-    void setStack(ItemStack stack);
+    void setStack(FluidStack stack);
 
     int getUsed();
 

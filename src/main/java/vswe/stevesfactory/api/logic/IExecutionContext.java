@@ -2,7 +2,7 @@ package vswe.stevesfactory.api.logic;
 
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
-import vswe.stevesfactory.api.item.IItemBufferElement;
+import vswe.stevesfactory.api.logic.item.IItemBuffer;
 import vswe.stevesfactory.api.network.INetworkController;
 
 import javax.annotation.Nullable;
@@ -21,7 +21,7 @@ public interface IExecutionContext {
 
     void push(@Nullable IProcedure frame);
 
-    <T extends IItemBufferElement> Map<Item, T> getItemBuffers(Class<T> type);
+    <T extends IItemBuffer> Map<Item, T> getItemBuffers(Class<T> type);
 
-    void forEachItemBuffer(BiConsumer<Item, IItemBufferElement> lambda);
+    void forEachItemBuffer(BiConsumer<Item, IItemBuffer> lambda);
 }

@@ -4,7 +4,6 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -13,7 +12,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.logic.item.DirectBufferElement;
 import vswe.stevesfactory.logic.item.IItemFilter;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
@@ -38,7 +37,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
     private boolean dirty = false;
 
     public ItemImportProcedure() {
-        super(Procedures.ITEM_IMPORT.getFactory());
+        super(ModProcedures.itemImport);
     }
 
     @Override

@@ -11,9 +11,8 @@ import net.minecraftforge.common.util.LazyOptional;
 import vswe.stevesfactory.api.capability.CapabilityTextDisplay;
 import vswe.stevesfactory.api.capability.ITextDisplay;
 import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.api.network.IConnectable;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.SignUpdaterLinesMenu;
@@ -34,7 +33,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
     private boolean dirty = false;
 
     public SignUpdaterProcedure() {
-        super(Procedures.SIGN_UPDATER.getFactory());
+        super(ModProcedures.signUpdater);
         Arrays.fill(texts, "");
     }
 

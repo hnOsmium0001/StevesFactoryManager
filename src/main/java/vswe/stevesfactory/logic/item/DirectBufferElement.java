@@ -3,12 +3,12 @@ package vswe.stevesfactory.logic.item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
-import vswe.stevesfactory.api.item.IItemBufferElement;
+import vswe.stevesfactory.api.logic.item.IItemBuffer;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class DirectBufferElement implements IItemBufferElement {
+public class DirectBufferElement implements IItemBuffer {
 
     public final Set<Pair<IItemHandler, Integer>> inventories = new HashSet<>();
 

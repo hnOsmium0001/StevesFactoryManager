@@ -38,7 +38,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
     private boolean dirty = false;
 
     public ItemTransferProcedure() {
-        super(Procedures.ITEM_TRANSFER.getFactory());
+        super(ModProcedures.itemTransfer);
         filter.setType(FilterType.BLACKLIST);
     }
 

@@ -34,7 +34,7 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
     private boolean dirty = false;
 
     public ItemExportProcedure() {
-        super(Procedures.ITEM_EXPORT.getFactory());
+        super(ModProcedures.itemExport);
         filter.setType(FilterType.BLACKLIST);
     }
 

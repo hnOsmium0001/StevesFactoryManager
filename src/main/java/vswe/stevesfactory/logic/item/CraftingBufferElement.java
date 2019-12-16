@@ -5,13 +5,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.Ingredient;
-import vswe.stevesfactory.api.item.IItemBufferElement;
+import vswe.stevesfactory.api.logic.item.IItemBuffer;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 
 import java.util.Map;
 
 // TODO fix dupes and crashes
-public class CraftingBufferElement implements IItemBufferElement {
+public class CraftingBufferElement implements IItemBuffer {
 
     private final IExecutionContext context;
 

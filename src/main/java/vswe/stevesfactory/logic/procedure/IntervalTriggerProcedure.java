@@ -6,7 +6,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.IntervalMenu;
@@ -17,7 +17,7 @@ public class IntervalTriggerProcedure extends AbstractProcedure implements ITrig
     public int interval = 20;
 
     public IntervalTriggerProcedure() {
-        super(Procedures.INTERVAL_TRIGGER.getFactory(), 0, 1);
+        super(ModProcedures.intervalTrigger, 0, 1);
     }
 
     @Override
@@ -44,6 +44,14 @@ public class IntervalTriggerProcedure extends AbstractProcedure implements ITrig
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
+    public FlowComponent<IntervalTriggerProcedure> createFlowComponent() {
+        FlowComponent<IntervalTriggerProcedure> f = FlowComponent.of(this, 0, 1);
+        f.addMenu(new IntervalMenu());
+        return f;
+    }
+
+    @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = super.serialize();
         tag.putInt("Interval", interval);
@@ -54,13 +62,5 @@ public class IntervalTriggerProcedure extends AbstractProcedure implements ITrig
     public void deserialize(CompoundNBT tag) {
         super.deserialize(tag);
         interval = tag.getInt("Interval");
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public FlowComponent<IntervalTriggerProcedure> createFlowComponent() {
-        FlowComponent<IntervalTriggerProcedure> f = FlowComponent.of(this, 0, 1);
-        f.addMenu(new IntervalMenu());
-        return f;
     }
 }

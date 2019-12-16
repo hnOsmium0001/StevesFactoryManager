@@ -13,7 +13,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.logic.item.CraftingBufferElement;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.RecipeConfigurationMenu;
@@ -28,7 +28,7 @@ public class CraftingProcedure extends AbstractProcedure implements IRecipeTarge
     private MyCraftingInventory inventory = new MyCraftingInventory();
 
     public CraftingProcedure() {
-        super(Procedures.CRAFTING.getFactory());
+        super(ModProcedures.crafting);
     }
 
     @Override

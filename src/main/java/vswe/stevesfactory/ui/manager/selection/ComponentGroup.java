@@ -9,7 +9,7 @@ import org.apache.commons.io.FilenameUtils;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.api.StevesFactoryManagerAPI;
 import vswe.stevesfactory.api.logic.IProcedureType;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.api.visibility.GUIVisibility;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -142,7 +142,7 @@ public final class ComponentGroup {
             groupedTypes.addAll(group.members);
         }
         for (IProcedureType<?> type : StevesFactoryManagerAPI.getProceduresRegistry().getValues()) {
-            if (!groupedTypes.contains(type) && Procedures.isEnabled(type)) {
+            if (!groupedTypes.contains(type) && GUIVisibility.isEnabled(type)) {
                 ungroupedTypes.add(type);
             }
         }
@@ -208,7 +208,7 @@ public final class ComponentGroup {
         for (JsonElement memberElement : members) {
             ResourceLocation member = new ResourceLocation(memberElement.getAsString());
             IProcedureType<?> type = StevesFactoryManagerAPI.getProceduresRegistry().getValue(member);
-            if (type != null && Procedures.isEnabled(type)) {
+            if (type != null && GUIVisibility.isEnabled(type)) {
                 this.members.add(type);
             }
         }

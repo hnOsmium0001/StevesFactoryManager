@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
-import vswe.stevesfactory.api.item.IItemBufferElement;
+import vswe.stevesfactory.api.logic.item.IItemBuffer;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.network.INetworkController;
@@ -22,10 +22,10 @@ import java.util.function.BiConsumer;
  */
 public class ProcedureExecutor implements IExecutionContext {
 
-    private static final Object2IntMap<Class<? extends IItemBufferElement>> orderAssociation = new Object2IntOpenHashMap<>();
+    private static final Object2IntMap<Class<? extends IItemBuffer>> orderAssociation = new Object2IntOpenHashMap<>();
     private static int nextOrder = 0;
 
-    public static void registerBufferType(Class<? extends IItemBufferElement> type) {
+    public static void registerBufferType(Class<? extends IItemBuffer> type) {
         orderAssociation.put(type, nextOrder++);
     }
 
@@ -39,7 +39,7 @@ public class ProcedureExecutor implements IExecutionContext {
 
     private Deque<IProcedure> executionStack = new ArrayDeque<>();
     @SuppressWarnings("unchecked")
-    private Map<Item, IItemBufferElement>[] itemBufferElements = new IdentityHashMap[orderAssociation.size()];
+    private Map<Item, IItemBuffer>[] itemBufferElements = new IdentityHashMap[orderAssociation.size()];
 
     public ProcedureExecutor(INetworkController controller, World world) {
         this.controller = controller;
@@ -71,17 +71,17 @@ public class ProcedureExecutor implements IExecutionContext {
         cleanup();
     }
 
-    private Map<Item, IItemBufferElement> getOrCreateBuffers(int index) {
+    private Map<Item, IItemBuffer> getOrCreateBuffers(int index) {
         if (itemBufferElements[index] != null) {
             return itemBufferElements[index];
         }
-        Map<Item, IItemBufferElement> map = new IdentityHashMap<>();
+        Map<Item, IItemBuffer> map = new IdentityHashMap<>();
         itemBufferElements[index] = map;
         return map;
     }
 
     @Override
-    public <T extends IItemBufferElement> Map<Item, T> getItemBuffers(Class<T> type) {
+    public <T extends IItemBuffer> Map<Item, T> getItemBuffers(Class<T> type) {
         int index = orderAssociation.getInt(type);
         // Returns checked type -> entry put is checked too
         @SuppressWarnings("unchecked") Map<Item, T> map = (Map<Item, T>) getOrCreateBuffers(index);
@@ -89,8 +89,8 @@ public class ProcedureExecutor implements IExecutionContext {
     }
 
     @Override
-    public void forEachItemBuffer(BiConsumer<Item, IItemBufferElement> lambda) {
-        for (Map<Item, IItemBufferElement> buffers : itemBufferElements) {
+    public void forEachItemBuffer(BiConsumer<Item, IItemBuffer> lambda) {
+        for (Map<Item, IItemBuffer> buffers : itemBufferElements) {
             if (buffers == null) {
                 continue;
             }
@@ -99,12 +99,12 @@ public class ProcedureExecutor implements IExecutionContext {
     }
 
     private void cleanup() {
-        for (Map<Item, IItemBufferElement> buffers : itemBufferElements) {
+        for (Map<Item, IItemBuffer> buffers : itemBufferElements) {
             if (buffers == null) {
                 continue;
             }
-            for (Map.Entry<Item, IItemBufferElement> entry : buffers.entrySet()) {
-                IItemBufferElement element = entry.getValue();
+            for (Map.Entry<Item, IItemBuffer> entry : buffers.entrySet()) {
+                IItemBuffer element = entry.getValue();
                 element.cleanup();
             }
         }

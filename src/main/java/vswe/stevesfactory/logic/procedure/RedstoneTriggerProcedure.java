@@ -6,13 +6,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import vswe.stevesfactory.api.capability.*;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.Procedures;
+import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.*;
@@ -41,7 +43,7 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
     private boolean dirty = true;
 
     public RedstoneTriggerProcedure() {
-        super(Procedures.REDSTONE_TRIGGER.getFactory(), 0, 2);
+        super(ModProcedures.redstoneTrigger, 0, 2);
     }
 
     @Override
@@ -107,6 +109,7 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public FlowComponent<RedstoneTriggerProcedure> createFlowComponent() {
         FlowComponent<RedstoneTriggerProcedure> f = FlowComponent.of(this, 0, 2);
         f.addMenu(new InventorySelectionMenu<>(INVENTORIES, I18n.format("menu.sfm.RedstoneTrigger.Watches"), I18n.format("error.sfm.RedstoneTrigger.NoWatches"), CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY));
