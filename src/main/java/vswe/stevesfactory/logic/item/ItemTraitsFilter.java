@@ -67,12 +67,14 @@ public class ItemTraitsFilter implements IItemFilter {
     }
 
     public boolean test(ItemStack stack) {
+        boolean trueOnMatched = type == FilterType.WHITELIST;
+        boolean trueOnUnmatched = type == FilterType.BLACKLIST;
         for (int i = 0; i < items.size(); i++) {
             if (isEqual(i, stack)) {
-                return !getTypeFlag();
+                return trueOnMatched;
             }
         }
-        return getTypeFlag();
+        return trueOnUnmatched;
     }
 
     @Override
@@ -85,8 +87,7 @@ public class ItemTraitsFilter implements IItemFilter {
                 continue;
             }
 
-            boolean accepted = test(stack);
-            if (accepted) {
+            if (test(stack)) {
                 if (processExtractableStack(counts, stack)) {
                     continue;
                 }
@@ -107,8 +108,6 @@ public class ItemTraitsFilter implements IItemFilter {
 
     @Override
     public void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler) {
-        // Lower end: desired count
-        // Higher end: extracted count
         Object2LongMap<Item> counts = constructResultMap();
 
         for (int i = 0; i < handler.getSlots(); i++) {
@@ -117,8 +116,7 @@ public class ItemTraitsFilter implements IItemFilter {
                 continue;
             }
 
-            boolean accepted = test(stack);
-            if (accepted) {
+            if (test(stack)) {
                 if (processExtractableStack(counts, stack)) {
                     continue;
                 }
@@ -131,7 +129,7 @@ public class ItemTraitsFilter implements IItemFilter {
         Item item = stack.getItem();
         long data = counts.getOrDefault(item, Integer.MAX_VALUE);
         int desired = getDesiredCount(data);
-        if (desired == 0) {
+        if (desired <= 0) {
             return true;
         }
         int extracted = getExtractedCount(data);
@@ -175,9 +173,6 @@ public class ItemTraitsFilter implements IItemFilter {
 
     public boolean isEqual(int filterIndex, ItemStack stack) {
         ItemStack item = items.get(filterIndex);
-        if (item.isEmpty()) {
-            return stack.isEmpty();
-        }
         return item.isItemEqual(stack)
                 && (!matchingDamage || item.getDamage() == stack.getDamage())
                 && (!matchingTag || item.areShareTagsEqual(stack));

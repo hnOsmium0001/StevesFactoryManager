@@ -52,9 +52,14 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
         cacheCaps(context);
 
         List<SingleItemBufferElement> items = new ArrayList<>();
+        Set<IItemHandler> visited = new HashSet<>();
         for (LazyOptional<IItemHandler> cap : cachedSourceCaps) {
             if (cap.isPresent()) {
                 IItemHandler handler = cap.orElseThrow(RuntimeException::new);
+                if (visited.contains(handler)) {
+                    continue;
+                }
+                visited.add(handler);
                 filter.extractFromInventory((stack, slot) -> items.add(new SingleItemBufferElement(stack, handler, slot)), handler);
             }
         }
@@ -70,9 +75,12 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
                         continue;
                     }
                     int sourceStackSize = source.getCount();
+                    // This will "invalidate" the parameter stack if insertion is successful
                     ItemStack untaken = ItemHandlerHelper.insertItem(handler, source, false);
 
                     buffer.used += sourceStackSize - untaken.getCount();
+                    // Remainder stack can be safely used later
+                    // Note that this will be the `source` stack if insertion failed
                     buffer.stack = untaken;
                 }
             }

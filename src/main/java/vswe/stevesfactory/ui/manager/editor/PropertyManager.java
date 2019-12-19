@@ -3,8 +3,8 @@ package vswe.stevesfactory.ui.manager.editor;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.resources.I18n;
-import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IClientDataStorage;
+import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.contextmenu.DefaultEntry;
 import vswe.stevesfactory.library.gui.contextmenu.IEntry;
 
@@ -100,13 +100,14 @@ public final class PropertyManager<T, P extends IProcedure & IClientDataStorage>
     }
 
     public void actionCycling() {
-        action(() -> new DefaultEntry(null, "gui.sfm.CtxMenu.Menu.CycleProperty") {
+        // Custom entry name logic implemented, dummy value here
+        action(() -> new DefaultEntry(null, "") {
             private int cachedIndex = -1;
             private String cachedText;
 
             @Override
             public String getText() {
-                updateText(selectedIndex);
+                updateText();
                 return cachedText;
             }
 
@@ -118,12 +119,14 @@ public final class PropertyManager<T, P extends IProcedure & IClientDataStorage>
                 return true;
             }
 
-            private void updateText(int currentIndex) {
+            private void updateText() {
                 // Lazy initialization so that even if the property is updated without using the cycling action, the text will still be in sync
-                int nextIndex = currentIndex + 1 >= cases.size() ? 0 : currentIndex + 1;
+                int nextIndex = selectedIndex + 1 >= cases.size() ? 0 : selectedIndex + 1;
                 if (cachedIndex != nextIndex || cachedText == null) {
-                    Case<T, P> caseElement = cases.get(nextIndex);
-                    cachedText = caseElement.hasName() ? I18n.format("gui.sfm.CtxMenu.Menu.CycleProperty.Named", caseElement.getName()) : super.getText();
+                    Case<T, P> nextCase = cases.get(nextIndex);
+                    cachedText = nextCase.hasName()
+                            ? I18n.format("gui.sfm.FactoryManager.Editor.CtxMenu.CycleProperty.Named", nextCase.getName())
+                            : I18n.format("gui.sfm.FactoryManager.Editor.CtxMenu.CycleProperty");
                     cachedIndex = nextIndex;
                     reflowSafe();
                 }

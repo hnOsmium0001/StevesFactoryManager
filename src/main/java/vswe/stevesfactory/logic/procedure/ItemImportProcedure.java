@@ -13,9 +13,7 @@ import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
-import vswe.stevesfactory.logic.item.DirectBufferElement;
-import vswe.stevesfactory.logic.item.IItemFilter;
-import vswe.stevesfactory.logic.item.ItemTraitsFilter;
+import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
@@ -49,17 +47,23 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
 
         updateCaches(context);
         Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
+        Set<IItemHandler> visited = new HashSet<>();
         for (LazyOptional<IItemHandler> cap : cachedCaps) {
-            cap.ifPresent(handler -> filter.extractFromInventory((stack, slot) -> {
-                // If this stack is used to create the buffer, the stack count will be reset and we will lose necessary information
-                int count = stack.getCount();
-                DirectBufferElement element = buffers.computeIfAbsent(stack.getItem(), key -> {
-                    stack.setCount(0);
-                    return new DirectBufferElement(stack);
-                });
-                element.stack.grow(count);
-                element.addInventory(handler, slot);
-            }, handler));
+            cap.ifPresent(handler -> {
+                if (!visited.add(handler)) {
+                    return;
+                }
+                filter.extractFromInventory((stack, slot) -> {
+                    // If this stack is used to create the buffer, the stack count will be reset and we will lose necessary information
+                    int count = stack.getCount();
+                    DirectBufferElement element = buffers.computeIfAbsent(stack.getItem(), key -> {
+                        stack.setCount(0);
+                        return new DirectBufferElement(stack);
+                    });
+                    element.stack.grow(count);
+                    element.addInventory(handler, slot);
+                }, handler);
+            });
         }
     }
 

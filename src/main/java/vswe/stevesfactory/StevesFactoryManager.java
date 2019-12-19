@@ -33,9 +33,9 @@ public class StevesFactoryManager {
     public static StevesFactoryManager instance;
 
     public StevesFactoryManager() {
+        instance = this;
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
-        instance = this;
 
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::setup);

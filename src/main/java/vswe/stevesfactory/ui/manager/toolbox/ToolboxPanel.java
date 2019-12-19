@@ -34,7 +34,7 @@ public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
         super(WidthOccupierType.MIN_WIDTH);
         this.setWidth(8 + RenderingHelper.LEFT_BORDER);
 
-        addChildOnly(groupList = new IconToolType<>(GROUP_LIST_ICON, GroupList::new).setName(I18n.format("Groups")));
+        addChildOnly(groupList = new IconToolType<>(GROUP_LIST_ICON, GroupList::new).setName(I18n.format("gui.sfm.FactoryManager.Tool.Group.Name")));
         addChildOnly(close = new AbstractIconButton(0, 0, 8, 8) {
             @Override
             public void render(int mouseX, int mouseY, float particleTicks) {

@@ -60,6 +60,9 @@ public final class NetworkHelper {
     }
 
     public static void removeAllConnectionsFor(IProcedure procedure) {
+        if (!procedure.isValid()) {
+            return;
+        }
         for (Connection conn : procedure.predecessors()) {
             if (conn != null) {
                 conn.remove();

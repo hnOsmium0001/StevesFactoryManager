@@ -54,6 +54,7 @@
   "gui.sfm.FactoryManager.Editor.CtxMenu.CycleProperty": "Cycle to next property",
   "gui.sfm.FactoryManager.Editor.CtxMenu.CycleProperty.Named": "Change to %s",
   "gui.sfm.FactoryManager.Tool.CtxMenu.CloseToolPanel": "Close current tool panel",
+  "gui.sfm.FactoryManager.Tool.Group.Name": "Groups",
   "gui.sfm.FactoryManager.Tool.Group.DefaultGroup": "(default)",
   "gui.sfm.FactoryManager.Tool.Group.CtxMenu.Delete": "Delete",
   "gui.sfm.FactoryManager.Tool.Group.CtxMenu.RenameGroup": "Rename",
