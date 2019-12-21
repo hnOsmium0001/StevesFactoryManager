@@ -1,9 +1,12 @@
 package vswe.stevesfactory.logic.execution;
 
+import com.google.common.collect.*;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
+import vswe.stevesfactory.api.logic.fluid.IFluidBuffer;
 import vswe.stevesfactory.api.logic.item.IItemBuffer;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
@@ -40,6 +43,8 @@ public class ProcedureExecutor implements IExecutionContext {
     private Deque<IProcedure> executionStack = new ArrayDeque<>();
     @SuppressWarnings("unchecked")
     private Map<Item, IItemBuffer>[] itemBufferElements = new IdentityHashMap[orderAssociation.size()];
+
+    private ClassToInstanceMap<Object> customData = MutableClassToInstanceMap.create();
 
     public ProcedureExecutor(INetworkController controller, World world) {
         this.controller = controller;
@@ -89,6 +94,17 @@ public class ProcedureExecutor implements IExecutionContext {
     }
 
     @Override
+    public <T extends IFluidBuffer> Map<Fluid, T> getFluidBuffers(Class<T> type) {
+        // TODO implement
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ClassToInstanceMap<Object> getCustomData() {
+        return customData;
+    }
+
+    @Override
     public void forEachItemBuffer(BiConsumer<Item, IItemBuffer> lambda) {
         for (Map<Item, IItemBuffer> buffers : itemBufferElements) {
             if (buffers == null) {
@@ -96,6 +112,12 @@ public class ProcedureExecutor implements IExecutionContext {
             }
             buffers.forEach(lambda);
         }
+    }
+
+    @Override
+    public void forEachFluidBuffer(BiConsumer<Fluid, IFluidBuffer> lambda) {
+        // TODO implement
+        throw new UnsupportedOperationException();
     }
 
     private void cleanup() {

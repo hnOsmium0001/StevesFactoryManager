@@ -141,6 +141,16 @@ public final class NetworkHelper {
         }
     }
 
+    public static <T> T obtainCustomData(IExecutionContext context, Class<T> type, Supplier<T> factory) {
+        // Checked when putting value in to the ClassToInstanceMap
+        @SuppressWarnings("unchecked") T res = (T) context.getCustomData().get(type);
+        if (res == null) {
+            res = factory.get();
+            context.getCustomData().putInstance(type, res);
+        }
+        return res;
+    }
+
     public static <T> void cacheDirectionalCaps(IExecutionContext context, Collection<LazyOptional<T>> target, Collection<BlockPos> poses, Collection<Direction> directions, Capability<T> capability) {
         cacheDirectionalCaps(context, context.getController().getLinkedInventories(capability), target, poses, directions, capability);
     }

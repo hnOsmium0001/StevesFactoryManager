@@ -47,7 +47,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
 
         updateCaches(context);
         Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
-        Set<IItemHandler> visited = new HashSet<>();
+        VisitedInventories visited = NetworkHelper.obtainCustomData(context, VisitedInventories.class, VisitedInventories::new);
         for (LazyOptional<IItemHandler> cap : cachedCaps) {
             cap.ifPresent(handler -> {
                 if (!visited.add(handler)) {
@@ -134,5 +134,8 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         if (id == FILTER) {
             this.filter = filter;
         }
+    }
+
+    private static final class VisitedInventories extends HashSet<IItemHandler> {
     }
 }
