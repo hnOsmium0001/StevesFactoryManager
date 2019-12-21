@@ -51,6 +51,7 @@
   "gui.sfm.FactoryManager.Editor.CtxMenu.CycleProperty": "切换为下一个属性类型",
   "gui.sfm.FactoryManager.Editor.CtxMenu.CycleProperty.Named": "切换为%s",
   "gui.sfm.FactoryManager.Tool.CtxMenu.CloseToolPanel": "关闭当前面板",
+  "gui.sfm.FactoryManager.Tool.Group.Name": "Groups",
   "gui.sfm.FactoryManager.Tool.Group.DefaultGroup": "（默认）",
   "gui.sfm.FactoryManager.Tool.Group.CtxMenu.Delete": "删除",
   "gui.sfm.FactoryManager.Tool.Group.CtxMenu.RenameGroup": "重命名",
