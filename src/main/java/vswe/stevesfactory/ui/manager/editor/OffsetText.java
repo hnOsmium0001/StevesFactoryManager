@@ -7,6 +7,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
 class OffsetText extends AbstractWidget implements LeafWidgetMixin {
 

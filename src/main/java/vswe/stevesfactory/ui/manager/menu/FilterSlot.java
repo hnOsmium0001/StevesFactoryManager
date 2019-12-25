@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
@@ -18,6 +19,8 @@ import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
 public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
 
@@ -77,7 +80,7 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
                 public void render(int mouseX, int mouseY, float particleTicks) {
                     super.render(mouseX, mouseY, particleTicks);
                     if (isHovered()) {
-                        WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("menu.sfm.CloseEditor.Info"), mouseX, mouseY);
+                        WidgetScreen.getCurrent().setHoveringText(I18n.format("menu.sfm.CloseEditor.Info"), mouseX, mouseY);
                     }
                 }
 
@@ -135,7 +138,7 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
             GlStateManager.disableDepthTest();
             GlStateManager.enableTexture();
             RenderHelper.enableGUIStandardItemLighting();
-            ItemRenderer ir = minecraft().getItemRenderer();
+            ItemRenderer ir = Minecraft.getInstance().getItemRenderer();
             int x = getAbsoluteX() + 4;
             int y = getAbsoluteY() + 4;
             ir.renderItemAndEffectIntoGUI(stack, x, y);
@@ -161,7 +164,7 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
         public void render(int mouseX, int mouseY, float particleTicks) {
             super.render(mouseX, mouseY, particleTicks);
             if (isHovered()) {
-                WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("menu.sfm.Delete.Info"), mouseX, mouseY);
+                WidgetScreen.getCurrent().setHoveringText(I18n.format("menu.sfm.Delete.Info"), mouseX, mouseY);
             }
         }
 

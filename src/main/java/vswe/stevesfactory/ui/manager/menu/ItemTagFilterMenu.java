@@ -68,7 +68,7 @@ public class ItemTagFilterMenu<P extends IProcedure & IClientDataStorage & IItem
             public void render(int mouseX, int mouseY, float particleTicks) {
                 super.render(mouseX, mouseY, particleTicks);
                 if (isHovered()) {
-                    WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("menu.sfm.ItemFilter.Tags.AddEntry"), mouseX, mouseY);
+                    WidgetScreen.getCurrent().setHoveringText(I18n.format("menu.sfm.ItemFilter.Tags.AddEntry"), mouseX, mouseY);
                 }
             }
 

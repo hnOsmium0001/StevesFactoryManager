@@ -320,12 +320,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         }
     }
 
-    public static <P extends IProcedure & IClientDataStorage> FlowComponent<P> of(P procedure, int inputNodes, int outputNodes) {
-        return new FlowComponent<>(procedure, inputNodes, outputNodes);
-    }
-
     public static <P extends IProcedure & IClientDataStorage> FlowComponent<P> of(P procedure) {
-        return of(procedure, 1, 1);
+        return new FlowComponent<>(procedure, procedure.predecessors().length, procedure.successors().length);
     }
 
     private P procedure;
@@ -517,7 +513,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         menus.render(mouseX, mouseY, particleTicks);
 
         if (nameBox.isInside(mouseX, mouseY)) {
-            WidgetScreen.getCurrentScreen().setHoveringText(getName(), mouseX, mouseY);
+            WidgetScreen.getCurrent().setHoveringText(getName(), mouseX, mouseY);
         }
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
@@ -635,7 +631,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
                 new CallbackEntry(COPY_ICON, "gui.sfm.FactoryManager.Editor.CtxMenu.Copy", b -> actionCopy()),
                 new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.ChangeGroup", b -> actionChangeGroup())
         ));
-        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+        WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
 
     private void actionDelete() {
@@ -653,7 +649,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     private void actionCopy() {
         save();
         CompoundNBT tag = procedure.serialize();
-        minecraft().keyboardListener.setClipboardString(tag.toString());
+        Minecraft.getInstance().keyboardListener.setClipboardString(tag.toString());
     }
 
     private void actionCut() {

@@ -152,7 +152,7 @@ public abstract class MultiLayerMenu<P extends IProcedure & IClientDataStorage> 
         public void render(int mouseX, int mouseY, float particleTicks) {
             super.render(mouseX, mouseY, particleTicks);
             if (isHovered()) {
-                WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("menu.sfm.ItemFilter.Traits.Settings"), mouseX, mouseY);
+                WidgetScreen.getCurrent().setHoveringText(I18n.format("menu.sfm.ItemFilter.Traits.Settings"), mouseX, mouseY);
             }
         }
 

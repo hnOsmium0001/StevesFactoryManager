@@ -2,6 +2,7 @@ package vswe.stevesfactory.library.gui.widget.slot;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -11,6 +12,8 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
+
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
 public abstract class AbstractItemSlot extends AbstractWidget implements LeafWidgetMixin {
 
@@ -32,8 +35,8 @@ public abstract class AbstractItemSlot extends AbstractWidget implements LeafWid
 
     protected void renderStack() {
         ItemStack stack = getRenderedStack();
-        ItemRenderer ir = minecraft().getItemRenderer();
-        FontRenderer fr = MoreObjects.firstNonNull(stack.getItem().getFontRenderer(stack), minecraft().fontRenderer);
+        ItemRenderer ir = Minecraft.getInstance().getItemRenderer();
+        FontRenderer fr = MoreObjects.firstNonNull(stack.getItem().getFontRenderer(stack), fontRenderer());
         int x = getAbsoluteX() + 1;
         int y = getAbsoluteY() + 1;
         GlStateManager.disableDepthTest();

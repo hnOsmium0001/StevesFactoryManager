@@ -10,6 +10,8 @@ import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
+
 public class RadioButton extends AbstractWidget implements IButton, LeafWidgetMixin {
 
     public static final TextureWrapper UNCHECKED = TextureWrapper.ofFlowComponent(18, 20, 8, 8);

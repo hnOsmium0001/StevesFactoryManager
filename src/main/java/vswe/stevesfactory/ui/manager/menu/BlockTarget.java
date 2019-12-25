@@ -3,6 +3,7 @@ package vswe.stevesfactory.ui.manager.menu;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -37,7 +38,7 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
     public BlockTarget(BlockPos pos, int size) {
         super(0, 0, size, size);
         this.pos = pos;
-        this.setBlockState(minecraft().world.getBlockState(pos));
+        this.setBlockState(Minecraft.getInstance().world.getBlockState(pos));
     }
 
     @Override
@@ -46,7 +47,7 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
             ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                     new CallbackEntry(null, "menu.sfm.BlockTarget.Highlight", b -> BlockHighlight.createHighlight(pos, 80))
             ));
-            WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+            WidgetScreen.getCurrent().addPopupWindow(contextMenu);
             return true;
         }
 
@@ -114,10 +115,10 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
         GlStateManager.enableTexture();
         RenderHelper.enableGUIStandardItemLighting();
         // 16 is the standard item size
-        minecraft().getItemRenderer().renderItemIntoGUI(cachedItemStack, x + (getWidth() - 16) / 2, y + (getHeight() - 16) / 2);
+        Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(cachedItemStack, x + (getWidth() - 16) / 2, y + (getHeight() - 16) / 2);
 
         if (hovered) {
-            WidgetScreen.getCurrentScreen().setHoveringText(new ItemStack(state.getBlock().asItem()), (int) mouseX, (int) mouseY);
+            WidgetScreen.getCurrent().setHoveringText(new ItemStack(state.getBlock().asItem()), (int) mouseX, (int) mouseY);
         }
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);

@@ -35,6 +35,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
 public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> implements RelocatableContainerMixin<FlowComponent<?>> {
 
@@ -63,7 +64,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     }
 
     public void readProcedures() {
-        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrentScreen()).getController().getPosition();
+        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrent()).getController().getPosition();
         INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
 
         Map<IProcedure, FlowComponent<?>> m = new HashMap<>();
@@ -353,11 +354,11 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
                 new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.CleanupProcedures", b -> actionCleanup()),
                 new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
         ));
-        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+        WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
 
     private void actionPaste() {
-        String json = minecraft().keyboardListener.getClipboardString();
+        String json = Minecraft.getInstance().keyboardListener.getClipboardString();
         CompoundNBT tag;
         try {
             tag = JsonToNBT.getTagFromJson(json);

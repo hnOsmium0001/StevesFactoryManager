@@ -24,7 +24,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
 
-    public static final TextureWrapper GROUP_LIST_ICON = TextureWrapper.ofGUITexture("component_icon/group.png", 16, 16, 0, 0, 16, 16);
+    public static final TextureWrapper GROUP_LIST_ICON = TextureWrapper.ofGUITexture("tool_icon/group.png", 16, 16, 0, 0, 16, 16);
 
     private final IconToolType<GroupList> groupList;
     private final AbstractIconButton close;
@@ -40,7 +40,7 @@ public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
             public void render(int mouseX, int mouseY, float particleTicks) {
                 super.render(mouseX, mouseY, particleTicks);
                 if (isInside(mouseX, mouseY)) {
-                    WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("gui.sfm.FactoryManager.Toolbox.CloseToolPanel"), mouseX, mouseY);
+                    WidgetScreen.getCurrent().setHoveringText(I18n.format("gui.sfm.FactoryManager.Toolbox.CloseToolPanel"), mouseX, mouseY);
                 }
             }
 
@@ -130,7 +130,7 @@ public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
         ));
-        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+        WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
 
     public GroupList getGroupList() {

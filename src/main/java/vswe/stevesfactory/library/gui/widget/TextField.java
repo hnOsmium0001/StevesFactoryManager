@@ -5,6 +5,7 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.MathHelper;
@@ -17,6 +18,7 @@ import vswe.stevesfactory.utils.Utils;
 import java.awt.*;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
 public class TextField extends AbstractWidget implements LeafWidgetMixin {
 
@@ -301,12 +303,12 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
 
     private void copyText() {
         if (isRegionSelected()) {
-            minecraft().keyboardListener.setClipboardString(getSelectedText());
+            Minecraft.getInstance().keyboardListener.setClipboardString(getSelectedText());
         }
     }
 
     private void pasteText() {
-        String text = minecraft().keyboardListener.getClipboardString();
+        String text = Minecraft.getInstance().keyboardListener.getClipboardString();
         if (isRegionSelected()) {
             replaceSelectedRegion(text);
         } else {
@@ -316,7 +318,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
 
     private void cutText() {
         if (isRegionSelected()) {
-            minecraft().keyboardListener.setClipboardString(getSelectedText());
+            Minecraft.getInstance().keyboardListener.setClipboardString(getSelectedText());
             replaceSelectedRegion("");
         }
     }

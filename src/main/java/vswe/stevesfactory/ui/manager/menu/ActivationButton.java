@@ -5,6 +5,7 @@ import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.library.gui.widget.TextButton;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
 class ActivationButton extends TextButton {
 

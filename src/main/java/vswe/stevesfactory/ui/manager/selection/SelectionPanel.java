@@ -100,6 +100,6 @@ public final class SelectionPanel extends DynamicWidthWidget<IComponentChoice> {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
         ));
-        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+        WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
 }

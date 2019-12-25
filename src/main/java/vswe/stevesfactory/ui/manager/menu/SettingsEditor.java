@@ -24,7 +24,7 @@ public final class SettingsEditor extends AbstractContainer<IWidget> {
             public void render(int mouseX, int mouseY, float particleTicks) {
                 super.render(mouseX, mouseY, particleTicks);
                 if (isHovered()) {
-                    WidgetScreen.getCurrentScreen().setHoveringText(I18n.format("menu.sfm.CloseEditor.Info"), mouseX, mouseY);
+                    WidgetScreen.getCurrent().setHoveringText(I18n.format("menu.sfm.CloseEditor.Info"), mouseX, mouseY);
                 }
             }
 

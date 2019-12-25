@@ -266,7 +266,7 @@ public class Dialog extends AbstractPopupWindow {
     @SuppressWarnings("UnusedReturnValue")
     public boolean tryAddSelfToActiveGUI() {
         if (Minecraft.getInstance().currentScreen instanceof WidgetScreen) {
-            WidgetScreen.getCurrentScreen().addPopupWindow(this);
+            WidgetScreen.getCurrent().addPopupWindow(this);
             return true;
         }
         return false;

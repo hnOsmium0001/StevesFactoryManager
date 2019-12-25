@@ -10,6 +10,8 @@ import vswe.stevesfactory.library.gui.window.IWindow;
 import javax.annotation.Nullable;
 import java.awt.*;
 
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
+
 public class DefaultEntry extends AbstractWidget implements IEntry, LeafWidgetMixin {
 
     public static final int MARGIN_SIDES = 2;

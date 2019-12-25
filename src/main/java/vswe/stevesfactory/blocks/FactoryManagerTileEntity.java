@@ -43,7 +43,7 @@ import java.util.*;
 public class FactoryManagerTileEntity extends TileEntity implements ITickableTileEntity, INamedContainerProvider, INetworkController, ICable {
 
     private Set<BlockPos> connectedCables = new HashSet<>();
-    private Map<Capability<?>, Multiset<BlockPos>> linkedInventories = new IdentityHashMap<>();
+    private Map<String, Multiset<BlockPos>> linkedInventories = new HashMap<>();
 
     private ProcedureGraph graph = ProcedureGraph.create();
 
@@ -141,10 +141,10 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             }
         }
 
-        for (Map.Entry<Capability<?>, Multiset<BlockPos>> entry : linkedInventories.entrySet()) {
-            Capability<?> cap = entry.getKey();
+        for (Map.Entry<String, Multiset<BlockPos>> entry : linkedInventories.entrySet()) {
+            String capName = entry.getKey();
             Multiset<BlockPos> set = entry.getValue();
-            logger.debug("Linked inventories ({}):", cap.getName());
+            logger.debug("Linked inventories ({}):", capName);
             for (BlockPos pos : set) {
                 logger.debug("    {}: {}", pos, world.getTileEntity(pos));
             }
@@ -171,18 +171,19 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         connectedCables.remove(cable);
     }
 
-    public <T> Multiset<BlockPos> getInventoryMultiset(Capability<T> cap) {
-        Multiset<BlockPos> multiset = linkedInventories.get(cap);
+    public <T> Multiset<BlockPos> getInventoryMultiset(@Nullable Capability<T> cap) {
+        String capName = cap == null ? "" : cap.getName();
+        Multiset<BlockPos> multiset = linkedInventories.get(capName);
         if (multiset == null) {
             Multiset<BlockPos> newSet = HashMultiset.create();
-            linkedInventories.put(cap, newSet);
+            linkedInventories.put(capName, newSet);
             return newSet;
         }
         return multiset;
     }
 
     @Override
-    public <T> Set<BlockPos> getLinkedInventories(Capability<T> cap) {
+    public <T> Set<BlockPos> getLinkedInventories(@Nullable Capability<T> cap) {
         return getInventoryMultiset(cap).elementSet();
     }
 
@@ -274,24 +275,6 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         read(pkt.getNbtCompound());
     }
 
-    private static final Map<String, Capability<?>> caps;
-
-    static {
-        // TODO use proper solution for serializing capability types
-        try {
-            Field field = CapabilityManager.class.getDeclaredField("providers");
-            field.setAccessible(true);
-            @SuppressWarnings("unchecked") Map<String, Capability<?>> map = (Map<String, Capability<?>>) field.get(CapabilityManager.INSTANCE);
-            caps = map;
-        } catch (NoSuchFieldException | IllegalAccessException | ClassCastException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Capability<?> findCapability(String name) {
-        return caps.get(name);
-    }
-
     @Override
     public void read(CompoundNBT compound) {
         StevesFactoryManager.logger.trace("Restoring data from NBT {}", compound);
@@ -308,16 +291,14 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         for (int i = 0; i < serializedInventories.size(); i++) {
             CompoundNBT element = serializedInventories.getCompound(i);
 
-            // Constructed (heap) string and interned string behave differently in an IdentityHashMap
-            // (CapabilityManager interns the capability name before putting them in the map)
-            Capability<?> cap = findCapability(element.getString("Name").intern());
-
             ListNBT serializedPoses = element.getList("Positions", Constants.NBT.TAG_COMPOUND);
             Multiset<BlockPos> set = HashMultiset.create();
             for (int j = 0; j < serializedPoses.size(); j++) {
                 set.add(NBTUtil.readBlockPos(serializedPoses.getCompound(j)));
             }
-            linkedInventories.put(cap, set);
+
+            String name = element.getString("Name");
+            linkedInventories.put(name, set);
         }
 
         // TODO remove for release
@@ -377,8 +358,8 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         compound.put("ConnectedCables", IOHelper.writeBlockPoses(connectedCables));
 
         ListNBT serializedInventories = new ListNBT();
-        for (Map.Entry<Capability<?>, Multiset<BlockPos>> entry : linkedInventories.entrySet()) {
-            Capability<?> cap = entry.getKey();
+        for (Map.Entry<String, Multiset<BlockPos>> entry : linkedInventories.entrySet()) {
+            String capName = entry.getKey();
             Multiset<BlockPos> set = entry.getValue();
 
             ListNBT serializedPoses = new ListNBT();
@@ -387,7 +368,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
             }
 
             CompoundNBT element = new CompoundNBT();
-            element.putString("Name", cap.getName());
+            element.putString("Name", capName);
             element.put("Positions", serializedPoses);
             serializedInventories.add(element);
         }

@@ -78,7 +78,7 @@ public class StevesFactoryManager {
                         .requires(source -> source.getEntity() instanceof ServerPlayerEntity)
                         .executes(context -> {
                             ServerPlayerEntity client = context.getSource().asPlayer();
-                            PacketReloadComponentGroups.reload(client);
+                            PacketReloadComponentGroups.reset(client);
                             return 0;
                         }));
     }

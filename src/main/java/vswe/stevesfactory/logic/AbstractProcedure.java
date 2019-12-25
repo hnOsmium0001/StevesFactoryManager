@@ -180,13 +180,13 @@ public abstract class AbstractProcedure implements IProcedure, IClientDataStorag
         return type.getRegistryName();
     }
 
-    protected final void pushFrame(IExecutionContext context, @Nullable Connection connection) {
+    protected void pushFrame(IExecutionContext context, @Nullable Connection connection) {
         if (connection != null) {
             context.push(connection.getDestination());
         }
     }
 
-    protected final void pushFrame(IExecutionContext context, int outputIndex) {
+    protected void pushFrame(IExecutionContext context, int outputIndex) {
         pushFrame(context, successors[outputIndex]);
     }
 

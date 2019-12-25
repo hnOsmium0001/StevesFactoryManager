@@ -4,6 +4,7 @@
 package vswe.stevesfactory.library.gui.widget.box;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -170,13 +171,13 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
         int top = getAbsoluteY();
         int right = getAbsoluteXRight();
         int bottom = getAbsoluteYBottom();
-        if (minecraft().world != null) {
+        if (Minecraft.getInstance().world != null) {
             GuiUtils.drawGradientRect(0, left, top, right, bottom, 0xc0101010, 0xd0101010);
         } else {
             // Draw dark dirt background
             GlStateManager.disableLighting();
             GlStateManager.disableFog();
-            minecraft().getTextureManager().bindTexture(AbstractGui.BACKGROUND_LOCATION);
+            Minecraft.getInstance().getTextureManager().bindTexture(AbstractGui.BACKGROUND_LOCATION);
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             float texScale = 32.0F;
             BufferBuilder renderer = RenderingHelper.getRenderer();

@@ -65,7 +65,7 @@ public class IconToolType<T extends IWidget & ResizableWidgetMixin> extends Abst
         RenderingHelper.drawVerticalText(name, x1 + 1, y1 + textureSize + LABEL_VERTICAL_GAP, FONT_HEIGHT, 0xffffffff);
 
         if (hovered && !name.isEmpty()) {
-            WidgetScreen.getCurrentScreen().setHoveringText(name, mouseX, mouseY);
+            WidgetScreen.getCurrent().setHoveringText(name, mouseX, mouseY);
         }
 
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);

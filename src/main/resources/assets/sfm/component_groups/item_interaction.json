@@ -1,7 +1,7 @@
 {
   "name": "sfm:item_interaction",
   "translation_key": "component_group.sfm.ItemInteraction",
-  "icon": "sfm:textures/gui/component_icon/item_transfer.png",
+  "icon": "sfm:textures/gui/group_icon/item_interaction.png",
   "members": [
     "sfm:item_transfer",
     "sfm:item_import",

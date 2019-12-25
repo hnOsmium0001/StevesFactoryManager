@@ -27,7 +27,7 @@ public class SingularComponentChoice extends AbstractWidget implements IComponen
         renderBackground(mouseX, mouseY);
         RenderingHelper.drawCompleteTexture(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), getIcon());
         if (isInside(mouseX, mouseY)) {
-            WidgetScreen.getCurrentScreen().setHoveringText(type.getLocalizedName(), mouseX, mouseY);
+            WidgetScreen.getCurrent().setHoveringText(type.getLocalizedName(), mouseX, mouseY);
         }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }

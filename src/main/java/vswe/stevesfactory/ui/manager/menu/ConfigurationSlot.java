@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
@@ -21,6 +22,7 @@ import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
 public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidget implements INamedElement, LeafWidgetMixin {
 
@@ -52,7 +54,7 @@ public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidge
         if (isInside(mouseX, mouseY)) {
             HOVERED.draw(x, y);
             if (!stack.isEmpty()) {
-                WidgetScreen.getCurrentScreen().setHoveringText(stack, mouseX, mouseY);
+                WidgetScreen.getCurrent().setHoveringText(stack, mouseX, mouseY);
             }
         } else {
             NORMAL.draw(x, y);
@@ -61,7 +63,7 @@ public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidge
         GlStateManager.disableDepthTest();
         GlStateManager.enableTexture();
         RenderHelper.enableGUIStandardItemLighting();
-        ItemRenderer ir = minecraft().getItemRenderer();
+        ItemRenderer ir = Minecraft.getInstance().getItemRenderer();
         ir.renderItemAndEffectIntoGUI(stack, x, y);
         ir.renderItemOverlayIntoGUI(fontRenderer(), stack, x, y, "");
         RenderHelper.disableStandardItemLighting();
@@ -159,7 +161,7 @@ public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidge
                 return representative;
             }
         });
-        WidgetScreen.getCurrentScreen().addPopupWindow(popup);
+        WidgetScreen.getCurrent().addPopupWindow(popup);
     }
 
     protected void onSetStack() {

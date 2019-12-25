@@ -64,6 +64,17 @@ public final class IOHelper {
         return target;
     }
 
+    public static ListNBT writeInventory(IInventory inventory) {
+        return writeInventory(inventory, new ListNBT());
+    }
+
+    public static ListNBT writeInventory(IInventory inventory, ListNBT target) {
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+            target.add(inventory.getStackInSlot(i).write(new CompoundNBT()));
+        }
+        return target;
+    }
+
     public static ListNBT writeItemStacks(Collection<ItemStack> stacks) {
         return writeItemStacks(stacks, new ListNBT());
     }

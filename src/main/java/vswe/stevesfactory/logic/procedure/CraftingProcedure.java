@@ -1,7 +1,7 @@
 package vswe.stevesfactory.logic.procedure;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipeType;
@@ -11,21 +11,22 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.items.ItemStackHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.logic.item.CraftingBufferElement;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.RecipeConfigurationMenu;
 import vswe.stevesfactory.utils.IOHelper;
-import vswe.stevesfactory.utils.MyCraftingInventory;
 
 import java.util.Optional;
 
 public class CraftingProcedure extends AbstractProcedure implements IRecipeTarget {
 
     private transient ICraftingRecipe recipe;
-    private MyCraftingInventory inventory = new MyCraftingInventory();
+    private CraftingInventory inventory = createCraftingInventory();
 
     public CraftingProcedure() {
         super(ModProcedures.crafting);
@@ -87,13 +88,17 @@ public class CraftingProcedure extends AbstractProcedure implements IRecipeTarge
     @Override
     public CompoundNBT serialize() {
         CompoundNBT tag = super.serialize();
-        tag.put("RecipeInv", IOHelper.writeItemStacks(inventory.handle));
+        tag.put("RecipeInv", IOHelper.writeInventory(inventory));
         return tag;
     }
 
     @Override
     public void deserialize(CompoundNBT tag) {
         super.deserialize(tag);
-        inventory = IOHelper.readInventory(tag.getList("RecipeInv", Constants.NBT.TAG_COMPOUND), new MyCraftingInventory());
+        IOHelper.readInventory(tag.getList("RecipeInv", Constants.NBT.TAG_COMPOUND), inventory);
+    }
+
+    private static CraftingInventory createCraftingInventory() {
+        return new CraftingInventory(WidgetScreen.getCurrent().getContainer(), 3, 3);
     }
 }

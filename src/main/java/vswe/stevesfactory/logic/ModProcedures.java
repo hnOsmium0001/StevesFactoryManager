@@ -33,6 +33,9 @@ public final class ModProcedures {
     public static IProcedureType<FluidTransferProcedure> fluidTransfer;
     public static IProcedureType<RedstoneEmitterProcedure> redstoneEmitter;
     public static IProcedureType<SignUpdaterProcedure> signUpdater;
+    public static IProcedureType<DummyBranchProcedure> sequentialBranch;
+    public static IProcedureType<DummyBranchProcedure> mergeBranch;
+    public static IProcedureType<FunctionCallProcedure> functionCall;
 
     @SubscribeEvent
     public static void onProcedureRegister(RegistryEvent.Register<IProcedureType<?>> event) {
@@ -47,6 +50,9 @@ public final class ModProcedures {
         r.register(fluidTransfer = create("fluid_transfer", FluidTransferProcedure::new, Config.COMMON.enableFluidTransfer));
         r.register(redstoneEmitter = create("redstone_emitter", RedstoneEmitterProcedure::new, Config.COMMON.enableRedstoneEmitter));
         r.register(signUpdater = create("sign_updater", SignUpdaterProcedure::new, Config.COMMON.enableSignUpdater));
+        r.register(sequentialBranch = create("sequential", DummyBranchProcedure::sequential, Config.COMMON.enableSequentialBranch));
+        r.register(mergeBranch = create("merge", DummyBranchProcedure::merge, Config.COMMON.enableMergeBranch));
+        r.register(functionCall = create("function_call", FunctionCallProcedure::new, Config.COMMON.enableFunctionCall));
     }
 
     private static <P extends IProcedure> IProcedureType<P> create(String id, Supplier<P> constructor, ForgeConfigSpec.BooleanValue enabledGetter) {

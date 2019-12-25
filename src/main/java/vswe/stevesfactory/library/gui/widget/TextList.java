@@ -1,12 +1,14 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 
 import java.util.List;
 
 import static vswe.stevesfactory.library.gui.RenderingHelper.fontHeight;
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
 public class TextList extends AbstractWidget implements LeafWidgetMixin {
 
@@ -73,7 +75,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
 
     private void tryExpand(String line) {
         if (fitContents) {
-            int w = (int) (minecraft().fontRenderer.getStringWidth(line) * scaleFactor);
+            int w = (int) (Minecraft.getInstance().fontRenderer.getStringWidth(line) * scaleFactor);
             setWidth(Math.max(getWidth(), 1 + w + 1));
             setHeight(1 + (fontHeight + 2) * texts.size() + 1);
         }

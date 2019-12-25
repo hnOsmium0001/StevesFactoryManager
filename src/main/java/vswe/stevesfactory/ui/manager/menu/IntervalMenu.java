@@ -10,6 +10,8 @@ import vswe.stevesfactory.ui.manager.editor.Menu;
 import java.util.ArrayList;
 import java.util.List;
 
+import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
+
 public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
 
     public static final int MARGIN_MIDDLE_UNIT_TEXT = 10;

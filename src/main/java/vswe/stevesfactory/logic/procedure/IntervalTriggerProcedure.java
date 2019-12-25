@@ -46,7 +46,7 @@ public class IntervalTriggerProcedure extends AbstractProcedure implements ITrig
     @Override
     @OnlyIn(Dist.CLIENT)
     public FlowComponent<IntervalTriggerProcedure> createFlowComponent() {
-        FlowComponent<IntervalTriggerProcedure> f = FlowComponent.of(this, 0, 1);
+        FlowComponent<IntervalTriggerProcedure> f = FlowComponent.of(this);
         f.addMenu(new IntervalMenu());
         return f;
     }

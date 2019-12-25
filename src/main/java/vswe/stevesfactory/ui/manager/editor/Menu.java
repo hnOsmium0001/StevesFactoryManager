@@ -248,7 +248,7 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
                     list.add(entry.get());
                 }
                 ContextMenu contextMenu = ContextMenu.atCursor(list.build());
-                WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+                WidgetScreen.getCurrent().addPopupWindow(contextMenu);
             }
             return true;
         }

@@ -1,7 +1,6 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.Inspections;
 import vswe.stevesfactory.library.gui.layout.ILayoutDataProvider;
@@ -13,14 +12,6 @@ import javax.annotation.Nullable;
 import java.awt.*;
 
 public abstract class AbstractWidget implements IWidget, Inspections.IInspectionInfoProvider, ILayoutDataProvider, ResizableWidgetMixin {
-
-    public static Minecraft minecraft() {
-        return Minecraft.getInstance();
-    }
-
-    public static FontRenderer fontRenderer() {
-        return Minecraft.getInstance().fontRenderer;
-    }
 
     private Point location;
     private Dimension dimensions;

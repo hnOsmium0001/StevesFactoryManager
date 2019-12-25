@@ -1,7 +1,7 @@
 {
   "name": "sfm:redstone_interaction",
   "translation_key": "component_group.sfm.RedstoneInteraction",
-  "icon": "sfm:textures/gui/component_icon/redstone_emitter.png",
+  "icon": "sfm:textures/gui/group_icon/redstone_interaction.png",
   "members": [
     "sfm:redstone_trigger",
     "sfm:redstone_emitter",

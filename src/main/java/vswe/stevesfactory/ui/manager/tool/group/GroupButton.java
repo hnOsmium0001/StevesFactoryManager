@@ -8,7 +8,6 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextButton;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
@@ -42,7 +41,7 @@ public class GroupButton extends TextButton {
                 new CallbackEntry(null, "gui.sfm.FactoryManager.Tool.Group.CtxMenu.RenameGroup", b -> actionRename()),
                 new CallbackEntry(null, "gui.sfm.FactoryManager.Tool.Group.CtxMenu.MoveContent", b -> actionMoveContent())
         ));
-        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+        WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
 
     private void actionSwitchGroup() {

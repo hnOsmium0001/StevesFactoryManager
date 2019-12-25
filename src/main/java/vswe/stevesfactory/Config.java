@@ -45,6 +45,9 @@ public final class Config {
         public final BooleanValue enableFluidTransfer;
         public final BooleanValue enableRedstoneEmitter;
         public final BooleanValue enableSignUpdater;
+        public final BooleanValue enableSequentialBranch;
+        public final BooleanValue enableMergeBranch;
+        public final BooleanValue enableFunctionCall;
 
         private CommonCategory(Builder builder) {
             builder.comment("Factory manager config options").push("factoryManager");
@@ -103,6 +106,9 @@ public final class Config {
             enableFluidTransfer = builder.define("enableFluidTransfer", true);
             enableRedstoneEmitter = builder.define("enableRedstoneEmitter", true);
             enableSignUpdater = builder.define("enableSignUpdater", true);
+            enableSequentialBranch = builder.define("enableSequentialBranch", true);
+            enableMergeBranch = builder.define("enableMergeBranch", true);
+            enableFunctionCall = builder.define("enableFunctionCall", false); // TODO implement and re-enable
             builder.pop();
         }
     }

@@ -1,7 +1,6 @@
 package vswe.stevesfactory.ui.manager.selection;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.logic.IProcedureType;
@@ -31,7 +30,7 @@ public class GroupComponentChoice extends AbstractWidget implements IComponentCh
         renderBackground(mouseX, mouseY);
         RenderingHelper.drawCompleteTexture(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), getIcon());
         if (isInside(mouseX, mouseY)) {
-            WidgetScreen.getCurrentScreen().setHoveringText(I18n.format(group.getTranslationKey()), mouseX, mouseY);
+            WidgetScreen.getCurrent().setHoveringText(I18n.format(group.getTranslationKey()), mouseX, mouseY);
         }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
@@ -43,7 +42,7 @@ public class GroupComponentChoice extends AbstractWidget implements IComponentCh
             contextMenu = ContextMenu.atCursor(
                     getAbsoluteXRight() + 2, getAbsoluteY(),
                     ImmutableList.of(new DefaultEntry(null, "gui.sfm.FactoryManager.Selection.NoComponentGroupsPresent")));
-            WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+            WidgetScreen.getCurrent().addPopupWindow(contextMenu);
         } else {
             List<IEntry> entries = new ArrayList<>();
             for (IProcedureType<?> type : group.getMembers()) {
@@ -51,7 +50,7 @@ public class GroupComponentChoice extends AbstractWidget implements IComponentCh
             }
             contextMenu = ContextMenu.atCursor(getAbsoluteXRight() + 2, getAbsoluteY(), entries);
         }
-        WidgetScreen.getCurrentScreen().addPopupWindow(contextMenu);
+        WidgetScreen.getCurrent().addPopupWindow(contextMenu);
         getWindow().setFocusedWidget(this);
         return true;
     }

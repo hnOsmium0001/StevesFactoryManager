@@ -27,7 +27,7 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
 
     public static final TextureWrapper ITEM_SLOT = TextureWrapper.ofFlowComponent(0, 106, 18, 18);
 
-    public static WidgetScreen getCurrentScreen() {
+    public static WidgetScreen getCurrent() {
         return (WidgetScreen) Minecraft.getInstance().currentScreen;
     }
 

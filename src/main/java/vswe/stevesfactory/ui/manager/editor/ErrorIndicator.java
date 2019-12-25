@@ -59,7 +59,7 @@ public class ErrorIndicator extends AbstractWidget implements LeafWidgetMixin {
         if (errors.size() > 1) {
             if (isInside(mouseX, mouseY)) {
                 backgroundHovered.draw(getAbsoluteX(), getAbsoluteY());
-                WidgetScreen.getCurrentScreen().setHoveringText(errors, mouseX, mouseY);
+                WidgetScreen.getCurrent().setHoveringText(errors, mouseX, mouseY);
             } else {
                 background.draw(getAbsoluteX(), getAbsoluteY());
             }
