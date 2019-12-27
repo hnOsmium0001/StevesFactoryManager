@@ -20,10 +20,6 @@ import static org.lwjgl.opengl.GL11.GL_QUADS;
 
 public final class RenderingHelper {
 
-    public static final Dimension UNBOUNDED = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
-    public static int translationX = 0;
-    public static int translationY = 0;
-
     private RenderingHelper() {
     }
 
@@ -372,14 +368,34 @@ public final class RenderingHelper {
         return new ResourceLocation(StevesFactoryManager.MODID, path.toString());
     }
 
+    private static int translationX = 0;
+    private static int translationY = 0;
+    private static boolean active = false;
+
+    public static int getTranslationX() {
+        return active ? translationX : 0;
+    }
+
+    public static int getTranslationY() {
+        return active ? translationY : 0;
+    }
+
+    public static int getPrevTranslationX() {
+        return translationX;
+    }
+
+    public static int getPrevTranslationY() {
+        return translationY;
+    }
+
     public static void translate(int x, int y) {
         translationX = x;
         translationY = y;
+        active = true;
     }
 
     public static void clearTranslation() {
-        translationX = 0;
-        translationY = 0;
+        active = false;
     }
 
     public static final int LEFT_BORDER = 2;

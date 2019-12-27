@@ -130,24 +130,20 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return editable;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField setEditable(boolean editable) {
+    public void setEditable(boolean editable) {
         this.editable = editable;
-        return this;
     }
 
     public String getText() {
         return text;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField setText(String text) {
+    public void setText(String text) {
         updateText(text);
         cursor = text.length();
         if (startOffset >= cursor) {
             startOffset = Utils.lowerBound(cursor - 1, 0);
         }
-        return this;
     }
 
     @Override
@@ -331,29 +327,22 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         this.cursor = MathHelper.clamp(cursor, 0, text.length());
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField scrollToFront() {
+    public void scrollToFront() {
         cursor = 0;
         startOffset = 0;
-        return this;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField selectAll() {
-        return setSelection(0, text.length());
+    public void selectAll() {
+        setSelection(0, text.length());
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField setSelection(int start, int end) {
+    public void setSelection(int start, int end) {
         selection = start;
         cursor = end;
-        return this;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField clearSelection() {
+    public void clearSelection() {
         selection = -1;
-        return this;
     }
 
     public boolean isRegionSelected() {
@@ -378,14 +367,12 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return text.substring(getSelectionStart(), getSelectionEnd());
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField replaceSelectedRegion(String replacement) {
+    public void replaceSelectedRegion(String replacement) {
         int selectionStart = getSelectionStart();
         if (updateText(text.substring(0, selectionStart) + replacement + text.substring(getSelectionEnd()))) {
             cursor = selectionStart + replacement.length();
         }
         clearSelection();
-        return this;
     }
 
     private void updateSelection() {
@@ -419,11 +406,9 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return fontHeight;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField setFontHeight(int fontHeight) {
+    public void setFontHeight(int fontHeight) {
         this.fontHeight = fontHeight;
         this.scaleFactor = (float) fontHeight / getDefaultFontHeight();
-        return this;
     }
 
     public int getDefaultFontHeight() {
@@ -452,7 +437,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
             if (isEditable()) {
                 drawString(renderedText, textX, textY, textColor);
             } else {
-                drawString(renderedText, textX, textY, textColor);
+                drawString(renderedText, textX, textY, textColorUneditable);
             }
 
             if (isRegionSelected()) {
@@ -497,17 +482,13 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return backgroundStyle;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField setBackgroundStyle(IBackgroundRenderer backgroundStyle) {
+    public void setBackgroundStyle(IBackgroundRenderer backgroundStyle) {
         this.backgroundStyle = backgroundStyle;
-        return this;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField setBackgroundStyle(BackgroundStyle backgroundStyle) {
+    public void setBackgroundStyle(BackgroundStyle backgroundStyle) {
         this.backgroundStyle = backgroundStyle;
         this.setTextColor(backgroundStyle.textColor, backgroundStyle.textColorUneditable);
-        return this;
     }
 
     public int getTextColor() {
@@ -518,11 +499,9 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         return textColorUneditable;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public TextField setTextColor(int textColor, int textColorUneditable) {
+    public void setTextColor(int textColor, int textColorUneditable) {
         this.textColor = textColor;
         this.textColorUneditable = textColorUneditable;
-        return this;
     }
 
     private String getSelectedTextSafe() {
@@ -538,10 +517,6 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
 
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    public void translateLabel(String translationKey) {
-        label = I18n.format(translationKey);
     }
 
     @Override

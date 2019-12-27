@@ -106,13 +106,13 @@ public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
                 }
             };
 
-            count = NumberField.integerFieldRanged(33, 12, 1, 1, Integer.MAX_VALUE)
-                    .setValue(stack.getCount());
+            count = NumberField.integerFieldRanged(33, 12, 1, 1, Integer.MAX_VALUE);
+            count.setValue(stack.getCount());
             count.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
             count.setLabel(I18n.format("menu.sfm.ItemFilter.Traits.Amount"));
             count.onValueUpdated = stack::setCount;
-            damage = NumberField.integerField(33, 12)
-                    .setValue(stack.getDamage());
+            damage = NumberField.integerField(33, 12);
+            damage.setValue(stack.getDamage());
             damage.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
             damage.setLabel(I18n.format("menu.sfm.ItemFilter.Traits.Damage"));
             damage.onValueUpdated = stack::setDamage;

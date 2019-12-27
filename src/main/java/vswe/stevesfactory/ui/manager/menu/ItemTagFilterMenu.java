@@ -6,8 +6,8 @@ import net.minecraft.item.Item;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
-import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IClientDataStorage;
+import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
@@ -126,9 +126,9 @@ public class ItemTagFilterMenu<P extends IProcedure & IClientDataStorage & IItem
 
         settings = new SettingsEditor(this);
         NumberField<Integer> stackLimitInput = settings.addIntegerInput(1, 0, Integer.MAX_VALUE);
-        stackLimitInput.setValue(filter.stackLimit)
-                .setBackgroundStyle(BackgroundStyle.RED_OUTLINE)
-                .translateLabel("menu.sfm.ItemFilter.Traits.Amount");
+        stackLimitInput.setValue(filter.stackLimit);
+        stackLimitInput.setBackgroundStyle(BackgroundStyle.RED_OUTLINE);
+        stackLimitInput.setLabel(I18n.format("menu.sfm.ItemFilter.Traits.Amount"));
         stackLimitInput.onValueUpdated = i -> filter.stackLimit = i;
         Checkbox checkbox = settings.addOption(filter.isMatchingAmount(), "menu.sfm.ItemFilter.Traits.MatchAmount");
         checkbox.onStateChange = b -> {

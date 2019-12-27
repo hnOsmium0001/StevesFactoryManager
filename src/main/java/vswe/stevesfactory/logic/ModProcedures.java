@@ -35,7 +35,8 @@ public final class ModProcedures {
     public static IProcedureType<SignUpdaterProcedure> signUpdater;
     public static IProcedureType<DummyBranchProcedure> sequentialBranch;
     public static IProcedureType<DummyBranchProcedure> mergeBranch;
-    public static IProcedureType<FunctionCallProcedure> functionCall;
+    public static IProcedureType<FunctionHatProcedure> functionHat;
+    public static IProcedureType<FunctionInvokeProcedure> functionCall;
 
     @SubscribeEvent
     public static void onProcedureRegister(RegistryEvent.Register<IProcedureType<?>> event) {
@@ -52,11 +53,12 @@ public final class ModProcedures {
         r.register(signUpdater = create("sign_updater", SignUpdaterProcedure::new, Config.COMMON.enableSignUpdater));
         r.register(sequentialBranch = create("sequential", DummyBranchProcedure::sequential, Config.COMMON.enableSequentialBranch));
         r.register(mergeBranch = create("merge", DummyBranchProcedure::merge, Config.COMMON.enableMergeBranch));
-        r.register(functionCall = create("function_call", FunctionCallProcedure::new, Config.COMMON.enableFunctionCall));
+        r.register(functionHat = create("function_hat", FunctionHatProcedure::functionHat, Config.COMMON.enableFunctionHat));
+        r.register(functionCall = create("function_invoke", FunctionInvokeProcedure::new, Config.COMMON.enableFunctionInvoke));
     }
 
     private static <P extends IProcedure> IProcedureType<P> create(String id, Supplier<P> constructor, ForgeConfigSpec.BooleanValue enabledGetter) {
-        IProcedureType<P> p = new SimpleProcedureType<>(constructor, RenderingHelper.linkTexture("gui/component_icon", id + ".png"));
+        IProcedureType<P> p = new SimpleProcedureType<>(constructor, RenderingHelper.linkTexture("gui/procedure_icon", id + ".png"));
         ResourceLocation rl = new ResourceLocation(StevesFactoryManager.MODID, id);
         p.setRegistryName(rl);
         GUIVisibility.registerEnableState(rl, enabledGetter::get);

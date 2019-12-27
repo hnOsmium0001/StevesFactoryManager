@@ -23,8 +23,8 @@ public class DummyBranchProcedure extends AbstractProcedure {
 
     @Override
     public void execute(IExecutionContext context) {
-        for (Connection successor : successors()) {
-            pushFrame(context, successor);
+        for (int i = successors().length - 1; i >= 0; i--) {
+            pushFrame(context, i);
         }
     }
 

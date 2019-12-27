@@ -1,6 +1,5 @@
 {
   "itemGroup.sfm": "Steve's Factory Manager",
-
   "block.sfm.factory_manager": "Factory Manager",
   "block.sfm.cable": "Inventory Cable",
   "block.sfm.redstone_input": "Redstone Input",
@@ -10,11 +9,9 @@
   "block.sfm.bud": "Block Detector (WIP)",
   "block.sfm.world_interactor": "Block Gate (WIP)",
   "block.sfm.sign_updater": "Sign Updater",
-
   "message.sfm.reload.componentGroups.success": "Successfully reloaded component groups",
   "message.sfm.settings.query": "Entry %s is currently set to %s",
   "message.sfm.settings.set": "Entry %s is now set to %s",
-
   "gui.sfm.seconds": "second(s)",
   "gui.sfm.ticks": "ticks",
   "gui.sfm.up": "Up",
@@ -70,7 +67,6 @@
   "gui.sfm.ItemIntake.Mode.Front": "Mode: front",
   "gui.sfm.ItemIntake.Mode.Centered": "Mode: centered",
   "gui.sfm.ItemIntake.SaveData": "Save and close",
-
   "logic.sfm.interval_trigger": "Interval Trigger",
   "logic.sfm.redstone_trigger": "Redstone Trigger",
   "logic.sfm.bud_trigger": "BUD Trigger",
@@ -92,15 +88,14 @@
   "logic.sfm.condition": "Condition",
   "logic.sfm.variable": "Variable",
   "logic.sfm.for_each": "For Each",
+  "logic.sfm.function_hat": "Function",
   "logic.sfm.function_call": "Call Function",
-
   "component_group.sfm.Trigger": "Trigger",
   "component_group.sfm.ItemInteraction": "Item Interactions",
   "component_group.sfm.FluidInteraction": "Fluid Interactions",
   "component_group.sfm.RedstoneInteraction": "Redstone Interactions",
   "component_group.sfm.FlowControl": "Flow Control",
   "component_group.sfm.Misc": "Miscellaneous",
-
   "menu.sfm.Interval": "Interval",
   "menu.sfm.Interval.Info": "Time between this command is triggered",
   "menu.sfm.BlockTarget.Highlight": "Highlight in world",
@@ -159,7 +154,9 @@
   "menu.sfm.FluidFilter.Traits": "Fluids",
   "menu.sfm.FluidFilter.Traits.Settings": "Filter Settings",
   "menu.sfm.FluidFilter.Traits.Amount": "Amount",
-
+  "menu.sfm.FunctionHat": "Function",
+  "menu.sfm.FunctionHat.Name": "Function Name: ",
+  "menu.sfm.InvocationTarget": "Function",
   "error.sfm.Error": "§c§l§nError:",
   "error.sfm.Warning": "§e§l§nWarning:",
   "error.sfm.ItemIO.NoInv": "No inventories specified",
@@ -179,5 +176,6 @@
   "error.sfm.FluidTransfer.NoSrcTank": "No source tanks specified",
   "error.sfm.FluidTransfer.NoSrcTarget": "No source targets specified",
   "error.sfm.FluidTransfer.NoDestTank": "No destination tanks specified",
-  "error.sfm.FluidTransfer.NoDestTarget": "No destination targets specified"
+  "error.sfm.FluidTransfer.NoDestTarget": "No destination targets specified",
+  "error.sfm.InvocationTarget.Unspecified": "No function invocation target specified"
 }

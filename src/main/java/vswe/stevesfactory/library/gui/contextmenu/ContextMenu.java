@@ -24,11 +24,11 @@ public class ContextMenu extends AbstractPopupWindow {
         double scale = Minecraft.getInstance().mainWindow.getGuiScaleFactor();
         double mouseX = m.getMouseX() / scale;
         double mouseY = m.getMouseY() / scale;
-        return atCursor(mouseX + RenderingHelper.translationX, mouseY + RenderingHelper.translationY, entries);
+        return atCursor(mouseX + RenderingHelper.getTranslationX(), mouseY + RenderingHelper.getTranslationY(), entries);
     }
 
     public static ContextMenu atCursor(double mouseX, double mouseY, List<? extends IEntry> entries) {
-        return new ContextMenu((int) mouseX + RenderingHelper.translationX, (int) mouseY + RenderingHelper.translationY, entries);
+        return new ContextMenu((int) mouseX + RenderingHelper.getTranslationX(), (int) mouseY + RenderingHelper.getTranslationY(), entries);
     }
 
     private final List<? extends IEntry> entries;

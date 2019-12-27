@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 /**
  * A one-use only context object for program execution data storage.
  */
-// TODO variables, subsequences (functions)
+// TODO variables
 public interface IExecutionContext {
 
     INetworkController getController();

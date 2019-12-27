@@ -31,18 +31,6 @@ public abstract class ValueField<V> extends TextField {
         }
 
         @Override
-        public ExceptionBasedValueField<V> setValueFormat(Function<String, V> parser, Function<V, String> stringifier) {
-            super.setValueFormat(parser, stringifier);
-            return this;
-        }
-
-        @Override
-        public ExceptionBasedValueField<V> setValue(V number) {
-            super.setValue(number);
-            return this;
-        }
-
-        @Override
         public void onFocusChanged(boolean focus) {
             // On loss focus, we override the text with number
             // This is for special format limiting that does not throw an exception
@@ -80,21 +68,13 @@ public abstract class ValueField<V> extends TextField {
 
         @Deprecated
         @Override
-        public ValidatorBasedValueField<V> setValueFormat(Function<String, V> parser, Function<V, String> stringifier) {
+        public void setValueFormat(Function<String, V> parser, Function<V, String> stringifier) {
             throw new UnsupportedOperationException();
         }
 
-        @SuppressWarnings("UnusedReturnValue")
-        public ValidatorBasedValueField<V> setValueFormat(Predicate<String> formatValidator, Function<String, V> parser, Function<V, String> stringifier) {
+        public void setValueFormat(Predicate<String> formatValidator, Function<String, V> parser, Function<V, String> stringifier) {
             this.formatValidator = formatValidator;
             super.setValueFormat(parser, stringifier);
-            return this;
-        }
-
-        @Override
-        public ValidatorBasedValueField<V> setValue(V value) {
-            super.setValue(value);
-            return this;
         }
     }
 
@@ -106,11 +86,9 @@ public abstract class ValueField<V> extends TextField {
         super(x, y, width, height);
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public ValueField<V> setValueFormat(Function<String, V> parser, Function<V, String> stringifier) {
+    public void setValueFormat(Function<String, V> parser, Function<V, String> stringifier) {
         this.parser = parser;
         this.stringifier = stringifier;
-        return this;
     }
 
     @Override
@@ -124,11 +102,9 @@ public abstract class ValueField<V> extends TextField {
         return value;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public ValueField<V> setValue(V number) {
+    public void setValue(V number) {
         this.value = number;
         super.updateText(stringifier.apply(number));
-        return this;
     }
 
     public Function<String, V> getParser() {

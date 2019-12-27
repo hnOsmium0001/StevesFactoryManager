@@ -37,7 +37,8 @@ public class Dialog extends AbstractPopupWindow {
     public static Dialog createPrompt(String message, String defaultText, String confirm, String cancel, BiConsumer<Integer, String> onConfirm, BiConsumer<Integer, String> onCancel) {
         Dialog dialog = dialog(message);
 
-        TextField inputBox = new TextField(0, 0, 0, 16).setText(defaultText);
+        TextField inputBox = new TextField(0, 0, 0, 16);
+        inputBox.setText(defaultText);
         dialog.insertBeforeButtons(inputBox);
         dialog.onPostReflow = inputBox::expandHorizontally;
 

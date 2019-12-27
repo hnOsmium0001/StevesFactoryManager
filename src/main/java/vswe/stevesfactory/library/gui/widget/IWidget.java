@@ -137,4 +137,8 @@ public interface IWidget {
     void mouseMoved(double mouseX, double mouseY);
 
     void update(float particleTicks);
+
+    default boolean doesEffectByTranslation() {
+        return false;
+    }
 }

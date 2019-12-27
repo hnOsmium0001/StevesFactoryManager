@@ -2,12 +2,10 @@ package vswe.stevesfactory.library.gui.debug;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.Config;
-import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.IWindow;
 
@@ -142,9 +140,7 @@ public abstract class Inspections implements IRenderEventListener {
     public void renderBox(IWindow window) {
         // Can't just do two rectangles because they are transparent
         useBlendingGLStates();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        Tessellator.getInstance().getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         {
             int x = window.getX();
             int y = window.getY();
@@ -152,17 +148,17 @@ public abstract class Inspections implements IRenderEventListener {
             int y2 = y + window.getHeight();
             int bs = window.getBorderSize();
 
-            RenderingHelper.rectVertices(x, y, x2 - bs, y + bs, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
-            RenderingHelper.rectVertices(x2 - bs, y, x2, y2 - bs, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
-            RenderingHelper.rectVertices(x + bs, y2 - bs, x2, y2, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
-            RenderingHelper.rectVertices(x, y + bs, x + bs, y2, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
+            rectVertices(x, y, x2 - bs, y + bs, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
+            rectVertices(x2 - bs, y, x2, y2 - bs, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
+            rectVertices(x + bs, y2 - bs, x2, y2, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
+            rectVertices(x, y + bs, x + bs, y2, BORDER_R, BORDER_G, BORDER_B, BORDER_A);
         }
         {
             int cx = window.getContentX();
             int cy = window.getContentY();
-            RenderingHelper.rectVertices(cx, cy, cx + window.getContentWidth(), cy + window.getContentHeight(), CONTENTS);
+            rectVertices(cx, cy, cx + window.getContentWidth(), cy + window.getContentHeight(), CONTENTS);
         }
-        tessellator.draw();
+        Tessellator.getInstance().draw();
         useTextureGLStates();
     }
 

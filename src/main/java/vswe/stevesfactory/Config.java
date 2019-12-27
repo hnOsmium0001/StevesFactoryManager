@@ -17,6 +17,7 @@ public final class Config {
         // Factory manager options
         public final IntValue maxSearchDepth;
         public final IntValue rescanInterval;
+        public final IntValue repeatThreshold;
 
         // Item intake options
         public final IntValue regularPickupInterval;
@@ -47,7 +48,8 @@ public final class Config {
         public final BooleanValue enableSignUpdater;
         public final BooleanValue enableSequentialBranch;
         public final BooleanValue enableMergeBranch;
-        public final BooleanValue enableFunctionCall;
+        public final BooleanValue enableFunctionHat;
+        public final BooleanValue enableFunctionInvoke;
 
         private CommonCategory(Builder builder) {
             builder.comment("Factory manager config options").push("factoryManager");
@@ -57,6 +59,10 @@ public final class Config {
             rescanInterval = builder
                     .comment("Number of ticks for the Factory Manager to rescan the network. Set to -1 to make it never rescan passively")
                     .defineInRange("rescanInterval", 100, -1, Integer.MAX_VALUE);
+            repeatThreshold = builder
+                    .comment("Maximum number that the controller is allowed executes a single procedure in one execution pass",
+                            "Extra attempts to the procedure will be ignored, and it's connection chain will stop")
+                    .defineInRange("repeatThreshold", 8, 1, 64);
             builder.pop();
 
             builder.comment("Item intake config options").push("itemIntake");
@@ -108,7 +114,8 @@ public final class Config {
             enableSignUpdater = builder.define("enableSignUpdater", true);
             enableSequentialBranch = builder.define("enableSequentialBranch", true);
             enableMergeBranch = builder.define("enableMergeBranch", true);
-            enableFunctionCall = builder.define("enableFunctionCall", false); // TODO implement and re-enable
+            enableFunctionHat = builder.define("enableFunctionHat", true);
+            enableFunctionInvoke = builder.define("enableFunctionInvoke", false); // TODO implement and re-enable
             builder.pop();
         }
     }

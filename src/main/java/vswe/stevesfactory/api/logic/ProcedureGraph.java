@@ -1,8 +1,6 @@
 package vswe.stevesfactory.api.logic;
 
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.nbt.CompoundNBT;
@@ -121,17 +119,21 @@ public final class ProcedureGraph {
         CompoundNBT tag = new CompoundNBT();
 
         Object2IntMap<IProcedure> idMap = createIDMap();
+        SerializationContext ctx = new SerializationContext(p -> idMap.getOrDefault(p, -1));
         ListNBT nodesNBT = new ListNBT();
         for (Object2IntMap.Entry<IProcedure> entry : idMap.object2IntEntrySet()) {
             IProcedure node = entry.getKey();
-            int id = entry.getIntValue();
-
             CompoundNBT nbt = new CompoundNBT();
+            nbt.putInt("ID", entry.getIntValue());
             nbt.put("Data", node.serialize());
-            nbt.putInt("ID", id);
+            CompoundNBT extra = node.serializeExtra(ctx);
+            if (extra != null) {
+                nbt.put("Extra", extra);
+            }
             nodesNBT.add(nbt);
         }
         tag.put("Nodes", nodesNBT);
+        tag.putInt("MaxID", idMap.size());
 
         ListNBT connectionsNBT = new ListNBT();
         Set<Connection> visited = new HashSet<>();
@@ -141,9 +143,9 @@ public final class ProcedureGraph {
                     visited.add(successor);
 
                     CompoundNBT nbt = new CompoundNBT();
-                    nbt.putInt("FromID", idMap.getInt(successor.getSource()));
+                    nbt.putInt("FromID", ctx.identify(successor.getSource()));
                     nbt.putInt("FromIdx", successor.getSourceOutputIndex());
-                    nbt.putInt("ToID", idMap.getInt(successor.getDestination()));
+                    nbt.putInt("ToID", ctx.identify(successor.getDestination()));
                     nbt.putInt("ToIdx", successor.getDestinationInputIndex());
                     connectionsNBT.add(nbt);
                 }
@@ -161,6 +163,8 @@ public final class ProcedureGraph {
             if (!node.isValid()) {
                 continue;
             }
+            // 0, 1, 2, ..., size of `all` - 1
+            // Accessing size of the returned map == maximum ID ever appears
             idMap.put(node, idMap.size());
         }
         return idMap;
@@ -174,28 +178,35 @@ public final class ProcedureGraph {
 
         // Deserialize procedures from NBT
         ListNBT nodesNBT = tag.getList("Nodes", Constants.NBT.TAG_COMPOUND);
-        Int2ObjectMap<IProcedure> nodes = new Int2ObjectOpenHashMap<>();
+        int maxID = tag.getInt("MaxID");
+        IProcedure[] nodes = new IProcedure[maxID];
+        CompoundNBT[] extras = new CompoundNBT[maxID];
         for (int i = 0; i < nodesNBT.size(); i++) {
             CompoundNBT nodeNBT = nodesNBT.getCompound(i);
             int id = nodeNBT.getInt("ID");
-            IProcedure node = deserializeNode(nodeNBT.getCompound("Data"));
-            nodes.put(id, node);
+            nodes[id] = deserializeNode(nodeNBT.getCompound("Data"));
+            extras[id] = nodeNBT.contains("Extra") ? nodeNBT.getCompound("Extra") : null;
         }
 
         // Deserialize procedure connections from NBT
         ListNBT connectionNBT = tag.getList("Connections", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < connectionNBT.size(); i++) {
             CompoundNBT nbt = connectionNBT.getCompound(i);
-            IProcedure from = nodes.get(nbt.getInt("FromID"));
+            IProcedure from = nodes[nbt.getInt("FromID")];
             int fromIdx = nbt.getInt("FromIdx");
-            IProcedure to = nodes.get(nbt.getInt("ToID"));
+            IProcedure to = nodes[nbt.getInt("ToID")];
             int toIdx = nbt.getInt("ToIdx");
             Connection.create(from, fromIdx, to, toIdx);
         }
 
+        DeserializationContext ctx = new DeserializationContext(i -> nodes[i]);
+        for (int i = 0; i < nodes.length; i++) {
+            nodes[i].deserializeExtra(extras[i], ctx);
+        }
+
         // Place deserialized procedures into data structure
-        for (int i = 0; i < nodes.size(); i++) {
-            addProcedure(nodes.get(i));
+        for (IProcedure node : nodes) {
+            addProcedure(node);
         }
     }
 

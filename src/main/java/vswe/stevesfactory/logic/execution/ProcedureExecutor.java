@@ -1,15 +1,17 @@
 package vswe.stevesfactory.logic.execution;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.MutableClassToInstanceMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
-import vswe.stevesfactory.api.logic.fluid.IFluidBuffer;
-import vswe.stevesfactory.api.logic.item.IItemBuffer;
+import vswe.stevesfactory.Config;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedure;
+import vswe.stevesfactory.api.logic.fluid.IFluidBuffer;
+import vswe.stevesfactory.api.logic.item.IItemBuffer;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.item.CraftingBufferElement;
 import vswe.stevesfactory.logic.item.DirectBufferElement;
@@ -25,25 +27,35 @@ import java.util.function.BiConsumer;
  */
 public class ProcedureExecutor implements IExecutionContext {
 
-    private static final Object2IntMap<Class<? extends IItemBuffer>> orderAssociation = new Object2IntOpenHashMap<>();
-    private static int nextOrder = 0;
+    private static final Object2IntMap<Class<? extends IItemBuffer>> itemOrderAssociation = new Object2IntOpenHashMap<>();
+    public static final int THRESHOLD = 10;
+    private static int nextItemOrder = 0;
+    private static final Object2IntMap<Class<? extends IFluidBuffer>> fluidOrderAssociation = new Object2IntOpenHashMap<>();
+    private static int nextFluidOrder = 0;
 
-    public static void registerBufferType(Class<? extends IItemBuffer> type) {
-        orderAssociation.put(type, nextOrder++);
+    public static void registerItemBufferType(Class<? extends IItemBuffer> type) {
+        itemOrderAssociation.put(type, nextItemOrder++);
+    }
+
+    public static void registerFluidBufferType(Class<? extends IFluidBuffer> type) {
+        fluidOrderAssociation.put(type, nextFluidOrder++);
     }
 
     static {
-        registerBufferType(CraftingBufferElement.class);
-        registerBufferType(DirectBufferElement.class);
+        registerItemBufferType(CraftingBufferElement.class);
+        registerItemBufferType(DirectBufferElement.class);
     }
 
     private final INetworkController controller;
     private final World world;
 
     private Deque<IProcedure> executionStack = new ArrayDeque<>();
-    @SuppressWarnings("unchecked")
-    private Map<Item, IItemBuffer>[] itemBufferElements = new IdentityHashMap[orderAssociation.size()];
+    private Object2IntOpenHashMap<IProcedure> executionFrequency = new Object2IntOpenHashMap<>();
 
+    @SuppressWarnings("unchecked")
+    private Map<Item, IItemBuffer>[] itemBufferElements = new IdentityHashMap[itemOrderAssociation.size()];
+    @SuppressWarnings("unchecked")
+    private Map<Fluid, IFluidBuffer>[] fluidBufferElements = new IdentityHashMap[fluidOrderAssociation.size()];
     private ClassToInstanceMap<Object> customData = MutableClassToInstanceMap.create();
 
     public ProcedureExecutor(INetworkController controller, World world) {
@@ -64,7 +76,10 @@ public class ProcedureExecutor implements IExecutionContext {
     @Override
     public void push(@Nullable IProcedure frame) {
         if (frame != null) {
-            executionStack.push(frame);
+            int freq = executionFrequency.addTo(frame, 1);
+            if (freq < Config.COMMON.repeatThreshold.get()) {
+                executionStack.push(frame);
+            }
         }
     }
 
@@ -76,7 +91,7 @@ public class ProcedureExecutor implements IExecutionContext {
         cleanup();
     }
 
-    private Map<Item, IItemBuffer> getOrCreateBuffers(int index) {
+    private Map<Item, IItemBuffer> getOrCreateItemBuffers(int index) {
         if (itemBufferElements[index] != null) {
             return itemBufferElements[index];
         }
@@ -87,16 +102,27 @@ public class ProcedureExecutor implements IExecutionContext {
 
     @Override
     public <T extends IItemBuffer> Map<Item, T> getItemBuffers(Class<T> type) {
-        int index = orderAssociation.getInt(type);
+        int index = itemOrderAssociation.getInt(type);
         // Returns checked type -> entry put is checked too
-        @SuppressWarnings("unchecked") Map<Item, T> map = (Map<Item, T>) getOrCreateBuffers(index);
+        @SuppressWarnings("unchecked") Map<Item, T> map = (Map<Item, T>) getOrCreateItemBuffers(index);
+        return map;
+    }
+
+    private Map<Fluid, IFluidBuffer> getOrCreateFluidBuffers(int index) {
+        if (fluidBufferElements[index] != null) {
+            return fluidBufferElements[index];
+        }
+        Map<Fluid, IFluidBuffer> map = new IdentityHashMap<>();
+        fluidBufferElements[index] = map;
         return map;
     }
 
     @Override
     public <T extends IFluidBuffer> Map<Fluid, T> getFluidBuffers(Class<T> type) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        int index = itemOrderAssociation.getInt(type);
+        // Returns checked type -> entry put is checked too
+        @SuppressWarnings("unchecked") Map<Fluid, T> map = (Map<Fluid, T>) getOrCreateFluidBuffers(index);
+        return map;
     }
 
     @Override
@@ -116,8 +142,12 @@ public class ProcedureExecutor implements IExecutionContext {
 
     @Override
     public void forEachFluidBuffer(BiConsumer<Fluid, IFluidBuffer> lambda) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        for (Map<Fluid, IFluidBuffer> buffers : fluidBufferElements) {
+            if (buffers == null) {
+                continue;
+            }
+            buffers.forEach(lambda);
+        }
     }
 
     private void cleanup() {
@@ -127,6 +157,15 @@ public class ProcedureExecutor implements IExecutionContext {
             }
             for (Map.Entry<Item, IItemBuffer> entry : buffers.entrySet()) {
                 IItemBuffer element = entry.getValue();
+                element.cleanup();
+            }
+        }
+        for (Map<Fluid, IFluidBuffer> buffers : fluidBufferElements) {
+            if (buffers == null) {
+                continue;
+            }
+            for (Map.Entry<Fluid, IFluidBuffer> entry : buffers.entrySet()) {
+                IFluidBuffer element = entry.getValue();
                 element.cleanup();
             }
         }

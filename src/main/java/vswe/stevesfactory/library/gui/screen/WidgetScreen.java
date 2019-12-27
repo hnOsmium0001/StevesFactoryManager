@@ -1,6 +1,5 @@
 package vswe.stevesfactory.library.gui.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -238,8 +237,8 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
 
     public void setHoveringText(List<String> hoveringText, int x, int y) {
         this.hoveringText = hoveringText;
-        this.hoveringTextX = x + RenderingHelper.translationX;
-        this.hoveringTextY = y + RenderingHelper.translationY;
+        this.hoveringTextX = x + RenderingHelper.getTranslationX();
+        this.hoveringTextY = y + RenderingHelper.getTranslationY();
     }
 
     public void setHoveringText(ItemStack stack, int x, int y) {

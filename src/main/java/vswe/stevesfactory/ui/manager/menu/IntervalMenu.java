@@ -21,9 +21,9 @@ public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
     public IntervalMenu() {
         interval = NumberField.integerFieldRanged(38, 14, 1, 1, 999);
         int x = RenderingHelper.getXForAlignedCenter(0, getWidth(), interval.getWidth() + MARGIN_MIDDLE_UNIT_TEXT + fontRenderer().getStringWidth(getUnitText()));
-        interval.setValue(1)
-                .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
-                .setLocation(x, 50);
+        interval.setValue(1);
+        interval.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
+        interval.setLocation(x, 50);
 
         int desX = interval.getX();
         TextList description = new TextList(getWidth() - x * 2, 0, new ArrayList<>());
@@ -62,7 +62,7 @@ public class IntervalMenu extends Menu<IntervalTriggerProcedure> {
                 getUnitText(),
                 interval.getAbsoluteXRight() + MARGIN_MIDDLE_UNIT_TEXT,
                 interval.getAbsoluteY(), interval.getAbsoluteYBottom(),
-                0xff000000);
+                0xff404040);
     }
 
     public String getUnitText() {

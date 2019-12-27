@@ -21,10 +21,11 @@ public class SignUpdaterLinesMenu extends Menu<SignUpdaterProcedure> {
         super.onLinkFlowComponent(flowComponent);
         SignUpdaterProcedure procedure = getLinkedProcedure();
         for (int i = 0; i < textFields.length; i++) {
-            textFields[i] = new TextField(0, 0, 48, 13)
-                    .setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE)
-                    .setText(procedure.getTexts()[i]);
-            addChildren(textFields[i]);
+            TextField field = new TextField(0, 0, 48, 13);
+            field.setBackgroundStyle(TextField.BackgroundStyle.RED_OUTLINE);
+            field.setText(procedure.getTexts()[i]);
+            textFields[i] = field;
+            addChildren(field);
         }
         FlowLayout.vertical(getChildren(), 4, HEADING_BOX.getPortionHeight() + 4, 4);
     }
