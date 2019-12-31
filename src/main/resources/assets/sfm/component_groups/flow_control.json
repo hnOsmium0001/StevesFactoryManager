@@ -9,6 +9,6 @@
     "sfm:variable",
     "sfm:for_each",
     "sfm:function_hat",
-    "sfm:function_call"
+    "sfm:function_invoke"
   ]
 }

@@ -69,7 +69,7 @@ public class GroupList extends LinearList<GroupButton> {
     public void move(String withGroup, String toGroup) {
         for (FlowComponent<?> component : FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel.getFlowComponents()) {
             if (component.getGroup().equals(withGroup)) {
-                component.getLinkedProcedure().setGroup(toGroup);
+                component.getProcedure().setGroup(toGroup);
             }
         }
     }

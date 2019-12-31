@@ -156,7 +156,7 @@
   "menu.sfm.FluidFilter.Traits.Amount": "Amount",
   "menu.sfm.FunctionHat": "Function",
   "menu.sfm.FunctionHat.Name": "Function Name: ",
-  "menu.sfm.InvocationTarget": "Function",
+  "menu.sfm.InvocationTarget": "Target",
   "error.sfm.Error": "§c§l§nError:",
   "error.sfm.Warning": "§e§l§nWarning:",
   "error.sfm.ItemIO.NoInv": "No inventories specified",

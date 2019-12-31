@@ -115,7 +115,7 @@ public final class Config {
             enableSequentialBranch = builder.define("enableSequentialBranch", true);
             enableMergeBranch = builder.define("enableMergeBranch", true);
             enableFunctionHat = builder.define("enableFunctionHat", true);
-            enableFunctionInvoke = builder.define("enableFunctionInvoke", false); // TODO implement and re-enable
+            enableFunctionInvoke = builder.define("enableFunctionInvoke", true);
             builder.pop();
         }
     }

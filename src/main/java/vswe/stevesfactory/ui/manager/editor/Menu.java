@@ -281,7 +281,7 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
     }
 
     public P getLinkedProcedure() {
-        return flowComponent.getLinkedProcedure();
+        return flowComponent.getProcedure();
     }
 
     public void enableActionInject() {

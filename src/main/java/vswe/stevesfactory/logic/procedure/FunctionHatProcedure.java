@@ -5,12 +5,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.IProcedureType;
+import vswe.stevesfactory.api.logic.ITrigger;
+import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.FunctionNameMenu;
 
-public class FunctionHatProcedure extends AbstractProcedure implements IFunctionHat {
+public class FunctionHatProcedure extends AbstractProcedure implements ITrigger, IFunctionHat {
 
     private String funcName = "";
 
@@ -25,6 +27,10 @@ public class FunctionHatProcedure extends AbstractProcedure implements IFunction
     @Override
     public void execute(IExecutionContext context) {
         pushFrame(context, 0);
+    }
+
+    @Override
+    public void tick(INetworkController controller) {
     }
 
     @Override

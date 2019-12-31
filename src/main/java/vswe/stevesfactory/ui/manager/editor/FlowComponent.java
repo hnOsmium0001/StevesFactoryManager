@@ -747,7 +747,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         return this.getZIndex() - that.getZIndex();
     }
 
-    public P getLinkedProcedure() {
+    public P getProcedure() {
         return procedure;
     }
 
@@ -758,10 +758,6 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     public void setGroup(String group) {
         procedure.setGroup(group);
         getActiveGUI().getTopLevel().toolboxPanel.getGroupList().onProcedureGroupChanged();
-    }
-
-    public IProcedure getProcedure() {
-        return procedure;
     }
 
     public IClientDataStorage getDataHandler() {

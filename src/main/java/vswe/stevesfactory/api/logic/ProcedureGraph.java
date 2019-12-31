@@ -199,7 +199,7 @@ public final class ProcedureGraph {
             Connection.create(from, fromIdx, to, toIdx);
         }
 
-        DeserializationContext ctx = new DeserializationContext(i -> nodes[i]);
+        DeserializationContext ctx = new DeserializationContext(i -> i < 0 || i >= nodes.length ? null : nodes[i]);
         for (int i = 0; i < nodes.length; i++) {
             nodes[i].deserializeExtra(extras[i], ctx);
         }

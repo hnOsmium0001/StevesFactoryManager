@@ -5,6 +5,7 @@
   "members": [
     "sfm:interval_trigger",
     "sfm:redstone_trigger",
-    "sfm:bud_trigger"
+    "sfm:bud_trigger",
+    "sfm:function_hat"
   ]
 }

@@ -42,4 +42,12 @@ public class FunctionInvokeProcedure extends AbstractProcedure {
     public void deserializeExtra(CompoundNBT tag, DeserializationContext ctx) {
         target = ctx.retrieveNullable(tag.getInt("CallTarget"));
     }
+
+    public IProcedure getTarget() {
+        return target;
+    }
+
+    public void setTarget(IProcedure target) {
+        this.target = target;
+    }
 }

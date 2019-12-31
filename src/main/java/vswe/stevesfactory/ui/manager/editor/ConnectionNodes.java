@@ -157,7 +157,7 @@ public abstract class ConnectionNodes extends AbstractContainer<Node> implements
         }
 
         public IProcedure getLinkedProcedure() {
-            return getFlowComponent().getLinkedProcedure();
+            return getFlowComponent().getProcedure();
         }
 
         @Override

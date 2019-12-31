@@ -59,7 +59,6 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
 
-        GlStateManager.disableAlphaTest();
         usePlainColorGLStates();
         Tessellator.getInstance().getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         int x1 = getAbsoluteX();
@@ -70,7 +69,6 @@ public class TextButton extends AbstractWidget implements IButton, LeafWidgetMix
         rectVertices(x1, y1, x2, y2, hovered ? getHoveredBorderColor() : getNormalBorderColor());
         rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, hovered ? getHoveredBackgroundColor() : getNormalBackgroundColor());
         Tessellator.getInstance().draw();
-        GlStateManager.enableAlphaTest();
 
         renderText();
 
