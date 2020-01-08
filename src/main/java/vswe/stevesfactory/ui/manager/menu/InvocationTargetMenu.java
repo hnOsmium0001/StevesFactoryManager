@@ -13,8 +13,8 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.logic.procedure.FunctionHatProcedure;
 import vswe.stevesfactory.logic.procedure.FunctionInvokeProcedure;
+import vswe.stevesfactory.logic.procedure.IFunctionHat;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.editor.*;
 
@@ -44,13 +44,12 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
     @Override
     public void onLinkFlowComponent(FlowComponent<FunctionInvokeProcedure> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
-        FactoryManagerGUI.getActiveGUI().scheduleTask(__ -> scanTargets());
+        scanTargets();
     }
 
     private void scanTargets() {
-        FactoryManagerGUI gui = FactoryManagerGUI.getActiveGUI();
+        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
         FunctionInvokeProcedure p = getLinkedProcedure();
-        EditorPanel editor = gui.getPrimaryWindow().topLevel.editorPanel;
         int i = 0;
         for (FlowComponent<?> component : editor.getFlowComponents()) {
             if (component.getProcedure() instanceof ITrigger) {
@@ -136,8 +135,8 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
 
             ScissorTest test = ScissorTest.scaled(x1, y1, x2, y2);
             String name = target.getName();
-            if (target.getProcedure() instanceof FunctionHatProcedure) {
-                name += " (" + ((FunctionHatProcedure) target.getProcedure()).getFunctionName() + ")";
+            if (target.getProcedure() instanceof IFunctionHat) {
+                name += " (" + ((IFunctionHat) target.getProcedure()).getFunctionName() + ")";
             }
             drawTextCenteredVertically(name, x1 + 2, y1, y2, 0xff000000);
             test.destroy();

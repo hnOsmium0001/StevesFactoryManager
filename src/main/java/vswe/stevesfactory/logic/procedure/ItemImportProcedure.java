@@ -15,6 +15,7 @@ import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
+import vswe.stevesfactory.ui.manager.editor.PropertyManager;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
@@ -87,7 +88,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         FlowComponent<ItemImportProcedure> f = FlowComponent.of(this);
         f.addMenu(new InventorySelectionMenu<>(INVENTORIES, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY));
         f.addMenu(new DirectionSelectionMenu<>(INVENTORIES));
-        IItemFilterTarget.createFilterMenu(this, f, FILTER);
+        PropertyManager.createFilterMenu(this, f, FILTER);
         return f;
     }
 

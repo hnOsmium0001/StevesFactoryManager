@@ -19,7 +19,7 @@ import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.box.MinimumLinearList;
 import vswe.stevesfactory.library.gui.window.Dialog;
-import vswe.stevesfactory.ui.manager.editor.ConnectionNodes.Node;
+import vswe.stevesfactory.ui.manager.editor.connection.*;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
@@ -331,8 +331,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     private final SubmitButton submitButton;
     private final CancelButton cancelButton;
     private final TextField nameBox;
-    private final ConnectionNodes inputNodes;
-    private final ConnectionNodes outputNodes;
+    private final ConnectionNodes<EndNode> inputNodes;
+    private final ConnectionNodes<StartNode> outputNodes;
     private final ErrorIndicator errorIndicator;
     private final MinimumLinearList<Menu<P>> menus;
     // A list that refers to all the widgets above
@@ -461,7 +461,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         submitButton.updateTo(state);
         cancelButton.updateTo(state);
         inputNodes.setWidth(state.dimensions.width);
-        inputNodes.setY(-Node.HEIGHT);
+        inputNodes.setY(-ConnectionsPanel.REGULAR_HEIGHT);
         inputNodes.reflow();
         outputNodes.setWidth(state.dimensions.width);
         outputNodes.setY(getHeight());
@@ -676,8 +676,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         nexts.add(start);
         while (!nexts.isEmpty()) {
             FlowComponent<?> node = nexts.remove();
-            for (Node conn : node.inputNodes.getChildren()) {
-                Node pair = conn.getPairedNode();
+            for (EndNode conn : node.inputNodes.getChildren()) {
+                StartNode pair = conn.getStart();
                 if (pair == null) {
                     continue;
                 }
@@ -688,8 +688,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
                 visited.add(prev);
                 nexts.add(prev);
             }
-            for (Node conn : node.outputNodes.getChildren()) {
-                Node pair = conn.getPairedNode();
+            for (StartNode conn : node.outputNodes.getChildren()) {
+                EndNode pair = conn.getEnd();
                 if (pair == null) {
                     continue;
                 }
@@ -720,11 +720,11 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         getParentWidget().removeFlowComponent(this);
     }
 
-    public ConnectionNodes getInputNodes() {
+    public ConnectionNodes<EndNode> getInputNodes() {
         return inputNodes;
     }
 
-    public ConnectionNodes getOutputNodes() {
+    public ConnectionNodes<StartNode> getOutputNodes() {
         return outputNodes;
     }
 

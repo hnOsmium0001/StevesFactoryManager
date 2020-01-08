@@ -1,5 +1,6 @@
 package vswe.stevesfactory.ui.manager;
 
+import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
@@ -14,6 +15,9 @@ public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractCont
     public static List<DynamicWidthWidget<?>> reflowDynamicWidth(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {
         int amountMaxWidth = 0;
         for (DynamicWidthWidget<?> widget : widgets) {
+            if (!BoxSizing.shouldIncludeWidget(widget)) {
+                continue;
+            }
             switch (widget.getWidthOccupier()) {
                 case MIN_WIDTH:
                     break;
@@ -24,7 +28,10 @@ public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractCont
         }
 
         int usable = bounds.width;
-        for (DynamicWidthWidget widget : widgets) {
+        for (DynamicWidthWidget<?> widget : widgets) {
+            if (!BoxSizing.shouldIncludeWidget(widget)) {
+                continue;
+            }
             if (widget.getWidthOccupier() == WidthOccupierType.MIN_WIDTH) {
                 usable -= widget.getWidth();
             }
@@ -33,6 +40,9 @@ public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractCont
         int unit = usable / amountMaxWidth;
         int nextX = 0;
         for (DynamicWidthWidget<?> widget : widgets) {
+            if (!BoxSizing.shouldIncludeWidget(widget)) {
+                continue;
+            }
             if (widget.getWidthOccupier() == WidthOccupierType.MAX_WIDTH) {
                 widget.setWidth(unit);
             }

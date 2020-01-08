@@ -20,14 +20,16 @@ import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.AbstractWindow;
 import vswe.stevesfactory.ui.manager.editor.EditorPanel;
+import vswe.stevesfactory.ui.manager.editor.ConnectionsPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
 import vswe.stevesfactory.ui.manager.tool.ToolPanel;
 import vswe.stevesfactory.ui.manager.toolbox.ToolboxPanel;
 
-import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.List;
 
+// TODO cleanup widget lifecycle
+// have no idea how does this work now
 public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
     public static FactoryManagerGUI getActiveGUI() {
@@ -66,7 +68,9 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
     @Override
     protected void init() {
         super.init();
-        initializePrimaryWindow(new PrimaryWindow());
+        PrimaryWindow w = new PrimaryWindow();
+        initializePrimaryWindow(w);
+        w.init();
     }
 
     @Override
@@ -100,6 +104,10 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
         private PrimaryWindow() {
             this.topLevel = new TopLevelWidget(this);
+        }
+
+        public void init() {
+            topLevel.init();
             setFocusedWidget(topLevel);
             asProportional();
         }
@@ -179,6 +187,7 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
         public final SelectionPanel selectionPanel;
         public final EditorPanel editorPanel;
+        public final ConnectionsPanel connectionsPanel;
         public final ToolPanel toolPanel;
         public final ToolboxPanel toolboxPanel;
         private final ImmutableList<DynamicWidthWidget<?>> children;
@@ -187,10 +196,15 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             super(window);
             this.selectionPanel = new SelectionPanel();
             this.editorPanel = new EditorPanel();
+            this.connectionsPanel = new ConnectionsPanel();
             this.toolPanel = new ToolPanel();
             this.toolboxPanel = new ToolboxPanel();
-            this.children = ImmutableList.of(selectionPanel, editorPanel, toolPanel, toolboxPanel);
+            this.children = ImmutableList.of(selectionPanel, editorPanel, connectionsPanel, toolPanel, toolboxPanel);
             attachChildren();
+        }
+
+        public void init() {
+
         }
 
         @Override
@@ -218,6 +232,7 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             // No render events for this object because it is technically internal for the window, and it has the exact size as the window
             selectionPanel.render(mouseX, mouseY, particleTicks);
             editorPanel.render(mouseX, mouseY, particleTicks);
+            connectionsPanel.render(mouseX, mouseY, particleTicks);
             toolPanel.render(mouseX, mouseY, particleTicks);
             toolboxPanel.render(mouseX, mouseY, particleTicks);
         }
@@ -232,12 +247,14 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
                 prevHeight = getHeight();
                 selectionPanel.setHeight(prevHeight);
                 editorPanel.setHeight(prevHeight);
+                connectionsPanel.setHeight(prevHeight);
                 toolPanel.setHeight(prevHeight);
                 toolboxPanel.setHeight(prevHeight);
             }
 
             selectionPanel.reflow();
             editorPanel.reflow();
+            connectionsPanel.reflow();
             toolPanel.reflow();
             toolboxPanel.reflow();
             DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);

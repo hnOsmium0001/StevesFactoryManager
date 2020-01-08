@@ -24,13 +24,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.ConnectionNodes.Node;
-import vswe.stevesfactory.ui.manager.editor.ConnectionNodes.OutputNode;
-import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
-import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.UserPreferencesPanel;
-import vswe.stevesfactory.ui.manager.editor.ControlFlow.Node;
-import vswe.stevesfactory.ui.manager.editor.ControlFlow.OutputNode;
+import vswe.stevesfactory.ui.manager.editor.connection.StartNode;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -51,8 +45,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     private Collection<FlowComponent<?>> childrenView = new DescendingTreeSetBackedUnmodifiableCollection<>(children);
     private int nextZIndex = 0;
 
-    // Node connection state
-    private Node selectedNode;
     private String currentGroup = "";
 
     private OffsetText xOffset;
@@ -121,9 +113,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         ScissorTest test = ScissorTest.scaled(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
         GlStateManager.pushMatrix();
         {
-            if (selectedNode != null) {
-                Node.drawConnectionLine(selectedNode.getCenterX() + xOffset.get(), selectedNode.getCenterY() + yOffset.get(), mouseX, mouseY);
-            }
+//            if (selectedNode != null) {
+//                ConnectionsPanel.drawConnectionLine(selectedNode.getCenterX() + xOffset.get(), selectedNode.getCenterY() + yOffset.get(), mouseX, mouseY);
+//            }
 
             GlStateManager.translatef(xOffset.get(), yOffset.get(), 0F);
             RenderingHelper.translate(xOffset.get(), yOffset.get());
@@ -136,14 +128,14 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
             // they are in a certain order.
             // The ideal way to solve this is to use depth testing, however it is such a huge amount of work to change all the GUI code written,
             // TODO use depth test instead of painter's algorithm
-            for (FlowComponent<?> child : children) {
-                if (!currentGroup.equals(child.getGroup())) {
-                    continue;
-                }
-                for (Node node : child.getOutputNodes().getChildren()) {
-                    ((OutputNode) node).renderConnectionLine(translatedX, translatedY);
-                }
-            }
+//            for (FlowComponent<?> child : children) {
+//                if (!currentGroup.equals(child.getGroup())) {
+//                    continue;
+//                }
+//                for (NodeUtils node : child.getOutputNodes().getChildren()) {
+//                    ((StartNode) node).renderConnectionLine(translatedX, translatedY);
+//                }
+//            }
 
             // Iterate in ascending order for rendering as a special case
             for (FlowComponent<?> child : children) {
@@ -170,10 +162,10 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         double translatedY = mouseY - yOffset.get();
 
         // Cancel node selection
-        if (selectedNode != null && button == GLFW_MOUSE_BUTTON_RIGHT) {
-            selectedNode = null;
-            return true;
-        }
+//        if (selectedNode != null && button == GLFW_MOUSE_BUTTON_RIGHT) {
+//            selectedNode = null;
+//            return true;
+//        }
 
         // All other events will be iterated in descending order
         for (FlowComponent<?> child : getChildren()) {
@@ -435,18 +427,18 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         children.add(child);
     }
 
-    public void startConnection(Node source) {
-        selectedNode = source;
-    }
-
-    public boolean tryFinishConnection(Node target) {
-        if (selectedNode != null && selectedNode.shouldConnect(target) && target.shouldConnect(selectedNode)) {
-            target.connect(selectedNode);
-            selectedNode = null;
-            return true;
-        }
-        return false;
-    }
+//    public void startConnection(NodeUtils source) {
+//        selectedNode = source;
+//    }
+//
+//    public boolean tryFinishConnection(NodeUtils target) {
+//        if (selectedNode != null && selectedNode.shouldConnect(target) && target.shouldConnect(selectedNode)) {
+//            ConnectionsPanel.connect(selectedNode);
+//            selectedNode = null;
+//            return true;
+//        }
+//        return false;
+//    }
 
     public void saveAll() {
         for (FlowComponent<?> flowComponent : getChildren()) {
