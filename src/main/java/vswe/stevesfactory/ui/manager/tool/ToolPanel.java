@@ -67,17 +67,20 @@ public final class ToolPanel extends DynamicWidthWidget<IWidget> {
             return true;
         }
         if (isInside(mouseX, mouseY)) {
-            if (button == GLFW_MOUSE_BUTTON_LEFT) {
-                getWindow().setFocusedWidget(this);
-            } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-                openActionMenu();
+            switch (button) {
+                case GLFW_MOUSE_BUTTON_LEFT:
+                    getWindow().setFocusedWidget(this);
+                    break;
+                case GLFW_MOUSE_BUTTON_RIGHT:
+                    openContextMenu();
+                    break;
             }
             return true;
         }
         return false;
     }
 
-    private void openActionMenu() {
+    private void openContextMenu() {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(null, "gui.sfm.FactoryManager.Tool.CtxMenu.CloseToolPanel", b -> setActivePanel(null)),
                 new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())

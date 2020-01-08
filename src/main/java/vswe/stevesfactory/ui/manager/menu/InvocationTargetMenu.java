@@ -1,22 +1,27 @@
 package vswe.stevesfactory.ui.manager.menu;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.ITrigger;
+import vswe.stevesfactory.library.gui.ScissorTest;
+import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
+import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
+import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.logic.procedure.FunctionHatProcedure;
 import vswe.stevesfactory.logic.procedure.FunctionInvokeProcedure;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.EditorPanel;
-import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.editor.Menu;
+import vswe.stevesfactory.ui.manager.editor.*;
 
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static vswe.stevesfactory.library.gui.RenderingHelper.*;
 
@@ -39,23 +44,47 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
     @Override
     public void onLinkFlowComponent(FlowComponent<FunctionInvokeProcedure> flowComponent) {
         super.onLinkFlowComponent(flowComponent);
-        FunctionInvokeProcedure p = getLinkedProcedure();
+        FactoryManagerGUI.getActiveGUI().scheduleTask(__ -> scanTargets());
+    }
+
+    private void scanTargets() {
         FactoryManagerGUI gui = FactoryManagerGUI.getActiveGUI();
-        gui.scheduleTask(__ -> {
-            EditorPanel editor = gui.getPrimaryWindow().topLevel.editorPanel;
-            int i = 0;
-            for (FlowComponent<?> component : editor.getFlowComponents()) {
-                if (component.getProcedure() instanceof ITrigger) {
-                    ITrigger trigger = (ITrigger) component.getProcedure();
-                    options.addChildren(new ListEntry(component, i));
-                    if (trigger == p.getTarget()) {
-                        selected = i;
-                    }
-                    i++;
+        FunctionInvokeProcedure p = getLinkedProcedure();
+        EditorPanel editor = gui.getPrimaryWindow().topLevel.editorPanel;
+        int i = 0;
+        for (FlowComponent<?> component : editor.getFlowComponents()) {
+            if (component.getProcedure() instanceof ITrigger) {
+                ITrigger trigger = (ITrigger) component.getProcedure();
+                ListEntry entry = new ListEntry(component, i);
+                entry.setWidth(options.getWidth() - options.getBarWidth());
+                options.addChildren(entry);
+                if (trigger == p.getTarget()) {
+                    selected = i;
                 }
+                i++;
             }
-            options.reflow();
-        });
+        }
+        options.reflow();
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        switch (button) {
+            case GLFW_MOUSE_BUTTON_RIGHT:
+                openContextMenu();
+                return true;
+        }
+        return false;
+    }
+
+    private void openContextMenu() {
+        ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
+                new CallbackEntry(null, "menu.sfm.InvocationTarget.CtxMenu.Rescan", b -> scanTargets())
+        ));
+        WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
 
     @Override
@@ -77,15 +106,17 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
         private final int index;
 
         public ListEntry(FlowComponent<?> target, int index) {
-            super(0, 0, 38, 14);
+            super(0, 0, 0, 14);
             this.target = target;
             this.index = index;
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            InvocationTargetMenu.this.selected = index;
-            InvocationTargetMenu.this.getLinkedProcedure().setTarget(target.getProcedure());
+            if (button == GLFW_MOUSE_BUTTON_LEFT) {
+                InvocationTargetMenu.this.selected = index;
+                InvocationTargetMenu.this.getLinkedProcedure().setTarget(target.getProcedure());
+            }
             return true;
         }
 
@@ -99,15 +130,21 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
             int y1 = getAbsoluteY();
             int x2 = getAbsoluteXRight();
             int y2 = getAbsoluteYBottom();
-            rectVertices(x1, y1, x2, y2, 0xff8c8c8c);
+            rectVertices(x1, y1, x2, y2, InvocationTargetMenu.this.selected == this.index ? 0xff00ffff : 0xff8c8c8c);
             rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, isInside(mouseX, mouseY) ? 0xff737373 : 0xffc9c9c9);
             Tessellator.getInstance().draw();
 
+            ScissorTest test = ScissorTest.scaled(x1, y1, x2, y2);
             String name = target.getName();
             if (target.getProcedure() instanceof FunctionHatProcedure) {
                 name += " (" + ((FunctionHatProcedure) target.getProcedure()).getFunctionName() + ")";
             }
             drawTextCenteredVertically(name, x1 + 2, y1, y2, 0xff000000);
+            test.destroy();
+
+            if (isInside(mouseX, mouseY)) {
+                FactoryManagerGUI.getActiveGUI().setHoveringText(name, mouseX, mouseY);
+            }
 
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
         }

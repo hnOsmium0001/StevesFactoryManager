@@ -14,7 +14,7 @@ public class FunctionInvokeProcedure extends AbstractProcedure {
     private IProcedure target;
 
     public FunctionInvokeProcedure() {
-        super(ModProcedures.functionCall);
+        super(ModProcedures.functionInvoke);
     }
 
     @Override

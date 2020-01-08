@@ -36,7 +36,7 @@ public final class ModProcedures {
     public static IProcedureType<DummyBranchProcedure> sequentialBranch;
     public static IProcedureType<DummyBranchProcedure> mergeBranch;
     public static IProcedureType<FunctionHatProcedure> functionHat;
-    public static IProcedureType<FunctionInvokeProcedure> functionCall;
+    public static IProcedureType<FunctionInvokeProcedure> functionInvoke;
 
     @SubscribeEvent
     public static void onProcedureRegister(RegistryEvent.Register<IProcedureType<?>> event) {
@@ -54,7 +54,7 @@ public final class ModProcedures {
         r.register(sequentialBranch = create("sequential", DummyBranchProcedure::sequential, Config.COMMON.enableSequentialBranch));
         r.register(mergeBranch = create("merge", DummyBranchProcedure::merge, Config.COMMON.enableMergeBranch));
         r.register(functionHat = create("function_hat", FunctionHatProcedure::functionHat, Config.COMMON.enableFunctionHat));
-        r.register(functionCall = create("function_invoke", FunctionInvokeProcedure::new, Config.COMMON.enableFunctionInvoke));
+        r.register(functionInvoke = create("function_invoke", FunctionInvokeProcedure::new, Config.COMMON.enableFunctionInvoke));
     }
 
     private static <P extends IProcedure> IProcedureType<P> create(String id, Supplier<P> constructor, ForgeConfigSpec.BooleanValue enabledGetter) {
