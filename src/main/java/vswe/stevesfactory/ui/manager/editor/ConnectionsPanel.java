@@ -83,7 +83,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
             if (previous == null) {
                 break;
             }
-            ConnectionsPanel.disconnect(current, previous);
+            ConnectionsPanel.disconnect(previous, current);
             nextTarget = previous;
         }
     }
@@ -188,15 +188,6 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
             return true;
         }
 
-        if (isInside(mouseX, mouseY)) {
-            getWindow().setFocusedWidget(this);
-            return true;
-        }
-        return false;
-        // See EditorPanel#mouseClicked for clearing node selection logic
-    }
-
-    boolean tryClearSelection(int button) {
         if (button == GLFW_MOUSE_BUTTON_RIGHT && selectedNode != null) {
             clearSelection();
             return true;
@@ -260,7 +251,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
         }
 
         // Create connection in GUI
-        ConnectionsPanel.connect(start, end);
+        ConnectionsPanel.connectAndOverride(start, end);
         // Create connection in actual flowchart
         Connection.createAndOverride(start.getProcedure(), start.getIndex(), end.getProcedure(), end.getIndex());
 

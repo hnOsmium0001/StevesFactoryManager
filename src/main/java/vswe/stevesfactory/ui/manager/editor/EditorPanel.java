@@ -142,10 +142,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         double translatedX = mouseX - xOffset.get();
         double translatedY = mouseY - yOffset.get();
 
-        if (FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.tryClearSelection(button)) {
-            return true;
-        }
-
         // All other events will be iterated in descending order
         for (FlowComponent<?> child : getChildren()) {
             if (!currentGroup.equals(child.getGroup())) {
@@ -163,8 +159,15 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         if (yOffset.isInside(mouseX, mouseY)) {
             return yOffset.mouseClicked(mouseX, mouseY, button);
         }
-        if (isInside(mouseX, mouseY) && button == GLFW_MOUSE_BUTTON_RIGHT) {
-            openActionMenu();
+        if (isInside(mouseX, mouseY)) {
+            switch (button) {
+                case GLFW_MOUSE_BUTTON_LEFT:
+                    getWindow().setFocusedWidget(this);
+                    break;
+                case GLFW_MOUSE_BUTTON_RIGHT:
+                    openActionMenu();
+                    break;
+            }
             return true;
         }
         return false;

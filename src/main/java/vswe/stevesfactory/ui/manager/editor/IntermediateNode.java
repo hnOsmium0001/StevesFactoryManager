@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.utils.Utils;
 
 import javax.annotation.Nonnull;
@@ -18,6 +19,14 @@ import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
 
 public class IntermediateNode extends AbstractWidget implements INode, LeafWidgetMixin {
+
+    public static IntermediateNode dragOutIntermediateNode(INode start, INode end, int mouseX, int mouseY) {
+        FactoryManagerGUI.TopLevelWidget topLevel = FactoryManagerGUI.getActiveGUI().getTopLevel();
+        IntermediateNode node = ConnectionsPanel.subdivideConnection(start, end);
+        topLevel.connectionsPanel.addChildren(node);
+        node.startDrag(mouseX - topLevel.connectionsPanel.getAbsoluteX(), mouseY - topLevel.connectionsPanel.getAbsoluteY());
+        return node;
+    }
 
     public static final int BORDER = 0xff4d4d4d;
     public static final int NORMAL_FILLER = 0xff9d9d9d;
@@ -58,8 +67,7 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         switch (button) {
             case GLFW_MOUSE_BUTTON_LEFT:
-                initialDragLocalX = (int) mouseX - getAbsoluteX();
-                initialDragLocalY = (int) mouseY - getAbsoluteY();
+                startDrag((int) mouseX, (int) mouseY);
                 break;
             case GLFW_MOUSE_BUTTON_RIGHT:
                 ConnectionsPanel.mergeConnection(previous, next, this);
@@ -68,10 +76,16 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
         return true;
     }
 
+    void startDrag(int mouseX, int mouseY) {
+        initialDragLocalX = mouseX - getAbsoluteX();
+        initialDragLocalY = mouseY - getAbsoluteY();
+        getWindow().setFocusedWidget(this);
+    }
+
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (isDragging()) {
-            ConnectionsPanel parent = getParentWidget();
+            ConnectionsPanel parent = FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel;
             int x = (int) mouseX - parent.getAbsoluteX() - initialDragLocalX;
             int y = (int) mouseY - parent.getAbsoluteY() - initialDragLocalY;
             setLocation(x, y);
@@ -93,12 +107,6 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
 
     private boolean isDragging() {
         return initialDragLocalX != -1 && initialDragLocalY != -1;
-    }
-
-    @Nonnull
-    @Override
-    public ConnectionsPanel getParentWidget() {
-        return (ConnectionsPanel) Objects.requireNonNull(super.getParentWidget());
     }
 
     @Nullable
@@ -123,13 +131,23 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
         this.previous = previous;
     }
 
+    private boolean removed = false;
+
     @Override
     public void disconnectNext() {
         this.next = null;
+        if (!removed) {
+            FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(this);
+            removed = true;
+        }
     }
 
     @Override
     public void disconnectPrevious() {
         this.previous = null;
+        if (!removed) {
+            FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(this);
+            removed = true;
+        }
     }
 }

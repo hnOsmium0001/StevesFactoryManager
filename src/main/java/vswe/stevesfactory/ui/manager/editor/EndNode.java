@@ -57,8 +57,26 @@ public final class EndNode extends AbstractIconButton implements INode {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.onTerminalNodeClick(Either.right(this), button);
+        getWindow().setFocusedWidget(this);
         return true;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (previous != null) {
+            IntermediateNode.dragOutIntermediateNode(previous, this, (int) mouseX, (int) mouseY);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (isFocused()) {
+            FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.onTerminalNodeClick(Either.right(this), button);
+            return true;
+        }
+        return false;
     }
 
     @Override
