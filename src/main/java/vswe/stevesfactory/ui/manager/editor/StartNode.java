@@ -1,11 +1,10 @@
-package vswe.stevesfactory.ui.manager.editor.connection;
+package vswe.stevesfactory.ui.manager.editor;
 
 import com.mojang.datafixers.util.Either;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,11 +20,39 @@ public final class StartNode extends AbstractIconButton implements INode {
 
     private INode next;
     private EndNode end;
-    private int index;
+
+    private final int index;
+    private final ShadowNode shadow;
 
     public StartNode(int index) {
         super(0, 0, REGULAR_WIDTH, REGULAR_HEIGHT);
         this.index = index;
+        this.shadow = new ShadowNode(this);
+        FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.addChildren(shadow);
+    }
+
+    @Override
+    public void onParentPositionChanged() {
+        super.onParentPositionChanged();
+        updateShadowPosition();
+    }
+
+    @Override
+    public void onRelativePositionChanged() {
+        super.onRelativePositionChanged();
+        updateShadowPosition();
+    }
+
+    private void updateShadowPosition() {
+        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        int x = this.getAbsoluteX() - editor.getAbsoluteX();
+        int y = this.getAbsoluteY() - editor.getAbsoluteY();
+        shadow.setLocation(x, y);
+    }
+
+    @Override
+    public void onRemoved() {
+        FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(shadow);
     }
 
     @Override

@@ -24,7 +24,6 @@ import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.connection.StartNode;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -52,7 +51,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
     public EditorPanel() {
         super(WidthOccupierType.MAX_WIDTH);
-        readProcedures();
 
         xOffset = new OffsetText(I18n.format("gui.sfm.FactoryManager.Editor.XOff"), 0, 0);
         xOffset.setParentWidget(this);
@@ -110,32 +108,16 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
+
         ScissorTest test = ScissorTest.scaled(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
         GlStateManager.pushMatrix();
+        GlStateManager.translatef(xOffset.get(), yOffset.get(), 0F);
+        RenderingHelper.translate(xOffset.get(), yOffset.get());
         {
-//            if (selectedNode != null) {
-//                ConnectionsPanel.drawConnectionLine(selectedNode.getCenterX() + xOffset.get(), selectedNode.getCenterY() + yOffset.get(), mouseX, mouseY);
-//            }
-
-            GlStateManager.translatef(xOffset.get(), yOffset.get(), 0F);
-            RenderingHelper.translate(xOffset.get(), yOffset.get());
             // Widgets are translated on render, which means player inputs will go at the translated positions
             // we need to translate the inputs back to the original position for logic handling, since the data position isn't changed at all
             int translatedX = mouseX - xOffset.get();
             int translatedY = mouseY - yOffset.get();
-
-            // If this is put into the rendering logic of the nodes, the connection line will be above of of the flow components if
-            // they are in a certain order.
-            // The ideal way to solve this is to use depth testing, however it is such a huge amount of work to change all the GUI code written,
-            // TODO use depth test instead of painter's algorithm
-//            for (FlowComponent<?> child : children) {
-//                if (!currentGroup.equals(child.getGroup())) {
-//                    continue;
-//                }
-//                for (NodeUtils node : child.getOutputNodes().getChildren()) {
-//                    ((StartNode) node).renderConnectionLine(translatedX, translatedY);
-//                }
-//            }
 
             // Iterate in ascending order for rendering as a special case
             for (FlowComponent<?> child : children) {
@@ -144,9 +126,8 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
                 }
                 child.render(translatedX, translatedY, particleTicks);
             }
-
-            RenderingHelper.clearTranslation();
         }
+        RenderingHelper.clearTranslation();
         GlStateManager.popMatrix();
         test.destroy();
 
@@ -161,11 +142,9 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         double translatedX = mouseX - xOffset.get();
         double translatedY = mouseY - yOffset.get();
 
-        // Cancel node selection
-//        if (selectedNode != null && button == GLFW_MOUSE_BUTTON_RIGHT) {
-//            selectedNode = null;
-//            return true;
-//        }
+        if (FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.tryClearSelection(button)) {
+            return true;
+        }
 
         // All other events will be iterated in descending order
         for (FlowComponent<?> child : getChildren()) {
@@ -184,12 +163,8 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
         if (yOffset.isInside(mouseX, mouseY)) {
             return yOffset.mouseClicked(mouseX, mouseY, button);
         }
-        if (isInside(mouseX, mouseY)) {
-            if (button == GLFW_MOUSE_BUTTON_LEFT) {
-                getWindow().setFocusedWidget(this);
-            } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-                openActionMenu();
-            }
+        if (isInside(mouseX, mouseY) && button == GLFW_MOUSE_BUTTON_RIGHT) {
+            openActionMenu();
             return true;
         }
         return false;
@@ -459,6 +434,14 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> impl
 
     public void setCurrentGroup(String currentGroup) {
         this.currentGroup = currentGroup;
+    }
+
+    public int getXOffset() {
+        return xOffset.get();
+    }
+
+    public int getYOffset() {
+        return yOffset.get();
     }
 
     @MethodsReturnNonnullByDefault

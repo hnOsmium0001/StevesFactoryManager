@@ -126,4 +126,11 @@ public interface ContainerWidgetMixin<T extends IWidget> extends IContainer<T> {
             }
         }
     }
+
+    @Override
+    default void onRemoved() {
+        for (T child : getChildren()) {
+            child.onRemoved();
+        }
+    }
 }

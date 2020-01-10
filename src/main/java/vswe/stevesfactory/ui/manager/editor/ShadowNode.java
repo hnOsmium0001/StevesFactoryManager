@@ -1,4 +1,4 @@
-package vswe.stevesfactory.ui.manager.editor.connection;
+package vswe.stevesfactory.ui.manager.editor;
 
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;

@@ -14,16 +14,16 @@ import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
+import vswe.stevesfactory.library.gui.widget.AbstractContainer;
+import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.TextField;
-import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.box.MinimumLinearList;
 import vswe.stevesfactory.library.gui.window.Dialog;
-import vswe.stevesfactory.ui.manager.editor.connection.*;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
@@ -37,58 +37,19 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 0, 64, 20),
                 TextureWrapper.ofFlowComponent(0, 20, 9, 10),
-                TextureWrapper.ofFlowComponent(0, 30, 9, 10),
-                54, 5,
-                43, 6,
-                45, 3,
-                45, 11) {
-            @Override
-            public void changeState(FlowComponent<?> flowComponent) {
-                flowComponent.expand();
-            }
-        },
+                TextureWrapper.ofFlowComponent(0, 30, 9, 10)),
         EXPANDED(TextureWrapper.ofFlowComponent(64, 0, 124, 152),
                 TextureWrapper.ofFlowComponent(9, 20, 9, 10),
-                TextureWrapper.ofFlowComponent(9, 30, 9, 10),
-                114, 5,
-                103, 6,
-                105, 3,
-                105, 11) {
-            @Override
-            public void changeState(FlowComponent<?> flowComponent) {
-                flowComponent.collapse();
-            }
-        };
+                TextureWrapper.ofFlowComponent(9, 30, 9, 10));
 
         public final TextureWrapper background;
         public final TextureWrapper toggleStateNormal;
         public final TextureWrapper toggleStateHovered;
 
-        public final int toggleStateButtonX;
-        public final int toggleStateButtonY;
-        public final int renameButtonX;
-        public final int renameButtonY;
-        public final int submitButtonX;
-        public final int submitButtonY;
-        public final int cancelButtonX;
-        public final int cancelButtonY;
-
-        public final Dimension dimensions;
-
-        State(TextureWrapper background, TextureWrapper toggleStateNormal, TextureWrapper toggleStateHovered, int toggleStateButtonX, int toggleStateButtonY, int renameButtonX, int renameButtonY, int submitButtonX, int submitButtonY, int cancelButtonX, int cancelButtonY) {
+        State(TextureWrapper background, TextureWrapper toggleStateNormal, TextureWrapper toggleStateHovered) {
             this.background = background;
             this.toggleStateNormal = toggleStateNormal;
             this.toggleStateHovered = toggleStateHovered;
-            this.toggleStateButtonX = toggleStateButtonX;
-            this.toggleStateButtonY = toggleStateButtonY;
-            this.renameButtonX = renameButtonX;
-            this.renameButtonY = renameButtonY;
-            this.submitButtonX = submitButtonX;
-            this.submitButtonY = submitButtonY;
-            this.cancelButtonX = cancelButtonX;
-            this.cancelButtonY = cancelButtonY;
-
-            this.dimensions = new Dimension(componentWidth(), componentHeight());
         }
 
         public int componentWidth() {
@@ -98,8 +59,6 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         public int componentHeight() {
             return background.getPortionHeight();
         }
-
-        public abstract void changeState(FlowComponent<?> flowComponent);
     }
 
     public static class ToggleStateButton extends AbstractIconButton {
@@ -137,10 +96,6 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         @Override
         public BoxSizing getBoxSizing() {
             return BoxSizing.PHANTOM;
-        }
-
-        public void updateTo(State state) {
-            setLocation(state.toggleStateButtonX, state.toggleStateButtonY);
         }
     }
 
@@ -187,10 +142,6 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         @Override
         public BoxSizing getBoxSizing() {
             return BoxSizing.PHANTOM;
-        }
-
-        public void updateTo(State state) {
-            setLocation(state.renameButtonX, state.renameButtonY);
         }
     }
 
@@ -244,10 +195,6 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         @Override
         public BoxSizing getBoxSizing() {
             return BoxSizing.PHANTOM;
-        }
-
-        public void updateTo(State state) {
-            setLocation(state.submitButtonX, state.submitButtonY);
         }
     }
 
@@ -314,10 +261,6 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         public BoxSizing getBoxSizing() {
             return BoxSizing.PHANTOM;
         }
-
-        public void updateTo(State state) {
-            setLocation(state.cancelButtonX, state.cancelButtonY);
-        }
     }
 
     public static <P extends IProcedure & IClientDataStorage> FlowComponent<P> of(P procedure) {
@@ -368,13 +311,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         this.setLinkedProcedure(procedure);
         this.state = State.COLLAPSED;
 
-        reflow();
         errorIndicator.setLocation(2, 8);
-    }
-
-    @Override
-    public Dimension getDimensions() {
-        return state.dimensions;
     }
 
     public TextureWrapper getBackgroundTexture() {
@@ -386,23 +323,41 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     }
 
     public void toggleState() {
-        state.changeState(this);
+        switch (state) {
+            case COLLAPSED:
+                expand();
+                break;
+            case EXPANDED:
+                collapse();
+                break;
+        }
     }
 
     public void expand() {
         state = State.EXPANDED;
+        setDimensions(state.componentWidth(), state.componentHeight());
 
         nameBox.setWidth(95);
+        nameBox.scrollToFront();
+        toggleStateButton.setLocation(114, 5);
+        renameButton.setLocation(103, 6);
+        submitButton.setLocation(105, 3);
+        cancelButton.setLocation(105, 11);
         renameButton.setEnabled(true);
         updateMenusEnableState(true);
         reflow();
-        errorIndicator.setLocation(2, 8);
     }
 
     public void collapse() {
         state = State.COLLAPSED;
+        setDimensions(state.componentWidth(), state.componentHeight());
 
         nameBox.setWidth(35);
+        nameBox.scrollToFront();
+        toggleStateButton.setLocation(54, 5);
+        renameButton.setLocation(43, 6);
+        submitButton.setLocation(45, 3);
+        cancelButton.setLocation(45, 11);
         if (isEditing()) {
             cancelButton.cancel();
         }
@@ -456,17 +411,12 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
     @Override
     public void reflow() {
-        toggleStateButton.updateTo(state);
-        renameButton.updateTo(state);
-        submitButton.updateTo(state);
-        cancelButton.updateTo(state);
-        inputNodes.setWidth(state.dimensions.width);
+        inputNodes.setWidth(getWidth());
         inputNodes.setY(-ConnectionsPanel.REGULAR_HEIGHT);
         inputNodes.reflow();
-        outputNodes.setWidth(state.dimensions.width);
+        outputNodes.setWidth(getWidth());
         outputNodes.setY(getHeight());
         outputNodes.reflow();
-        nameBox.scrollToFront();
         menus.reflow();
     }
 
@@ -551,7 +501,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
         }
-        if (isFocused() && isDragging()) {
+        if (isDragging()) {
             EditorPanel parent = getParentWidget();
             int x = (int) mouseX - parent.getAbsoluteX() - initialDragLocalX;
             int y = (int) mouseY - parent.getAbsoluteY() - initialDragLocalY;
@@ -640,7 +590,8 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
                     "gui.sfm.FactoryManager.Editor.PopupMsg.DeleteAll.ConfirmMsg",
                     "gui.sfm.yes",
                     "gui.sfm.no",
-                    b -> removeGraph(this), b -> {}).tryAddSelfToActiveGUI();
+                    b -> removeGraph(this), b -> {
+                    }).tryAddSelfToActiveGUI();
         } else {
             remove();
         }
@@ -778,7 +729,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         }
     }
 
-    void readConnections(Map<IProcedure, FlowComponent<?>> m) {
+    public void readConnections(Map<IProcedure, FlowComponent<?>> m) {
         this.inputNodes.readConnections(m, procedure);
         this.outputNodes.readConnections(m, procedure);
     }

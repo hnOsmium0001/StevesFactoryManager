@@ -1,15 +1,14 @@
-package vswe.stevesfactory.ui.manager.editor.connection;
+package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.util.Either;
 import vswe.stevesfactory.api.logic.Connection;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
-import vswe.stevesfactory.ui.manager.editor.ConnectionsPanel;
-import vswe.stevesfactory.ui.manager.editor.FlowComponent;
+import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
+import java.awt.*;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -40,10 +39,25 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
                     }
                     IProcedure successor = connection.getDestination();
                     FlowComponent<?> other = m.get(successor);
-                    StartNode from = nodes.get(i);
-                    EndNode to = other.getInputNodes().nodes.get(connection.getDestinationInputIndex());
+                    StartNode start = nodes.get(i);
+                    EndNode end = other.getInputNodes().nodes.get(connection.getDestinationInputIndex());
 
-                    ConnectionsPanel.connect(from, to);
+                    INode[] polylineNodes = new INode[1 + connection.getPolylineNodes().size() + 1];
+                    polylineNodes[0] = start;
+                    polylineNodes[polylineNodes.length - 1] = end;
+                    // Generate the intermediate nodes
+                    int j = 1;
+                    for (Point pos : connection.getPolylineNodes()) {
+                        polylineNodes[j] = new IntermediateNode();
+                        polylineNodes[j].setLocation(pos);
+                        j++;
+                    }
+                    // Connect the intermediate nodes
+                    for (int k = 0; k < polylineNodes.length - 1; k++) {
+                        INode from = polylineNodes[k];
+                        INode to = polylineNodes[k + 1];
+                        ConnectionsPanel.connect(from, to);
+                    }
                 }
                 initializing = false;
             }
@@ -55,23 +69,28 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
 
     public ConnectionNodes(int amountNodes, Function<Integer, N> factory) {
         super(0, 0, 0, ConnectionsPanel.REGULAR_HEIGHT);
-        ImmutableList.Builder<N> builder = ImmutableList.builder();
+        ImmutableList.Builder<N> nodes = ImmutableList.builder();
         for (int i = 0; i < amountNodes; i++) {
-            builder.add(factory.apply(i));
+            nodes.add(factory.apply(i));
         }
-        this.nodes = builder.build();
+        this.nodes = nodes.build();
+    }
+
+    private static void removeNode(INode node) {
+        ConnectionsPanel panel = FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel;
+        panel.removeChildren(node);
     }
 
     @Override
     public void reflow() {
-        int sections = nodes.size() + 1;
+        int segments = nodes.size() + 1;
         int emptyWidth = getWidth() - nodes.size() * ConnectionsPanel.REGULAR_WIDTH;
-        int sectionWidth = emptyWidth / sections;
+        int segmentsWidth = emptyWidth / segments;
 
-        int x = sectionWidth;
+        int x = segmentsWidth;
         for (N node : nodes) {
             node.setX(x);
-            x += node.getWidth() + sectionWidth;
+            x += node.getWidth() + segmentsWidth;
         }
     }
 
@@ -82,41 +101,14 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
 
     public abstract void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure);
 
-//    public void removeConnection(int i) {
-//        nodes.get(i).disconnect();
-//    }
-//
-//    public boolean removeConnection(N other) {
-//        for (N node : nodes) {
-//            if (node.getPairedNode() == other) {
-//                node.disconnect();
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
-//    public boolean removeConnection(FlowComponent<?> component) {
-//        for (N node : nodes) {
-//            if (node.getParentWidget().getParentWidget() == component) {
-//                node.disconnect();
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     public void removeAllConnections() {
-        // TODO
-//        for (N node : nodes) {
-//            ConnectionsPanel.breakCompletely(Either.);
-//        }
-    }
-
-    @Override
-    public void onParentPositionChanged() {
-        super.onParentPositionChanged();
-        // AbstractWidget overrides the method, therefore we need to trigger this manually here9
-        notifyChildrenForPositionChange();
+        for (N node : nodes) {
+            // TODO no hard coding
+            if (node instanceof StartNode) {
+                ConnectionsPanel.removeConnection((StartNode) node);
+            } else {
+                ConnectionsPanel.removeConnection((EndNode) node);
+            }
+        }
     }
 }

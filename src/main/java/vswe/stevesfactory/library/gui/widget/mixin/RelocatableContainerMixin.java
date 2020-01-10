@@ -20,20 +20,7 @@ public interface RelocatableContainerMixin<T extends IWidget> extends IContainer
     }
 
     @Override
-    default void setLocation(int x, int y) {
-        IContainer.super.setLocation(x, y);
-        notifyChildrenForPositionChange();
-    }
-
-    @Override
-    default void setX(int x) {
-        IContainer.super.setX(x);
-        notifyChildrenForPositionChange();
-    }
-
-    @Override
-    default void setY(int y) {
-        IContainer.super.setY(y);
+    default void onRelativePositionChanged() {
         notifyChildrenForPositionChange();
     }
 }

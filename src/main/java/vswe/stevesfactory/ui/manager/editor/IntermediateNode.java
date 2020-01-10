@@ -1,4 +1,4 @@
-package vswe.stevesfactory.ui.manager.editor.connection;
+package vswe.stevesfactory.ui.manager.editor;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.ui.manager.editor.ConnectionsPanel;
 import vswe.stevesfactory.utils.Utils;
 
 import javax.annotation.Nonnull;
@@ -63,9 +62,7 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
                 initialDragLocalY = (int) mouseY - getAbsoluteY();
                 break;
             case GLFW_MOUSE_BUTTON_RIGHT:
-                ConnectionsPanel.breakConnection(previous, this);
-                ConnectionsPanel.breakConnection(this, next);
-                ConnectionsPanel.connect(previous, next);
+                ConnectionsPanel.mergeConnection(previous, next, this);
                 break;
         }
         return true;
@@ -73,14 +70,14 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (isFocused() && isDragging()) {
+        if (isDragging()) {
             ConnectionsPanel parent = getParentWidget();
             int x = (int) mouseX - parent.getAbsoluteX() - initialDragLocalX;
             int y = (int) mouseY - parent.getAbsoluteY() - initialDragLocalY;
             setLocation(x, y);
             return true;
         }
-        return true;
+        return false;
     }
 
     @Override

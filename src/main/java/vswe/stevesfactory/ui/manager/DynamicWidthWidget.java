@@ -6,7 +6,6 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
 import java.awt.*;
-import java.util.Comparator;
 import java.util.List;
 
 public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
@@ -47,8 +46,11 @@ public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractCont
                 widget.setWidth(unit);
             }
             widget.setX(nextX);
-            widget.onAfterReflow();
             nextX += widget.getWidth();
+        }
+
+        for (DynamicWidthWidget<?> widget : widgets) {
+            widget.onAfterReflow();
         }
 
         return widgets;

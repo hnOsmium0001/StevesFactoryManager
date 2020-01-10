@@ -33,7 +33,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         GlStateManager.translatef(x, y, 0F);
         GlStateManager.scalef(scaleFactor, scaleFactor, 1F);
         for (String text : texts) {
-            fontRenderer().drawString(text, 0, 0, 0xff404040);
+            fontRenderer().drawString(text, 0, 0, 0xff000000);
             GlStateManager.translatef(0F, fontHeight, 0F);
         }
         GlStateManager.popMatrix();
@@ -62,7 +62,7 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
     }
 
     public void addLineSplit(int maxWidth, String text) {
-        int end = (int) (fontRenderer().sizeStringToWidth(text, maxWidth));
+        int end = fontRenderer().sizeStringToWidth(text, maxWidth);
         if (end >= text.length()) {
             addLine(text);
         } else {

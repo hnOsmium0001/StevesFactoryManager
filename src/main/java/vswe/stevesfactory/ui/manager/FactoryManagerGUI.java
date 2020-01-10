@@ -200,11 +200,11 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             this.toolPanel = new ToolPanel();
             this.toolboxPanel = new ToolboxPanel();
             this.children = ImmutableList.of(selectionPanel, editorPanel, connectionsPanel, toolPanel, toolboxPanel);
-            attachChildren();
         }
 
         public void init() {
-
+            attachChildren();
+            editorPanel.readProcedures();
         }
 
         @Override
@@ -230,9 +230,10 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
         @Override
         public void render(int mouseX, int mouseY, float particleTicks) {
             // No render events for this object because it is technically internal for the window, and it has the exact size as the window
+            // Render connections panel first because we want it's content to be under other editor stuff
             selectionPanel.render(mouseX, mouseY, particleTicks);
-            editorPanel.render(mouseX, mouseY, particleTicks);
             connectionsPanel.render(mouseX, mouseY, particleTicks);
+            editorPanel.render(mouseX, mouseY, particleTicks);
             toolPanel.render(mouseX, mouseY, particleTicks);
             toolboxPanel.render(mouseX, mouseY, particleTicks);
         }

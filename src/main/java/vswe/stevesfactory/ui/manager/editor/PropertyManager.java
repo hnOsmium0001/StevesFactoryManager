@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public final class PropertyManager<T, P extends IProcedure & IClientDataStorage> {
+public class PropertyManager<T, P extends IProcedure & IClientDataStorage> {
 
     public static <P extends IProcedure & IClientDataStorage & IItemFilterTarget> PropertyManager<IItemFilter, P> createFilterMenu(P procedure, FlowComponent<P> flowComponent, int filterID) {
         PropertyManager<IItemFilter, P> pm = new PropertyManager<>(
