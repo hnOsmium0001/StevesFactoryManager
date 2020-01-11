@@ -14,6 +14,7 @@ import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.*;
 import vswe.stevesfactory.logic.item.*;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
+import vswe.stevesfactory.ui.manager.editor.PropertyManager;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
@@ -120,7 +121,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
         f.addMenu(new InventorySelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("menu.sfm.InventorySelection.Destination"), I18n.format("error.sfm.ItemTransfer.NoSrcTarget"), CapabilityItemHandler.ITEM_HANDLER_CAPABILITY));
         f.addMenu(new DirectionSelectionMenu<>(SOURCE_INVENTORIES, I18n.format("menu.sfm.TargetSides.Source"), I18n.format("error.sfm.ItemTransfer.NoDestInv")));
         f.addMenu(new DirectionSelectionMenu<>(DESTINATION_INVENTORIES, I18n.format("menu.sfm.TargetSides.Destination"), I18n.format("error.sfm.ItemTransfer.NoDestTarget")));
-        IItemFilterTarget.createFilterMenu(this, f, FILTER);
+        PropertyManager.createFilterMenu(this, f, FILTER);
         return f;
     }
 

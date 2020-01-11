@@ -3,7 +3,6 @@ package vswe.stevesfactory.library.gui.layout;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.layout.properties.HorizontalAlignment;
-import vswe.stevesfactory.library.gui.widget.Checkbox;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.ui.manager.editor.Menu;
 import vswe.stevesfactory.utils.Utils;

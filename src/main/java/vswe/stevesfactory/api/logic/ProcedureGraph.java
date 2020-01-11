@@ -147,6 +147,7 @@ public final class ProcedureGraph {
                     nbt.putInt("FromIdx", successor.getSourceOutputIndex());
                     nbt.putInt("ToID", ctx.identify(successor.getDestination()));
                     nbt.putInt("ToIdx", successor.getDestinationInputIndex());
+                    nbt.putLongArray("PolylineNodes", successor.toPolylineData());
                     connectionsNBT.add(nbt);
                 }
             }
@@ -196,7 +197,8 @@ public final class ProcedureGraph {
             int fromIdx = nbt.getInt("FromIdx");
             IProcedure to = nodes[nbt.getInt("ToID")];
             int toIdx = nbt.getInt("ToIdx");
-            Connection.create(from, fromIdx, to, toIdx);
+            long[] polylineNodes = nbt.getLongArray("PolylineNodes");
+            Connection.create(from, fromIdx, to, toIdx).fromPolylineData(polylineNodes);
         }
 
         DeserializationContext ctx = new DeserializationContext(i -> i < 0 || i >= nodes.length ? null : nodes[i]);

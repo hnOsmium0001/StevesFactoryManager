@@ -12,6 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 
 import java.awt.*;
 
@@ -246,6 +247,14 @@ public final class RenderingHelper {
 
     public static void drawTexture256x256(int x1, int y1, int x2, int y2, ResourceLocation texture, int tx, int ty, int portionWidth, int portionHeight) {
         drawTexturePortion(x1, y1, x2, y2, texture, 256, 256, tx, ty, portionWidth, portionHeight);
+    }
+
+    public static int getCenterXFor(IWidget widget) {
+        return widget.getAbsoluteX() + widget.getWidth() / 2;
+    }
+
+    public static int getCenterYFor(IWidget widget) {
+        return widget.getAbsoluteY() + widget.getHeight() / 2;
     }
 
     public static int getXForAlignedRight(int right, int width) {

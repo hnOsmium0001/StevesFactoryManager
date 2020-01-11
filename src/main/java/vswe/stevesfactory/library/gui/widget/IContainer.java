@@ -25,5 +25,4 @@ public interface IContainer<T extends IWidget> extends IWidget {
         widgets.forEachRemaining(this::addChildren);
         return this;
     }
-
 }

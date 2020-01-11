@@ -7,25 +7,50 @@ import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.contextmenu.DefaultEntry;
 import vswe.stevesfactory.library.gui.contextmenu.IEntry;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.ItemTagFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
+import vswe.stevesfactory.logic.procedure.IItemFilterTarget;
+import vswe.stevesfactory.ui.manager.menu.ItemTagFilterMenu;
+import vswe.stevesfactory.ui.manager.menu.ItemTraitsFilterMenu;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-public final class PropertyManager<T, P extends IProcedure & IClientDataStorage> {
+public class PropertyManager<T, P extends IProcedure & IClientDataStorage> {
+
+    public static <P extends IProcedure & IClientDataStorage & IItemFilterTarget> PropertyManager<IItemFilter, P> createFilterMenu(P procedure, FlowComponent<P> flowComponent, int filterID) {
+        PropertyManager<IItemFilter, P> pm = new PropertyManager<>(
+                flowComponent,
+                () -> procedure.getFilter(filterID),
+                filter -> procedure.setFilter(filterID, filter));
+        pm.on(filter -> filter instanceof ItemTraitsFilter)
+                .name(I18n.format("menu.sfm.ItemFilter.Traits"))
+                .prop(ItemTraitsFilter::new)
+                .then(() -> new ItemTraitsFilterMenu<>(filterID, I18n.format("menu.sfm.ItemFilter.Traits")));
+        pm.on(filter -> filter instanceof ItemTagFilter)
+                .name(I18n.format("menu.sfm.ItemFilter.Tags"))
+                .prop(ItemTagFilter::new)
+                .then(() -> new ItemTagFilterMenu<>(filterID, I18n.format("menu.sfm.ItemFilter.Tags")));
+        pm.actionCycling();
+        pm.setProperty(procedure.getFilter(filterID));
+        return pm;
+    }
 
     private static final List<Supplier<IEntry>> EMPTY_LIST = ImmutableList.of();
-
     private final FlowComponent<P> flowComponent;
     private final List<Case<T, P>> cases = new ArrayList<>();
     private final Supplier<T> propertyGetter;
     private final Consumer<T> propertySetter;
 
     private List<Supplier<IEntry>> actions = EMPTY_LIST;
-
     private Menu<P> menu;
+
     private int selectedIndex = -1;
 
     public PropertyManager(FlowComponent<P> flowComponent, Supplier<T> propertyGetter, Consumer<T> propertySetter) {

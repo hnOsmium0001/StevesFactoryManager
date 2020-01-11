@@ -52,6 +52,8 @@ public abstract class AbstractContainer<T extends IWidget> extends AbstractWidge
         throw new UnsupportedOperationException();
     }
 
+    // Re-override these because AbstractWidget overrides them without updating children positions
+
     @Override
     public void onParentPositionChanged() {
         super.onParentPositionChanged();
