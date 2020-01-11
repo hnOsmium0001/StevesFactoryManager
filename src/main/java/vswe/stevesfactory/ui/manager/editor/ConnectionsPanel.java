@@ -62,8 +62,9 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
         return middle;
     }
 
-    public static void removeConnection(StartNode startNode) {
-        INode nextTarget = startNode;
+    public static void removeConnection(StartNode start) {
+        start.onEdgeRemoval();
+        INode nextTarget = start;
         while (true) {
             INode current = nextTarget;
             INode next = current.getNext();
@@ -72,10 +73,12 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
             }
             ConnectionsPanel.disconnect(current, next);
             nextTarget = next;
+            next.onEdgeRemoval();
         }
     }
 
     public static void removeConnection(EndNode end) {
+        end.onEdgeRemoval();
         INode nextTarget = end;
         while (true) {
             INode current = nextTarget;
@@ -85,6 +88,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
             }
             ConnectionsPanel.disconnect(previous, current);
             nextTarget = previous;
+            previous.onEdgeRemoval();
         }
     }
 

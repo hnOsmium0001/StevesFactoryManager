@@ -81,18 +81,26 @@ public final class Connection {
         }
     }
 
-    public void addNodeFront(Point node) {
-        updateListType();
-        polylineNodes.add(0, node);
-    }
-
-    public void addNode(Point node) {
-        updateListType();
-        polylineNodes.add(node);
-    }
-
     public List<Point> getPolylineNodes() {
+        updateListType();
         return polylineNodes;
+    }
+
+    long[] toPolylineData() {
+        long[] data = new long[polylineNodes.size()];
+        for (int i = 0; i < polylineNodes.size(); i++) {
+            Point point = polylineNodes.get(i);
+            data[i] = (long) point.x << 32 | point.y;
+        }
+        return data;
+    }
+
+    void fromPolylineData(long[] data) {
+        updateListType();
+        polylineNodes.clear();
+        for (long pos : data) {
+            polylineNodes.add(new Point((int) (pos >> 32), (int) pos));
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.nbt.CompoundNBT;
+import vswe.stevesfactory.api.logic.Connection;
 import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
@@ -24,6 +25,7 @@ import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
@@ -618,6 +620,22 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     public void save() {
         for (Menu<?> menu : menus.getChildren()) {
             menu.updateData();
+        }
+        P proc = getProcedure();
+        for (int i = 0; i < proc.successors().length; i++) {
+            Connection conn = proc.successors()[i];
+            if (conn == null) {
+                continue;
+            }
+            StartNode start = outputNodes.getChildren().get(i);
+
+            conn.getPolylineNodes().clear();
+            INode next = start.getNext();
+            while (next != null && !next.getType().isTerminal()) {
+                INode current = next;
+                conn.getPolylineNodes().add(new Point(current.getPosition()));
+                next = current.getNext();
+            }
         }
     }
 

@@ -40,4 +40,25 @@ public interface INode extends IWidget {
      * vswe.stevesfactory.ui.manager.editor.ConnectionsPanel} to * manipulate connections safely.
      */
     void disconnectPrevious();
+
+    default void onEdgeRemoval() {
+    }
+
+    Type getType();
+
+    enum Type {
+        START(true),
+        END(true),
+        INTERMEDIATE(false);
+
+        private final boolean terminal;
+
+        Type(boolean terminal) {
+            this.terminal = terminal;
+        }
+
+        public boolean isTerminal() {
+            return terminal;
+        }
+    }
 }

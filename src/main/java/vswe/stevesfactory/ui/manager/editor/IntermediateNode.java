@@ -71,6 +71,7 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
                 break;
             case GLFW_MOUSE_BUTTON_RIGHT:
                 ConnectionsPanel.mergeConnection(previous, next, this);
+                FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(this);
                 break;
         }
         return true;
@@ -131,23 +132,23 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
         this.previous = previous;
     }
 
-    private boolean removed = false;
-
     @Override
     public void disconnectNext() {
         this.next = null;
-        if (!removed) {
-            FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(this);
-            removed = true;
-        }
     }
 
     @Override
     public void disconnectPrevious() {
         this.previous = null;
-        if (!removed) {
-            FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(this);
-            removed = true;
-        }
+    }
+
+    @Override
+    public void onEdgeRemoval() {
+        FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(this);
+    }
+
+    @Override
+    public Type getType() {
+        return Type.INTERMEDIATE;
     }
 }

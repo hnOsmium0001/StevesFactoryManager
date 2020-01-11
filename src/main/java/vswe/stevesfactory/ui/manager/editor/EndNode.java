@@ -1,6 +1,7 @@
 package vswe.stevesfactory.ui.manager.editor;
 
 import com.mojang.datafixers.util.Either;
+import vswe.stevesfactory.api.logic.Connection;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
@@ -10,6 +11,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static vswe.stevesfactory.ui.manager.editor.ConnectionsPanel.REGULAR_HEIGHT;
 import static vswe.stevesfactory.ui.manager.editor.ConnectionsPanel.REGULAR_WIDTH;
 
@@ -57,8 +60,15 @@ public final class EndNode extends AbstractIconButton implements INode {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        getWindow().setFocusedWidget(this);
-        return true;
+        switch (button) {
+            case GLFW_MOUSE_BUTTON_LEFT:
+                getWindow().setFocusedWidget(this);
+                return true;
+            case GLFW_MOUSE_BUTTON_RIGHT:
+                ConnectionsPanel.removeConnection(this);
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -126,8 +136,12 @@ public final class EndNode extends AbstractIconButton implements INode {
     }
 
     public boolean isConnected() {
-        // Two links are handled simultaneously, only one check is needed
         return start != null;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.END;
     }
 
     public int getIndex() {

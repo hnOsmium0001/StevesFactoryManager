@@ -42,20 +42,21 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
                     StartNode start = nodes.get(i);
                     EndNode end = other.getInputNodes().nodes.get(connection.getDestinationInputIndex());
 
-                    INode[] polylineNodes = new INode[1 + connection.getPolylineNodes().size() + 1];
-                    polylineNodes[0] = start;
-                    polylineNodes[polylineNodes.length - 1] = end;
+                    INode[] allNodes = new INode[1 + connection.getPolylineNodes().size() + 1];
+                    allNodes[0] = start;
+                    allNodes[allNodes.length - 1] = end;
                     // Generate the intermediate nodes
                     int j = 1;
                     for (Point pos : connection.getPolylineNodes()) {
-                        polylineNodes[j] = new IntermediateNode();
-                        polylineNodes[j].setLocation(pos);
+                        allNodes[j] = new IntermediateNode();
+                        allNodes[j].setLocation(pos);
+                        FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.addChildren(allNodes[j]);
                         j++;
                     }
                     // Connect the intermediate nodes
-                    for (int k = 0; k < polylineNodes.length - 1; k++) {
-                        INode from = polylineNodes[k];
-                        INode to = polylineNodes[k + 1];
+                    for (int k = 0; k < allNodes.length - 1; k++) {
+                        INode from = allNodes[k];
+                        INode to = allNodes[k + 1];
                         ConnectionsPanel.connect(from, to);
                     }
                 }

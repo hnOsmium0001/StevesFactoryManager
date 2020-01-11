@@ -54,6 +54,11 @@ public class ShadowNode extends AbstractWidget implements INode, LeafWidgetMixin
     }
 
     @Override
+    public Type getType() {
+        return handle.getType();
+    }
+
+    @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
     }
 }
