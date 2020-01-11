@@ -24,7 +24,8 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
         FactoryManagerGUI.TopLevelWidget topLevel = FactoryManagerGUI.getActiveGUI().getTopLevel();
         IntermediateNode node = ConnectionsPanel.subdivideConnection(start, end);
         topLevel.connectionsPanel.addChildren(node);
-        node.startDrag(mouseX - topLevel.connectionsPanel.getAbsoluteX(), mouseY - topLevel.connectionsPanel.getAbsoluteY());
+        node.setLocation(mouseX - topLevel.editorPanel.getAbsoluteX(), mouseY - topLevel.editorPanel.getAbsoluteY());
+        node.startDrag(mouseX, mouseY);
         return node;
     }
 

@@ -168,7 +168,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
                 }
             }
             for (INode child : children) {
-                child.render(mouseX, mouseY, particleTicks);
+                child.render(mouseX - editor.getXOffset(), mouseY - editor.getYOffset(), particleTicks);
             }
         }
         GlStateManager.popMatrix();
