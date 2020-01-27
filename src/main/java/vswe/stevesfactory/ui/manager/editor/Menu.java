@@ -19,7 +19,6 @@ import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
-import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public abstract class Menu<P extends IProcedure & IClientDataStorage> extends AbstractContainer<IWidget> implements IErrorPopulator, ResizableWidgetMixin {
+public abstract class Menu<P extends IProcedure & IClientDataStorage> extends AbstractContainer<IWidget> implements IErrorPopulator, IWidget {
 
     public enum State {
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 40, 9, 9),

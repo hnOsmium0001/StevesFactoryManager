@@ -3,12 +3,11 @@ package vswe.stevesfactory.ui.manager;
 import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
-import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
 import java.awt.*;
 import java.util.List;
 
-public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
+public abstract class DynamicWidthWidget<T extends IWidget> extends AbstractContainer<T> implements IWidget {
 
     @SuppressWarnings("UnusedReturnValue")
     public static List<DynamicWidthWidget<?>> reflowDynamicWidth(Dimension bounds, List<DynamicWidthWidget<?>> widgets) {

@@ -44,6 +44,9 @@ public class StevesFactoryManager {
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> eventBus.addListener(this::clientSetup));
 
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+            MinecraftForge.EVENT_BUS.addListener(ClientEventHandler::onPlayerLoggedIn);
+        });
     }
 
     private void setup(final FMLCommonSetupEvent event) {

@@ -1,13 +1,12 @@
 package vswe.stevesfactory.library.gui.widget;
 
 import vswe.stevesfactory.library.gui.widget.mixin.ContainerWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.IWindow;
 
 import java.awt.*;
 import java.util.Collection;
 
-public abstract class AbstractContainer<T extends IWidget> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T>, RelocatableContainerMixin<T> {
+public abstract class AbstractContainer<T extends IWidget> extends AbstractWidget implements IContainer<T>, ContainerWidgetMixin<T> {
 
     public AbstractContainer(IWindow window) {
         super(window);
@@ -64,6 +63,15 @@ public abstract class AbstractContainer<T extends IWidget> extends AbstractWidge
     public void onRelativePositionChanged() {
         super.onRelativePositionChanged();
         notifyChildrenForPositionChange();
+    }
+
+    public void notifyChildrenForPositionChange() {
+        // Prevent NPE when containers setting coordinates before child widgets get initialized
+        if (getChildren() != null) {
+            for (T child : getChildren()) {
+                child.onParentPositionChanged();
+            }
+        }
     }
 
     public void adjustMinContent() {

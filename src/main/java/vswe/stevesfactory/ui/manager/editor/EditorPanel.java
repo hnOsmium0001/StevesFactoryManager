@@ -20,7 +20,6 @@ import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
-import vswe.stevesfactory.library.gui.widget.mixin.RelocatableContainerMixin;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
@@ -35,7 +34,7 @@ import java.util.stream.Stream;
 import static org.lwjgl.glfw.GLFW.*;
 import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
-public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> implements RelocatableContainerMixin<FlowComponent<?>> {
+public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
 
     /**
      * This is a tree set (ordered set) because handling z-index of the flow components need things to be sorted.

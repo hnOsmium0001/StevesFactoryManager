@@ -12,6 +12,7 @@
   "message.sfm.reload.componentGroups.success": "Successfully reloaded component groups",
   "message.sfm.settings.query": "Entry %s is currently set to %s",
   "message.sfm.settings.set": "Entry %s is now set to %s",
+  "message.sfm.login.reloadComponentGroupsOnUpdate": "§e[SFM]§r Note: It is necessary to manually run `/sfm componentGroups reset` after updating the mod to get the latest GUI layout.\nNote that this will §lRESET§r all the component group configs back to default.\nYou may disable this message in the sfm-client.toml config file.",
   "gui.sfm.seconds": "second(s)",
   "gui.sfm.ticks": "ticks",
   "gui.sfm.up": "Up",

@@ -10,7 +10,6 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
-import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.tool.ToolPanel;
 
@@ -20,7 +19,7 @@ import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
 import static vswe.stevesfactory.library.gui.RenderingHelper.textWidth;
 
-public class IconToolType<T extends IWidget & ResizableWidgetMixin> extends AbstractWidget implements IToolType, LeafWidgetMixin {
+public class IconToolType<T extends IWidget> extends AbstractWidget implements IToolType, LeafWidgetMixin {
 
     public static final int NORMAL_BORDER_COLOR = 0xff8c8c8c;
     public static final int HOVERED_BORDER_COLOR = 0xff8c8c8c;

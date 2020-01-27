@@ -28,8 +28,6 @@ import vswe.stevesfactory.ui.manager.toolbox.ToolboxPanel;
 import java.awt.*;
 import java.util.List;
 
-// TODO cleanup widget lifecycle
-// have no idea how does this work now
 public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
     public static FactoryManagerGUI getActiveGUI() {
@@ -166,6 +164,9 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             }
             setScreenBounds(width, height);
             topLevel.reflow();
+
+            getActiveGUI().xSize = width;
+            getActiveGUI().ySize = height;
         }
 
         private void asFullscreen() {

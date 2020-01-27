@@ -7,7 +7,6 @@ import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.IWidget;
-import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
@@ -25,7 +24,7 @@ public final class ToolPanel extends DynamicWidthWidget<IWidget> {
         super(WidthOccupierType.MIN_WIDTH);
     }
 
-    public <T extends IWidget & ResizableWidgetMixin> void setActivePanel(@Nullable T panel) {
+    public <T extends IWidget> void setActivePanel(@Nullable T panel) {
         if (panel == null) {
             children = ImmutableList.of();
         } else {

@@ -3,7 +3,6 @@ package vswe.stevesfactory.library.gui.widget.box;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
-import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 
 import java.awt.*;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.function.Consumer;
 /**
  * A ready-to-use box widget for grouping widgets.
  */
-public class Box<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
+public class Box<T extends IWidget> extends AbstractContainer<T> implements IWidget {
 
     private List<T> children = new ArrayList<>();
     private List<T> childrenView = Collections.unmodifiableList(children);

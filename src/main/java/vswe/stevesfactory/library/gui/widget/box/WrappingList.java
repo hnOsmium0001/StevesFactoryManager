@@ -14,7 +14,6 @@ import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.*;
 import vswe.stevesfactory.library.gui.widget.TextField.BackgroundStyle;
-import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.Utils;
 
 import java.awt.*;
@@ -22,7 +21,7 @@ import java.util.List;
 import java.util.*;
 
 
-public class WrappingList<T extends IWidget & INamedElement> extends AbstractContainer<IWidget> implements ResizableWidgetMixin {
+public class WrappingList<T extends IWidget & INamedElement> extends AbstractContainer<IWidget> implements IWidget {
 
     // Scrolling states
     private int offset;

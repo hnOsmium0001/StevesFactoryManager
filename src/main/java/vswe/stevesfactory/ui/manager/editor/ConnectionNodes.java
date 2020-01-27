@@ -5,14 +5,14 @@ import com.google.common.collect.ImmutableList;
 import vswe.stevesfactory.api.logic.Connection;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
-import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
+import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
 import java.awt.*;
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class ConnectionNodes<N extends INode> extends AbstractContainer<N> implements ResizableWidgetMixin {
+public abstract class ConnectionNodes<N extends INode> extends AbstractContainer<N> implements IWidget {
 
     public static ConnectionNodes<EndNode> inputNodes(int amount) {
         return new ConnectionNodes<EndNode>(amount, EndNode::new) {

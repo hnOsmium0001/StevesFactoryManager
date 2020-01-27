@@ -54,6 +54,23 @@ public interface IWidget {
 
     Dimension getDimensions();
 
+    default void setDimensions(Dimension dimensions) {
+        setDimensions(dimensions.width, dimensions.height);
+    }
+
+    default void setDimensions(int width, int height) {
+        setWidth(width);
+        setHeight(height);
+    }
+
+    default void setWidth(int width) {
+        getDimensions().width = width;
+    }
+
+    default void setHeight(int height) {
+        getDimensions().height = height;
+    }
+
     int getWidth();
 
     int getHeight();

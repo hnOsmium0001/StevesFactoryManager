@@ -20,14 +20,13 @@ import vswe.stevesfactory.library.gui.debug.ITextReceiver;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
-import vswe.stevesfactory.library.gui.widget.mixin.ResizableWidgetMixin;
 import vswe.stevesfactory.utils.Utils;
 
 import java.util.*;
 
 import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
 
-public class LinearList<T extends IWidget> extends AbstractContainer<T> implements ResizableWidgetMixin {
+public class LinearList<T extends IWidget> extends AbstractContainer<T> implements IWidget {
 
     private boolean scrolling;
     protected float scrollDistance;

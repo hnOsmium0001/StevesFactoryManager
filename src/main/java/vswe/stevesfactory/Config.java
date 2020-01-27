@@ -124,6 +124,8 @@ public final class Config {
 
     public static final class ClientCategory {
 
+        public final BooleanValue showComponentGroupsMessage;
+
         // Widgets options
         public final IntValue scrollSpeed;
         public final BooleanValue enableInspections;
@@ -135,7 +137,13 @@ public final class Config {
         public final IntValue acceleratedEditorMoveSpeed;
 
         private ClientCategory(Builder builder) {
-            builder.comment("Client config options").push("generalGUI");
+            builder.comment("General client config options").push("general");
+            showComponentGroupsMessage = builder
+                    .comment("Controls whether the to hint the player to reload component groups on login or not")
+                    .define("showComponentGroupsMessage", true);
+            builder.pop();
+
+            builder.comment("General GUI config options").push("generalGUI");
             scrollSpeed = builder
                     .comment("How long one move wheel movement for scrolling lists")
                     .defineInRange("scrollSpeed", 20, 1, 256);
