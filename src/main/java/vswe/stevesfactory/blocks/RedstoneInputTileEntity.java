@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class RedstoneInputTileEntity extends TileEntity implements ICable, IRedstoneEventBus {
+public class RedstoneInputTileEntity extends TileEntity implements ICable, IRedstoneEventDispatcher {
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") // The .removeIf() call has side effects of triggering the event handlers
     private List<Predicate<SignalStatus>> eventHandlers = new ArrayList<>();
-    private LazyOptional<IRedstoneEventBus> signalReactor = LazyOptional.of(() -> this);
+    private LazyOptional<IRedstoneEventDispatcher> capability = LazyOptional.of(() -> this);
 
     private SignalStatus lastSignalState = new SignalStatus();
 
@@ -35,8 +35,8 @@ public class RedstoneInputTileEntity extends TileEntity implements ICable, IReds
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY) {
-            return signalReactor.cast();
+        if (cap == CapabilityEventDispatchers.REDSTONE_EVENT_DISPATCHER_CAPABILITY) {
+            return capability.cast();
         }
         return super.getCapability(cap, side);
     }
@@ -48,7 +48,7 @@ public class RedstoneInputTileEntity extends TileEntity implements ICable, IReds
     }
 
     @Override
-    public void subscribeEvent(Consumer<SignalStatus> onChange) {
+    public void subscribe(Consumer<SignalStatus> onChange) {
         eventHandlers.add(status -> {
             onChange.accept(status);
             return false;
@@ -56,7 +56,7 @@ public class RedstoneInputTileEntity extends TileEntity implements ICable, IReds
     }
 
     @Override
-    public void subscribeEvent(Predicate<SignalStatus> onChange) {
+    public void subscribe(Predicate<SignalStatus> onChange) {
         eventHandlers.add(onChange);
     }
 
@@ -83,7 +83,7 @@ public class RedstoneInputTileEntity extends TileEntity implements ICable, IReds
 
     @Override
     protected void invalidateCaps() {
-        signalReactor.invalidate();
+        capability.invalidate();
         super.invalidateCaps();
     }
 

@@ -30,6 +30,7 @@ public final class Config {
         // Block property options
         public final BooleanValue isRedstoneInputBlockCables;
         public final BooleanValue isRedstoneEmitterBlockCables;
+        public final BooleanValue isBUDBlockCables;
         public final BooleanValue isItemIntakeBlockCables;
         public final BooleanValue isInstantItemIntakeBlockCables;
 
@@ -93,6 +94,9 @@ public final class Config {
             isRedstoneEmitterBlockCables = builder
                     .comment("Whether the redstone emitter block (sfm:redstone_emitter) is considered a cable")
                     .define("isRedstoneEmitterBlockCables", false);
+            isBUDBlockCables = builder
+                    .comment("Whether the block detector (sfm:bud) is considered a cable")
+                    .define("isBUDBlockCables", false);
             isItemIntakeBlockCables = builder
                     .comment("Whether the item intake block (sfm:item_intake) is considered a cable")
                     .define("isItemIntakeBlockCables", false);
@@ -104,7 +108,7 @@ public final class Config {
             builder.comment("Procedures config options", "Run '/sfm componentGroups reload' after updating config").push("procedures");
             enableIntervalTrigger = builder.define("enableIntervalTrigger", true);
             enableRedstoneTrigger = builder.define("enableRedstoneTrigger", true);
-            enableBUDTrigger = builder.define("enableBUDTrigger", false); // TODO complete procedure and remove WIP
+            enableBUDTrigger = builder.define("enableBUDTrigger", true);
             enableItemTransfer = builder.define("enableItemTransfer", true);
             enableItemImport = builder.define("enableItemImport", true);
             enableItemExport = builder.define("enableItemExport", true);

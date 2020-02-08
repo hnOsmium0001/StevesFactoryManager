@@ -5,7 +5,7 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-public interface ITextDisplay {
+public interface ITextDocument {
 
     int getLines();
 

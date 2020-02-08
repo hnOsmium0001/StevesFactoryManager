@@ -8,8 +8,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import vswe.stevesfactory.api.capability.CapabilityTextDisplay;
-import vswe.stevesfactory.api.capability.ITextDisplay;
+import vswe.stevesfactory.api.capability.CapabilityDocuments;
+import vswe.stevesfactory.api.capability.ITextDocument;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
@@ -29,7 +29,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
     private List<BlockPos> signs = new ArrayList<>();
     private String[] texts = new String[4];
 
-    private List<LazyOptional<ITextDisplay>> cachedCaps = new ArrayList<>();
+    private List<LazyOptional<ITextDocument>> cachedCaps = new ArrayList<>();
     private boolean dirty = false;
 
     public SignUpdaterProcedure() {
@@ -41,7 +41,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
     public void execute(IExecutionContext context) {
         pushFrame(context, 0);
         updateCaches(context);
-        for (LazyOptional<ITextDisplay> cap : cachedCaps) {
+        for (LazyOptional<ITextDocument> cap : cachedCaps) {
             cap.ifPresent(display -> {
                 for (int i = 0; i < texts.length; i++) {
                     display.setLine(i, new StringTextComponent(texts[i]));
@@ -56,7 +56,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
         }
 
         cachedCaps.clear();
-        NetworkHelper.cacheCaps(context, cachedCaps, signs, CapabilityTextDisplay.TEXT_DISPLAY_CAPABILITY);
+        NetworkHelper.cacheCaps(context, cachedCaps, signs, CapabilityDocuments.TEXT_DISPLAY_CAPABILITY);
         dirty = false;
     }
 
@@ -64,7 +64,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
     @OnlyIn(Dist.CLIENT)
     public FlowComponent<SignUpdaterProcedure> createFlowComponent() {
         FlowComponent<SignUpdaterProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>(SIGNS, I18n.format("menu.sfm.SignUpdater.Signs"), I18n.format("error.sfm.SignUpdater.NoTargets"), CapabilityTextDisplay.TEXT_DISPLAY_CAPABILITY));
+        f.addMenu(new InventorySelectionMenu<>(SIGNS, I18n.format("menu.sfm.SignUpdater.Signs"), I18n.format("error.sfm.SignUpdater.NoTargets"), CapabilityDocuments.TEXT_DISPLAY_CAPABILITY));
         f.addMenu(new SignUpdaterLinesMenu());
         return f;
     }

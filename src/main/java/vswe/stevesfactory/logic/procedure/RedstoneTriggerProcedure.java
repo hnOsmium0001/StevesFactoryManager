@@ -25,7 +25,7 @@ import java.util.*;
 
 public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrigger, IInventoryTarget, IDirectionTarget, ILogicalConjunction, IAnalogTarget {
 
-    public static final int INVENTORIES = 0;
+    public static final int WATCHING = 0;
     public static final int DIRECTIONS = 0;
 
     public static final int RISING_EDGE_CHILD = 0;
@@ -64,19 +64,17 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
                 continue;
             }
 
-            LazyOptional<IRedstoneEventBus> cap = tile.getCapability(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY);
+            LazyOptional<IRedstoneEventDispatcher> cap = tile.getCapability(CapabilityEventDispatchers.REDSTONE_EVENT_DISPATCHER_CAPABILITY);
             if (!cap.isPresent()) {
                 continue;
             }
-            IRedstoneEventBus bus = cap.orElseThrow(RuntimeException::new);
+            IRedstoneEventDispatcher dispatcher = cap.orElseThrow(RuntimeException::new);
 
             // This holder is captured by this specific event handler
-            // Once the event handler is removed, this holder will be invalid
-            BooleanHolder last = new BooleanHolder(bus.hasSignal());
-            bus.subscribeEvent(status -> {
+            BooleanHolder last = new BooleanHolder(dispatcher.hasSignal());
+            dispatcher.subscribe(status -> {
                 // If this procedure is invalid, which means it was removed from the controller, remove the event handler
                 if (!this.isValid()) {
-                    System.out.println("remove listeners");
                     return true;
                 }
 
@@ -95,7 +93,7 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
         dirty = false;
     }
 
-    private boolean applyConjunction(SignalStatus status) {
+    private boolean applyConjunction(IRedstoneEventDispatcher.SignalStatus status) {
         boolean result = conjunction == Type.ALL;
         for (Direction direction : directions) {
             int power = status.get(direction);
@@ -112,7 +110,7 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
     @OnlyIn(Dist.CLIENT)
     public FlowComponent<RedstoneTriggerProcedure> createFlowComponent() {
         FlowComponent<RedstoneTriggerProcedure> f = FlowComponent.of(this);
-        f.addMenu(new InventorySelectionMenu<>(INVENTORIES, I18n.format("menu.sfm.RedstoneTrigger.Watches"), I18n.format("error.sfm.RedstoneTrigger.NoWatches"), CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY));
+        f.addMenu(new InventorySelectionMenu<>(WATCHING, I18n.format("menu.sfm.RedstoneTrigger.Watches"), I18n.format("error.sfm.RedstoneTrigger.NoWatches"), CapabilityEventDispatchers.REDSTONE_EVENT_DISPATCHER_CAPABILITY));
         f.addMenu(new RedstoneSidesMenu<>(DIRECTIONS,
                 () -> conjunction == Type.ANY, () -> conjunction = Type.ANY, I18n.format("menu.sfm.IfAny"),
                 () -> conjunction == Type.ALL, () -> conjunction = Type.ALL, I18n.format("menu.sfm.RequireAll"),

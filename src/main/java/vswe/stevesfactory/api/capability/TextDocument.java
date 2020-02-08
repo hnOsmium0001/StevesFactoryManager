@@ -5,7 +5,7 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class DynamicTextDisplay implements ITextDisplay {
+public class TextDocument implements ITextDocument {
 
     private List<ITextComponent> lines = new ArrayList<>();
 

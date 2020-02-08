@@ -37,8 +37,9 @@ public class StevesFactoryManagerAPI {
             recognizableCapabilities.add(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
             recognizableCapabilities.add(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
             recognizableCapabilities.add(CapabilityRedstone.REDSTONE_CAPABILITY);
-            recognizableCapabilities.add(CapabilityRedstoneEventBus.REDSTONE_EVENT_BUS_CAPABILITY);
-            recognizableCapabilities.add(CapabilityTextDisplay.TEXT_DISPLAY_CAPABILITY);
+            recognizableCapabilities.add(CapabilityEventDispatchers.REDSTONE_EVENT_DISPATCHER_CAPABILITY);
+            recognizableCapabilities.add(CapabilityEventDispatchers.BUD_EVENT_DISPATCHER_CAPABILITY);
+            recognizableCapabilities.add(CapabilityDocuments.TEXT_DISPLAY_CAPABILITY);
         }
         return recognizableCapabilities;
     }
@@ -46,8 +47,9 @@ public class StevesFactoryManagerAPI {
     @SubscribeEvent
     public static void setup(FMLCommonSetupEvent event) {
         CapabilityRedstone.register();
-        CapabilityRedstoneEventBus.register();
-        CapabilityTextDisplay.register();
+        CapabilityEventDispatchers.registerRedstone();
+        CapabilityEventDispatchers.registerBUD();
+        CapabilityDocuments.registerTextDocument();
     }
 
     @SubscribeEvent

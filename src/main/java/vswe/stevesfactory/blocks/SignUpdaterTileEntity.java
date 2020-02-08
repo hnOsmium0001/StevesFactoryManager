@@ -13,8 +13,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import vswe.stevesfactory.api.capability.CapabilityTextDisplay;
-import vswe.stevesfactory.api.capability.ITextDisplay;
+import vswe.stevesfactory.api.capability.CapabilityDocuments;
+import vswe.stevesfactory.api.capability.ITextDocument;
 import vswe.stevesfactory.setup.ModBlocks;
 
 import javax.annotation.Nonnull;
@@ -22,11 +22,11 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class SignUpdaterTileEntity extends TileEntity implements ITextDisplay {
+public class SignUpdaterTileEntity extends TileEntity implements ITextDocument {
 
     private static final ITextComponent EMPTY_TEXT_COMPONENT = new StringTextComponent("");
 
-    private LazyOptional<ITextDisplay> textDisplayCap = LazyOptional.of(() -> this);
+    private LazyOptional<ITextDocument> textDisplayCap = LazyOptional.of(() -> this);
     private SignTileEntity cachedSign;
 
     private long updatedTick = -1;
@@ -132,7 +132,7 @@ public class SignUpdaterTileEntity extends TileEntity implements ITextDisplay {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityTextDisplay.TEXT_DISPLAY_CAPABILITY) {
+        if (cap == CapabilityDocuments.TEXT_DISPLAY_CAPABILITY) {
             return textDisplayCap.cast();
         }
         return super.getCapability(cap, side);
