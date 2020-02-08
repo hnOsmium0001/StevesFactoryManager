@@ -14,11 +14,16 @@ import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.menu.*;
+import vswe.stevesfactory.ui.manager.menu.EmitterTypeMenu;
+import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
+import vswe.stevesfactory.ui.manager.menu.RedstoneSidesMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 public class RedstoneEmitterProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget {
 
@@ -29,10 +34,10 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
     private Set<Direction> directions = EnumSet.allOf(Direction.class);
     private IRedstoneHandler.Type signalType = IRedstoneHandler.Type.WEAK;
     private OperationType operationType = OperationType.FIXED;
-
-    private List<LazyOptional<IRedstoneHandler>> cachedRedstoneCaps = new ArrayList<>();
     private int value = 15;
-    private boolean dirty = false;
+
+    private transient List<LazyOptional<IRedstoneHandler>> cachedRedstoneCaps = new ArrayList<>();
+    private transient boolean dirty = false;
 
     public RedstoneEmitterProcedure() {
         super(ModProcedures.redstoneEmitter);
@@ -90,7 +95,7 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
         }
 
         cachedRedstoneCaps.clear();
-        NetworkHelper.cacheDirectionalCaps(context, cachedRedstoneCaps, emitters, directions, CapabilityRedstone.REDSTONE_CAPABILITY);
+        NetworkHelper.cacheDirectionalCaps(context, cachedRedstoneCaps, emitters, directions, CapabilityRedstone.REDSTONE_CAPABILITY, __ -> markDirty());
         dirty = false;
     }
 

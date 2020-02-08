@@ -13,6 +13,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.function.Predicate;
 
 /**
  * Collection of general helper methods that doesn't worth creating an extra helper class for them.
@@ -62,6 +63,13 @@ public final class Utils {
 
     public static boolean invertIf(boolean bool, boolean predicate) {
         return bool ^ predicate;
+    }
+
+    /**
+     * Helper for negating a method reference.
+     */
+    public static <T> Predicate<T> not(Predicate<T> original) {
+        return original.negate();
     }
 
     public static Iterable<BlockPos> neighbors(BlockPos center) {

@@ -22,7 +22,7 @@ import java.util.List;
 
 import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
-public class FilterSlot extends ConfigurationSlot<FilterSlot.Editor> {
+public class FilterSlot extends ConfigurableSlot<FilterSlot.Editor> {
 
     private final int index;
     private final ItemTraitsFilter filter;

@@ -19,7 +19,9 @@ import vswe.stevesfactory.ui.manager.menu.SignUpdaterLinesMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 // TODO support for RFTools screens
 public class SignUpdaterProcedure extends AbstractProcedure implements IInventoryTarget {
@@ -29,8 +31,8 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
     private List<BlockPos> signs = new ArrayList<>();
     private String[] texts = new String[4];
 
-    private List<LazyOptional<ITextDisplay>> cachedCaps = new ArrayList<>();
-    private boolean dirty = false;
+    private transient List<LazyOptional<ITextDisplay>> cachedCaps = new ArrayList<>();
+    private transient boolean dirty = false;
 
     public SignUpdaterProcedure() {
         super(ModProcedures.signUpdater);
@@ -56,7 +58,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
         }
 
         cachedCaps.clear();
-        NetworkHelper.cacheCaps(context, cachedCaps, signs, CapabilityTextDisplay.TEXT_DISPLAY_CAPABILITY);
+        NetworkHelper.cacheCaps(context, cachedCaps, signs, CapabilityTextDisplay.TEXT_DISPLAY_CAPABILITY, __ -> markDirty());
         dirty = false;
     }
 

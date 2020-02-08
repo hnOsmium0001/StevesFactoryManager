@@ -8,9 +8,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.*;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.logic.*;
+import vswe.stevesfactory.logic.AbstractProcedure;
+import vswe.stevesfactory.logic.FilterType;
+import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.logic.item.IItemFilter;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
@@ -20,7 +24,10 @@ import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 public class ItemExportProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget, IItemFilterTarget {
 
@@ -31,8 +38,8 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
     private Set<Direction> directions = EnumSet.noneOf(Direction.class);
     private IItemFilter filter = new ItemTraitsFilter();
 
-    private List<LazyOptional<IItemHandler>> cachedCaps = new ArrayList<>();
-    private boolean dirty = false;
+    private transient List<LazyOptional<IItemHandler>> cachedCaps = new ArrayList<>();
+    private transient boolean dirty = false;
 
     public ItemExportProcedure() {
         super(ModProcedures.itemExport);
@@ -97,7 +104,10 @@ public class ItemExportProcedure extends AbstractProcedure implements IInventory
         }
 
         cachedCaps.clear();
-        NetworkHelper.cacheDirectionalCaps(context, cachedCaps, inventories, directions, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        NetworkHelper.cacheDirectionalCaps(
+                context, cachedCaps, inventories, directions,
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+                __ -> markDirty());
         dirty = true;
     }
 

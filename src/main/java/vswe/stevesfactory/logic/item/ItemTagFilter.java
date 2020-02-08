@@ -58,7 +58,7 @@ public class ItemTagFilter implements IItemFilter {
     }
 
     @Override
-    public void extractFromInventory(List<ItemStack> target, IItemHandler handler, boolean merge) {
+    public void extractFromInventory(IItemHandler handler, List<ItemStack> target, boolean merge) {
         if (merge) {
             extractFromInventoryMerge(target, handler);
         } else {
@@ -67,7 +67,7 @@ public class ItemTagFilter implements IItemFilter {
     }
 
     @Override
-    public void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler) {
+    public void extractFromInventory(IItemHandler handler, BiConsumer<ItemStack, Integer> receiver) {
         int total = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.extractItem(i, Integer.MAX_VALUE, true);

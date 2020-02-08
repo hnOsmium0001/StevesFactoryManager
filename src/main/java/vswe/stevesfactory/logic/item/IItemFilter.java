@@ -20,9 +20,9 @@ public interface IItemFilter {
 
     void setMatchingAmount(boolean matchingAmount);
 
-    void extractFromInventory(List<ItemStack> target, IItemHandler handler, boolean merge);
+    void extractFromInventory(IItemHandler handler, List<ItemStack> target, boolean merge);
 
-    void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler);
+    void extractFromInventory(IItemHandler handler, BiConsumer<ItemStack, Integer> receiver);
 
     FilterType getType();
 

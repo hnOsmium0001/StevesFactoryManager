@@ -168,6 +168,7 @@
   "error.sfm.ItemTransfer.NoDestInv": "No destination inventories specified",
   "error.sfm.ItemTransfer.NoDestTarget": "No destination targets specified",
   "error.sfm.CraftingProcedure.NoRecipe": "No recipe specified",
+  "error.sfm.CraftingProcedure.Dynamic": "Cannot craft dynamic recipe",
   "error.sfm.TraitsFilter.WhitelistEmpty": "Illegal filter: whitelist with no item filters specified",
   "error.sfm.TagsFilter.WhitelistEmpty": "Illegal filter: whitelist with no tags specified",
   "error.sfm.RedstoneTrigger.NoWatches": "No redstone receivers specified",

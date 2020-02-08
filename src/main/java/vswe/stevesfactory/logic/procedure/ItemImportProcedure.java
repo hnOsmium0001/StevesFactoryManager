@@ -13,7 +13,9 @@ import net.minecraftforge.items.IItemHandler;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
-import vswe.stevesfactory.logic.item.*;
+import vswe.stevesfactory.logic.item.DirectBufferElement;
+import vswe.stevesfactory.logic.item.IItemFilter;
+import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.PropertyManager;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;
@@ -32,8 +34,8 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
     private Set<Direction> directions = EnumSet.noneOf(Direction.class);
     private IItemFilter filter = new ItemTraitsFilter();
 
-    private List<LazyOptional<IItemHandler>> cachedCaps = new ArrayList<>();
-    private boolean dirty = false;
+    private transient List<LazyOptional<IItemHandler>> cachedCaps = new ArrayList<>();
+    private transient boolean dirty = false;
 
     public ItemImportProcedure() {
         super(ModProcedures.itemImport);
@@ -54,8 +56,9 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
                 if (!visited.add(handler)) {
                     return;
                 }
-                filter.extractFromInventory((stack, slot) -> {
+                filter.extractFromInventory(handler, (stack, slot) -> {
                     // If this stack is used to create the buffer, the stack count will be reset and we will lose necessary information
+                    // Therefore copy the size in case it happens
                     int count = stack.getCount();
                     DirectBufferElement element = buffers.computeIfAbsent(stack.getItem(), key -> {
                         stack.setCount(0);
@@ -63,7 +66,7 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
                     });
                     element.stack.grow(count);
                     element.addInventory(handler, slot);
-                }, handler);
+                });
             });
         }
     }
@@ -78,7 +81,10 @@ public class ItemImportProcedure extends AbstractProcedure implements IInventory
         }
 
         cachedCaps.clear();
-        NetworkHelper.cacheDirectionalCaps(context, cachedCaps, inventories, directions, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        NetworkHelper.cacheDirectionalCaps(
+                context, cachedCaps, inventories, directions,
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+                __ -> markDirty());
         dirty = false;
     }
 
