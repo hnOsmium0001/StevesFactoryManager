@@ -73,6 +73,7 @@ public class BUDTriggerProcedure extends AbstractProcedure implements ITrigger, 
                 return false;
             });
         }
+        dirty = false;
     }
 
     @Override
