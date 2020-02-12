@@ -225,6 +225,11 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
     }
 
     @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return pickupBox;
+    }
+
+    @Override
     public boolean isRendering() {
         return rendering;
     }

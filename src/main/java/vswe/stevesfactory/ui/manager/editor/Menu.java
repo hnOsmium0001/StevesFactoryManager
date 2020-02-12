@@ -263,6 +263,9 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
         return false;
     }
 
+    protected void addContextMenuEntries(ImmutableList.Builder<IEntry> builder) {
+    }
+
     protected void updateData() {
     }
 
@@ -287,16 +290,14 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
         return flowComponent.getProcedure();
     }
 
-    public void enableActionInject() {
-        Preconditions.checkState(actionMenuEntries == EMPTY_LIST);
-        actionMenuEntries = new ArrayList<>();
-    }
-
     void useActionList(List<Supplier<IEntry>> actions) {
         actionMenuEntries = actions;
     }
 
     public void injectAction(Supplier<IEntry> action) {
+        if (actionMenuEntries == EMPTY_LIST) {
+            actionMenuEntries = new ArrayList<>();
+        }
         actionMenuEntries.add(action);
     }
 }

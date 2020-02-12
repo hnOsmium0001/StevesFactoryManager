@@ -14,11 +14,16 @@ import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.menu.*;
+import vswe.stevesfactory.ui.manager.menu.EmitterTypeMenu;
+import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
+import vswe.stevesfactory.ui.manager.menu.RedstoneSidesMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 public class RedstoneEmitterProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget {
 
@@ -50,31 +55,44 @@ public class RedstoneEmitterProcedure extends AbstractProcedure implements IInve
             cap.ifPresent(redstone -> {
                 redstone.setType(signalType);
                 switch (operationType) {
-                    case FIXED:
+                    case FIXED: {
                         redstone.setSignal(value);
                         break;
-                    case TOGGLE:
-                        int power = redstone.getSignal();
-                        redstone.setSignal(power > 0 ? 0 : value);
+                    }
+                    case TOGGLE: {
+                        int signal = redstone.getSignal();
+                        redstone.setSignal(signal > 0 ? 0 : value);
                         break;
-                    case FORWARD:
-                        // TODO
+                    }
+                    case FORWARD: {
+                        // Add to existing signal and wrap around
+                        redstone.setSignal((redstone.getSignal() + value) % 16);
                         break;
-                    case BACKWARD:
-                        // TODO
+                    }
+                    case BACKWARD: {
+                        // Subtract from existing signal and wrap around
+                        int signal = redstone.getSignal() - value;
+                        redstone.setSignal(signal < 0 ? signal + 16 : signal);
                         break;
-                    case MIN:
+                    }
+                    case MIN: {
                         redstone.setSignal(Math.min(redstone.getSignal(), value));
                         break;
-                    case MAX:
+                    }
+                    case MAX: {
                         redstone.setSignal(Math.max(redstone.getSignal(), value));
                         break;
-                    case INCREASE:
+                    }
+                    case INCREASE: {
+                        // Add to existing signal and cap at 15
                         redstone.setSignal(redstone.getSignal() + value);
                         break;
-                    case DECREASE:
+                    }
+                    case DECREASE: {
+                        // Subtract from existing signal and cap at 0
                         redstone.setSignal(redstone.getSignal() - value);
                         break;
+                    }
                 }
             });
         }

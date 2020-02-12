@@ -4,10 +4,13 @@ import com.google.common.base.Preconditions;
 import net.minecraft.util.ResourceLocation;
 import vswe.stevesfactory.api.logic.IProcedureType;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
+@ParametersAreNonnullByDefault
 public final class GUIVisibility {
 
     private GUIVisibility() {
@@ -16,7 +19,8 @@ public final class GUIVisibility {
     private static final Map<ResourceLocation, BooleanSupplier> map = new HashMap<>();
 
     public static boolean isEnabled(IProcedureType<?> type) {
-        return isEnabled(type.getRegistryName());
+        ResourceLocation id = Objects.requireNonNull(type.getRegistryName());
+        return isEnabled(id);
     }
 
     public static boolean isEnabled(ResourceLocation registryName) {
@@ -25,7 +29,8 @@ public final class GUIVisibility {
 
     public static void registerEnableState(IProcedureType<?> type, BooleanSupplier getter) {
         Preconditions.checkNotNull(type);
-        registerEnableState(type.getRegistryName(), getter);
+        ResourceLocation id = Objects.requireNonNull(type.getRegistryName());
+        registerEnableState(id, getter);
     }
 
     public static void registerEnableState(ResourceLocation id, BooleanSupplier getter) {

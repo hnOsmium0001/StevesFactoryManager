@@ -23,11 +23,13 @@ public class ItemIntakeContainer extends WidgetContainer {
 
     ItemIntakeTileEntity intake;
 
+    // Sending-side constructor
     public ItemIntakeContainer(int windowId, ItemIntakeTileEntity intake) {
         super(ModContainers.itemIntakeContainer, windowId);
         this.intake = intake;
     }
 
+    // Receiving-side constructor
     public ItemIntakeContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
         super(ModContainers.itemIntakeContainer, windowId);
         BlockPos pos = data.readBlockPos();

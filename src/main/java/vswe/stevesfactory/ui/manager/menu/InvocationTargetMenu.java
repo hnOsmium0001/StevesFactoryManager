@@ -1,27 +1,25 @@
 package vswe.stevesfactory.ui.manager.menu;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.ITrigger;
 import vswe.stevesfactory.library.gui.ScissorTest;
 import vswe.stevesfactory.library.gui.contextmenu.CallbackEntry;
-import vswe.stevesfactory.library.gui.contextmenu.ContextMenu;
 import vswe.stevesfactory.library.gui.debug.RenderEventDispatcher;
-import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractWidget;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.logic.procedure.FunctionInvokeProcedure;
 import vswe.stevesfactory.logic.procedure.IFunctionHat;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.*;
+import vswe.stevesfactory.ui.manager.editor.EditorPanel;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
+import vswe.stevesfactory.ui.manager.editor.Menu;
 
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static vswe.stevesfactory.library.gui.RenderingHelper.*;
 
@@ -39,6 +37,8 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
         options.setLocation(HORIZONTAL_MARGIN, HEADING_BOX.getPortionHeight() + VERTICAL_MARGIN);
 
         addChildren(options);
+
+        injectAction(() -> new CallbackEntry(null, "menu.sfm.InvocationTarget.CtxMenu.Rescan", b -> scanTargets()));
     }
 
     @Override
@@ -71,19 +71,10 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        switch (button) {
-            case GLFW_MOUSE_BUTTON_RIGHT:
-                openContextMenu();
-                return true;
+        if (!isInside(mouseX, mouseY)) {
+            return false;
         }
         return false;
-    }
-
-    private void openContextMenu() {
-        ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                new CallbackEntry(null, "menu.sfm.InvocationTarget.CtxMenu.Rescan", b -> scanTargets())
-        ));
-        WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
 
     @Override
