@@ -40,6 +40,9 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!isInside(mouseX, mouseY)) {
+            return false;
+        }
         scrolling = button == GLFW.GLFW_MOUSE_BUTTON_LEFT && isInsideBar(mouseX, mouseY) && isDrawingScrollBar();
         if (scrolling) {
             return true;

@@ -8,18 +8,22 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextButton;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
+import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public class GroupButton extends TextButton {
 
-    private final String groupName;
+    public static String formatGroupName(String group) {
+        return group.isEmpty() ? I18n.format("gui.sfm.FactoryManager.Tool.Group.DefaultGroup") : group;
+    }
+
+    private String group;
 
     public GroupButton(String name) {
-        this.groupName = name;
-        setText(name.isEmpty() ? I18n.format("gui.sfm.FactoryManager.Tool.Group.DefaultGroup") : name);
-        setHeight(12);
+        this.setGroup(name);
+        this.setHeight(12);
     }
 
     @Override
@@ -45,53 +49,46 @@ public class GroupButton extends TextButton {
     }
 
     private void actionSwitchGroup() {
-        FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel.setCurrentGroup(groupName);
+        FactoryManagerGUI.get().getTopLevel().editorPanel.setCurrentGroup(group);
     }
 
     private void actionDelete() {
-        GroupList groupList = getGroupList();
-        groupList.delete(groupName);
-        groupList.onProcedureGroupChanged();
+        getGroupList().delete(group);
     }
 
     private void actionRename() {
-        Dialog.createPrompt("gui.sfm.FactoryManager.Tool.Group.PopupMsg.RenameGroup", (b, newName) -> {
-            GroupList groupList = getGroupList();
-            for (GroupButton group : groupList.getChildren()) {
-                if (group != this && groupName.equals(group.groupName)) {
-                    Dialog.createDialog(I18n.format("gui.sfm.FactoryManager.Tool.Group.PopupMsg.RenameFailed", newName)).tryAddSelfToActiveGUI();
+        Dialog.createPrompt("gui.sfm.FactoryManager.Tool.Group.Dialog.RenameGroup", (b, newName) -> {
+            for (GroupButton group : getGroupList().getChildren()) {
+                if (group != this && this.group.equals(group.group)) {
+                    Dialog.createDialog(I18n.format("gui.sfm.FactoryManager.Tool.Group.Dialog.RenameFailed", newName)).tryAddSelfToActiveGUI();
                     return;
                 }
             }
-            groupList.move(groupName, newName);
-            groupList.onProcedureGroupChanged();
+            FactoryManagerGUI.get().groupModel.updateGroup(group, newName);
         }).tryAddSelfToActiveGUI();
     }
 
     private void actionMoveContent() {
-        Dialog.createPrompt("gui.sfm.FactoryManager.Tool.Group.PopupMsg.MoveContent", (b, toGroup) -> {
-            GroupList groupList = getGroupList();
-            boolean exists = false;
-            for (GroupButton group : groupList.getChildren()) {
-                if (toGroup.equals(group.groupName)) {
-                    exists = true;
-                    break;
+        SelectGroupDialog.create(toGroup -> {
+            for (FlowComponent<?> component : FactoryManagerGUI.get().getTopLevel().editorPanel.getFlowComponents()) {
+                if (component.getGroup().equals(group)) {
+                    component.getProcedure().setGroup(toGroup);
                 }
             }
-            if (!exists) {
-                Dialog.createDialog(I18n.format("gui.sfm.FactoryManager.Tool.Group.PopupMsg.MoveFailed", toGroup)).tryAddSelfToActiveGUI();
-                return;
-            }
-            groupList.move(groupName, toGroup);
-            groupList.onProcedureGroupChanged();
+        }, () -> {
         }).tryAddSelfToActiveGUI();
     }
 
-    private GroupList getGroupList() {
-        return FactoryManagerGUI.getActiveGUI().getTopLevel().toolboxPanel.getGroupList();
+    private static GroupList getGroupList() {
+        return FactoryManagerGUI.get().getTopLevel().toolboxPanel.getGroupList();
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+        this.setTextRaw(formatGroupName(group));
     }
 }

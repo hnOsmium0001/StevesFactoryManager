@@ -46,7 +46,7 @@ public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
 
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                ToolPanel panel = FactoryManagerGUI.getActiveGUI().getPrimaryWindow().topLevel.toolPanel;
+                ToolPanel panel = FactoryManagerGUI.get().getPrimaryWindow().topLevel.toolPanel;
                 panel.setActivePanel(null);
                 return true;
             }
@@ -128,7 +128,7 @@ public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
 
     private void openActionMenu() {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
+                new CallbackEntry(null, "gui.sfm.FactoryManager.Generic.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.get().getPrimaryWindow().toggleFullscreen())
         ));
         WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }

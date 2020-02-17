@@ -55,6 +55,25 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         xOffset.setParentWidget(this);
         yOffset = new OffsetText(I18n.format("gui.sfm.FactoryManager.Editor.YOff"), 0, 0);
         yOffset.setParentWidget(this);
+
+        FactoryManagerGUI.get().groupModel.addListenerRemove(this::onGroupRemoved);
+        FactoryManagerGUI.get().groupModel.addListenerUpdate(this::onGroupUpdated);
+    }
+
+    private void onGroupRemoved(String group) {
+        for (FlowComponent<?> component : children) {
+            if (component.getGroup().equals(group)) {
+                FactoryManagerGUI.get().scheduleTask(__ -> component.remove());
+            }
+        }
+    }
+
+    private void onGroupUpdated(String from, String to) {
+        for (FlowComponent<?> component : children) {
+            if (component.getGroup().equals(from)) {
+                component.setGroup(to);
+            }
+        }
     }
 
     public void readProcedures() {
@@ -326,7 +345,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.FactoryManager.Editor.CtxMenu.Paste", b -> actionPaste()),
                 new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.CleanupProcedures", b -> actionCleanup()),
-                new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
+                new CallbackEntry(null, "gui.sfm.FactoryManager.Generic.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.get().getPrimaryWindow().toggleFullscreen())
         ));
         WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
@@ -337,11 +356,11 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         try {
             tag = JsonToNBT.getTagFromJson(json);
         } catch (CommandSyntaxException e) {
-            Dialog.createDialog("gui.sfm.FactoryManager.Editor.PopupMsg.PasteProcedure.Fail").tryAddSelfToActiveGUI();
+            Dialog.createDialog("gui.sfm.FactoryManager.Editor.Dialog.PasteProcedure.Fail").tryAddSelfToActiveGUI();
             return;
         }
 
-        INetworkController controller = FactoryManagerGUI.getActiveGUI().getController();
+        INetworkController controller = FactoryManagerGUI.get().getController();
         IProcedure procedure = NetworkHelper.retrieveProcedureAndAdd(controller, tag);
 
         addChildren(procedure.createFlowComponent());

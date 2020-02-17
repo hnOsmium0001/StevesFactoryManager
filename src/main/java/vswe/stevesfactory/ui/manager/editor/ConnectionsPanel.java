@@ -140,7 +140,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
 
     @Override
     protected void onAfterReflow() {
-        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
         setLocation(editor.getX(), editor.getY());
         setDimensions(editor.getWidth(), editor.getHeight());
     }
@@ -148,7 +148,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
 
         ScissorTest test = ScissorTest.scaled(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
         GlStateManager.pushMatrix();
@@ -187,7 +187,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
         if (super.mouseClicked(mouseX - editor.getXOffset(), mouseY - editor.getYOffset(), button)) {
             return true;
         }
@@ -201,25 +201,25 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
         return super.mouseReleased(mouseX - editor.getXOffset(), mouseY - editor.getYOffset(), button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
         return super.mouseDragged(mouseX - editor.getXOffset(), mouseY - editor.getYOffset(), button, deltaX, deltaY);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
-        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
         return super.mouseScrolled(mouseX - editor.getXOffset(), mouseY - editor.getYOffset(), scroll);
     }
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
         super.mouseMoved(mouseX - editor.getXOffset(), mouseY - editor.getYOffset());
     }
 

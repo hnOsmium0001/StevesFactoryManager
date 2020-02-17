@@ -65,6 +65,8 @@ public interface INetworkController {
 
     ProcedureGraph getPGraph();
 
+    Set<String> getGroups();
+
     /**
      * Sync command graph data.
      */

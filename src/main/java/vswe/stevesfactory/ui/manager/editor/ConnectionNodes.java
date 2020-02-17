@@ -50,7 +50,7 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
                     for (Point pos : connection.getPolylineNodes()) {
                         allNodes[j] = new IntermediateNode();
                         allNodes[j].setLocation(pos);
-                        FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.addChildren(allNodes[j]);
+                        FactoryManagerGUI.get().getTopLevel().connectionsPanel.addChildren(allNodes[j]);
                         j++;
                     }
                     // Connect the intermediate nodes
@@ -78,7 +78,7 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
     }
 
     private static void removeNode(INode node) {
-        ConnectionsPanel panel = FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel;
+        ConnectionsPanel panel = FactoryManagerGUI.get().getTopLevel().connectionsPanel;
         panel.removeChildren(node);
     }
 

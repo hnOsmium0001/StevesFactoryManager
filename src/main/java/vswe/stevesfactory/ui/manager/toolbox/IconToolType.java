@@ -72,8 +72,7 @@ public class IconToolType<T extends IWidget> extends AbstractWidget implements I
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        ToolPanel panel = FactoryManagerGUI.getActiveGUI().getTopLevel().toolPanel;
-        panel.setActivePanel(getToolWindow());
+        FactoryManagerGUI.get().getTopLevel().toolPanel.setActivePanel(getToolWindow());
         return true;
     }
 
