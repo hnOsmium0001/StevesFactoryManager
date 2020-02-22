@@ -3,7 +3,6 @@ package vswe.stevesfactory.blocks;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -32,9 +31,15 @@ import java.util.List;
 
 public class BlockInteractorTileEntity extends TileEntity implements IItemHandler {
 
+    public static final int UNREADY = 0;
+    public static final int READY_SIMULATE = 1;
+    public static final int READY_PERFORMED = 2;
+
     private LazyOptional<IItemHandler> itemHandlerCap = LazyOptional.of(() -> this);
 
-    private boolean readDirty = true;
+    private int state = UNREADY;
+    private long lastUpdateGT = -1L;
+
     private List<ItemStack> droppedItems = null;
     private int readerIndex = -1;
 
@@ -43,7 +48,7 @@ public class BlockInteractorTileEntity extends TileEntity implements IItemHandle
     }
 
     private boolean isUnready() {
-        return readDirty || droppedItems == null || readerIndex < 0;
+        return state == UNREADY;
     }
 
     private void breakFrontBlock(boolean remove) {
@@ -53,27 +58,45 @@ public class BlockInteractorTileEntity extends TileEntity implements IItemHandle
             return;
         }
 
-        if (!isUnready()) {
-            return;
+        if (state != READY_PERFORMED && world.getGameTime() != lastUpdateGT) {
+            lastUpdateGT = world.getGameTime();
+            state = UNREADY;
         }
-        Direction facing = this.getBlockState().get(BlockStateProperties.FACING);
-        BlockPos neighborPos = pos.offset(facing);
-        BlockState neighbor = world.getBlockState(neighborPos);
-        if (neighbor.isAir(world, neighborPos)) {
-            return;
+        switch (state) {
+            case UNREADY: {
+                Direction facing = this.getBlockState().get(BlockStateProperties.FACING);
+                BlockPos neighborPos = pos.offset(facing);
+                BlockState neighbor = world.getBlockState(neighborPos);
+                if (neighbor.isAir(world, neighborPos)) {
+                    return;
+                }
+                droppedItems = Block.getDrops(neighbor, (ServerWorld) world, neighborPos, world.getTileEntity(neighborPos));
+                readerIndex = droppedItems.size() - 1;
+                if (remove) {
+                    world.removeBlock(neighborPos, false);
+                    state = READY_PERFORMED;
+                } else {
+                    state = READY_SIMULATE;
+                }
+                break;
+            }
+            case READY_SIMULATE: {
+                if (remove) {
+                    Direction facing = this.getBlockState().get(BlockStateProperties.FACING);
+                    BlockPos neighborPos = pos.offset(facing);
+                    world.removeBlock(neighborPos, false);
+                    state = READY_PERFORMED;
+                }
+                break;
+            }
+            case READY_PERFORMED: {
+                break;
+            }
         }
-        droppedItems = Block.getDrops(neighbor, (ServerWorld) world, neighborPos, world.getTileEntity(neighborPos));
-        readerIndex = droppedItems.size() - 1;
-        if (remove) {
-            world.removeBlock(neighborPos, false);
-        }
-        readDirty = false;
     }
 
     private ItemStack getNextItem(boolean remove) {
-        if (isUnready()) {
-            breakFrontBlock(remove);
-        }
+        breakFrontBlock(remove);
         // Tried to break block in front, but nothing happened -> unable to do anything
         if (isUnready()) {
             return ItemStack.EMPTY;
@@ -83,6 +106,9 @@ public class BlockInteractorTileEntity extends TileEntity implements IItemHandle
 
     private void advance() {
         readerIndex--;
+        if (readerIndex < 0) {
+            state = UNREADY;
+        }
     }
 
     @Override
@@ -193,14 +219,10 @@ public class BlockInteractorTileEntity extends TileEntity implements IItemHandle
         return super.getCapability(cap, side);
     }
 
-    public void onNeighborChanged() {
-        readDirty = true;
-    }
-
     @Override
     public void read(CompoundNBT compound) {
         super.read(compound);
-        readDirty = compound.getBoolean("ReadDirty");
+        state = compound.getInt("State");
         readerIndex = compound.getInt("ReaderIdx");
         droppedItems.clear();
         ListNBT serializedItems = compound.getList("DroppedItems", Constants.NBT.TAG_COMPOUND);
@@ -211,7 +233,7 @@ public class BlockInteractorTileEntity extends TileEntity implements IItemHandle
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
-        compound.putBoolean("ReadDirty", readDirty);
+        compound.putInt("State", state);
         compound.putInt("ReaderIdx", readerIndex);
         ListNBT serializedItems = new ListNBT();
         for (ItemStack item : droppedItems) {

@@ -22,15 +22,6 @@ public class BlockInteractorBlock extends Block {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof BlockInteractorTileEntity) {
-            ((BlockInteractorTileEntity) tile).onNeighborChanged();
-        }
-    }
-
-    @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         Direction direction = context.getNearestLookingDirection().getOpposite();
         return getDefaultState()
