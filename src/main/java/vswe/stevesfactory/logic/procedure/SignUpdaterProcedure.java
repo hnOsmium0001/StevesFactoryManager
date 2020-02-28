@@ -58,7 +58,7 @@ public class SignUpdaterProcedure extends AbstractProcedure implements IInventor
         }
 
         cachedCaps.clear();
-        NetworkHelper.cacheCaps(context, cachedCaps, signs, CapabilityDocuments.TEXT_DISPLAY_CAPABILITY);
+        NetworkHelper.cacheCaps(context, cachedCaps, signs, CapabilityDocuments.TEXT_DISPLAY_CAPABILITY, __ -> markDirty());
         dirty = false;
     }
 

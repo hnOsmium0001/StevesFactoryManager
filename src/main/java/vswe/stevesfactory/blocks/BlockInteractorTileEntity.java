@@ -3,6 +3,7 @@ package vswe.stevesfactory.blocks;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -29,6 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+// TODO drop stored item when broken
 public class BlockInteractorTileEntity extends TileEntity implements IItemHandler {
 
     public static final int UNREADY = 0;
@@ -210,6 +212,14 @@ public class BlockInteractorTileEntity extends TileEntity implements IItemHandle
         return slot == 0;
     }
 
+    public void dropItems() {
+        if (state == READY_PERFORMED) {
+            for (ItemStack item : droppedItems) {
+                InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), item);
+            }
+        }
+    }
+
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
@@ -236,8 +246,10 @@ public class BlockInteractorTileEntity extends TileEntity implements IItemHandle
         compound.putInt("State", state);
         compound.putInt("ReaderIdx", readerIndex);
         ListNBT serializedItems = new ListNBT();
-        for (ItemStack item : droppedItems) {
-            serializedItems.add(item.write(new CompoundNBT()));
+        if (droppedItems != null) {
+            for (ItemStack item : droppedItems) {
+                serializedItems.add(item.write(new CompoundNBT()));
+            }
         }
         compound.put("DroppedItems", serializedItems);
         return super.write(compound);

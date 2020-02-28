@@ -112,7 +112,7 @@ public final class Config {
             enableItemTransfer = builder.define("enableItemTransfer", true);
             enableItemImport = builder.define("enableItemImport", true);
             enableItemExport = builder.define("enableItemExport", true);
-            enableCrafting = builder.define("enableCrafting", false); // TODO fix bugs and re-enable
+            enableCrafting = builder.define("enableCrafting", true);
             enableFluidTransfer = builder.define("enableFluidTransfer", true);
             enableRedstoneEmitter = builder.define("enableRedstoneEmitter", true);
             enableSignUpdater = builder.define("enableSignUpdater", true);
