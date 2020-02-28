@@ -40,7 +40,7 @@ public class RedstoneTriggerProcedure extends AbstractProcedure implements ITrig
 
     // Do not cache caps because we use it once, to set listeners for redstone changes
     // However we still want the dirty check to update listeners upon data mutation
-    private boolean dirty = true;
+    private transient boolean dirty = true;
 
     public RedstoneTriggerProcedure() {
         super(ModProcedures.redstoneTrigger, 0, 2);

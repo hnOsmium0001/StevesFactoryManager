@@ -61,7 +61,7 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
                     continue;
                 }
                 visited.add(handler);
-                filter.extractFromInventory((stack, slot) -> items.add(new SingleItemBufferElement(stack, handler, slot)), handler);
+                filter.extractFromInventory(handler, (stack, slot) -> items.add(new SingleItemBufferElement(stack, handler, slot)));
             }
         }
 
@@ -108,8 +108,8 @@ public class ItemTransferProcedure extends AbstractProcedure implements IInvento
         Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         cachedSourceCaps.clear();
         cachedDestinationCaps.clear();
-        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedSourceCaps, sourceInventories, sourceDirections, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedDestinationCaps, destinationInventories, destinationDirections, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedSourceCaps, sourceInventories, sourceDirections, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, __ -> markDirty());
+        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedDestinationCaps, destinationInventories, destinationDirections, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, __ -> markDirty());
         dirty = false;
     }
 

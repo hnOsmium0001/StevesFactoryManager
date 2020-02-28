@@ -23,7 +23,10 @@ import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.utils.IOHelper;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 public class FluidTransferProcedure extends AbstractProcedure implements IInventoryTarget, IDirectionTarget {
 
@@ -36,9 +39,9 @@ public class FluidTransferProcedure extends AbstractProcedure implements IInvent
     private List<BlockPos> destinationTanks = new ArrayList<>();
     private Set<Direction> destinationDirections = EnumSet.noneOf(Direction.class);
 
-    private List<LazyOptional<IFluidHandler>> cachedSourceCaps = new ArrayList<>();
-    private List<LazyOptional<IFluidHandler>> cachedDestinationCaps = new ArrayList<>();
-    private boolean dirty = false;
+    private transient List<LazyOptional<IFluidHandler>> cachedSourceCaps = new ArrayList<>();
+    private transient List<LazyOptional<IFluidHandler>> cachedDestinationCaps = new ArrayList<>();
+    private transient boolean dirty = false;
 
     public FluidTransferProcedure() {
         super(ModProcedures.fluidTransfer);
@@ -96,8 +99,8 @@ public class FluidTransferProcedure extends AbstractProcedure implements IInvent
         Set<BlockPos> linkedInventories = context.getController().getLinkedInventories(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         cachedSourceCaps.clear();
         cachedDestinationCaps.clear();
-        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedSourceCaps, sourceTanks, sourceDirections, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
-        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedDestinationCaps, destinationTanks, destinationDirections, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedSourceCaps, sourceTanks, sourceDirections, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, __ -> markDirty());
+        NetworkHelper.cacheDirectionalCaps(context, linkedInventories, cachedDestinationCaps, destinationTanks, destinationDirections, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, __ -> markDirty());
         dirty = false;
     }
 

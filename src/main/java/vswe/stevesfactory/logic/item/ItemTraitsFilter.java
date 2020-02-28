@@ -78,7 +78,7 @@ public class ItemTraitsFilter implements IItemFilter {
     }
 
     @Override
-    public void extractFromInventory(List<ItemStack> target, IItemHandler handler, boolean merge) {
+    public void extractFromInventory(IItemHandler handler, List<ItemStack> target, boolean merge) {
         Object2LongMap<Item> counts = constructResultMap();
 
         for (int i = 0; i < handler.getSlots(); i++) {
@@ -107,7 +107,7 @@ public class ItemTraitsFilter implements IItemFilter {
     }
 
     @Override
-    public void extractFromInventory(BiConsumer<ItemStack, Integer> receiver, IItemHandler handler) {
+    public void extractFromInventory(IItemHandler handler, BiConsumer<ItemStack, Integer> receiver) {
         Object2LongMap<Item> counts = constructResultMap();
 
         for (int i = 0; i < handler.getSlots(); i++) {

@@ -24,7 +24,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
-public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidget implements INamedElement, LeafWidgetMixin {
+public abstract class ConfigurableSlot<E extends IWidget> extends AbstractWidget implements INamedElement, LeafWidgetMixin {
 
     public static final TextureWrapper NORMAL = TextureWrapper.ofFlowComponent(36, 20, 16, 16);
     public static final TextureWrapper HOVERED = NORMAL.toDown(1);
@@ -32,7 +32,7 @@ public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidge
     protected ItemStack stack;
     protected E editor;
 
-    public ConfigurationSlot(ItemStack stack) {
+    public ConfigurableSlot(ItemStack stack) {
         this.stack = stack;
         this.setDimensions(NORMAL.getPortionWidth(), NORMAL.getPortionHeight());
     }
@@ -43,6 +43,7 @@ public abstract class ConfigurationSlot<E extends IWidget> extends AbstractWidge
 
     public void setStack(ItemStack stack) {
         this.stack = stack;
+        this.onSetStack();
     }
 
     @Override

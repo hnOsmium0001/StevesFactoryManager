@@ -3,7 +3,8 @@ package vswe.stevesfactory.logic.procedure;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import vswe.stevesfactory.api.logic.*;
+import vswe.stevesfactory.api.logic.IExecutionContext;
+import vswe.stevesfactory.api.logic.ITrigger;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
@@ -13,8 +14,9 @@ import vswe.stevesfactory.ui.manager.menu.IntervalMenu;
 
 public class IntervalTriggerProcedure extends AbstractProcedure implements ITrigger {
 
-    private int tickCounter = 0;
     public int interval = 20;
+
+    private transient int tickCounter = 0;
 
     public IntervalTriggerProcedure() {
         super(ModProcedures.intervalTrigger, 0, 1);

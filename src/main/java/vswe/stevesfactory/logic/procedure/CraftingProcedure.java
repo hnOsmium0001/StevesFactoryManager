@@ -1,7 +1,9 @@
 package vswe.stevesfactory.logic.procedure;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.inventory.*;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipeType;
@@ -12,20 +14,21 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import vswe.stevesfactory.api.logic.IExecutionContext;
-import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.ModProcedures;
 import vswe.stevesfactory.logic.item.CraftingBufferElement;
+import vswe.stevesfactory.logic.item.RecipeInfo;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
-import vswe.stevesfactory.ui.manager.menu.RecipeConfigurationMenu;
+import vswe.stevesfactory.ui.manager.menu.CraftingRecipeMenu;
 import vswe.stevesfactory.utils.IOHelper;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
-public class CraftingProcedure extends AbstractProcedure implements IRecipeTarget {
+public class CraftingProcedure extends AbstractProcedure implements ICraftingGrid {
 
-    private transient ICraftingRecipe recipe;
     private CraftingInventory inventory = createCraftingInventory();
+    private transient RecipeInfo info;
 
     public CraftingProcedure() {
         super(ModProcedures.crafting);
@@ -40,31 +43,31 @@ public class CraftingProcedure extends AbstractProcedure implements IRecipeTarge
         }
 
         CraftingBufferElement buffer = new CraftingBufferElement(context);
-        buffer.setRecipe(recipe);
+        buffer.setRecipe(info);
         context.getItemBuffers(CraftingBufferElement.class)
                 .put(buffer.getStack().getItem(), buffer);
     }
 
     private void updateRecipe(IExecutionContext context) {
-        if (recipe == null) {
+        if (info == null) {
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             // In all cases we will not get null from the above invocation if we are on a server thread
             Preconditions.checkState(server != null, "Illegal to execute procedure on client side");
-            Optional<ICraftingRecipe> recipe = server.getRecipeManager().getRecipe(IRecipeType.CRAFTING, inventory, context.getControllerWorld());
-            this.recipe = recipe.orElse(null);
+            Optional<ICraftingRecipe> lookup = server.getRecipeManager().getRecipe(IRecipeType.CRAFTING, inventory, context.getControllerWorld());
+            info = lookup.map(RecipeInfo::new).orElse(null);
         }
     }
 
     public boolean hasError() {
         // Error for execution (server side)
-        return recipe == null;
+        return info == null || info.getRecipe().isDynamic();
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public FlowComponent<CraftingProcedure> createFlowComponent() {
         FlowComponent<CraftingProcedure> f = FlowComponent.of(this);
-        f.addMenu(new RecipeConfigurationMenu<>());
+        f.addMenu(new CraftingRecipeMenu<>());
         return f;
     }
 
@@ -81,7 +84,7 @@ public class CraftingProcedure extends AbstractProcedure implements IRecipeTarge
     @Override
     public void setIngredient(int slot, ItemStack ingredient) {
         inventory.setInventorySlotContents(slot, ingredient);
-        recipe = null;
+        info = null;
     }
 
     @Override
@@ -98,6 +101,11 @@ public class CraftingProcedure extends AbstractProcedure implements IRecipeTarge
     }
 
     private static CraftingInventory createCraftingInventory() {
-        return new CraftingInventory(WidgetScreen.getCurrent().getContainer(), 3, 3);
+        return new CraftingInventory(new Container(null, -1) {
+            @Override
+            public boolean canInteractWith(@Nonnull PlayerEntity player) {
+                return false;
+            }
+        }, 3, 3);
     }
 }

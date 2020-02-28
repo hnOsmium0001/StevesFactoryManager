@@ -1,21 +1,21 @@
 package vswe.stevesfactory.logic.item;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.Ingredient;
-import vswe.stevesfactory.api.logic.item.IItemBuffer;
 import vswe.stevesfactory.api.logic.IExecutionContext;
+import vswe.stevesfactory.api.logic.item.IItemBuffer;
 
 import java.util.Map;
 
-// TODO fix dupes and crashes
 public class CraftingBufferElement implements IItemBuffer {
 
     private final IExecutionContext context;
 
-    private ICraftingRecipe recipe;
+    private RecipeInfo recipe;
     private int outputBase = -1;
     private ItemStack result = ItemStack.EMPTY;
 
@@ -24,13 +24,13 @@ public class CraftingBufferElement implements IItemBuffer {
     }
 
     public ICraftingRecipe getRecipe() {
-        return recipe;
+        return recipe.getRecipe();
     }
 
-    public void setRecipe(ICraftingRecipe recipe) {
+    public void setRecipe(RecipeInfo recipe) {
         this.recipe = recipe;
         // TODO crafting inventory
-        result = recipe.getCraftingResult(null);
+        result = recipe.getRecipe().getCraftingResult(null);
         outputBase = result.getCount();
     }
 
@@ -59,25 +59,24 @@ public class CraftingBufferElement implements IItemBuffer {
     public void refresh() {
         Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
         int batchesAvailable = Integer.MAX_VALUE;
-        for (Ingredient ingredient : recipe.getIngredients()) {
-            // Number of crafting set performable, just looking at this ingredient
-            int totalAvailableSets = 0;
-            for (ItemStack matchable : ingredient.getMatchingStacks()) {
+        for (Object2IntMap.Entry<Ingredient> ingredient : recipe.getIngredients()) {
+            // Consumption of items per craft
+            int consumption = ingredient.getIntValue();
+            // Number of all available items, considering all alternatives
+            int available = 0;
+            for (ItemStack matchable : ingredient.getKey().getMatchingStacks()) {
                 DirectBufferElement buffer = buffers.get(matchable.getItem());
                 if (buffer == null) {
                     continue;
                 }
 
-                ItemStack source = buffer.getStack();
-                // The total number of this ingredients needed in this recipe
-                int needed = matchable.getCount();
-                // Number of available resource
-                int available = source.getCount();
-                totalAvailableSets += available / needed;
+                available += buffer.getStack().getCount();
             }
 
+            // Number of crafting set performable, just looking at this ingredient
+            int totalAvailableSets = available / consumption;
             if (totalAvailableSets == 0) {
-                // Fast path for resulting nothing: cannot find any stacks for this ingredient, therefore this will be the limiting reagent
+                // Fast path for resulting nothing: cannot find any stacks for this ingredient, therefore it will be the limiting reagent
                 batchesAvailable = 0;
                 break;
             } else {
@@ -89,19 +88,22 @@ public class CraftingBufferElement implements IItemBuffer {
 
     @Override
     public void use(int amount) {
+        // Number of crafts needed to produced the parameter number of products (`amount`)
         int actualSize = amount / outputBase;
         Map<Item, DirectBufferElement> buffers = context.getItemBuffers(DirectBufferElement.class);
-        for (Ingredient ingredient : recipe.getIngredients()) {
-            int required = actualSize;
-            for (ItemStack matchable : ingredient.getMatchingStacks()) {
+        for (Object2IntMap.Entry<Ingredient> ingredient : recipe.getIngredients()) {
+            // Total item consumption for this ingredient for the given `actualSize` number of crafts
+            int desire = actualSize * ingredient.getIntValue();
+            for (ItemStack matchable : ingredient.getKey().getMatchingStacks()) {
                 DirectBufferElement buffer = buffers.get(matchable.getItem());
                 if (buffer == null) {
                     continue;
                 }
-                int consumption = Math.min(buffer.stack.getCount(), required);
+
+                int consumption = Math.min(buffer.stack.getCount(), desire); // Prevent over using an ingredient
                 buffer.use(consumption);
                 buffer.stack.shrink(consumption);
-                required -= consumption;
+                desire -= consumption;
             }
         }
     }
