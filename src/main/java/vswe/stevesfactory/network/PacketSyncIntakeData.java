@@ -19,7 +19,7 @@ public final class PacketSyncIntakeData {
     public static void encode(PacketSyncIntakeData msg, PacketBuffer buf) {
         buf.writeResourceLocation(Objects.requireNonNull(msg.dimension.getRegistryName()));
         buf.writeBlockPos(msg.pos);
-        buf.writeInt(msg.radius);
+        buf.writeVarInt(msg.radius);
         buf.writeBoolean(msg.rendering);
         buf.writeEnumValue(msg.mode);
     }
@@ -27,7 +27,7 @@ public final class PacketSyncIntakeData {
     public static PacketSyncIntakeData decode(PacketBuffer buf) {
         DimensionType dimension = DimensionType.byName(buf.readResourceLocation());
         BlockPos pos = buf.readBlockPos();
-        int radius = buf.readInt();
+        int radius = buf.readVarInt();
         boolean rendering = buf.readBoolean();
         ItemIntakeTileEntity.Mode mode = buf.readEnumValue(ItemIntakeTileEntity.Mode.class);
         return new PacketSyncIntakeData(dimension, pos, radius, rendering, mode);

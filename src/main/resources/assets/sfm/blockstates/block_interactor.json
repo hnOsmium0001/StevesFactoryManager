@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "sfm:block/block_interactor",
+      "x": 90
+    },
+    "facing=up": {
+      "model": "sfm:block/block_interactor",
+      "x": 270
+    },
+    "facing=north": {
+      "model": "sfm:block/block_interactor"
+    },
+    "facing=south": {
+      "model": "sfm:block/block_interactor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "sfm:block/block_interactor",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "sfm:block/block_interactor",
+      "y": 90
+    }
+  }
+}

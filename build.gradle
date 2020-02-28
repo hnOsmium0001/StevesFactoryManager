@@ -104,7 +104,7 @@ jar {
 }
 
 def static getCheckedOutGitCommitHash() {
-    'git rev-parse --verify --short HEAD'.execute().text.trim()
+     'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
 task buildForCommit(type: Copy, dependsOn: build) {

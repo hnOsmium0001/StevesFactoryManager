@@ -26,7 +26,7 @@ public final class ModBlocks {
     private ModBlocks() {
     }
 
-    private static List<BlockBuilder> pendingBlocks = new ArrayList<>();
+    private static List<BlockBuilder<?>> pendingBlocks = new ArrayList<>();
 
     @ObjectHolder("sfm:factory_manager")
     public static FactoryManagerBlock factoryManagerBlock;
@@ -62,6 +62,11 @@ public final class ModBlocks {
     public static BUDBlock budBlock;
     @ObjectHolder("sfm:bud")
     public static TileEntityType<BUDTileEntity> budTileEntity;
+
+    @ObjectHolder("sfm:block_interactor")
+    public static BlockInteractorBlock blockInteractorBlock;
+    @ObjectHolder("sfm:block_interactor")
+    public static TileEntityType<BlockInteractorTileEntity> blockInteractorTileEntity;
 
     @ObjectHolder("sfm:world_interactor")
     public static WorldInteractorBlock worldInteractorBlock;
@@ -119,6 +124,12 @@ public final class ModBlocks {
                 .constructor(BUDBlock::new)
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(BUDTileEntity::new, block)));
+
+        pendingBlocks.add(new BlockBuilder<BlockInteractorTileEntity>("block_interactor")
+                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
+                .constructor(BlockInteractorBlock::new)
+                .item(defaultItemProperties())
+                .tileEntity(block -> TileEntityType.Builder.create(BlockInteractorTileEntity::new, block)));
 
         pendingBlocks.add(new BlockBuilder<WorldInteractorTileEntity>("world_interactor")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
