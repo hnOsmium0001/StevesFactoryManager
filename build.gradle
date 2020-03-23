@@ -12,7 +12,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "${mc_version}-${mod_version}-${release_type}"
+version = prerelease_tag.isEmpty()
+        ? "${mc_version}-${mod_version}"
+        : "${mc_version}-${mod_version}-${prerelease_tag}+${build_tag}"
 group = 'vswe.stevesfactory'
 archivesBaseName = "${mod_name}"
 
@@ -112,6 +114,6 @@ task buildForCommit(type: Copy, dependsOn: build) {
     from "$buildDir/libs"
     into "$buildDir/libs-custom"
     include "**/${mod_name}-*.jar"
-    rename "${mod_name}-${mc_version}-${mod_version}-${release_type}.jar",
-            "${mod_name}-${mc_version}-${mod_version}-${getCheckedOutGitCommitHash()}.jar"
+    rename "${mod_name}-${version}.jar",
+            "${mod_name}-${mc_version}-${mod_version}-build+${getCheckedOutGitCommitHash()}.jar"
 }

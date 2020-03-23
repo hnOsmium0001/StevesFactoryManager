@@ -2,16 +2,16 @@ package vswe.stevesfactory.library.gui.screen;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.StevesFactoryManager;
 
 import java.awt.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import static org.lwjgl.opengl.GL11.*;
 
 @OnlyIn(Dist.CLIENT)
 public final class DisplayListCaches {
@@ -23,7 +23,7 @@ public final class DisplayListCaches {
             .expireAfterAccess(120, TimeUnit.SECONDS)
             .removalListener(removal -> {
                 StevesFactoryManager.logger.info("Removed background display list with size {}", removal.getKey());
-                GLAllocation.deleteDisplayLists((Integer) removal.getValue());
+                glDeleteLists((Integer) removal.getValue(), 1);
             })
             .build();
 
@@ -36,12 +36,12 @@ public final class DisplayListCaches {
             return VANILLA_BACKGROUND_CACHE.get(rectangle, () -> {
                 StevesFactoryManager.logger.info("Created background display list with size {}", rectangle);
 
-                int id = GLAllocation.generateDisplayLists(1);
-                GlStateManager.newList(id, GL11.GL_COMPILE);
+                int id = glGenLists(1);
+                glNewList(id, GL_COMPILE);
                 {
                     BackgroundRenderers.drawVanillaStyle(rectangle.x, rectangle.y, rectangle.width, rectangle.height, z);
                 }
-                GlStateManager.endList();
+                glEndList();
                 return id;
             });
         } catch (ExecutionException e) {

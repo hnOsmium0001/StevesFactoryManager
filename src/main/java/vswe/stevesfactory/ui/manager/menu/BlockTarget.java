@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
@@ -113,7 +114,7 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
         // No depth test so that popups get correctly rendered
         GlStateManager.disableDepthTest();
         GlStateManager.enableTexture();
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderHelper.enableStandardItemLighting();
         // 16 is the standard item size
         Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(cachedItemStack, x + (getWidth() - 16) / 2, y + (getHeight() - 16) / 2);
 

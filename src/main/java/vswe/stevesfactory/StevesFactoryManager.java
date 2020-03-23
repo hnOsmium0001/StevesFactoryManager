@@ -40,7 +40,6 @@ public class StevesFactoryManager {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::setup);
         eventBus.addListener(Config::onLoad);
-        eventBus.addListener(Config::onConfigChanged);
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> eventBus.addListener(this::clientSetup));
 
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);

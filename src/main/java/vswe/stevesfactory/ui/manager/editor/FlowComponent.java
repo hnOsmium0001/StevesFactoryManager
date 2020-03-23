@@ -1,7 +1,7 @@
 package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.nbt.CompoundNBT;
@@ -451,7 +451,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
 
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
         getBackgroundTexture().draw(getAbsoluteX(), getAbsoluteY());
 
         // Renaming state (showing different buttons at different times) is handled inside the widgets' render method

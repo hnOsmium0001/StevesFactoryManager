@@ -1,6 +1,7 @@
 package vswe.stevesfactory.ui.manager.menu;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
 import vswe.stevesfactory.api.logic.IProcedure;
@@ -107,7 +108,7 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IC
 
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
         GlStateManager.enableTexture();
         super.render(mouseX, mouseY, particleTicks);
     }

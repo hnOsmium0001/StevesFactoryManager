@@ -8,6 +8,7 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -26,13 +27,13 @@ public class WorldInteractorBlock extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (world.isRemote) {
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        Direction aim = player.isSneaking() ? hit.getFace().getOpposite() : hit.getFace();
+        Direction aim = player.isCrouching() ? hit.getFace().getOpposite() : hit.getFace();
         world.setBlockState(pos, state.with(AIM_PROPERTY, aim));
-        return true;
+        return ActionResultType.SUCCESS;
     }
 
     @Override

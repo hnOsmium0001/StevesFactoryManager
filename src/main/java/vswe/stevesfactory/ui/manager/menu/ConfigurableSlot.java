@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -49,7 +50,7 @@ public abstract class ConfigurableSlot<E extends IWidget> extends AbstractWidget
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
         int x = getAbsoluteX();
         int y = getAbsoluteY();
         if (isInside(mouseX, mouseY)) {
@@ -63,7 +64,7 @@ public abstract class ConfigurableSlot<E extends IWidget> extends AbstractWidget
 
         GlStateManager.disableDepthTest();
         GlStateManager.enableTexture();
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderHelper.enableStandardItemLighting();
         ItemRenderer ir = Minecraft.getInstance().getItemRenderer();
         ir.renderItemAndEffectIntoGUI(stack, x, y);
         ir.renderItemOverlayIntoGUI(fontRenderer(), stack, x, y, "");

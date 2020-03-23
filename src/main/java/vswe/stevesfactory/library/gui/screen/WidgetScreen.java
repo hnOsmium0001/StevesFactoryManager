@@ -1,5 +1,6 @@
 package vswe.stevesfactory.library.gui.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -7,7 +8,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.library.collections.CompositeCollection;
 import vswe.stevesfactory.library.gui.RenderingHelper;
@@ -21,6 +22,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
+import static org.lwjgl.opengl.GL11.*;
 
 public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerScreen<C> implements IGuiEventListener {
 
@@ -114,6 +116,9 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         // Dark transparent overlay
         renderBackground();
+
+        RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        RenderSystem.enableAlphaTest();
 
         inspectionHandler.startCycle();
         primaryWindow.render(mouseX, mouseY, partialTicks);

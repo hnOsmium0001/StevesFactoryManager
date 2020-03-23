@@ -2,6 +2,7 @@ package vswe.stevesfactory.ui.manager.menu;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -137,14 +138,14 @@ public class FilterSlot extends ConfigurableSlot<FilterSlot.Editor> {
         private void renderItem() {
             GlStateManager.disableDepthTest();
             GlStateManager.enableTexture();
-            RenderHelper.enableGUIStandardItemLighting();
+            RenderHelper.enableStandardItemLighting();
             ItemRenderer ir = Minecraft.getInstance().getItemRenderer();
             int x = getAbsoluteX() + 4;
             int y = getAbsoluteY() + 4;
             ir.renderItemAndEffectIntoGUI(stack, x, y);
             ir.renderItemOverlayIntoGUI(fontRenderer(), stack, x, y, "");
             RenderHelper.disableStandardItemLighting();
-            GlStateManager.color3f(1F, 1F, 1F);
+            RenderSystem.color3f(1F, 1F, 1F);
         }
 
         @Override

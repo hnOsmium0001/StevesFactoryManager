@@ -2,7 +2,6 @@ package vswe.stevesfactory.ui.manager;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -28,6 +27,8 @@ import vswe.stevesfactory.ui.manager.toolbox.ToolboxPanel;
 
 import java.awt.*;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.glCallList;
 
 public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
@@ -127,7 +128,7 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             if (fullscreen && !Config.CLIENT.useBackgroundOnFullscreen.get()) {
                 RenderingHelper.drawRect(getPosition(), getBorder(), 0xffc6c6c6);
             } else {
-                GlStateManager.callList(backgroundDL);
+                glCallList(backgroundDL);
             }
             topLevel.render(mouseX, mouseY, particleTicks);
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);

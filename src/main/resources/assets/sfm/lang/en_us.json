@@ -7,7 +7,7 @@
   "block.sfm.item_intake": "Item Valve",
   "block.sfm.instant_item_intake": "Rapid Item Valve",
   "block.sfm.bud": "Block Detector",
-  "block.sfm.block_interactor": "Block Gate (WIP)",
+  "block.sfm.block_interactor": "Block Gate",
   "block.sfm.world_interactor": "Player Gate (WIP)",
   "block.sfm.sign_updater": "Sign Updater",
   "message.sfm.reload.componentGroups.success": "Successfully reloaded component groups",

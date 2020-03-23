@@ -21,7 +21,7 @@ public class ContextMenu extends AbstractPopupWindow {
 
     public static ContextMenu atCursor(List<? extends IEntry> entries) {
         MouseHelper m = Minecraft.getInstance().mouseHelper;
-        double scale = Minecraft.getInstance().mainWindow.getGuiScaleFactor();
+        double scale = Minecraft.getInstance().getMainWindow().getGuiScaleFactor();
         double mouseX = m.getMouseX() / scale;
         double mouseY = m.getMouseY() / scale;
         return atCursor(mouseX + RenderingHelper.getTranslationX(), mouseY + RenderingHelper.getTranslationY(), entries);

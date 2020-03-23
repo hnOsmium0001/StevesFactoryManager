@@ -1,8 +1,10 @@
 package vswe.stevesfactory.library.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -51,29 +53,29 @@ public final class RenderingHelper {
     }
 
     public static void useGradientGLStates() {
-        GlStateManager.disableTexture();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.enableBlend();
-        GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
+        RenderSystem.disableTexture();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.enableBlend();
+        RenderSystem.shadeModel(GL11.GL_SMOOTH);
+        RenderSystem.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
     }
 
     public static void useBlendingGLStates() {
-        GlStateManager.disableTexture();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
+        RenderSystem.disableTexture();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
     }
 
     public static void usePlainColorGLStates() {
-        GlStateManager.disableTexture();
-        GlStateManager.disableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.disableBlend();
     }
 
     public static void useTextureGLStates() {
-        GlStateManager.enableTexture();
-        GlStateManager.disableBlend();
-        GlStateManager.color3f(1.0F, 1.0F, 1.0F);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+        RenderSystem.color3f(1.0F, 1.0F, 1.0F);
     }
 
     public static void drawRect(Rectangle rect, int color) {
@@ -97,14 +99,14 @@ public final class RenderingHelper {
     }
 
     public static void drawRect(int x, int y, int x2, int y2, int red, int green, int blue, int alpha) {
-        GlStateManager.disableTexture();
+        RenderSystem.disableTexture();
         getRenderer().begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         rectVertices(x, y, x2, y2, red, green, blue, alpha);
         Tessellator.getInstance().draw();
     }
 
     public static void drawRect(int x, int y, int x2, int y2, int color) {
-        GlStateManager.disableTexture();
+        RenderSystem.disableTexture();
         getRenderer().begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         rectVertices(x, y, x2, y2, color);
         Tessellator.getInstance().draw();
@@ -127,24 +129,24 @@ public final class RenderingHelper {
     }
 
     public static void drawColorLogic(int x, int y, int width, int height, int red, int green, int blue, GlStateManager.LogicOp logicOp) {
-        GlStateManager.disableTexture();
-        GlStateManager.enableColorLogicOp();
-        GlStateManager.logicOp(logicOp);
+        RenderSystem.disableTexture();
+        RenderSystem.enableColorLogicOp();
+        RenderSystem.logicOp(logicOp);
 
         drawRect(x, y, x + width, y + height, red, green, blue, 255);
 
-        GlStateManager.disableColorLogicOp();
-        GlStateManager.enableTexture();
+        RenderSystem.disableColorLogicOp();
+        RenderSystem.enableTexture();
     }
 
     public static void drawThickBeveledBox(int x1, int y1, int x2, int y2, int thickness, int topLeftColor, int bottomRightColor, int fillColor) {
-        GlStateManager.disableTexture();
+        RenderSystem.disableTexture();
         drawRect(x1, y1, x2, y2, bottomRightColor);
         drawRect(x1, y1, x2 - thickness, y2 - thickness, topLeftColor);
         if (fillColor != -1) {
             drawRect(x1 + thickness, y1 + thickness, x2 - thickness, y2 - thickness, fillColor);
         }
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
     }
 
     public static void drawVerticalGradientRect(int x1, int y1, int x2, int y2, int color1, int color2) {
@@ -168,10 +170,10 @@ public final class RenderingHelper {
         buffer.pos(x2, y2, 0F).color(r2, g2, b2, a2).endVertex();
         tessellator.draw();
 
-        GlStateManager.shadeModel(GL_FLAT);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.enableTexture();
+        RenderSystem.shadeModel(GL_FLAT);
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.enableTexture();
     }
 
     public static void drawHorizontalGradientRect(int x1, int y1, int x2, int y2, int color1, int color2) {
@@ -195,16 +197,16 @@ public final class RenderingHelper {
         buffer.pos(x2, y1, 0F).color(r2, g2, b2, a2).endVertex();
         tessellator.draw();
 
-        GlStateManager.shadeModel(GL_FLAT);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.enableTexture();
+        RenderSystem.shadeModel(GL_FLAT);
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.enableTexture();
     }
 
     public static void drawTexture(int x1, int y1, int x2, int y2, float z, ResourceLocation texture, float u1, float v1, float u2, float v2) {
-        GlStateManager.enableTexture();
-        GlStateManager.disableLighting();
-        GlStateManager.color3f(1.0F, 1.0F, 1.0F);
+        RenderSystem.enableTexture();
+        RenderSystem.disableLighting();
+        RenderSystem.color3f(1.0F, 1.0F, 1.0F);
         bindTexture(texture);
 
         BufferBuilder buffer = getRenderer();
@@ -284,77 +286,77 @@ public final class RenderingHelper {
 
     public static void drawTextCenteredVertically(String text, int leftX, int top, int bottom, int color) {
         int y = getYForVerticallyCenteredText(top, bottom);
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
         fontRenderer().drawString(text, leftX, y, color);
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
     }
 
     public static void drawTextCenteredHorizontally(String text, int left, int right, int topY, int color) {
         int x = getXForHorizontallyCenteredText(text, left, right);
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
         fontRenderer().drawString(text, x, topY, color);
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
     }
 
     public static void drawTextCentered(String text, int top, int bottom, int left, int right, int color) {
         int x = getXForHorizontallyCenteredText(text, left, right);
         int y = getYForVerticallyCenteredText(top, bottom);
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
         fontRenderer().drawString(text, x, y, color);
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
     }
 
     public static void drawText(String text, int x, int y, int fontHeight, int color) {
         FontRenderer fr = fontRenderer();
         float scale = (float) fontHeight / fr.FONT_HEIGHT;
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(x, y, 0F);
-        GlStateManager.scalef(scale, scale, 1F);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(x, y, 0F);
+        RenderSystem.scalef(scale, scale, 1F);
         fr.drawString(text, 0, 0, color);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     public static void drawTextCenteredVertically(String text, int x, int top, int bottom, int fontHeight, int color) {
         int y = getYForVerticallyCenteredText(top, bottom);
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
         drawText(text, x, y, fontHeight, color);
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
     }
 
     public static void drawTextCenteredHorizontally(String text, int left, int right, int y, int fontHeight, int color) {
         int x = getXForHorizontallyCenteredText(text, left, right);
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
         drawText(text, x, y, fontHeight, color);
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
     }
 
     public static void drawTextCentered(String text, int top, int bottom, int left, int right, int fontHeight, int color) {
         int x = getXForHorizontallyCenteredText(text, left, right);
         int y = getYForVerticallyCenteredText(top, bottom);
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
         drawText(text, x, y, fontHeight, color);
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
     }
 
     public static void drawTextWithShadow(String text, int x, int y, int fontHeight, int color) {
         FontRenderer fr = fontRenderer();
         float scale = (float) fontHeight / fr.FONT_HEIGHT;
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(x, y, 0F);
-        GlStateManager.scalef(scale, scale, 1F);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(x, y, 0F);
+        RenderSystem.scalef(scale, scale, 1F);
         fr.drawStringWithShadow(text, 0, 0, color);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     public static void drawVerticalText(String text, int x, int y, int fontHeight, int color) {
         FontRenderer fr = fontRenderer();
         float scale = (float) fontHeight / fr.FONT_HEIGHT;
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(x + fontHeight, y, 0F);
-        GlStateManager.rotated(90, 0F, 0F, 1F);
-        GlStateManager.scalef(scale, scale, 1F);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(x + fontHeight, y, 0F);
+        RenderSystem.rotatef(90, 0F, 0F, 1F);
+        RenderSystem.scalef(scale, scale, 1F);
         fr.drawString(text, 0, 0, color);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     public static ResourceLocation linkTexture(String path) {
@@ -410,7 +412,7 @@ public final class RenderingHelper {
     public static final int LEFT_BORDER = 2;
 
     public static void renderSideLine(AbstractWidget widget) {
-        GlStateManager.disableTexture();
+        RenderSystem.disableTexture();
         Tessellator.getInstance().getBuffer().begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         int x1 = widget.getAbsoluteX();
         int x2 = x1 + LEFT_BORDER;
@@ -419,6 +421,6 @@ public final class RenderingHelper {
         rectVertices(x1, y1, x2, y2, 0xff797979);
         rectVertices(x1 + 1, y1, x2, y2, 0xffffffff);
         Tessellator.getInstance().draw();
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
     }
 }

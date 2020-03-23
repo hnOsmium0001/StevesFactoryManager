@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -17,7 +18,10 @@ import vswe.stevesfactory.StevesFactoryManager;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class BlockBuilder<T extends TileEntity> {
 
@@ -39,8 +43,7 @@ public final class BlockBuilder<T extends TileEntity> {
     private TileEntityType<T> tileEntityType;
 
     // TileEntityRenderer construction
-    private Class<T> tileClass;
-    private Supplier<TileEntityRenderer<T>> rendererFactory;
+    private Function<TileEntityRendererDispatcher, TileEntityRenderer<T>> rendererFactory;
 
     public BlockBuilder(String registryName) {
         this(new ResourceLocation(StevesFactoryManager.MODID, registryName));
@@ -90,8 +93,7 @@ public final class BlockBuilder<T extends TileEntity> {
         return this;
     }
 
-    public BlockBuilder<T> renderer(@Nonnull Class<T> tileClass, @Nonnull Supplier<TileEntityRenderer<T>> rendererFactory) {
-        this.tileClass = Objects.requireNonNull(tileClass);
+    public BlockBuilder<T> renderer(@Nonnull Function<TileEntityRendererDispatcher, TileEntityRenderer<T>> rendererFactory) {
         this.rendererFactory = Objects.requireNonNull(rendererFactory);
         return this;
     }
@@ -125,7 +127,7 @@ public final class BlockBuilder<T extends TileEntity> {
     @SuppressWarnings("UnusedReturnValue")
     public boolean tryRegisterTileEntityRenderer() {
         if (hasTileEntityRenderer()) {
-            ClientRegistry.bindTileEntitySpecialRenderer(tileClass, rendererFactory.get());
+            ClientRegistry.bindTileEntityRenderer(tileEntityType, dispatcher -> rendererFactory.apply(dispatcher));
             return true;
         }
         return false;
@@ -141,7 +143,7 @@ public final class BlockBuilder<T extends TileEntity> {
 
     @OnlyIn(Dist.CLIENT)
     public boolean hasTileEntityRenderer() {
-        return tileClass != null && rendererFactory != null;
+        return rendererFactory != null;
     }
 
     public ResourceLocation getRegistryName() {

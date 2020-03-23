@@ -1,6 +1,7 @@
 package vswe.stevesfactory.ui.intake;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
@@ -17,6 +18,8 @@ import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.network.PacketSyncIntakeData;
 
 import java.util.*;
+
+import static org.lwjgl.opengl.GL11.glCallList;
 
 public class ItemIntakeGUI extends WidgetScreen<ItemIntakeContainer> {
 
@@ -110,7 +113,7 @@ public class ItemIntakeGUI extends WidgetScreen<ItemIntakeContainer> {
         @Override
         public void render(int mouseX, int mouseY, float particleTicks) {
             RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-            GlStateManager.callList(backgroundDL);
+            glCallList(backgroundDL);
             renderChildren(mouseX, mouseY, particleTicks);
             RenderingHelper.drawTextCenteredVertically(I18n.format("gui.sfm.ItemIntake.Radius"), radius.getAbsoluteXRight() + 2, radius.getAbsoluteY(), radius.getAbsoluteYBottom(), 0xff404040);
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);

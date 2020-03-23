@@ -2,6 +2,7 @@ package vswe.stevesfactory.library.gui.widget.slot;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -24,7 +25,7 @@ public abstract class AbstractItemSlot extends AbstractWidget implements LeafWid
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
         renderBase();
         if (isInside(mouseX, mouseY)) {
             renderHoveredOverlay();
@@ -40,7 +41,7 @@ public abstract class AbstractItemSlot extends AbstractWidget implements LeafWid
         int x = getAbsoluteX() + 1;
         int y = getAbsoluteY() + 1;
         GlStateManager.disableDepthTest();
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderHelper.enableStandardItemLighting();
         ir.renderItemAndEffectIntoGUI(stack, x, y);
         ir.renderItemOverlayIntoGUI(fr, stack, x, y, null);
         RenderHelper.disableStandardItemLighting();

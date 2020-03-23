@@ -109,7 +109,7 @@ public final class ModBlocks {
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::regular, block))
                 .forClient(() -> builder -> builder
-                        .renderer(ItemIntakeTileEntity.class, WorkingAreaRenderer::new)));
+                        .renderer(WorkingAreaRenderer::new)));
 
         pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("instant_item_intake")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
@@ -117,7 +117,7 @@ public final class ModBlocks {
                 .item(defaultItemProperties())
                 .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::instant, block))
                 .forClient(() -> builder -> builder
-                        .renderer(ItemIntakeTileEntity.class, WorkingAreaRenderer::new)));
+                        .renderer(WorkingAreaRenderer::new)));
 
         pendingBlocks.add(new BlockBuilder<BUDTileEntity>("bud")
                 .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))

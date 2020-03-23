@@ -4,13 +4,14 @@
 package vswe.stevesfactory.library.gui.widget.box;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import vswe.stevesfactory.Config;
@@ -22,7 +23,9 @@ import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.utils.Utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
 
@@ -165,8 +168,8 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
     /**
      * Draw a vanilla style overlay.
      * <p>
-     * If there is no world loaded, it will draw a dirt background; if a world is loaded, it will simply draw a vertical gradient rectangle
-     * from {@code 0xc0101010} to {@code 0xd0101010}.
+     * If there is no world loaded, it will draw a dirt background; if a world is loaded, it will simply draw a vertical
+     * gradient rectangle from {@code 0xc0101010} to {@code 0xd0101010}.
      */
     protected final void drawDefaultOverlay() {
         int left = getAbsoluteX();

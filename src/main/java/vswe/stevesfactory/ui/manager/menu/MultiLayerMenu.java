@@ -1,6 +1,7 @@
 package vswe.stevesfactory.ui.manager.menu;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.resources.I18n;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IClientDataStorage;
@@ -21,7 +22,7 @@ public abstract class MultiLayerMenu<P extends IProcedure & IClientDataStorage> 
 
     @Override
     public void renderContents(int mouseX, int mouseY, float particleTicks) {
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
         if (openEditor != null) {
             getToggleStateButton().render(mouseX, mouseY, particleTicks);
             openEditor.render(mouseX, mouseY, particleTicks);

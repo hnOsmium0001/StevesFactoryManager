@@ -3,6 +3,7 @@ package vswe.stevesfactory.ui.manager.editor;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IClientDataStorage;
 import vswe.stevesfactory.api.logic.IErrorPopulator;
@@ -92,7 +93,7 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
 
         @Override
         public void render(int mouseX, int mouseY, float particleTicks) {
-            GlStateManager.color3f(1F, 1F, 1F);
+            RenderSystem.color3f(1F, 1F, 1F);
             super.render(mouseX, mouseY, particleTicks);
         }
     }
@@ -204,7 +205,7 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
         }
 
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        GlStateManager.color3f(1F, 1F, 1F);
+        RenderSystem.color3f(1F, 1F, 1F);
         HEADING_BOX.draw(getAbsoluteX(), getAbsoluteY());
         renderHeadingText();
 

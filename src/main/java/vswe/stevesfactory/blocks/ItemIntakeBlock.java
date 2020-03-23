@@ -9,6 +9,7 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -33,20 +34,17 @@ public class ItemIntakeBlock extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (world.isRemote) {
-            return true;
-        }
-        if (player.isSneaking()) {
-            return false;
+            return ActionResultType.SUCCESS;
         }
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof ItemIntakeTileEntity) {
             ItemIntakeTileEntity intake = (ItemIntakeTileEntity) tile;
             ItemIntakeContainer.openGUI((ServerPlayerEntity) player, intake);
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.FAIL;
     }
 
     @Override

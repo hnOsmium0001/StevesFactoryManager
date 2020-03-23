@@ -1,8 +1,9 @@
 package vswe.stevesfactory;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.*;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
+import net.minecraftforge.common.ForgeConfigSpec.Builder;
+import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import net.minecraftforge.fml.config.ModConfig;
 
 public final class Config {
@@ -192,8 +193,5 @@ public final class Config {
 
     static void onLoad(ModConfig.Loading event) {
         StevesFactoryManager.logger.debug("Loaded {} config file {}", StevesFactoryManager.MODID, event.getConfig().getFileName());
-    }
-
-    static void onConfigChanged(ConfigChangedEvent event) {
     }
 }
