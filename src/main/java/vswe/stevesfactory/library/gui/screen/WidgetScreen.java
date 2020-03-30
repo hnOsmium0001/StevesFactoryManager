@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import vswe.stevesfactory.StevesFactoryManager;
-import vswe.stevesfactory.library.collections.CompositeUnmodifiableList;
+import vswe.stevesfactory.library.collections.CompositeCollection;
 import vswe.stevesfactory.library.gui.RenderingHelper;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.debug.Inspections;
@@ -48,10 +48,10 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
 
     private IWindow primaryWindow;
     private List<IWindow> regularWindows = new ArrayList<>();
-    private List<IPopupWindow> popupWindows = new ArrayList<>();
+    private TreeSet<IPopupWindow> popupWindows = new TreeSet<>();
     private Collection<IWindow> windows;
 
-    private final Queue<Consumer<WidgetScreen>> tasks = new ArrayDeque<>();
+    private final Queue<Consumer<WidgetScreen<?>>> tasks = new ArrayDeque<>();
 
     private final WidgetTreeInspections inspectionHandler = new WidgetTreeInspections();
 
@@ -62,8 +62,8 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
     protected WidgetScreen(C container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
         // Safe downwards erasure cast
-        @SuppressWarnings("unchecked") List<IWindow> popupWindows = (List<IWindow>) (List<? extends IWindow>) this.popupWindows;
-        windows = CompositeUnmodifiableList.of(regularWindows, popupWindows);
+        @SuppressWarnings("unchecked") Collection<IWindow> popupWindows = (Collection<IWindow>) (Collection<? extends IWindow>) this.popupWindows.descendingSet();
+        windows = new CompositeCollection<>(regularWindows, popupWindows);
     }
 
     @Override
@@ -117,7 +117,10 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
 
         inspectionHandler.startCycle();
         primaryWindow.render(mouseX, mouseY, partialTicks);
-        for (IWindow window : windows) {
+        for (IWindow window : regularWindows) {
+            window.render(mouseX, mouseY, partialTicks);
+        }
+        for (IPopupWindow window : popupWindows) {
             window.render(mouseX, mouseY, partialTicks);
         }
         inspectionHandler.endCycle();
@@ -139,7 +142,25 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (windows.stream().anyMatch(window -> window.mouseClicked(mouseX, mouseY, button))) {
+        boolean captured = false;
+        passEvents:
+        {
+            for (IWindow window : regularWindows) {
+                if (window.mouseClicked(mouseX, mouseY, button)) {
+                    captured = true;
+                    break passEvents;
+                }
+            }
+            for (IPopupWindow window : popupWindows.descendingSet()) {
+                if (window.mouseClicked(mouseX, mouseY, button)) {
+                    raiseWindowToTop(window);
+                    captured = true;
+                    break passEvents;
+                }
+            }
+        }
+
+        if (captured) {
             return true;
         } else {
             return primaryWindow.mouseClicked(mouseX, mouseY, button);
@@ -226,7 +247,7 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
         super.removed();
     }
 
-    public void scheduleTask(Consumer<WidgetScreen> task) {
+    public void scheduleTask(Consumer<WidgetScreen<?>> task) {
         tasks.add(task);
     }
 
@@ -252,11 +273,28 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
     }
 
     public void addPopupWindow(IPopupWindow popup) {
-        popupWindows.add(popup);
+        // TODO proper solution to button in popup that creates a popup
+        scheduleTask(__ -> {
+            popup.setOrder(nextOrderIndex());
+            popupWindows.add(popup);
+            popup.onAdded(this);
+        });
     }
 
     public void removePopupWindow(IPopupWindow popup) {
         popupWindows.remove(popup);
         popup.onRemoved();
+    }
+
+    private int nextOrderIndex = 0;
+
+    public void raiseWindowToTop(IPopupWindow window) {
+        popupWindows.remove(window);
+        window.setOrder(nextOrderIndex());
+        popupWindows.add(window);
+    }
+
+    public int nextOrderIndex() {
+        return nextOrderIndex++;
     }
 }
