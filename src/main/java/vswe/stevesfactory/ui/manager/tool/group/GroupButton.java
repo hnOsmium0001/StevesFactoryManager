@@ -14,12 +14,15 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public class GroupButton extends TextButton {
 
-    private final String groupName;
+    public static String formatGroupName(String group) {
+        return group.isEmpty() ? I18n.format("gui.sfm.FactoryManager.Tool.Group.DefaultGroup") : group;
+    }
+
+    private String group;
 
     public GroupButton(String name) {
-        this.groupName = name;
-        setText(name.isEmpty() ? I18n.format("gui.sfm.FactoryManager.Tool.Group.DefaultGroup") : name);
-        setHeight(12);
+        this.setGroup(name);
+        this.setHeight(12);
     }
 
     @Override
@@ -45,53 +48,60 @@ public class GroupButton extends TextButton {
     }
 
     private void actionSwitchGroup() {
-        FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel.setCurrentGroup(groupName);
+        FactoryManagerGUI.get().groupModel.setCurrentGroup(group);
     }
 
     private void actionDelete() {
-        GroupList groupList = getGroupList();
-        groupList.delete(groupName);
-        groupList.onProcedureGroupChanged();
+        getGroupList().delete(group);
     }
 
     private void actionRename() {
-        Dialog.createPrompt("gui.sfm.FactoryManager.Tool.Group.PopupMsg.RenameGroup", (b, newName) -> {
-            GroupList groupList = getGroupList();
-            for (GroupButton group : groupList.getChildren()) {
-                if (group != this && groupName.equals(group.groupName)) {
-                    Dialog.createDialog(I18n.format("gui.sfm.FactoryManager.Tool.Group.PopupMsg.RenameFailed", newName)).tryAddSelfToActiveGUI();
+        Dialog.createPrompt("gui.sfm.FactoryManager.Tool.Group.Dialog.RenameGroup", (b, newName) -> {
+            for (String group : FactoryManagerGUI.get().groupModel.getGroups()) {
+                if (newName.equals(group)) {
+                    Dialog.createDialog(I18n.format("gui.sfm.FactoryManager.Tool.Group.Dialog.RenameFailed", newName)).tryAddSelfToActiveGUI();
                     return;
                 }
             }
-            groupList.move(groupName, newName);
-            groupList.onProcedureGroupChanged();
+            FactoryManagerGUI.get().groupModel.updateGroup(group, newName);
         }).tryAddSelfToActiveGUI();
     }
 
     private void actionMoveContent() {
-        Dialog.createPrompt("gui.sfm.FactoryManager.Tool.Group.PopupMsg.MoveContent", (b, toGroup) -> {
-            GroupList groupList = getGroupList();
-            boolean exists = false;
-            for (GroupButton group : groupList.getChildren()) {
-                if (toGroup.equals(group.groupName)) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                Dialog.createDialog(I18n.format("gui.sfm.FactoryManager.Tool.Group.PopupMsg.MoveFailed", toGroup)).tryAddSelfToActiveGUI();
-                return;
-            }
-            groupList.move(groupName, toGroup);
-            groupList.onProcedureGroupChanged();
-        }).tryAddSelfToActiveGUI();
+        Grouplist.createSelectGroupDialog(
+                toGroup -> {
+                    if (!this.group.equals(toGroup)) {
+                        FactoryManagerGUI.get().getTopLevel().editorPanel.moveGroup(this.group, toGroup);
+                        FactoryManagerGUI.get().getTopLevel().connectionsPanel.moveGroup(this.group, toGroup);
+                    }
+                },
+                () -> {}).tryAddSelfToActiveGUI();
     }
 
-    private GroupList getGroupList() {
-        return FactoryManagerGUI.getActiveGUI().getTopLevel().toolboxPanel.getGroupList();
+    private static Grouplist getGroupList() {
+        return FactoryManagerGUI.get().getTopLevel().toolboxPanel.getGroupList();
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+        this.setTextRaw(formatGroupName(group));
+    }
+
+    @Override
+    public int getNormalBorderColor() {
+        return isSelected() ? 0xffffff66 : super.getNormalBorderColor();
+    }
+
+    @Override
+    public int getHoveredBorderColor() {
+        return isSelected() ? 0xffffff00 : super.getNormalBorderColor();
+    }
+
+    private boolean isSelected() {
+        return group.equals(FactoryManagerGUI.get().groupModel.getCurrentGroup());
     }
 }

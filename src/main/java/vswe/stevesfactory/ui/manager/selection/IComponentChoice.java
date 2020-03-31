@@ -31,11 +31,13 @@ public interface IComponentChoice extends IWidget {
     default void createFlowComponent(IProcedureType<?> type) {
         BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrent()).getController().getPosition();
         INetworkController controller = (INetworkController) Objects.requireNonNull(Minecraft.getInstance().world.getTileEntity(controllerPos));
+        EditorPanel editor = getEditorPanel();
 
-        FlowComponent<?> flowComponent = NetworkHelper.fabricateInstance(controller, type).createFlowComponent();
+        FlowComponent<?> comp = NetworkHelper.fabricateInstance(controller, type).createFlowComponent();
         // Magic number so that the flow component don't overlap with the selection panel
-        flowComponent.setLocation(10, 20);
-        getEditorPanel().addChildren(flowComponent);
+        comp.setLocation(10, 20);
+        comp.setGroup(FactoryManagerGUI.get().groupModel.getCurrentGroup());
+        editor.addChildren(comp);
     }
 
     EditorPanel getEditorPanel();

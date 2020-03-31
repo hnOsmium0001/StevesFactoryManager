@@ -1,11 +1,14 @@
 package vswe.stevesfactory.library.gui.window;
 
+import vswe.stevesfactory.library.gui.debug.ITextReceiver;
+
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 
 public abstract class AbstractPopupWindow extends AbstractWindow implements IPopupWindow {
 
     private int initialDragLocalX = -1, initialDragLocalY = -1;
     public boolean alive = true;
+    private int order;
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -71,5 +74,21 @@ public abstract class AbstractPopupWindow extends AbstractWindow implements IPop
     @Override
     public boolean shouldDiscard() {
         return !alive;
+    }
+
+    @Override
+    public int getOrder() {
+        return order;
+    }
+
+    @Override
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    @Override
+    public void provideInformation(ITextReceiver receiver) {
+        super.provideInformation(receiver);
+        receiver.line("Order=" + order);
     }
 }

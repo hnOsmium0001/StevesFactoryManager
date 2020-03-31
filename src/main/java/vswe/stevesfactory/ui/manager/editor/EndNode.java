@@ -1,7 +1,6 @@
 package vswe.stevesfactory.ui.manager.editor;
 
 import com.mojang.datafixers.util.Either;
-import vswe.stevesfactory.api.logic.Connection;
 import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.library.gui.TextureWrapper;
 import vswe.stevesfactory.library.gui.widget.AbstractIconButton;
@@ -24,14 +23,15 @@ public final class EndNode extends AbstractIconButton implements INode {
     private INode previous;
     private StartNode start;
 
-    private final int index;
-    private final ShadowNode shadow;
+    public final int index;
+    public final ShadowNode shadow;
 
     public EndNode(int index) {
         super(0, 0, REGULAR_WIDTH, REGULAR_HEIGHT);
         this.index = index;
         this.shadow = new ShadowNode(this);
-        FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.addChildren(shadow);
+        // This action will do nothing if we are reading from network data
+        FactoryManagerGUI.get().getTopLevel().connectionsPanel.addChildren(shadow);
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class EndNode extends AbstractIconButton implements INode {
     }
 
     private void updateShadowPosition() {
-        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
         int x = this.getAbsoluteX() - editor.getAbsoluteX();
         int y = this.getAbsoluteY() - editor.getAbsoluteY();
         shadow.setLocation(x, y);
@@ -55,7 +55,7 @@ public final class EndNode extends AbstractIconButton implements INode {
 
     @Override
     public void onRemoved() {
-        FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(shadow);
+        FactoryManagerGUI.get().getTopLevel().connectionsPanel.removeChildren(shadow);
     }
 
     @Override
@@ -83,7 +83,7 @@ public final class EndNode extends AbstractIconButton implements INode {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (isFocused()) {
-            FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.onTerminalNodeClick(Either.right(this), button);
+            FactoryManagerGUI.get().getTopLevel().connectionsPanel.onTerminalNodeClick(Either.right(this), button);
             return true;
         }
         return false;
@@ -142,10 +142,6 @@ public final class EndNode extends AbstractIconButton implements INode {
     @Override
     public Type getType() {
         return Type.END;
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     public StartNode getStart() {

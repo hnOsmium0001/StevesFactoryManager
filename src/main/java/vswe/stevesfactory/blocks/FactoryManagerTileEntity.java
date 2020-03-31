@@ -13,6 +13,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -38,6 +39,7 @@ import vswe.stevesfactory.api.network.ICable;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.network.PacketSyncProcedureGraph;
+import vswe.stevesfactory.network.PacketSyncProcedureGroups;
 import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.ui.manager.FactoryManagerContainer;
 import vswe.stevesfactory.utils.IOHelper;
@@ -53,11 +55,13 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     private Map<String, Multiset<BlockPos>> linkedInventories = new HashMap<>();
 
     private ProcedureGraph graph = ProcedureGraph.create();
+    private Set<String> groups = new HashSet<>();
 
     private int ticks;
 
     public FactoryManagerTileEntity() {
         super(ModBlocks.factoryManagerTileEntity);
+        groups.add("");
     }
 
     @Override
@@ -227,6 +231,11 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         this.graph = graph;
     }
 
+    @Override
+    public Set<String> getGroups() {
+        return groups;
+    }
+
     /**
      * @return {@code true} always. See {@link Multiset#add(Object)} for details.
      */
@@ -269,6 +278,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         assert world != null;
         if (world.isRemote) {
             NetworkHandler.sendToServer(new PacketSyncProcedureGraph(getDimension(), getPosition(), graph));
+            NetworkHandler.sendToServer(new PacketSyncProcedureGroups(getDimension(), getPosition(), groups));
         }
     }
 
@@ -348,6 +358,12 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         }
 
         graph.deserialize(compound.getCompound("Procedures"));
+
+        ListNBT serializedGroups = compound.getList("Groups", Constants.NBT.TAG_STRING);
+        groups.clear();
+        for (int i = 0; i < serializedGroups.size(); i++) {
+            groups.add(serializedGroups.getString(i));
+        }
     }
 
     @Override
@@ -381,6 +397,12 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
         }
         compound.put("LinkedInventories", serializedInventories);
         compound.put("Procedures", graph.serialize());
+
+        ListNBT serializedGroups = new ListNBT();
+        for (String group : groups) {
+            serializedGroups.add(new StringNBT(group));
+        }
+        compound.put("Groups", serializedGroups);
 
         return compound;
     }

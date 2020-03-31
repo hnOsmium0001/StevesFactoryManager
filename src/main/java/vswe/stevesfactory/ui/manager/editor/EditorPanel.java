@@ -3,7 +3,6 @@ package vswe.stevesfactory.ui.manager.editor;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
@@ -23,27 +22,20 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
+import vswe.stevesfactory.ui.manager.tool.group.GroupDataModel;
 import vswe.stevesfactory.utils.NetworkHelper;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static vswe.stevesfactory.library.gui.RenderingHelper.fontRenderer;
 
 public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
 
-    /**
-     * This is a tree set (ordered set) because handling z-index of the flow components need things to be sorted.
-     */
-    private TreeSet<FlowComponent<?>> children = new TreeSet<>();
-    private Collection<FlowComponent<?>> childrenView = new DescendingTreeSetBackedUnmodifiableCollection<>(children);
+    private Map<String, TreeSet<FlowComponent<?>>> groupMappedChildren = new HashMap<>();
+    private TreeSet<FlowComponent<?>> children;
+    private Collection<FlowComponent<?>> childrenView;
     private int nextZIndex = 0;
-
-    private String currentGroup = "";
 
     private OffsetText xOffset;
     private OffsetText yOffset;
@@ -55,22 +47,36 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         xOffset.setParentWidget(this);
         yOffset = new OffsetText(I18n.format("gui.sfm.FactoryManager.Editor.YOff"), 0, 0);
         yOffset.setParentWidget(this);
+
+        children = new TreeSet<>();
+        childrenView = children.descendingSet();
+        groupMappedChildren.put(GroupDataModel.DEFAULT_GROUP, children);
+
+        GroupDataModel data = FactoryManagerGUI.get().groupModel;
+        data.addListenerRemove(this::onGroupRemoved);
+        data.addListenerUpdate(this::onGroupUpdated);
+        data.addListenerSelect(this::onGroupSelected);
     }
 
-    public void readProcedures() {
-        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrent()).getController().getPosition();
-        INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
-
-        Map<IProcedure, FlowComponent<?>> m = new HashMap<>();
-        for (IProcedure procedure : controller.getPGraph().iterableValidAll()) {
-            FlowComponent<?> f = procedure.createFlowComponent();
-            m.put(procedure, f);
-            addChildren(f);
+    private void onGroupRemoved(String group) {
+        for (FlowComponent<?> component : children) {
+            if (component.getGroup().equals(group)) {
+                FactoryManagerGUI.get().scheduleTask(__ -> component.remove());
+            }
         }
+    }
 
-        for (FlowComponent<?> child : children) {
-            child.readConnections(m);
+    private void onGroupUpdated(String from, String to) {
+        for (FlowComponent<?> component : children) {
+            if (component.getGroup().equals(from)) {
+                component.setGroup(to);
+            }
         }
+    }
+
+    private void onGroupSelected(String current) {
+        children = groupMappedChildren.computeIfAbsent(current, __ -> new TreeSet<>());
+        childrenView = children.descendingSet();
     }
 
     public TreeSet<FlowComponent<?>> getFlowComponents() {
@@ -120,9 +126,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
 
             // Iterate in ascending order for rendering as a special case
             for (FlowComponent<?> child : children) {
-                if (!currentGroup.equals(child.getGroup())) {
-                    continue;
-                }
                 child.render(translatedX, translatedY, particleTicks);
             }
         }
@@ -143,9 +146,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
 
         // All other events will be iterated in descending order
         for (FlowComponent<?> child : getChildren()) {
-            if (!currentGroup.equals(child.getGroup())) {
-                continue;
-            }
             if (child.mouseClicked(translatedX, translatedY, button)) {
                 raiseComponentToTop(child);
                 return true;
@@ -184,9 +184,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         double translatedX = mouseX - xOffset.get();
         double translatedY = mouseY - yOffset.get();
         for (FlowComponent<?> child : getChildren()) {
-            if (!currentGroup.equals(child.getGroup())) {
-                continue;
-            }
             if (child.mouseReleased(translatedX, translatedY, button)) {
                 return true;
             }
@@ -208,9 +205,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         }
 
         for (FlowComponent<?> child : getChildren()) {
-            if (!currentGroup.equals(child.getGroup())) {
-                continue;
-            }
             if (child.mouseDragged(mouseX - xOffset.get(), mouseY - yOffset.get(), button, deltaX, deltaY)) {
                 return true;
             }
@@ -230,9 +224,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         double translatedX = mouseX - xOffset.get();
         double translatedY = mouseY - yOffset.get();
         for (FlowComponent<?> child : getChildren()) {
-            if (!currentGroup.equals(child.getGroup())) {
-                continue;
-            }
             if (child.mouseScrolled(translatedX, translatedY, scroll)) {
                 return true;
             }
@@ -250,9 +241,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         }
 
         for (FlowComponent<?> child : getChildren()) {
-            if (!currentGroup.equals(child.getGroup())) {
-                continue;
-            }
             child.mouseMoved(mouseX - xOffset.get(), mouseY - yOffset.get());
         }
     }
@@ -260,9 +248,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         for (FlowComponent<?> child : getChildren()) {
-            if (!currentGroup.equals(child.getGroup())) {
-                continue;
-            }
             if (child.keyPressed(keyCode, scanCode, modifiers)) {
                 return true;
             }
@@ -271,16 +256,16 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         int offset = Screen.hasShiftDown() ? Config.CLIENT.acceleratedEditorMoveSpeed.get() : Config.CLIENT.defaultEditorMoveSpeed.get();
         switch (keyCode) {
             case GLFW_KEY_UP:
-                yOffset.subtract(offset);
-                break;
-            case GLFW_KEY_DOWN:
                 yOffset.add(offset);
                 break;
+            case GLFW_KEY_DOWN:
+                yOffset.subtract(offset);
+                break;
             case GLFW_KEY_LEFT:
-                xOffset.subtract(offset);
+                xOffset.add(offset);
                 break;
             case GLFW_KEY_RIGHT:
-                xOffset.add(offset);
+                xOffset.subtract(offset);
                 break;
         }
         return false;
@@ -289,9 +274,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         for (FlowComponent<?> child : getChildren()) {
-            if (!currentGroup.equals(child.getGroup())) {
-                continue;
-            }
             if (child.keyReleased(keyCode, scanCode, modifiers)) {
                 return true;
             }
@@ -302,9 +284,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
     @Override
     public boolean charTyped(char charTyped, int keyCode) {
         for (FlowComponent<?> child : getChildren()) {
-            if (!currentGroup.equals(child.getGroup())) {
-                continue;
-            }
             if (child.charTyped(charTyped, keyCode)) {
                 return true;
             }
@@ -315,9 +294,6 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
     @Override
     public void update(float particleTicks) {
         for (FlowComponent<?> child : getChildren()) {
-            if (!currentGroup.equals(child.getGroup())) {
-                continue;
-            }
             child.update(particleTicks);
         }
     }
@@ -326,7 +302,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
                 new CallbackEntry(FactoryManagerGUI.PASTE_ICON, "gui.sfm.FactoryManager.Editor.CtxMenu.Paste", b -> actionPaste()),
                 new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.CleanupProcedures", b -> actionCleanup()),
-                new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
+                new CallbackEntry(null, "gui.sfm.FactoryManager.Generic.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.get().getPrimaryWindow().toggleFullscreen())
         ));
         WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
@@ -337,11 +313,11 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         try {
             tag = JsonToNBT.getTagFromJson(json);
         } catch (CommandSyntaxException e) {
-            Dialog.createDialog("gui.sfm.FactoryManager.Editor.PopupMsg.PasteProcedure.Fail").tryAddSelfToActiveGUI();
+            Dialog.createDialog("gui.sfm.FactoryManager.Editor.Dialog.PasteProcedure.Fail").tryAddSelfToActiveGUI();
             return;
         }
 
-        INetworkController controller = FactoryManagerGUI.getActiveGUI().getController();
+        INetworkController controller = FactoryManagerGUI.get().getController();
         IProcedure procedure = NetworkHelper.retrieveProcedureAndAdd(controller, tag);
 
         addChildren(procedure.createFlowComponent());
@@ -404,38 +380,35 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         children.add(child);
     }
 
-//    public void startConnection(NodeUtils source) {
-//        selectedNode = source;
-//    }
-//
-//    public boolean tryFinishConnection(NodeUtils target) {
-//        if (selectedNode != null && selectedNode.shouldConnect(target) && target.shouldConnect(selectedNode)) {
-//            ConnectionsPanel.connect(selectedNode);
-//            selectedNode = null;
-//            return true;
-//        }
-//        return false;
-//    }
-
     public void saveAll() {
-        for (FlowComponent<?> flowComponent : getChildren()) {
-            flowComponent.save();
+        for (TreeSet<FlowComponent<?>> children : groupMappedChildren.values()) {
+            for (FlowComponent<?> child : children) {
+                child.save();
+            }
         }
     }
 
-    @Override
-    public void provideInformation(ITextReceiver receiver) {
-        super.provideInformation(receiver);
-        receiver.line("XOff=" + xOffset.get());
-        receiver.line("YOff=" + yOffset.get());
-    }
+    public void readProcedures() {
+        BlockPos controllerPos = ((FactoryManagerGUI) WidgetScreen.getCurrent()).getController().getPosition();
+        INetworkController controller = Objects.requireNonNull((INetworkController) Minecraft.getInstance().world.getTileEntity(controllerPos));
 
-    public String getCurrentGroup() {
-        return currentGroup;
-    }
+        FactoryManagerGUI.get().getTopLevel().connectionsPanel.disabledModification = true;
+        Map<IProcedure, FlowComponent<?>> m = new HashMap<>();
+        for (IProcedure procedure : controller.getPGraph().iterableValidAll()) {
+            FlowComponent<?> f = procedure.createFlowComponent();
+            f.setParentWidget(this);
+            f.setZIndex(nextZIndex());
 
-    public void setCurrentGroup(String currentGroup) {
-        this.currentGroup = currentGroup;
+            m.put(procedure, f);
+            groupMappedChildren.computeIfAbsent(f.getGroup(), __ -> new TreeSet<>()).add(f);
+        }
+        FactoryManagerGUI.get().getTopLevel().connectionsPanel.disabledModification = false;
+
+        for (TreeSet<FlowComponent<?>> children : groupMappedChildren.values()) {
+            for (FlowComponent<?> child : children) {
+                child.readConnections(m);
+            }
+        }
     }
 
     public int getXOffset() {
@@ -446,91 +419,28 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         return yOffset.get();
     }
 
-    @MethodsReturnNonnullByDefault
-    @ParametersAreNonnullByDefault
-    private static class DescendingTreeSetBackedUnmodifiableCollection<E> extends AbstractCollection<E> {
-
-        private final TreeSet<E> s;
-
-        public DescendingTreeSetBackedUnmodifiableCollection(TreeSet<E> s) {
-            this.s = s;
+    public void moveGroup(String from, String to) {
+        TreeSet<FlowComponent<?>> original = groupMappedChildren.computeIfAbsent(from, __ -> new TreeSet<>());
+        groupMappedChildren.computeIfAbsent(to, __ -> new TreeSet<>()).addAll(original);
+        for (FlowComponent<?> component : original) {
+            component.setGroup(to);
         }
+        original.clear();
+    }
 
-        public int size() {
-            return this.s.size();
+    @Override
+    public void notifyChildrenForPositionChange() {
+        for (TreeSet<FlowComponent<?>> children : groupMappedChildren.values()) {
+            for (FlowComponent<?> child : children) {
+                child.onParentPositionChanged();
+            }
         }
+    }
 
-        public boolean isEmpty() {
-            return this.s.isEmpty();
-        }
-
-        public boolean contains(Object var1) {
-            return this.s.contains(var1);
-        }
-
-        public Object[] toArray() {
-            return this.s.toArray();
-        }
-
-        public <T> T[] toArray(T[] a) {
-            return this.s.toArray(a);
-        }
-
-        public String toString() {
-            return this.s.toString();
-        }
-
-        @Override
-        public Iterator<E> iterator() {
-            return s.descendingIterator();
-        }
-
-        public boolean add(E e) {
-            throw new UnsupportedOperationException();
-        }
-
-        public boolean remove(Object o) {
-            throw new UnsupportedOperationException();
-        }
-
-        public boolean containsAll(Collection<?> c) {
-            return this.s.containsAll(c);
-        }
-
-        public boolean addAll(Collection<? extends E> c) {
-            throw new UnsupportedOperationException();
-        }
-
-        public boolean removeAll(Collection<?> c) {
-            throw new UnsupportedOperationException();
-        }
-
-        public boolean retainAll(Collection<?> c) {
-            throw new UnsupportedOperationException();
-        }
-
-        public void clear() {
-            throw new UnsupportedOperationException();
-        }
-
-        public void forEach(Consumer<? super E> c) {
-            this.s.forEach(c);
-        }
-
-        public boolean removeIf(Predicate<? super E> p) {
-            throw new UnsupportedOperationException();
-        }
-
-        public Spliterator<E> spliterator() {
-            return this.s.spliterator();
-        }
-
-        public Stream<E> stream() {
-            return this.s.stream();
-        }
-
-        public Stream<E> parallelStream() {
-            return this.s.parallelStream();
-        }
+    @Override
+    public void provideInformation(ITextReceiver receiver) {
+        super.provideInformation(receiver);
+        receiver.line("XOff=" + xOffset.get());
+        receiver.line("YOff=" + yOffset.get());
     }
 }

@@ -19,10 +19,11 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.AbstractContainer;
 import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.library.gui.window.AbstractWindow;
-import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.editor.ConnectionsPanel;
+import vswe.stevesfactory.ui.manager.editor.EditorPanel;
 import vswe.stevesfactory.ui.manager.selection.SelectionPanel;
 import vswe.stevesfactory.ui.manager.tool.ToolPanel;
+import vswe.stevesfactory.ui.manager.tool.group.GroupDataModel;
 import vswe.stevesfactory.ui.manager.toolbox.ToolboxPanel;
 
 import java.awt.*;
@@ -30,7 +31,7 @@ import java.util.List;
 
 public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
 
-    public static FactoryManagerGUI getActiveGUI() {
+    public static FactoryManagerGUI get() {
         return (FactoryManagerGUI) Minecraft.getInstance().currentScreen;
     }
 
@@ -165,8 +166,8 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             setScreenBounds(width, height);
             topLevel.reflow();
 
-            getActiveGUI().xSize = width;
-            getActiveGUI().ySize = height;
+            get().xSize = width;
+            get().ySize = height;
         }
 
         private void asFullscreen() {
@@ -260,4 +261,6 @@ public class FactoryManagerGUI extends WidgetScreen<FactoryManagerContainer> {
             DynamicWidthWidget.reflowDynamicWidth(getDimensions(), children);
         }
     }
+
+    public final GroupDataModel groupModel = new GroupDataModel(this);
 }

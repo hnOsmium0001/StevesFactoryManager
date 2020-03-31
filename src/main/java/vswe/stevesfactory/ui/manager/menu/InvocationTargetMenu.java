@@ -48,7 +48,7 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
     }
 
     private void scanTargets() {
-        EditorPanel editor = FactoryManagerGUI.getActiveGUI().getTopLevel().editorPanel;
+        EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
         FunctionInvokeProcedure p = getLinkedProcedure();
         int i = 0;
         for (FlowComponent<?> component : editor.getFlowComponents()) {
@@ -120,7 +120,7 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
             int y1 = getAbsoluteY();
             int x2 = getAbsoluteXRight();
             int y2 = getAbsoluteYBottom();
-            rectVertices(x1, y1, x2, y2, InvocationTargetMenu.this.selected == this.index ? 0xff00ffff : 0xff8c8c8c);
+            rectVertices(x1, y1, x2, y2, InvocationTargetMenu.this.selected == this.index ? 0xffffff66 : 0xff8c8c8c);
             rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, isInside(mouseX, mouseY) ? 0xff737373 : 0xffc9c9c9);
             Tessellator.getInstance().draw();
 
@@ -133,7 +133,7 @@ public class InvocationTargetMenu extends Menu<FunctionInvokeProcedure> {
             test.destroy();
 
             if (isInside(mouseX, mouseY)) {
-                FactoryManagerGUI.getActiveGUI().setHoveringText(name, mouseX, mouseY);
+                FactoryManagerGUI.get().setHoveringText(name, mouseX, mouseY);
             }
 
             RenderEventDispatcher.onPostRender(this, mouseX, mouseY);

@@ -9,9 +9,7 @@ import vswe.stevesfactory.library.gui.widget.mixin.LeafWidgetMixin;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.utils.Utils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
@@ -21,7 +19,7 @@ import static vswe.stevesfactory.library.gui.RenderingHelper.rectVertices;
 public class IntermediateNode extends AbstractWidget implements INode, LeafWidgetMixin {
 
     public static IntermediateNode dragOutIntermediateNode(INode start, INode end, int mouseX, int mouseY) {
-        FactoryManagerGUI.TopLevelWidget topLevel = FactoryManagerGUI.getActiveGUI().getTopLevel();
+        FactoryManagerGUI.TopLevelWidget topLevel = FactoryManagerGUI.get().getTopLevel();
         IntermediateNode node = ConnectionsPanel.subdivideConnection(start, end);
         topLevel.connectionsPanel.addChildren(node);
         node.setLocation(mouseX - topLevel.editorPanel.getAbsoluteX(), mouseY - topLevel.editorPanel.getAbsoluteY());
@@ -72,7 +70,7 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
                 break;
             case GLFW_MOUSE_BUTTON_RIGHT:
                 ConnectionsPanel.mergeConnection(previous, next, this);
-                FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(this);
+                FactoryManagerGUI.get().getTopLevel().connectionsPanel.removeChildren(this);
                 break;
         }
         return true;
@@ -87,7 +85,7 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (isDragging()) {
-            ConnectionsPanel parent = FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel;
+            ConnectionsPanel parent = FactoryManagerGUI.get().getTopLevel().connectionsPanel;
             int x = (int) mouseX - parent.getAbsoluteX() - initialDragLocalX;
             int y = (int) mouseY - parent.getAbsoluteY() - initialDragLocalY;
             setLocation(x, y);
@@ -145,7 +143,7 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
 
     @Override
     public void onEdgeRemoval() {
-        FactoryManagerGUI.getActiveGUI().getTopLevel().connectionsPanel.removeChildren(this);
+        FactoryManagerGUI.get().getTopLevel().connectionsPanel.removeChildren(this);
     }
 
     @Override

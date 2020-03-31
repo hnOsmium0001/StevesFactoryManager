@@ -22,6 +22,7 @@ import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.box.MinimumLinearList;
 import vswe.stevesfactory.library.gui.window.Dialog;
+import vswe.stevesfactory.ui.manager.tool.group.Grouplist;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
@@ -589,7 +590,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     private void actionDelete() {
         if (Screen.hasShiftDown()) {
             Dialog.createBiSelectionDialog(
-                    "gui.sfm.FactoryManager.Editor.PopupMsg.DeleteAll.ConfirmMsg",
+                    "gui.sfm.FactoryManager.Editor.Dialog.DeleteAll.ConfirmMsg",
                     "gui.sfm.yes",
                     "gui.sfm.no",
                     b -> removeGraph(this), b -> {
@@ -611,9 +612,10 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     }
 
     private void actionChangeGroup() {
-        Dialog.createPrompt("gui.sfm.FactoryManager.Editor.PopupMsg.ChangeGroup", (b, newGroup) -> {
+        Grouplist.createSelectGroupDialog(newGroup -> {
             disconnect();
             setGroup(newGroup);
+        }, () -> {
         }).tryAddSelfToActiveGUI();
     }
 
@@ -726,7 +728,6 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
 
     public void setGroup(String group) {
         procedure.setGroup(group);
-        getActiveGUI().getTopLevel().toolboxPanel.getGroupList().onProcedureGroupChanged();
     }
 
     public IClientDataStorage getDataHandler() {

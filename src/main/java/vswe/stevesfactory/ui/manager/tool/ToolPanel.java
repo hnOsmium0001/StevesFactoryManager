@@ -34,7 +34,7 @@ public final class ToolPanel extends DynamicWidthWidget<IWidget> {
             panel.setHeight(getHeight());
             getWindow().setFocusedWidget(panel);
         }
-        FactoryManagerGUI.getActiveGUI().getTopLevel().reflow();
+        FactoryManagerGUI.get().getTopLevel().reflow();
     }
 
     @Override
@@ -81,8 +81,7 @@ public final class ToolPanel extends DynamicWidthWidget<IWidget> {
 
     private void openContextMenu() {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                new CallbackEntry(null, "gui.sfm.FactoryManager.Tool.CtxMenu.CloseToolPanel", b -> setActivePanel(null)),
-                new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
+                new CallbackEntry(null, "gui.sfm.FactoryManager.Generic.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.get().getPrimaryWindow().toggleFullscreen())
         ));
         WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }

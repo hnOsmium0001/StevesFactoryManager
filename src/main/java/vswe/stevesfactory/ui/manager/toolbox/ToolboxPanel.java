@@ -15,7 +15,7 @@ import vswe.stevesfactory.library.gui.widget.IWidget;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 import vswe.stevesfactory.ui.manager.tool.ToolPanel;
-import vswe.stevesfactory.ui.manager.tool.group.GroupList;
+import vswe.stevesfactory.ui.manager.tool.group.Grouplist;
 
 import java.util.*;
 
@@ -26,7 +26,7 @@ public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
 
     public static final TextureWrapper GROUP_LIST_ICON = TextureWrapper.ofGUITexture("tool_icon/group.png", 16, 16, 0, 0, 16, 16);
 
-    private final IconToolType<GroupList> groupList;
+    private final IconToolType<Grouplist> groupList;
     private final AbstractIconButton close;
     private final List<IWidget> children = new ArrayList<>();
 
@@ -34,7 +34,7 @@ public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
         super(WidthOccupierType.MIN_WIDTH);
         this.setWidth(8 + RenderingHelper.LEFT_BORDER);
 
-        addChildOnly(groupList = new IconToolType<>(GROUP_LIST_ICON, GroupList::new).setName(I18n.format("gui.sfm.FactoryManager.Tool.Group.Name")));
+        addChildOnly(groupList = new IconToolType<>(GROUP_LIST_ICON, Grouplist::new).setName(I18n.format("gui.sfm.FactoryManager.Tool.Group.Name")));
         addChildOnly(close = new AbstractIconButton(0, 0, 8, 8) {
             @Override
             public void render(int mouseX, int mouseY, float particleTicks) {
@@ -46,7 +46,7 @@ public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
 
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                ToolPanel panel = FactoryManagerGUI.getActiveGUI().getPrimaryWindow().topLevel.toolPanel;
+                ToolPanel panel = FactoryManagerGUI.get().getPrimaryWindow().topLevel.toolPanel;
                 panel.setActivePanel(null);
                 return true;
             }
@@ -128,12 +128,12 @@ public final class ToolboxPanel extends DynamicWidthWidget<IWidget> {
 
     private void openActionMenu() {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                new CallbackEntry(null, "gui.sfm.FactoryManager.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.getActiveGUI().getPrimaryWindow().toggleFullscreen())
+                new CallbackEntry(null, "gui.sfm.FactoryManager.Generic.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.get().getPrimaryWindow().toggleFullscreen())
         ));
         WidgetScreen.getCurrent().addPopupWindow(contextMenu);
     }
 
-    public GroupList getGroupList() {
+    public Grouplist getGroupList() {
         return groupList.getToolWindow();
     }
 }
