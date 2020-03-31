@@ -22,7 +22,7 @@ import vswe.stevesfactory.library.gui.widget.TextField;
 import vswe.stevesfactory.library.gui.widget.box.LinearList;
 import vswe.stevesfactory.library.gui.widget.box.MinimumLinearList;
 import vswe.stevesfactory.library.gui.window.Dialog;
-import vswe.stevesfactory.ui.manager.tool.group.SelectGroupDialog;
+import vswe.stevesfactory.ui.manager.tool.group.Grouplist;
 import vswe.stevesfactory.utils.NetworkHelper;
 
 import javax.annotation.Nonnull;
@@ -612,7 +612,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
     }
 
     private void actionChangeGroup() {
-        SelectGroupDialog.create(newGroup -> {
+        Grouplist.createSelectGroupDialog(newGroup -> {
             disconnect();
             setGroup(newGroup);
         }, () -> {

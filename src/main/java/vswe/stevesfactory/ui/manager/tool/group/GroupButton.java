@@ -8,7 +8,6 @@ import vswe.stevesfactory.library.gui.screen.WidgetScreen;
 import vswe.stevesfactory.library.gui.widget.TextButton;
 import vswe.stevesfactory.library.gui.window.Dialog;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
-import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
@@ -49,7 +48,7 @@ public class GroupButton extends TextButton {
     }
 
     private void actionSwitchGroup() {
-        FactoryManagerGUI.get().getTopLevel().editorPanel.setCurrentGroup(group);
+        FactoryManagerGUI.get().groupModel.setCurrentGroup(group);
     }
 
     private void actionDelete() {
@@ -58,8 +57,8 @@ public class GroupButton extends TextButton {
 
     private void actionRename() {
         Dialog.createPrompt("gui.sfm.FactoryManager.Tool.Group.Dialog.RenameGroup", (b, newName) -> {
-            for (GroupButton group : getGroupList().getChildren()) {
-                if (group != this && this.group.equals(group.group)) {
+            for (String group : FactoryManagerGUI.get().groupModel.getGroups()) {
+                if (newName.equals(group)) {
                     Dialog.createDialog(I18n.format("gui.sfm.FactoryManager.Tool.Group.Dialog.RenameFailed", newName)).tryAddSelfToActiveGUI();
                     return;
                 }
@@ -69,17 +68,17 @@ public class GroupButton extends TextButton {
     }
 
     private void actionMoveContent() {
-        SelectGroupDialog.create(toGroup -> {
-            for (FlowComponent<?> component : FactoryManagerGUI.get().getTopLevel().editorPanel.getFlowComponents()) {
-                if (component.getGroup().equals(group)) {
-                    component.getProcedure().setGroup(toGroup);
-                }
-            }
-        }, () -> {
-        }).tryAddSelfToActiveGUI();
+        Grouplist.createSelectGroupDialog(
+                toGroup -> {
+                    if (!this.group.equals(toGroup)) {
+                        FactoryManagerGUI.get().getTopLevel().editorPanel.moveGroup(this.group, toGroup);
+                        FactoryManagerGUI.get().getTopLevel().connectionsPanel.moveGroup(this.group, toGroup);
+                    }
+                },
+                () -> {}).tryAddSelfToActiveGUI();
     }
 
-    private static GroupList getGroupList() {
+    private static Grouplist getGroupList() {
         return FactoryManagerGUI.get().getTopLevel().toolboxPanel.getGroupList();
     }
 
@@ -90,5 +89,19 @@ public class GroupButton extends TextButton {
     public void setGroup(String group) {
         this.group = group;
         this.setTextRaw(formatGroupName(group));
+    }
+
+    @Override
+    public int getNormalBorderColor() {
+        return isSelected() ? 0xffffff66 : super.getNormalBorderColor();
+    }
+
+    @Override
+    public int getHoveredBorderColor() {
+        return isSelected() ? 0xffffff00 : super.getNormalBorderColor();
+    }
+
+    private boolean isSelected() {
+        return group.equals(FactoryManagerGUI.get().groupModel.getCurrentGroup());
     }
 }

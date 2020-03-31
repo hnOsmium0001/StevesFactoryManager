@@ -81,7 +81,6 @@ public final class ToolPanel extends DynamicWidthWidget<IWidget> {
 
     private void openContextMenu() {
         ContextMenu contextMenu = ContextMenu.atCursor(ImmutableList.of(
-                new CallbackEntry(null, "gui.sfm.FactoryManager.Tool.CtxMenu.CloseToolPanel", b -> setActivePanel(null)),
                 new CallbackEntry(null, "gui.sfm.FactoryManager.Generic.CtxMenu.ToggleFullscreen", b -> FactoryManagerGUI.get().getPrimaryWindow().toggleFullscreen())
         ));
         WidgetScreen.getCurrent().addPopupWindow(contextMenu);

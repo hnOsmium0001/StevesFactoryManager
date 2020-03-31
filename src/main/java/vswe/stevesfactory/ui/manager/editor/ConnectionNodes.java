@@ -41,16 +41,20 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
                     FlowComponent<?> other = m.get(successor);
                     StartNode start = nodes.get(i);
                     EndNode end = other.getInputNodes().nodes.get(connection.getDestinationInputIndex());
+                    String group = other.getGroup();
 
                     INode[] allNodes = new INode[1 + connection.getPolylineNodes().size() + 1];
                     allNodes[0] = start;
                     allNodes[allNodes.length - 1] = end;
+                    FactoryManagerGUI.get().getTopLevel().connectionsPanel.addChildren(group, start.shadow);
+                    FactoryManagerGUI.get().getTopLevel().connectionsPanel.addChildren(group, end.shadow);
                     // Generate the intermediate nodes
                     int j = 1;
                     for (Point pos : connection.getPolylineNodes()) {
                         allNodes[j] = new IntermediateNode();
                         allNodes[j].setLocation(pos);
-                        FactoryManagerGUI.get().getTopLevel().connectionsPanel.addChildren(allNodes[j]);
+                        // Other's group is the same as our group
+                        FactoryManagerGUI.get().getTopLevel().connectionsPanel.addChildren(group, allNodes[j]);
                         j++;
                     }
                     // Connect the intermediate nodes
@@ -72,12 +76,13 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
         super(0, 0, 0, ConnectionsPanel.REGULAR_HEIGHT);
         ImmutableList.Builder<N> nodes = ImmutableList.builder();
         for (int i = 0; i < amountNodes; i++) {
-            nodes.add(factory.apply(i));
+            N node = factory.apply(i);
+            nodes.add(node);
         }
         this.nodes = nodes.build();
     }
 
-    private static void removeNode(INode node) {
+    private static void resmoveNode(INode node) {
         ConnectionsPanel panel = FactoryManagerGUI.get().getTopLevel().connectionsPanel;
         panel.removeChildren(node);
     }

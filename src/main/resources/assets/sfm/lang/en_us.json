@@ -62,7 +62,6 @@
   "gui.sfm.FactoryManager.Tool.Group.Dialog.CreateGroup": "Create new group",
   "gui.sfm.FactoryManager.Tool.Group.Dialog.CreateFailed": "Unable to create new group: a group with the name %s already exists.",
   "gui.sfm.FactoryManager.Tool.Group.Dialog.SelectGroup": "Select a group from the following list:",
-  "gui.sfm.FactoryManager.Toolbox.CloseToolPanel": "Close tool panel",
   "gui.sfm.ItemIntake.Title": "Item Intake",
   "gui.sfm.ItemIntake.Radius": "Working area radius",
   "gui.sfm.ItemIntake.RenderWorkingArea": "Renders working area",

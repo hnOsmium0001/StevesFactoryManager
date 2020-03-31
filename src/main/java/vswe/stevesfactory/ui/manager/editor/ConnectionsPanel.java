@@ -10,9 +10,7 @@ import vswe.stevesfactory.library.gui.layout.properties.BoxSizing;
 import vswe.stevesfactory.ui.manager.DynamicWidthWidget;
 import vswe.stevesfactory.ui.manager.FactoryManagerGUI;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
@@ -115,12 +113,19 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
         GlStateManager.enableTexture();
     }
 
-    private Set<INode> children = new HashSet<>();
+    private Map<String, Set<INode>> groupMappedChildren = new HashMap<>();
+    private Set<INode> children;
+    public boolean disabledModification = false;
 
     private Either<StartNode, EndNode> selectedNode = null;
 
     public ConnectionsPanel() {
         super(WidthOccupierType.MAX_WIDTH);
+        // Default group child widget collection
+        children = new HashSet<>();
+        groupMappedChildren.put("", children);
+        // No need to remove because this panel has the same lifetime as the GUI
+        FactoryManagerGUI.get().groupModel.addListenerSelect(current -> children = groupMappedChildren.computeIfAbsent(current, __ -> new HashSet<>()));
     }
 
     @Override
@@ -257,7 +262,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
         // Create connection in GUI
         ConnectionsPanel.connectAndOverride(start, end);
         // Create connection in actual flowchart
-        Connection.createAndOverride(start.getProcedure(), start.getIndex(), end.getProcedure(), end.getIndex());
+        Connection.createAndOverride(start.getProcedure(), start.index, end.getProcedure(), end.index);
 
         clearSelection();
     }
@@ -278,22 +283,55 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
 
     @Override
     public ConnectionsPanel addChildren(INode node) {
-        children.add(node);
-        node.setParentWidget(this);
+        if (!disabledModification) {
+            children.add(node);
+            node.setParentWidget(this);
+        }
         return this;
     }
 
     @Override
     public ConnectionsPanel addChildren(Collection<INode> nodes) {
-        for (INode node : nodes) {
-            addChildren(node);
+        if (!disabledModification) {
+            for (INode node : nodes) {
+                addChildren(node);
+            }
         }
         return this;
     }
 
+    /**
+     * Special add child widget function for retrieving from serialized data. Avoid using during GUI lifetime.
+     */
+    public void addChildren(String group, INode node) {
+        if (!disabledModification) {
+            groupMappedChildren.computeIfAbsent(group, __ -> new HashSet<>()).add(node);
+            node.setParentWidget(this);
+        }
+    }
+
     public void removeChildren(INode node) {
-        if (children.remove(node)) {
-            node.onRemoved();
+        if (!disabledModification) {
+            for (Set<INode> children : groupMappedChildren.values()) {
+                if (children.remove(node)) {
+                    node.onRemoved();
+                }
+            }
+        }
+    }
+
+    public void moveGroup(String from, String to) {
+        Set<INode> original = groupMappedChildren.computeIfAbsent(from, __ -> new HashSet<>());
+        groupMappedChildren.computeIfAbsent(to, __ -> new HashSet<>()).addAll(original);
+        original.clear();
+    }
+
+    @Override
+    public void notifyChildrenForPositionChange() {
+        for (Set<INode> children : groupMappedChildren.values()) {
+            for (INode child : children) {
+                child.onParentPositionChanged();
+            }
         }
     }
 }

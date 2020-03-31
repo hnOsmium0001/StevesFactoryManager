@@ -23,13 +23,14 @@ public final class EndNode extends AbstractIconButton implements INode {
     private INode previous;
     private StartNode start;
 
-    private final int index;
-    private final ShadowNode shadow;
+    public final int index;
+    public final ShadowNode shadow;
 
     public EndNode(int index) {
         super(0, 0, REGULAR_WIDTH, REGULAR_HEIGHT);
         this.index = index;
         this.shadow = new ShadowNode(this);
+        // This action will do nothing if we are reading from network data
         FactoryManagerGUI.get().getTopLevel().connectionsPanel.addChildren(shadow);
     }
 
@@ -141,10 +142,6 @@ public final class EndNode extends AbstractIconButton implements INode {
     @Override
     public Type getType() {
         return Type.END;
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     public StartNode getStart() {
