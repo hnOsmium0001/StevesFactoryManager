@@ -131,14 +131,14 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
                 int barLeftX = getAbsBarLeft();
                 int barRightX = barLeftX + barWidth;
 
-                GlStateManager.disableDepthTest();
-                GlStateManager.disableTexture();
+                RenderSystem.disableDepthTest();
+                RenderSystem.disableTexture();
                 renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
                 rectVertices(barLeftX, top, barRightX, bottom, getShadowColor());
                 rectVertices(barLeftX, barTopY, barRightX, barBottomY, getBarBorderColor());
                 rectVertices(barLeftX, barTopY, barRightX - 1, barBottomY - 1, getBarBodyColor());
                 tess.draw();
-                GlStateManager.enableTexture();
+                RenderSystem.enableTexture();
             }
 
             test.destroy();
@@ -180,10 +180,10 @@ public class LinearList<T extends IWidget> extends AbstractContainer<T> implemen
             GuiUtils.drawGradientRect(0, left, top, right, bottom, 0xc0101010, 0xd0101010);
         } else {
             // Draw dark dirt background
-            GlStateManager.disableLighting();
-            GlStateManager.disableFog();
+            RenderSystem.disableLighting();
+            RenderSystem.disableFog();
             Minecraft.getInstance().getTextureManager().bindTexture(AbstractGui.BACKGROUND_LOCATION);
-            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             float texScale = 32.0F;
             BufferBuilder renderer = RenderingHelper.getRenderer();
             renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);

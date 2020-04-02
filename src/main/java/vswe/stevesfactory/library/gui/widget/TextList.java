@@ -29,15 +29,15 @@ public class TextList extends AbstractWidget implements LeafWidgetMixin {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
         int x = getAbsoluteX() + 1;
         int y = getAbsoluteY() + 1;
-        GlStateManager.enableTexture();
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(x, y, 0F);
-        GlStateManager.scalef(scaleFactor, scaleFactor, 1F);
+        RenderSystem.enableTexture();
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(x, y, 0F);
+        RenderSystem.scalef(scaleFactor, scaleFactor, 1F);
         for (String text : texts) {
             fontRenderer().drawString(text, 0, 0, 0xff000000);
-            GlStateManager.translatef(0F, fontHeight, 0F);
+            RenderSystem.translatef(0F, fontHeight, 0F);
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 

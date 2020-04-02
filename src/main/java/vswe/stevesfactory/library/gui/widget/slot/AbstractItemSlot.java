@@ -40,7 +40,7 @@ public abstract class AbstractItemSlot extends AbstractWidget implements LeafWid
         FontRenderer fr = MoreObjects.firstNonNull(stack.getItem().getFontRenderer(stack), fontRenderer());
         int x = getAbsoluteX() + 1;
         int y = getAbsoluteY() + 1;
-        GlStateManager.disableDepthTest();
+        RenderSystem.disableDepthTest();
         RenderHelper.enableStandardItemLighting();
         ir.renderItemAndEffectIntoGUI(stack, x, y);
         ir.renderItemOverlayIntoGUI(fr, stack, x, y, null);

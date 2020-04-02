@@ -62,8 +62,8 @@ public abstract class ConfigurableSlot<E extends IWidget> extends AbstractWidget
             NORMAL.draw(x, y);
         }
 
-        GlStateManager.disableDepthTest();
-        GlStateManager.enableTexture();
+        RenderSystem.disableDepthTest();
+        RenderSystem.enableTexture();
         RenderHelper.enableStandardItemLighting();
         ItemRenderer ir = Minecraft.getInstance().getItemRenderer();
         ir.renderItemAndEffectIntoGUI(stack, x, y);
@@ -146,8 +146,8 @@ public abstract class ConfigurableSlot<E extends IWidget> extends AbstractWidget
                 if (isSelected() && !in.isEmpty()) {
                     RenderingHelper.useBlendingGLStates();
                     RenderingHelper.drawRect(getAbsoluteX(), getAbsoluteY(), getAbsoluteXRight(), getAbsoluteYBottom(), 0x66ffff00);
-                    GlStateManager.disableBlend();
-                    GlStateManager.enableTexture();
+                    RenderSystem.disableBlend();
+                    RenderSystem.enableTexture();
                 }
             }
 

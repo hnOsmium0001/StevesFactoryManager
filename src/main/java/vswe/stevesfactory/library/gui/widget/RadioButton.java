@@ -49,11 +49,11 @@ public class RadioButton extends AbstractWidget implements IButton, LeafWidgetMi
 
         if (!label.isEmpty()) {
             int y = RenderingHelper.getYForAlignedCenter(y1, y2, (int) (RenderingHelper.fontHeight() * 0.7F));
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(x2, y, 0F);
-            GlStateManager.scalef(0.7F, 0.7F, 1F);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(x2, y, 0F);
+            RenderSystem.scalef(0.7F, 0.7F, 1F);
             fontRenderer().drawString(label, 0F, 0F, 0xff404040);
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }

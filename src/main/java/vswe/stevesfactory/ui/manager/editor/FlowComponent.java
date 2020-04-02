@@ -460,6 +460,7 @@ public class FlowComponent<P extends IProcedure & IClientDataStorage> extends Ab
         submitButton.render(mouseX, mouseY, particleTicks);
         cancelButton.render(mouseX, mouseY, particleTicks);
         nameBox.render(mouseX, mouseY, particleTicks);
+        RenderSystem.enableAlphaTest();
         inputNodes.render(mouseX, mouseY, particleTicks);
         outputNodes.render(mouseX, mouseY, particleTicks);
         errorIndicator.render(mouseX, mouseY, particleTicks);

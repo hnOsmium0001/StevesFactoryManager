@@ -57,7 +57,7 @@ public final class BackgroundRenderers {
         rectVertices(x + 2, y + 2, x2 - 2, y2 - 2, BACKGROUND_COLOR);
 
         Tessellator.getInstance().draw();
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ public final class BackgroundRenderers {
 
         if (bodyWidth > 0 && bodyHeight > 0) {
             drawRect(bodyX, bodyY, bodyX + bodyWidth, bodyY + bodyHeight, 198, 198, 198, 255);
-            GlStateManager.enableTexture();
+            RenderSystem.enableTexture();
         }
     }
 

@@ -136,8 +136,8 @@ public class FilterSlot extends ConfigurableSlot<FilterSlot.Editor> {
         }
 
         private void renderItem() {
-            GlStateManager.disableDepthTest();
-            GlStateManager.enableTexture();
+            RenderSystem.disableDepthTest();
+            RenderSystem.enableTexture();
             RenderHelper.enableStandardItemLighting();
             ItemRenderer ir = Minecraft.getInstance().getItemRenderer();
             int x = getAbsoluteX() + 4;
@@ -171,12 +171,12 @@ public class FilterSlot extends ConfigurableSlot<FilterSlot.Editor> {
 
         @Override
         protected void renderText() {
-            GlStateManager.pushMatrix();
-            GlStateManager.enableTexture();
-            GlStateManager.translatef(getAbsoluteX() + 2, getAbsoluteY() + 2, 0F);
-            GlStateManager.scalef(0.8F, 0.8F, 1F);
+            RenderSystem.pushMatrix();
+            RenderSystem.enableTexture();
+            RenderSystem.translatef(getAbsoluteX() + 2, getAbsoluteY() + 2, 0F);
+            RenderSystem.scalef(0.8F, 0.8F, 1F);
             fontRenderer().drawString(getText(), 0, 0, getTextColor());
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
 
         @Override

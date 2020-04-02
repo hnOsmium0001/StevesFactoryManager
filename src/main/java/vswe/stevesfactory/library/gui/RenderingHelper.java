@@ -205,7 +205,7 @@ public final class RenderingHelper {
 
     public static void drawTexture(int x1, int y1, int x2, int y2, float z, ResourceLocation texture, float u1, float v1, float u2, float v2) {
         RenderSystem.enableTexture();
-        RenderSystem.disableLighting();
+        RenderSystem.enableAlphaTest();
         RenderSystem.color3f(1.0F, 1.0F, 1.0F);
         bindTexture(texture);
 

@@ -117,7 +117,7 @@ public abstract class WidgetScreen<C extends WidgetContainer> extends ContainerS
         // Dark transparent overlay
         renderBackground();
 
-        RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         RenderSystem.enableAlphaTest();
 
         inspectionHandler.startCycle();

@@ -164,27 +164,27 @@ public abstract class Inspections implements IRenderEventListener {
     }
 
     public void renderOverlayInfo(IWidget widget) {
-        GlStateManager.pushMatrix();
-        GlStateManager.scalef(0.5F, 0.5F, 1F);
+        RenderSystem.pushMatrix();
+        RenderSystem.scalef(0.5F, 0.5F, 1F);
         DEFAULT_INFO_RENDERER.reset();
         if (widget instanceof IInspectionInfoProvider) {
             ((IInspectionInfoProvider) widget).provideInformation(DEFAULT_INFO_RENDERER);
         } else {
             defaultOverlayInfo(widget);
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     public void renderOverlayInfo(IWindow window) {
-        GlStateManager.pushMatrix();
-        GlStateManager.scalef(0.5F, 0.5F, 1.0F);
+        RenderSystem.pushMatrix();
+        RenderSystem.scalef(0.5F, 0.5F, 1.0F);
         DEFAULT_INFO_RENDERER.reset();
         if (window instanceof IInspectionInfoProvider) {
             ((IInspectionInfoProvider) window).provideInformation(DEFAULT_INFO_RENDERER);
         } else {
             defaultOverlayInfo(window);
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     protected void defaultOverlayInfo(IWidget widget) {

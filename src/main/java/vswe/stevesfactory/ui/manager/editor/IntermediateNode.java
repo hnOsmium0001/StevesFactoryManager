@@ -49,7 +49,7 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
 
-        GlStateManager.disableTexture();
+        RenderSystem.disableTexture();
         Tessellator.getInstance().getBuffer().begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         int x1 = getAbsoluteX();
         int y1 = getAbsoluteY();
@@ -58,7 +58,7 @@ public class IntermediateNode extends AbstractWidget implements INode, LeafWidge
         rectVertices(x1, y1, x2, y2, BORDER);
         rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, Utils.isInside(mouseX, mouseY, x1, y1, x2, y2) ? HOVERED_FILLER : NORMAL_FILLER);
         Tessellator.getInstance().draw();
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }

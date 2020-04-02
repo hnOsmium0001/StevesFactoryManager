@@ -104,15 +104,15 @@ public class Dialog extends AbstractPopupWindow {
     }
 
     public static final Consumer<Dialog> VANILLA_STYLE_RENDERER = d -> {
-        GlStateManager.enableAlphaTest();
+        RenderSystem.enableAlphaTest();
         BackgroundRenderers.drawVanillaStyle(d.position.x, d.position.y, d.border.width, d.border.height, 0F);
     };
     public static final int VANILLA_STYLE_BORDER_SIZE = 4;
 
     public static final Consumer<Dialog> FLAT_STYLE_RENDERER = d -> {
-        GlStateManager.disableAlphaTest();
+        RenderSystem.disableAlphaTest();
         BackgroundRenderers.drawFlatStyle(d.position.x, d.position.y, d.border.width, d.border.height, 0F);
-        GlStateManager.enableAlphaTest();
+        RenderSystem.enableAlphaTest();
     };
     public static final int FLAT_STYLE_BORDER_SIZE = 2 + 1;
 

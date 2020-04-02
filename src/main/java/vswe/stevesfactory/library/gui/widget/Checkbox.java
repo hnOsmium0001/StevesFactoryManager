@@ -50,12 +50,12 @@ public class Checkbox extends AbstractWidget implements LeafWidgetMixin {
                 ? (checked ? HOVERED_CHECKED : HOVERED_UNCHECKED)
                 : (checked ? CHECKED : UNCHECKED);
 
-        GlStateManager.disableTexture();
+        RenderSystem.disableTexture();
         getRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         rectVertices(x1, y1, x2, y2, borderColor);
         rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, contentColor);
         Tessellator.getInstance().draw();
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
 
         if (!label.isEmpty()) {
             RenderingHelper.drawTextCenteredVertically(label, x2 + 2, y1, y2, 0xff404040);

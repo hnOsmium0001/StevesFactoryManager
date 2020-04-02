@@ -27,12 +27,12 @@ class ActivationButton extends TextButton {
         // 0.7F, 3, and 3 are magic numbers
         // It would require a lot of effort (including rewriting FontRenderer#getStringWidth) to get rid of those magic numbers
         // 0.7F can be seen as fontHeight=7.3
-        GlStateManager.enableTexture();
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(getAbsoluteX() + 3, getAbsoluteY() + 3, 0F);
-        GlStateManager.scalef(0.7F, 0.7F, 1F);
+        RenderSystem.enableTexture();
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(getAbsoluteX() + 3, getAbsoluteY() + 3, 0F);
+        RenderSystem.scalef(0.7F, 0.7F, 1F);
         fontRenderer().drawString(getText(), 0F, 0F, 0xff4d4d4d);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @Override

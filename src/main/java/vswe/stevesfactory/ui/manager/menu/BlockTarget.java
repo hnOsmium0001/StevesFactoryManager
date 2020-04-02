@@ -112,8 +112,8 @@ public class BlockTarget extends AbstractWidget implements IButton, INamedElemen
         RenderingHelper.drawRect(x, y, getAbsoluteXRight(), getAbsoluteYBottom(), color);
 
         // No depth test so that popups get correctly rendered
-        GlStateManager.disableDepthTest();
-        GlStateManager.enableTexture();
+        RenderSystem.disableDepthTest();
+        RenderSystem.enableTexture();
         RenderHelper.enableStandardItemLighting();
         // 16 is the standard item size
         Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(cachedItemStack, x + (getWidth() - 16) / 2, y + (getHeight() - 16) / 2);

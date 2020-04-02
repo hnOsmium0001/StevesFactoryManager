@@ -99,7 +99,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
     }
 
     public static void drawConnectionLine(int x1, int y1, int x2, int y2) {
-        GlStateManager.disableTexture();
+        RenderSystem.disableTexture();
         glEnable(GL_LINE_SMOOTH);
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         glLineWidth(4);
@@ -111,7 +111,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
         }
         glEnd();
         glColor3f(1F, 1F, 1F);
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
     }
 
     private Map<String, Set<INode>> groupMappedChildren = new HashMap<>();
@@ -157,8 +157,8 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
         EditorPanel editor = FactoryManagerGUI.get().getTopLevel().editorPanel;
 
         ScissorTest test = ScissorTest.scaled(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(editor.getXOffset(), editor.getYOffset(), 0F);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(editor.getXOffset(), editor.getYOffset(), 0F);
         {
             // Separate widget rendering and connection rendering to put the connections behind the widgets
             for (INode child : children) {
@@ -177,7 +177,7 @@ public final class ConnectionsPanel extends DynamicWidthWidget<INode> {
                 child.render(mouseX - editor.getXOffset(), mouseY - editor.getYOffset(), particleTicks);
             }
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         test.destroy();
 
         if (selectedNode != null) {

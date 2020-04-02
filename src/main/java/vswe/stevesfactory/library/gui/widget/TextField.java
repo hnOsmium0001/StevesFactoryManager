@@ -433,7 +433,7 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
         String renderedText = fontRenderer().trimStringToWidth(this.text.substring(startOffset), width);
         int textX = x + 2;
         int textY = y + calculateVerticalOffset();
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
         if (isEnabled()) {
             if (isEditable()) {
                 drawString(renderedText, textX, textY, textColor);
@@ -465,18 +465,18 @@ public class TextField extends AbstractWidget implements LeafWidgetMixin {
             int w = (int) (fontRenderer().getStringWidth(text.substring(startOffset, cursor)) * scaleFactor);
             int cx = x + 2 + w;
             RenderingHelper.drawRect(cx, y + 2, cx + 1, y2 - 3, 0xff000000);
-            GlStateManager.enableTexture();
+            RenderSystem.enableTexture();
         }
 
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);
     }
 
     private void drawString(String text, int textX, int textY, int color) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(textX, textY, 0F);
-        GlStateManager.scalef(scaleFactor, scaleFactor, 1F);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(textX, textY, 0F);
+        RenderSystem.scalef(scaleFactor, scaleFactor, 1F);
         fontRenderer().drawString(text, 0, 0, color);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     public IBackgroundRenderer getBackgroundStyle() {

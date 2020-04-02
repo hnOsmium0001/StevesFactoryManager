@@ -116,8 +116,8 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
 
         ScissorTest test = ScissorTest.scaled(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(xOffset.get(), yOffset.get(), 0F);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(xOffset.get(), yOffset.get(), 0F);
         RenderingHelper.translate(xOffset.get(), yOffset.get());
         {
             // Widgets are translated on render, which means player inputs will go at the translated positions
@@ -131,7 +131,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
             }
         }
         RenderingHelper.clearTranslation();
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         test.destroy();
 
         xOffset.render(mouseX, mouseY, particleTicks);

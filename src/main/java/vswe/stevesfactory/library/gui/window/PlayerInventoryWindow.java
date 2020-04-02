@@ -86,7 +86,7 @@ public class PlayerInventoryWindow extends AbstractPopupWindow {
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
-        GlStateManager.enableAlphaTest();
+        RenderSystem.enableAlphaTest();
         BackgroundRenderers.drawVanillaStyle(getX(), getY(), getWidth(), getHeight(), 0F);
         renderChildren(mouseX, mouseY, particleTicks);
         RenderEventDispatcher.onPostRender(this, mouseX, mouseY);

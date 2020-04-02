@@ -1,6 +1,7 @@
 package vswe.stevesfactory.api.logic;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.AbstractIterator;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.nbt.CompoundNBT;
@@ -85,18 +86,16 @@ public final class ProcedureGraph {
     }
 
     private static <T extends IProcedure> Iterator<T> createValidOnlyIter(List<T> list) {
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
             private Iterator<T> backing = list.iterator();
 
             @Override
-            public boolean hasNext() {
-                return backing.hasNext();
-            }
-
-            @Override
-            public T next() {
+            protected T computeNext() {
                 T t;
                 do {
+                    if (!backing.hasNext()) {
+                        return endOfData();
+                    }
                     t = backing.next();
                 } while (!t.isValid());
                 return t;

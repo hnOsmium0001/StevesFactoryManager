@@ -109,7 +109,7 @@ public class DirectionSelectionMenu<P extends IDirectionTarget & IProcedure & IC
     @Override
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderSystem.color3f(1F, 1F, 1F);
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
         super.render(mouseX, mouseY, particleTicks);
     }
 

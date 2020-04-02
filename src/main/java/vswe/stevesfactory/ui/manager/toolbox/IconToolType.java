@@ -46,8 +46,8 @@ public class IconToolType<T extends IWidget> extends AbstractWidget implements I
     public void render(int mouseX, int mouseY, float particleTicks) {
         RenderEventDispatcher.onPreRender(this, mouseX, mouseY);
 
-        GlStateManager.disableAlphaTest();
-        GlStateManager.disableTexture();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.disableTexture();
         Tessellator.getInstance().getBuffer().begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         int x1 = getAbsoluteX();
         int y1 = getAbsoluteY();
@@ -57,8 +57,8 @@ public class IconToolType<T extends IWidget> extends AbstractWidget implements I
         rectVertices(x1, y1, x2, y2, hovered ? HOVERED_BORDER_COLOR : NORMAL_BORDER_COLOR);
         rectVertices(x1 + 1, y1 + 1, x2 - 1, y2 - 1, hovered ? HOVERED_FILLER_COLOR : NORMAL_FILLER_COLOR);
         Tessellator.getInstance().draw();
-        GlStateManager.enableTexture();
-        GlStateManager.enableAlphaTest();
+        RenderSystem.enableTexture();
+        RenderSystem.enableAlphaTest();
 
         int textureSize = getWidth();
         tex.draw(x1, y1, textureSize, textureSize);
