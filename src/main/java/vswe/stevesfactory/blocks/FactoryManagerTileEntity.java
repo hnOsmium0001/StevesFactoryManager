@@ -400,7 +400,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
 
         ListNBT serializedGroups = new ListNBT();
         for (String group : groups) {
-            serializedGroups.add(new StringNBT(group));
+            serializedGroups.add(StringNBT.valueOf(group));
         }
         compound.put("Groups", serializedGroups);
 
