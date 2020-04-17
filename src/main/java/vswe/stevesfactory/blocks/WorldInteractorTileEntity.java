@@ -7,6 +7,6 @@ import vswe.stevesfactory.setup.ModBlocks;
 public class WorldInteractorTileEntity extends TileEntity {
 
     public WorldInteractorTileEntity() {
-        super(ModBlocks.worldInteractorTileEntity);
+        super(ModBlocks.worldInteractorTileEntity.get());
     }
 }

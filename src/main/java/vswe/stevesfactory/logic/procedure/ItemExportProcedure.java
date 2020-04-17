@@ -14,7 +14,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
 import vswe.stevesfactory.logic.FilterType;
-import vswe.stevesfactory.logic.ModProcedures;
+import vswe.stevesfactory.setup.ModProcedures;
 import vswe.stevesfactory.logic.item.IItemFilter;
 import vswe.stevesfactory.logic.item.ItemTraitsFilter;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;

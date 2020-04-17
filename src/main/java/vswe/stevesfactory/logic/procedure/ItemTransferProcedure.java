@@ -13,6 +13,7 @@ import net.minecraftforge.items.*;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.*;
 import vswe.stevesfactory.logic.item.*;
+import vswe.stevesfactory.setup.ModProcedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.editor.PropertyManager;
 import vswe.stevesfactory.ui.manager.menu.DirectionSelectionMenu;

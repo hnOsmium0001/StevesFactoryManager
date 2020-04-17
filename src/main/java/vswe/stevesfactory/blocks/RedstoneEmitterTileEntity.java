@@ -27,12 +27,12 @@ public class RedstoneEmitterTileEntity extends TileEntity implements ICable {
     private LazyOptional<RedstoneSignalHandler> redstoneEast = LazyOptional.of(this::createSignalHandler);
 
     public RedstoneEmitterTileEntity() {
-        super(ModBlocks.redstoneEmitterTileEntity);
+        super(ModBlocks.redstoneEmitterTileEntity.get());
     }
 
     private RedstoneSignalHandler createSignalHandler() {
         assert world != null;
-        return new RedstoneSignalHandler(() -> world.notifyNeighbors(pos, ModBlocks.redstoneEmitterBlock));
+        return new RedstoneSignalHandler(() -> world.notifyNeighbors(pos, ModBlocks.redstoneEmitterBlock.get()));
     }
 
     @Nonnull

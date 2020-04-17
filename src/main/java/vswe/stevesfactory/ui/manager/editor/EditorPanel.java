@@ -360,6 +360,7 @@ public final class EditorPanel extends DynamicWidthWidget<FlowComponent<?>> {
 
     public void removeFlowComponent(FlowComponent<?> flowComponent) {
         children.remove(flowComponent);
+        flowComponent.onRemoved();
     }
 
     private void raiseComponentToTop(FlowComponent<?> target) {

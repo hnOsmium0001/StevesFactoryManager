@@ -46,7 +46,7 @@ public class BlockInteractorTileEntity extends TileEntity implements IItemHandle
     private int readerIndex = -1;
 
     public BlockInteractorTileEntity() {
-        super(ModBlocks.blockInteractorTileEntity);
+        super(ModBlocks.blockInteractorTileEntity.get());
     }
 
     private boolean isUnready() {

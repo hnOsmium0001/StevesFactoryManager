@@ -10,7 +10,7 @@ import vswe.stevesfactory.utils.NetworkHelper;
 public class CableTileEntity extends TileEntity implements ICable {
 
     public CableTileEntity() {
-        super(ModBlocks.cableTileEntity);
+        super(ModBlocks.cableTileEntity.get());
     }
 
     @Override

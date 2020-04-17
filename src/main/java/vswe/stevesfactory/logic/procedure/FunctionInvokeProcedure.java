@@ -5,7 +5,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import vswe.stevesfactory.api.logic.*;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.ModProcedures;
+import vswe.stevesfactory.setup.ModProcedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.InvocationTargetMenu;
 

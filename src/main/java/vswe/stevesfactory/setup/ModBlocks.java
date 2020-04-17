@@ -2,170 +2,135 @@ package vswe.stevesfactory.setup;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import vswe.stevesfactory.StevesFactoryManager;
 import vswe.stevesfactory.blocks.*;
 import vswe.stevesfactory.render.WorkingAreaRenderer;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static vswe.stevesfactory.setup.ModItems.defaultItemProperties;
-
+@SuppressWarnings("ConstantConditions")
 @EventBusSubscriber(modid = StevesFactoryManager.MODID, bus = Bus.MOD)
 public final class ModBlocks {
 
     private ModBlocks() {
     }
 
-    private static List<BlockBuilder<?>> pendingBlocks = new ArrayList<>();
+    public static DeferredRegister<Block> blocks = new DeferredRegister<>(ForgeRegistries.BLOCKS, StevesFactoryManager.MODID);
 
-    @ObjectHolder("sfm:factory_manager")
-    public static FactoryManagerBlock factoryManagerBlock;
-    @ObjectHolder("sfm:factory_manager")
-    public static TileEntityType<FactoryManagerTileEntity> factoryManagerTileEntity;
+    public static final RegistryObject<FactoryManagerBlock> factoryManagerBlock = blocks.register(
+            "factory_manager",
+            () -> new FactoryManagerBlock(Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(3F, 10F)));
+    public static final RegistryObject<CableBlock> cableBlock = blocks.register(
+            "cable",
+            () -> new CableBlock(Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(1F, 10F)));
+    public static final RegistryObject<RedstoneEmitterBlock> redstoneEmitterBlock = blocks.register(
+            "redstone_emitter",
+            () -> new RedstoneEmitterBlock(Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(1.8F, 10F)));
+    public static final RegistryObject<RedstoneInputBlock> redstoneInputBlock = blocks.register(
+            "redstone_input",
+            () -> new RedstoneInputBlock(Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(1.8F, 10F)));
+    public static final RegistryObject<ItemIntakeBlock> itemIntakeBlock = blocks.register(
+            "item_intake",
+            () -> new ItemIntakeBlock(ItemIntakeTileEntity::regular, Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(1.8F, 10F)));
+    public static final RegistryObject<ItemIntakeBlock> instantItemIntakeBlock = blocks.register(
+            "instant_item_intake",
+            () -> new ItemIntakeBlock(ItemIntakeTileEntity::instant, Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(1.8F, 10F)));
+    public static final RegistryObject<BUDBlock> budBlock = blocks.register(
+            "bud",
+            () -> new BUDBlock(Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(1.8F, 10F)));
+    public static final RegistryObject<BlockInteractorBlock> blockInteractorBlock = blocks.register(
+            "block_interactor",
+            () -> new BlockInteractorBlock(Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(1.8F, 10F)));
+    public static final RegistryObject<WorldInteractorBlock> worldInteractorBlock = blocks.register(
+            "world_interactor",
+            () -> new WorldInteractorBlock(Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(1.8F, 10F)));
+    public static final RegistryObject<SignUpdaterBlock> signUpdaterBlock = blocks.register(
+            "sign_updater",
+            () -> new SignUpdaterBlock(Block.Properties
+                    .create(Material.IRON)
+                    .hardnessAndResistance(1.8F, 10F)));
 
-    @ObjectHolder("sfm:cable")
-    public static CableBlock cableBlock;
-    @ObjectHolder("sfm:cable")
-    public static TileEntityType<CableTileEntity> cableTileEntity;
+    public static DeferredRegister<TileEntityType<?>> tiles = new DeferredRegister<>(ForgeRegistries.TILE_ENTITIES, StevesFactoryManager.MODID);
 
-    @ObjectHolder("sfm:redstone_emitter")
-    public static RedstoneEmitterBlock redstoneEmitterBlock;
-    @ObjectHolder("sfm:redstone_emitter")
-    public static TileEntityType<RedstoneEmitterTileEntity> redstoneEmitterTileEntity;
-
-    @ObjectHolder("sfm:redstone_input")
-    public static RedstoneInputBlock redstoneInputBlock;
-    @ObjectHolder("sfm:redstone_input")
-    public static TileEntityType<RedstoneInputTileEntity> redstoneInputTileEntity;
-
-    @ObjectHolder("sfm:item_intake")
-    public static ItemIntakeBlock itemIntakeBlock;
-    @ObjectHolder("sfm:item_intake")
-    public static TileEntityType<ItemIntakeTileEntity> itemIntakeTileEntity;
-
-    @ObjectHolder("sfm:instant_item_intake")
-    public static ItemIntakeBlock instantItemIntakeBlock;
-    @ObjectHolder("sfm:instant_item_intake")
-    public static TileEntityType<ItemIntakeTileEntity> instantItemIntakeTileEntity;
-
-    @ObjectHolder("sfm:bud")
-    public static BUDBlock budBlock;
-    @ObjectHolder("sfm:bud")
-    public static TileEntityType<BUDTileEntity> budTileEntity;
-
-    @ObjectHolder("sfm:block_interactor")
-    public static BlockInteractorBlock blockInteractorBlock;
-    @ObjectHolder("sfm:block_interactor")
-    public static TileEntityType<BlockInteractorTileEntity> blockInteractorTileEntity;
-
-    @ObjectHolder("sfm:world_interactor")
-    public static WorldInteractorBlock worldInteractorBlock;
-    @ObjectHolder("sfm:world_interactor")
-    public static TileEntityType<WorldInteractorTileEntity> worldInteractorTileEntity;
-
-    @ObjectHolder("sfm:sign_updater")
-    public static SignUpdaterBlock signUpdaterBlock;
-    @ObjectHolder("sfm:sign_updater")
-    public static TileEntityType<SignUpdaterTileEntity> signUpdaterTileEntity;
-
-    static {
-        pendingBlocks.add(new BlockBuilder<FactoryManagerTileEntity>("factory_manager")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(3F, 10F))
-                .constructor(FactoryManagerBlock::new)
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(FactoryManagerTileEntity::new, block)));
-
-        pendingBlocks.add(new BlockBuilder<CableTileEntity>("cable")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1F, 10F))
-                .constructor(CableBlock::new)
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(CableTileEntity::new, block)));
-
-        pendingBlocks.add(new BlockBuilder<RedstoneEmitterTileEntity>("redstone_emitter")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
-                .constructor(RedstoneEmitterBlock::new)
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(RedstoneEmitterTileEntity::new, block)));
-
-        pendingBlocks.add(new BlockBuilder<RedstoneInputTileEntity>("redstone_input")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
-                .constructor(RedstoneInputBlock::new)
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(RedstoneInputTileEntity::new, block)));
-
-        pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("item_intake")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
-                .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::regular, props))
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::regular, block))
-                .forClient(() -> builder -> builder
-                        .renderer(WorkingAreaRenderer::new)));
-
-        pendingBlocks.add(new BlockBuilder<ItemIntakeTileEntity>("instant_item_intake")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
-                .constructor(props -> new ItemIntakeBlock(ItemIntakeTileEntity::instant, props))
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(ItemIntakeTileEntity::instant, block))
-                .forClient(() -> builder -> builder
-                        .renderer(WorkingAreaRenderer::new)));
-
-        pendingBlocks.add(new BlockBuilder<BUDTileEntity>("bud")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
-                .constructor(BUDBlock::new)
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(BUDTileEntity::new, block)));
-
-        pendingBlocks.add(new BlockBuilder<BlockInteractorTileEntity>("block_interactor")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
-                .constructor(BlockInteractorBlock::new)
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(BlockInteractorTileEntity::new, block)));
-
-        pendingBlocks.add(new BlockBuilder<WorldInteractorTileEntity>("world_interactor")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
-                .constructor(WorldInteractorBlock::new)
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(WorldInteractorTileEntity::new, block)));
-
-        pendingBlocks.add(new BlockBuilder<SignUpdaterTileEntity>("sign_updater")
-                .properties(Block.Properties.create(Material.IRON).hardnessAndResistance(1.8F, 10F))
-                .constructor(SignUpdaterBlock::new)
-                .item(defaultItemProperties())
-                .tileEntity(block -> TileEntityType.Builder.create(SignUpdaterTileEntity::new, block)));
-    }
-
-    @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        pendingBlocks.forEach(b -> event.getRegistry().register(b.construct()));
-    }
-
-    @SubscribeEvent
-    public static void registerItemBlocks(RegistryEvent.Register<Item> event) {
-        pendingBlocks.forEach(b -> event.getRegistry().register(b.constructItemBlock()));
-    }
-
-    @SubscribeEvent
-    public static void registerTileEntities(RegistryEvent.Register<TileEntityType<?>> event) {
-        pendingBlocks.forEach(b -> event.getRegistry().register(b.constructTileEntityType()));
-    }
+    public static final RegistryObject<TileEntityType<FactoryManagerTileEntity>> factoryManagerTileEntity = tiles.register(
+            "factory_manager",
+            () -> TileEntityType.Builder
+                    .create(FactoryManagerTileEntity::new, factoryManagerBlock.get())
+                    .build(null));
+    public static final RegistryObject<TileEntityType<CableTileEntity>> cableTileEntity = tiles.register(
+            "cable",
+            () -> TileEntityType.Builder
+                    .create(CableTileEntity::new, cableBlock.get())
+                    .build(null));
+    public static final RegistryObject<TileEntityType<RedstoneEmitterTileEntity>> redstoneEmitterTileEntity = tiles.register(
+            "redstone_emitter",
+            () -> TileEntityType.Builder
+                    .create(RedstoneEmitterTileEntity::new, redstoneEmitterBlock.get())
+                    .build(null));
+    public static final RegistryObject<TileEntityType<RedstoneInputTileEntity>> redstoneInputTileEntity = tiles.register(
+            "redstone_input",
+            () -> TileEntityType.Builder
+                    .create(RedstoneInputTileEntity::new, redstoneInputBlock.get())
+                    .build(null));
+    public static final RegistryObject<TileEntityType<ItemIntakeTileEntity>> itemIntakeTileEntity = tiles.register(
+            "item_intake",
+            () -> TileEntityType.Builder
+                    .create(ItemIntakeTileEntity::regular, itemIntakeBlock.get())
+                    .build(null));
+    public static final RegistryObject<TileEntityType<ItemIntakeTileEntity>> instantItemIntakeTileEntity = tiles.register(
+            "instant_item_intake",
+            () -> TileEntityType.Builder
+                    .create(ItemIntakeTileEntity::instant, instantItemIntakeBlock.get())
+                    .build(null));
+    public static final RegistryObject<TileEntityType<BUDTileEntity>> budTileEntity = tiles.register(
+            "bud",
+            () -> TileEntityType.Builder
+                    .create(BUDTileEntity::new, budBlock.get())
+                    .build(null));
+    public static final RegistryObject<TileEntityType<BlockInteractorTileEntity>> blockInteractorTileEntity = tiles.register(
+            "block_interactor",
+            () -> TileEntityType.Builder
+                    .create(BlockInteractorTileEntity::new, blockInteractorBlock.get())
+                    .build(null));
+    public static final RegistryObject<TileEntityType<WorldInteractorTileEntity>> worldInteractorTileEntity = tiles.register(
+            "world_interactor",
+            () -> TileEntityType.Builder
+                    .create(WorldInteractorTileEntity::new, worldInteractorBlock.get())
+                    .build(null));
+    public static final RegistryObject<TileEntityType<SignUpdaterTileEntity>> signUpdaterTileEntity = tiles.register(
+            "sign_updater",
+            () -> TileEntityType.Builder
+                    .create(SignUpdaterTileEntity::new, signUpdaterBlock.get())
+                    .build(null));
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
-        pendingBlocks.forEach(BlockBuilder::tryRegisterTileEntityRenderer);
-    }
-
-    @SubscribeEvent
-    public static void finishLoading(FMLLoadCompleteEvent event) {
-        pendingBlocks = null;
+        ClientRegistry.bindTileEntityRenderer(itemIntakeTileEntity.get(), WorkingAreaRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(instantItemIntakeTileEntity.get(), WorkingAreaRenderer::new);
     }
 }

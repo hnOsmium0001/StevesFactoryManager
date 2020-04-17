@@ -15,7 +15,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.ModProcedures;
+import vswe.stevesfactory.setup.ModProcedures;
 import vswe.stevesfactory.logic.item.CraftingBufferElement;
 import vswe.stevesfactory.logic.item.RecipeInfo;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;

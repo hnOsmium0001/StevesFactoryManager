@@ -1,4 +1,4 @@
-package vswe.stevesfactory.logic;
+package vswe.stevesfactory.setup;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -13,6 +13,7 @@ import vswe.stevesfactory.api.logic.IProcedure;
 import vswe.stevesfactory.api.logic.IProcedureType;
 import vswe.stevesfactory.api.visibility.GUIVisibility;
 import vswe.stevesfactory.library.gui.RenderingHelper;
+import vswe.stevesfactory.logic.SimpleProcedureType;
 import vswe.stevesfactory.logic.procedure.*;
 
 import java.util.function.Supplier;

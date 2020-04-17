@@ -32,7 +32,7 @@ public class SignUpdaterTileEntity extends TileEntity implements ITextDocument {
     private long updatedTick = -1;
 
     public SignUpdaterTileEntity() {
-        super(ModBlocks.signUpdaterTileEntity);
+        super(ModBlocks.signUpdaterTileEntity.get());
     }
 
     public Direction getFacing() {

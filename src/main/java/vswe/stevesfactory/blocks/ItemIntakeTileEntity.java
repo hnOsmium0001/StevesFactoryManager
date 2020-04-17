@@ -53,7 +53,7 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
     }
 
     public static ItemIntakeTileEntity regular() {
-        return new ItemIntakeTileEntity(ModBlocks.itemIntakeTileEntity) {
+        return new ItemIntakeTileEntity(ModBlocks.itemIntakeTileEntity.get()) {
             @Override
             public boolean isCable() {
                 return Config.COMMON.isItemIntakeBlockCables.get();
@@ -82,7 +82,7 @@ public abstract class ItemIntakeTileEntity extends TileEntity implements ITickab
     }
 
     public static ItemIntakeTileEntity instant() {
-        return new ItemIntakeTileEntity(ModBlocks.instantItemIntakeTileEntity) {
+        return new ItemIntakeTileEntity(ModBlocks.instantItemIntakeTileEntity.get()) {
             @Override
             public boolean isCable() {
                 return Config.COMMON.isInstantItemIntakeBlockCables.get();

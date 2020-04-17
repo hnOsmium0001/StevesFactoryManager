@@ -12,7 +12,7 @@ import vswe.stevesfactory.api.capability.CapabilityDocuments;
 import vswe.stevesfactory.api.capability.ITextDocument;
 import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.ModProcedures;
+import vswe.stevesfactory.setup.ModProcedures;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.InventorySelectionMenu;
 import vswe.stevesfactory.ui.manager.menu.SignUpdaterLinesMenu;

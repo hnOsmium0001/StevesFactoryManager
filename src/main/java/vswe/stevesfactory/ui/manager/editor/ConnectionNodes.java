@@ -27,7 +27,6 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
         return new ConnectionNodes<StartNode>(amount, StartNode::new) {
             @Override
             public void readConnections(Map<IProcedure, FlowComponent<?>> m, IProcedure procedure) {
-                initializing = true;
                 ImmutableList<StartNode> nodes = this.getChildren();
                 Connection[] successors = procedure.successors();
                 Preconditions.checkState(successors.length == nodes.size());
@@ -64,13 +63,11 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
                         ConnectionsPanel.connect(from, to);
                     }
                 }
-                initializing = false;
             }
         };
     }
 
     private final ImmutableList<N> nodes;
-    protected boolean initializing = false;
 
     public ConnectionNodes(int amountNodes, Function<Integer, N> factory) {
         super(0, 0, 0, ConnectionsPanel.REGULAR_HEIGHT);
@@ -82,7 +79,7 @@ public abstract class ConnectionNodes<N extends INode> extends AbstractContainer
         this.nodes = nodes.build();
     }
 
-    private static void resmoveNode(INode node) {
+    private static void removeNode(INode node) {
         ConnectionsPanel panel = FactoryManagerGUI.get().getTopLevel().connectionsPanel;
         panel.removeChildren(node);
     }

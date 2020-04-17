@@ -7,7 +7,7 @@ import vswe.stevesfactory.api.logic.IExecutionContext;
 import vswe.stevesfactory.api.logic.ITrigger;
 import vswe.stevesfactory.api.network.INetworkController;
 import vswe.stevesfactory.logic.AbstractProcedure;
-import vswe.stevesfactory.logic.ModProcedures;
+import vswe.stevesfactory.setup.ModProcedures;
 import vswe.stevesfactory.logic.execution.ProcedureExecutor;
 import vswe.stevesfactory.ui.manager.editor.FlowComponent;
 import vswe.stevesfactory.ui.manager.menu.IntervalMenu;

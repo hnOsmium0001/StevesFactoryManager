@@ -13,13 +13,16 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import vswe.stevesfactory.network.NetworkHandler;
 import vswe.stevesfactory.network.PacketReloadComponentGroups;
+import vswe.stevesfactory.setup.ModBlocks;
 import vswe.stevesfactory.setup.ModContainers;
+import vswe.stevesfactory.setup.ModItems;
 import vswe.stevesfactory.ui.manager.selection.ComponentGroup;
 
 @Mod(StevesFactoryManager.MODID)
@@ -36,16 +39,21 @@ public class StevesFactoryManager {
         instance = this;
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
-
-        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        eventBus.addListener(this::setup);
-        eventBus.addListener(Config::onLoad);
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> eventBus.addListener(this::clientSetup));
-
-        MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
-            MinecraftForge.EVENT_BUS.addListener(ClientEventHandler::onPlayerLoggedIn);
-        });
+        {
+            IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+            bus.addListener(this::setup);
+            bus.addListener(this::finishLoading);
+            bus.addListener(Config::onLoad);
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> bus.addListener(this::clientSetup));
+            ModBlocks.blocks.register(bus);
+            ModBlocks.tiles.register(bus);
+            ModItems.items.register(bus);
+        }
+        {
+            IEventBus bus = MinecraftForge.EVENT_BUS;
+            bus.addListener(this::serverStarting);
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> bus.addListener(ClientEventHandler::onPlayerLoggedIn));
+        }
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -55,6 +63,12 @@ public class StevesFactoryManager {
     private void clientSetup(final FMLClientSetupEvent event) {
         ModContainers.registerFactories();
         ComponentGroup.reload(false);
+    }
+
+    private void finishLoading(final FMLLoadCompleteEvent event) {
+        ModBlocks.blocks = null;
+        ModBlocks.tiles = null;
+        ModItems.items = null;
     }
 
     private void serverStarting(final FMLServerStartingEvent event) {

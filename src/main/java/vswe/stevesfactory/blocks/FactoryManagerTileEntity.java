@@ -60,7 +60,7 @@ public class FactoryManagerTileEntity extends TileEntity implements ITickableTil
     private int ticks;
 
     public FactoryManagerTileEntity() {
-        super(ModBlocks.factoryManagerTileEntity);
+        super(ModBlocks.factoryManagerTileEntity.get());
         groups.add("");
     }
 

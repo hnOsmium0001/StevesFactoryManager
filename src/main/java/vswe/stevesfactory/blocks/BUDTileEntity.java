@@ -26,7 +26,7 @@ public class BUDTileEntity extends TileEntity implements ICable, IBUDEventDispat
     private LazyOptional<IBUDEventDispatcher> capability = LazyOptional.of(() -> this);
 
     public BUDTileEntity() {
-        super(ModBlocks.budTileEntity);
+        super(ModBlocks.budTileEntity.get());
     }
 
     @Nonnull

@@ -2,7 +2,6 @@ package vswe.stevesfactory.ui.manager.editor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.lwjgl.glfw.GLFW;
 import vswe.stevesfactory.api.logic.IClientDataStorage;
@@ -34,14 +33,14 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
         COLLAPSED(TextureWrapper.ofFlowComponent(0, 40, 9, 9),
                 TextureWrapper.ofFlowComponent(9, 40, 9, 9)) {
             @Override
-            public void toggleStateFor(Menu menu) {
+            public void toggleStateFor(Menu<?> menu) {
                 menu.expand();
             }
         },
         EXPANDED(TextureWrapper.ofFlowComponent(0, 49, 9, 9),
                 TextureWrapper.ofFlowComponent(9, 49, 9, 9)) {
             @Override
-            public void toggleStateFor(Menu menu) {
+            public void toggleStateFor(Menu<?> menu) {
                 menu.collapse();
             }
         };
@@ -54,12 +53,12 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
             this.toggleStateHoveringTexture = toggleStateHoveringTexture;
         }
 
-        public abstract void toggleStateFor(Menu menu);
+        public abstract void toggleStateFor(Menu<?> menu);
     }
 
     public static class ToggleStateButton extends AbstractIconButton {
 
-        public ToggleStateButton(Menu parent) {
+        public ToggleStateButton(Menu<?> parent) {
             super(109, 2, 9, 9);
             setParentWidget(parent);
         }
@@ -82,8 +81,8 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
 
         @Nonnull
         @Override
-        public Menu getParentWidget() {
-            return Objects.requireNonNull((Menu) super.getParentWidget());
+        public Menu<?> getParentWidget() {
+            return Objects.requireNonNull((Menu<?>) super.getParentWidget());
         }
 
         @Override
@@ -136,13 +135,17 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
     }
 
     @Override
-    public Menu<P> addChildren(IWidget widget) {
+    public Menu
+
+            <P> addChildren(IWidget widget) {
         children.add(widget);
         return this;
     }
 
     @Override
-    public Menu<P> addChildren(Collection<IWidget> widgets) {
+    public Menu
+
+            <P> addChildren(Collection<IWidget> widgets) {
         children.addAll(widgets);
         return this;
     }
@@ -251,8 +254,8 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
             getWindow().setFocusedWidget(this);
             if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                 ImmutableList.Builder<IEntry> list = ImmutableList.<IEntry>builder()
-                        .add(new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.CollapseAll", b -> flowComponent.collapseAllMenus()))
-                        .add(new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu.ExpandAll", b -> flowComponent.expandAllMenus()));
+                        .add(new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu<?>.CollapseAll", b -> flowComponent.collapseAllMenus()))
+                        .add(new CallbackEntry(null, "gui.sfm.FactoryManager.Editor.CtxMenu<?>.ExpandAll", b -> flowComponent.expandAllMenus()));
                 for (Supplier<IEntry> entry : actionMenuEntries) {
                     list.add(entry.get());
                 }
@@ -267,13 +270,15 @@ public abstract class Menu<P extends IProcedure & IClientDataStorage> extends Ab
     protected void addContextMenuEntries(ImmutableList.Builder<IEntry> builder) {
     }
 
-    protected void updateData() {
+    protected void saveData() {
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public LinearList<Menu<P>> getParentWidget() {
+    public LinearList<Menu<P>>
+
+    getParentWidget() {
         return Objects.requireNonNull((LinearList<Menu<P>>) super.getParentWidget());
     }
 

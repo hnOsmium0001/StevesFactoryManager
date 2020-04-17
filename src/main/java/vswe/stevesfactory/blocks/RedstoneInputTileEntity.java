@@ -29,7 +29,7 @@ public class RedstoneInputTileEntity extends TileEntity implements ICable, IReds
     private SignalStatus lastSignalState = new SignalStatus();
 
     public RedstoneInputTileEntity() {
-        super(ModBlocks.redstoneInputTileEntity);
+        super(ModBlocks.redstoneInputTileEntity.get());
     }
 
     @Nonnull
