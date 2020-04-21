@@ -6,11 +6,13 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 version = prerelease_tag.isEmpty()
         ? "${mc_version}-${mod_version}"
@@ -95,18 +97,18 @@ jar {
     manifest {
         attributes([
                 "Specification-Title"     : "sfm",
-                "Specification-Vendor"    : "sfmsareus",
+                "Specification-Vendor"    : "hnOsmium0001",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : "${version}",
-                "Implementation-Vendor"   : "sfmsareus",
+                "Implementation-Vendor"   : "hnOsmium0001",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
 
 def static getCheckedOutGitCommitHash() {
-     'git rev-parse --verify --short HEAD'.execute().text.trim()
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
 task buildForCommit(type: Copy, dependsOn: build) {
@@ -116,4 +118,37 @@ task buildForCommit(type: Copy, dependsOn: build) {
     include "**/${mod_name}-*.jar"
     rename "${mod_name}-${version}.jar",
             "${mod_name}-${mc_version}-${mod_version}-build+${getCheckedOutGitCommitHash()}.jar"
+}
+
+bintray {
+    user = findProperty('bintray.user')
+    key = findProperty('bintray.apiKey')
+    publications = ['BintrayPublication']
+    pkg {
+        repo = 'Maven'
+        name = 'steves-factory-manager'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/gigabit101/StevesFactoryManager.git'
+        version {
+            name = "$project.version"
+            released = new Date()
+        }
+    }
+}
+
+def reobfFile = file("$buildDir/reobfJar/output.jar")
+def reobfArtifact = artifacts.add('default', reobfFile) {
+    type 'jar'
+    builtBy 'reobfJar'
+}
+
+publishing {
+    publications {
+        BintrayPublication(MavenPublication) {
+            artifact reobfArtifact
+            groupId project.group
+            artifactId 'steves-factory-manager'
+            version project.version
+        }
+    }
 }
